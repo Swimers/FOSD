@@ -58,7 +58,6 @@ SOURCES += \
     Connect/connectdebug.cpp \
     Connect/connectwindow.cpp \
     Connect/qcpdocumentobject.cpp \
-    Connect/qcustomplot.cpp \
     Dependence/global.cpp \
     Dependence/IFE.cpp \
     Dependence/database.cpp \
@@ -89,7 +88,6 @@ HEADERS += \
     Connect/connectdebug.h \
     Connect/connectwindow.h \
     Connect/qcpdocumentobject.h \
-    Connect/qcustomplot.h \
     Dependence/Timer.h \
     Dependence/global.h \
     Dependence/IFE.h \
@@ -134,7 +132,7 @@ RESOURCES += \
 
 win32:CONFIG(release, debug|release):{
 
-VTK_DIR = $$clean_path($$PWD/VTK-release)
+VTK_DIR = $$clean_path($$PWD/VTK/VTK-release)
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2/vtkhdf5
 LIBS += -L$$VTK_DIR/lib
@@ -271,7 +269,7 @@ LIBS += $$VTK_DIR/lib/vtkzlib-8.2.lib
 
 
 else:win32:CONFIG(debug, debug|release):{
-VTK_DIR = $$clean_path($$PWD/VTK-debug)
+VTK_DIR = $$clean_path($$PWD/VTK/VTK-debug)
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2/vtkhdf5
 LIBS += -L$$VTK_DIR/lib
