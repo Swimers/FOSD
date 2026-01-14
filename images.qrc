@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/resource_demo/1.png</file>
+        <file>resource/resource_demo/2.png</file>
+        <file>resource/resource_main/icon1.jpg</file>
+        <file>resource/resource_main/icon17.png</file>
+        <file>resource/resource_main/icon18.png</file>
+        <file>resource/resource_main/icon25.png</file>
+        <file>resource/resource_log/1.png</file>
+        <file>resource/resource_log/2.png</file>
+        <file>resource/go-down-symbolic.symbolic.png</file>
+        <file>resource/go-next-symbolic.symbolic.png</file>
+        <file>resource/go-previous-symbolic.symbolic.png</file>
+        <file>resource/go-up-symbolic.symbolic.png</file>
+        <file>resource/object-select-symbolic.symbolic.png</file>
+        <file>resource/resource_disp2d/image2.jpg</file>
+        <file>resource/resource_disp2d/image3.jpg</file>
+        <file>resource/resource_disp2d/jiyi1.jpg</file>
+        <file>resource/resource_disp2d/4.bmp</file>
+        <file>resource/resource_disp2d/image6.png</file>
+        <file>resource/resource_disp3d/icon101.png</file>
+        <file>resource/resource_disp3d/icon105.png</file>
+        <file>resource/resource_disp3d/icon107.png</file>
+        <file>resource/resource_disp3d/icon14.png</file>
+        <file>resource/resource_disp3d/icon15.png</file>
+        <file>resource/resource_disp3d/icon102.png</file>
+        <file>resource/resource_disp3d/information_48px.png</file>
+        <file>resource/resource_disp3d/icon13.png</file>
+        <file>resource/resource_disp3d/icon103.png</file>
+        <file>resource/resource_main/icon30.png</file>
+        <file>resource/resource_main/user_100px.png</file>
+        <file>resource/resource_main/airport_48px.png</file>
+        <file>resource/resource_main/fighter_jet_48px.png</file>
+        <file>resource/resource_disp2d/6.png</file>
+    </qresource>
+</RCC>
