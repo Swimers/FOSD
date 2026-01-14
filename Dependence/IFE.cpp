@@ -237,23 +237,23 @@ void IFE::saveConfig(const QString &filePath)
 void IFE::calculateDisp()
 {
     //传递传感器应变值
-    QMutexLocker locker(&mutexStrain);
-//    for (int i = 0; i < SensorNum; ++i) {
-//        sortedstrain[i] = strain[order[i] - 1] * static_cast<float>(para[i]);
-//    }
-    sortedstrain[0] = 6.6519e-004;
-    sortedstrain[1] = 4.0582e-005;
-    sortedstrain[2] = -6.11E-05;
-    sortedstrain[3] = -5.42E-04;
-    sortedstrain[4] = 7.6332e-005;
-    sortedstrain[5] = 6.6399e-005;
+    QMutexLocker locker(&strainMutex);
+    for (int i = 0; i < SensorNum; ++i) {
+        sortedstrain[i] = strain[order[i] - 1] * static_cast<float>(para[i]);
+    }
+//    sortedstrain[0] = 6.6519e-004;
+//    sortedstrain[1] = 4.0582e-005;
+//    sortedstrain[2] = -6.11E-05;
+//    sortedstrain[3] = -5.42E-04;
+//    sortedstrain[4] = 7.6332e-005;
+//    sortedstrain[5] = 6.6399e-005;
 
-    sortedstrain[6] = 1.518e-005;
-    sortedstrain[7] = -8.63E-05;
-    sortedstrain[8] = -2.99E-04;
-    sortedstrain[9] = -1.53E-05;
-    sortedstrain[10] = -8.00E-06;
-    sortedstrain[11] = 1.4629e-004;
+//    sortedstrain[6] = 1.518e-005;
+//    sortedstrain[7] = -8.63E-05;
+//    sortedstrain[8] = -2.99E-04;
+//    sortedstrain[9] = -1.53E-05;
+//    sortedstrain[10] = -8.00E-06;
+//    sortedstrain[11] = 1.4629e-004;
     //乘以类刚度矩阵
     for (int i = 0; i < 20; i++){
         node_u[i] = 0;

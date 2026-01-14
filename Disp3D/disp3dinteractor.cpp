@@ -24,32 +24,7 @@ disp3dinteractor::disp3dinteractor()
 
 disp3dinteractor::~disp3dinteractor()
 {
-    if (m_disp3dmodel && Flag_Pick) {
-        ClearPicker();
-    }
 
-    if (m_TextActor) {
-        if (m_disp3dmodel && m_disp3dmodel->GetVTKRenderer()) {
-            m_disp3dmodel->GetVTKRenderer()->RemoveActor2D(m_TextActor);
-        }
-        m_TextActor->Delete();
-        m_TextActor = nullptr;
-    }
-    if (m_SphereActor) {
-        if (m_disp3dmodel && m_disp3dmodel->GetVTKRenderer()) {
-            m_disp3dmodel->GetVTKRenderer()->RemoveActor(m_SphereActor);
-        }
-        m_SphereActor->Delete();
-        m_SphereActor = nullptr;
-    }
-
-    m_disp3dmodel      = nullptr;
-    lab_KeyPointID     = nullptr;
-    lab_KeyPointRawPos = nullptr;
-    lab_KeyPointDisplace = nullptr;
-    lab_KeyPointNewPos   = nullptr;
-
-    style = nullptr;
 }
 
 void disp3dinteractor::OnLeftButtonDown()
@@ -81,10 +56,10 @@ void disp3dinteractor::OnLeftButtonDown()
             m_TextActor->SetInput(text);                                     // 显示文本
             m_TextActor->GetTextProperty()->SetColor(1, 0, 0);               // 设置文本颜色为红色
             m_TextActor->GetTextProperty()->SetFontSize(20);                 // 设置字体大小
-            m_disp3dmodel->GetVTKRenderer()->AddActor2D(m_TextActor);        // 添加到渲染器中
+            m_disp3dmodel->GetVTKRenderer()->AddActor2D(m_TextActor); // 添加到渲染器中
 
             double bounds[6];
-            m_disp3dmodel->GetVTKActor()->GetBounds(bounds);
+            m_disp3dmodel->GetVTKRenderer()->ComputeVisiblePropBounds(bounds);
             double dx = bounds[1] - bounds[0];
             double dy = bounds[3] - bounds[2];
             double dz = bounds[5] - bounds[4];
@@ -99,10 +74,6 @@ void disp3dinteractor::OnLeftButtonDown()
             mapper->SetInputConnection(sphereSource->GetOutputPort());
             m_SphereActor->SetMapper(mapper);
             m_SphereActor->SetPosition(NewPos[0], NewPos[1], NewPos[2]); // 设置小球位置（初始坐标）
-            if(Flag_CameraFellow && !Flag_CameraLock){
-                vtkCamera* camera = this->GetCurrentRenderer()->GetActiveCamera();
-                camera->SetFocalPoint(NewPos[0], NewPos[1], NewPos[2]);
-            }
             m_disp3dmodel->GetVTKRenderer()->AddActor(m_SphereActor);
 
             m_disp3dmodel->GetVTKRenderWindow()->Render();
@@ -160,57 +131,52 @@ void disp3dinteractor::OnRightButtonUp()
 
 void disp3dinteractor::OnMouseMove()
 {
-    if(Flag_CameraLock){
-        return;
-    }
-    else {
-        if (Flag_RightButtonPressed){   //鼠标右键按下移动
-            int x, y;
-            this->GetInteractor()->GetEventPosition(x, y);
-            int dx = x - this->LastX;
-            int dy = y - this->LastY;
-            this->LastX = x;
-            this->LastY = y;
-            vtkRenderer* ren = this->GetDefaultRenderer();
-            vtkCamera* cam = ren->GetActiveCamera();
-            if (!ren) return;
-            if (!cam) return;
-            double right[3], up[3];
-            cam->GetViewUp(up);
-            cam->OrthogonalizeViewUp();
-            double fp[3], pos[3], viewDir[3];
-            cam->GetFocalPoint(fp);
-            cam->GetPosition(pos);
-            cam->GetDirectionOfProjection(viewDir);
-            vtkMath::Cross(viewDir, up, right);
-            vtkMath::Normalize(right);
-            vtkMath::Normalize(up);
-            double bounds[6];
+    RefreshText();
+    m_disp3dmodel->FreshKeyPoint();
+    if (Flag_RightButtonPressed){   //鼠标右键按下移动
+        int x, y;
+        this->GetInteractor()->GetEventPosition(x, y);
+        int dx = x - this->LastX;
+        int dy = y - this->LastY;
+        this->LastX = x;
+        this->LastY = y;
+        vtkRenderer* ren = this->GetDefaultRenderer();
+        vtkCamera* cam = ren->GetActiveCamera();
+        if (!ren) return;
+        if (!cam) return;
+        double right[3], up[3];
+        cam->GetViewUp(up);
+        cam->OrthogonalizeViewUp();
+        double fp[3], pos[3], viewDir[3];
+        cam->GetFocalPoint(fp);
+        cam->GetPosition(pos);
+        cam->GetDirectionOfProjection(viewDir);
+        vtkMath::Cross(viewDir, up, right);
+        vtkMath::Normalize(right);
+        vtkMath::Normalize(up);
+        double bounds[6];
 
-            ren->ComputeVisiblePropBounds(bounds);
-            double diagonal = sqrt(qPow(bounds[1]-bounds[0],2)+qPow(bounds[3]- bounds[2],2)+qPow(bounds[5]-bounds[4],2));
-            double scale = 0.001 * diagonal;
+        ren->ComputeVisiblePropBounds(bounds);
+        double diagonal = sqrt(qPow(bounds[1]-bounds[0],2)+qPow(bounds[3]- bounds[2],2)+qPow(bounds[5]-bounds[4],2));
+        double scale = 0.001 * diagonal;
 
-            double move[3];
-            move[0] = -dx * right[0] * scale - dy * up[0] * scale;
-            move[1] = -dx * right[1] * scale - dy * up[1] * scale;
-            move[2] = -dx * right[2] * scale - dy * up[2] * scale;
-            for (int i = 0; i < 3; ++i){
-                pos[i] += move[i];
-                fp[i] += move[i];
-            }
-            cam->SetPosition(pos);
-            cam->SetFocalPoint(fp);
-            this->GetInteractor()->Render();
-            RefreshText();
-            m_disp3dmodel->FreshKeyPoint();
-            }
-        else{
-            vtkInteractorStyleTrackballCamera::OnMouseMove();
-            RefreshText();
-            m_disp3dmodel->FreshKeyPoint();
-            return;
+        double move[3];
+        move[0] = -dx * right[0] * scale - dy * up[0] * scale;
+        move[1] = -dx * right[1] * scale - dy * up[1] * scale;
+        move[2] = -dx * right[2] * scale - dy * up[2] * scale;
+        for (int i = 0; i < 3; ++i){
+            pos[i] += move[i];
+            fp[i] += move[i];
         }
+        cam->SetPosition(pos);
+        cam->SetFocalPoint(fp);
+        this->GetInteractor()->Render();
+        RefreshText();
+        }
+    else{
+        vtkInteractorStyleTrackballCamera::OnMouseMove();
+        RefreshText();
+        return;
     }
 }
 

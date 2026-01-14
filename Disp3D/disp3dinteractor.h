@@ -48,9 +48,6 @@ public: //变量
     bool Flag_RightButtonPressed = false;
     bool Flag_Pick;
 
-    bool Flag_CameraLock = 0;
-    bool Flag_CameraFellow = 0;
-
     int LastX = 0, LastY = 0;
     double scale = 0.5; // 控制平移灵敏度，可调节
 

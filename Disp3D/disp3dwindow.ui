@@ -261,42 +261,61 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="3" column="1">
-      <widget class="QPushButton" name="pbtn_KeyPointSelect">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pbtn_ModelMerge">
        <property name="text">
-        <string>拾取关键点</string>
+        <string>模型合并</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QPushButton" name="pbtn_ScalarSet">
-         <property name="text">
-          <string>颜色映射</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pbtn_ScalarClear">
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>清除</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="pbtn_ModelExport">
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>模型导出</string>
+        <string>可视化方法：</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <widget class="Line" name="line_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="comboBox_2">
+       <item>
+        <property name="text">
+         <string>X轴向变形</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Y轴向变形</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Z轴向变形</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item row="0" column="0" colspan="2">
@@ -329,37 +348,6 @@
        </item>
       </layout>
      </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="pbtn_ModelMerge">
-       <property name="text">
-        <string>模型合并</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>刷新率：</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0" colspan="2">
-      <widget class="Line" name="line_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
      <item row="3" column="0">
       <widget class="QPushButton" name="pbtn_KeyPointEdit">
        <property name="text">
@@ -367,20 +355,10 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_5">
+     <item row="3" column="1">
+      <widget class="QPushButton" name="pbtn_KeyPointSelect">
        <property name="text">
-        <string>可视化方法：</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0" colspan="2">
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <string>拾取关键点</string>
        </property>
       </widget>
      </item>
@@ -413,25 +391,6 @@
        </item>
       </widget>
      </item>
-     <item row="7" column="1">
-      <widget class="QComboBox" name="cbox_ScalarSelect">
-       <item>
-        <property name="text">
-         <string>X轴向变形</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Y轴向变形</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Z轴向变形</string>
-        </property>
-       </item>
-      </widget>
-     </item>
      <item row="9" column="0">
       <spacer name="verticalSpacer">
        <property name="orientation">
@@ -444,6 +403,30 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="pbtn_ModelExport">
+       <property name="text">
+        <string>模型导出</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>刷新率：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="2">
+      <widget class="QSlider" name="hsd_ViewPar">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -463,22 +446,8 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="cbox_GridAble">
-       <property name="text">
-        <string>网格显示</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
       <widget class="QSlider" name="hsd_GridSize">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0" colspan="2">
-      <widget class="Line" name="line_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -491,17 +460,44 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
-      <widget class="QCheckBox" name="cbox_CareamLockAble">
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="checkBox_2">
        <property name="text">
-        <string>视角锁定</string>
+        <string>焦点跟踪</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QCheckBox" name="cbox_FellowAble">
+     <item row="3" column="0" colspan="2">
+      <widget class="Line" name="line_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="checkBox">
        <property name="text">
-        <string>焦点跟踪</string>
+        <string>网格显示</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="checkBox_4">
+       <property name="text">
+        <string>视角锁定</string>
        </property>
       </widget>
      </item>
@@ -512,7 +508,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0" colspan="2">
+     <item row="4" column="0" colspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QLabel" name="label_7">
@@ -573,93 +569,6 @@
        </item>
       </layout>
      </item>
-     <item row="8" column="0">
-      <spacer name="verticalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="3" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <spacer name="horizontalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="cbox_XOZGrid">
-         <property name="minimumSize">
-          <size>
-           <width>37</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>37</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>XOZ</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="cbox_XOYGrid">
-         <property name="minimumSize">
-          <size>
-           <width>37</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>37</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>XOY</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="cbox_ZOYGrid">
-         <property name="minimumSize">
-          <size>
-           <width>37</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>37</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>ZOY</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
     </layout>
    </widget>
   </widget>
@@ -678,6 +587,20 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
     <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QRadioButton" name="radioButton_2">
+       <property name="text">
+        <string>三角形数：</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="lab_NumKeyPoints">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QRadioButton" name="radioButton_3">
        <property name="text">
@@ -692,24 +615,17 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="Line" name="line_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QRadioButton" name="radioButton">
        <property name="text">
         <string>节点数：</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="lab_MaxDeformation">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0" colspan="2">
-      <widget class="QPushButton" name="pushButton_6">
-       <property name="text">
-        <string>关键点变形显示</string>
        </property>
       </widget>
      </item>
@@ -720,29 +636,8 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QRadioButton" name="radioButton_2">
-       <property name="text">
-        <string>三角形数：</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0" colspan="2">
-      <widget class="Line" name="line_5">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="lab_NumKeyPoints">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="lab_NumPolys">
+     <item row="3" column="1">
+      <widget class="QLabel" name="lab_MaxDeformation">
        <property name="text">
         <string/>
        </property>
@@ -761,10 +656,27 @@
        </property>
       </spacer>
      </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="lab_NumPolys">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QPushButton" name="pushButton_6">
+       <property name="text">
+        <string>关键点变形显示</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
   <action name="actionModelDock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../resource.qrc">
      <normaloff>:/icon/Resource/icon/3D_Plot.png</normaloff>:/icon/Resource/icon/3D_Plot.png</iconset>

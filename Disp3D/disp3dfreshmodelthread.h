@@ -14,8 +14,6 @@ public:
     void pauseThread() {isPaused = true;}
     void GetPtr(disp3dmodel* externdisplaymodel,IFE* externife);
 
-    void normalizeScalarArray(vtkSmartPointer<vtkDoubleArray> arr);
-
 protected:
     void run() override;
 

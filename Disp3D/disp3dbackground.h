@@ -5,8 +5,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkAxesActor.h>
 
-enum PlaneType { PLANE_XZ, PLANE_XY, PLANE_YZ };
-
 class disp3dbackground
 {
 public:
@@ -21,24 +19,16 @@ public:
     void ShowAxes(bool flag);
     void SetAxesLength(int size);
 
-    vtkSmartPointer<vtkActor> CreateGridActor(PlaneType type);
     void AddAxesGrid();
+    void ShowAxesGrid(bool flag);
     void SetAxesGridSize(int size);
-
-    void ShowGridXZ(bool);
-    void ShowGridXY(bool);
-    void ShowGridYZ(bool);
 
 private:
     vtkRenderer* m_renderer = nullptr;
     vtkSmartPointer<vtkRenderWindow> m_renderWindow = nullptr;    //声明窗口指针
 
     vtkAxesActor* axe = nullptr;
-
-    vtkSmartPointer<vtkActor> axesGridActor_XZ;  // 原 Y=0 平面
-    vtkSmartPointer<vtkActor> axesGridActor_XY;  // Z=0 平面
-    vtkSmartPointer<vtkActor> axesGridActor_YZ;  // X=0 平面
-
+    vtkSmartPointer<vtkActor> axesGridActor = vtkSmartPointer<vtkActor>::New(); //网格指针
     double m_gridRange = 3000.0;
     int m_gridNum = 100;
 };

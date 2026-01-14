@@ -3,18 +3,10 @@
 
 #include <disp3dbackground.h>
 
-#include <stdio.h>
 #include <QDebug>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QFileDialog>
-
-#include <vtkPolyDataMapper.h>
-
-#include <vtkAutoInit.h>
-VTK_MODULE_INIT(vtkRenderingOpenGL2);    // 必须有：OpenGL 渲染后端
-VTK_MODULE_INIT(vtkInteractionStyle);    // 交互风格
-VTK_MODULE_INIT(vtkRenderingFreeType);   // 文本渲染（若用到）
 
 disp3dwindow::disp3dwindow(QWidget *parent) :
     QMainWindow(parent),
@@ -27,34 +19,10 @@ disp3dwindow::disp3dwindow(QWidget *parent) :
 
 disp3dwindow::~disp3dwindow()
 {
-    if (freshTimer) {
-        freshTimer->stop();
-        freshTimer = nullptr;   // 防止后续误用
-    }
-
-    if (m_disp3dthread) {
-        m_disp3dthread->pauseThread();
-        m_disp3dthread->wait();
-        m_disp3dthread = nullptr;
-    }
-
-    if (m_disp3dinteractor) {
-        delete m_disp3dinteractor;
-        m_disp3dinteractor = nullptr;
-    }
-    if (m_disp3dbackground) {
-        delete m_disp3dbackground;
-        m_disp3dbackground = nullptr;
-    }
-    if (m_disp3dmodel) {
-        delete m_disp3dmodel;
-        m_disp3dmodel = nullptr;
-    }
-
-    if (ui) {
-        delete ui;
-        ui = nullptr;
-    }
+    delete m_disp3dmodel;
+    delete m_disp3dbackground;
+    delete m_disp3dinteractor;
+    delete ui;
 }
 
 void disp3dwindow::InitWindow()
@@ -62,16 +30,15 @@ void disp3dwindow::InitWindow()
     m_disp3dmodel = new disp3dmodel();
     ui->vtk_stage->SetRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
 
-    ui->dock_Infor->setVisible(false);
-
     m_disp3dbackground = new disp3dbackground(m_disp3dmodel->GetVTKRenderer(),m_disp3dmodel->GetVTKRenderWindow());
     m_disp3dbackground->SetVtkRenderBackGradient(0.625,0.6797,0.762,0.109, 0.1797, 0.2773);
     m_disp3dbackground->AddAxesActor();
     m_disp3dbackground->AddAxesGrid();
 
-    ui->actionReset->setDisabled(true);
     ui->actionStart->setDisabled(false);
     ui->actionStop->setEnabled(false);
+
+    ui->hsd_ViewPar->setValue(50);
 
     freshTimer = new QTimer(this);
     FPS = ui->cbox_FPS->currentText().left(ui->cbox_FPS->currentText().indexOf('H')).toInt();
@@ -79,17 +46,15 @@ void disp3dwindow::InitWindow()
     InitPointInfor();
 
     m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
-    if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
 
     connect(freshTimer,SIGNAL(timeout()),this,SLOT(RefreshStage()));
-
 }
 
 void disp3dwindow::InitPointInfor()
 {
-    ui->label->setStyleSheet("QLabel { font-weight: bold; color: #4169E1; }");
-    ui->lab_KeyPointID->setStyleSheet("QLabel { font-weight: bold; color: #4169E1; }");
+    ui->label->setStyleSheet("QLabel { font-weight: bold; color: blue; }");
+    ui->lab_KeyPointID->setStyleSheet("QLabel { font-weight: bold; color: blue; }");
     ui->label_6->setStyleSheet("QLabel { font-weight: bold; color: green; }");
     ui->lab_KeyPointRawPos->setStyleSheet("QLabel { font-weight: bold; color: green; }");
     ui->label_8->setStyleSheet("QLabel { font-weight: bold; color: green; }");
@@ -110,9 +75,6 @@ void disp3dwindow::RefreshInfor()
 void disp3dwindow::RefreshStage()
 {
     m_disp3dmodel->GetVTKRenderWindow()->Render();
-    char str[8];
-    sprintf(str, "%0.4f", m_disp3dmodel->MaxDisplace);
-    ui->lab_MaxDeformation->setText(QString(str));
 }
 
 void disp3dwindow::on_checkBox_3_clicked(bool checked)
@@ -143,19 +105,9 @@ void disp3dwindow::on_cbox_AxisAble_clicked(bool checked)
     m_disp3dbackground->ShowAxes(checked);
 }
 
-void disp3dwindow::on_cbox_GridAble_clicked(bool checked)
+void disp3dwindow::on_checkBox_clicked(bool checked)
 {
-    Flag_ShowGrid = checked;
-    if(checked){
-        m_disp3dbackground->ShowGridXY(ui->cbox_XOYGrid->isChecked());
-        m_disp3dbackground->ShowGridXZ(ui->cbox_XOZGrid->isChecked());
-        m_disp3dbackground->ShowGridYZ(ui->cbox_ZOYGrid->isChecked());
-    }
-    else {
-        m_disp3dbackground->ShowGridXY(false);
-        m_disp3dbackground->ShowGridXZ(false);
-        m_disp3dbackground->ShowGridYZ(false);
-    }
+    m_disp3dbackground->ShowAxesGrid(checked);
 }
 
 void disp3dwindow::on_pbtn_ModelClear_clicked()
@@ -256,11 +208,6 @@ void disp3dwindow::on_hsd_AxisSize_valueChanged(int value)
 void disp3dwindow::on_hsd_GridSize_sliderReleased()
 {
     m_disp3dbackground->SetAxesGridSize(ui->hsd_GridSize->value());
-
-    ui->cbox_XOYGrid->setChecked(false);
-    ui->cbox_XOZGrid->setChecked(false);
-    ui->cbox_ZOYGrid->setChecked(false);
-    ui->cbox_GridAble->setChecked(false);
 }
 
 void disp3dwindow::on_pbtn_KeyPointSelect_clicked()
@@ -300,9 +247,6 @@ void disp3dwindow::on_actionStart_triggered()
         return ;
     }
     ui->actionStart->setDisabled(true);
-    ui->actionReset->setDisabled(true);
-
-    ui->actionPause->setEnabled(true);
     ui->actionStop->setEnabled(true);
     freshTimer->start(1000/FPS);
     if(m_disp3dthread == nullptr){  //这里使用线程的方式计算数据，如果采用定时器的话，会造成界面很卡
@@ -319,41 +263,20 @@ void disp3dwindow::on_actionStop_triggered()
         QMessageBox::critical(this, "错误", "模型不存在");
         return ;
     }
-    ui->actionReset->setEnabled(true);
-
-    ui->actionStart->setDisabled(true);
-    ui->actionPause->setDisabled(true);
+    ui->actionStart->setEnabled(true);
     ui->actionStop->setDisabled(true);
-
     m_disp3dthread->pauseThread();
     freshTimer->stop();
 }
 
 void disp3dwindow::on_actionPause_triggered()
 {
-    if(!m_disp3dmodel->Flag_Actor){
-        QMessageBox::critical(this, "错误", "模型不存在");
-        return ;
-    }
-    ui->actionPause->setDisabled(true);
-    ui->actionReset->setDisabled(true);
-    ui->actionStart->setEnabled(true);
-    ui->actionStop->setEnabled(true);
 
-    m_disp3dthread->pauseThread();
-    freshTimer->stop();
 }
 
 void disp3dwindow::on_actionReset_triggered()
 {
-    m_disp3dmodel->ResetModel();
-    ui->actionStart->setEnabled(true);
 
-    ui->actionReset->setDisabled(true);
-    ui->actionPause->setDisabled(true);
-    ui->actionStop->setDisabled(true);
-
-    RefreshStage();
 }
 
 void disp3dwindow::on_cbox_FPS_currentTextChanged(const QString &arg1)
@@ -362,84 +285,5 @@ void disp3dwindow::on_cbox_FPS_currentTextChanged(const QString &arg1)
     if(freshTimer->isActive()){
         freshTimer->stop();
         freshTimer->start(1000/FPS);
-    }
-}
-
-void disp3dwindow::on_pbtn_ScalarSet_clicked()
-{
-    if(!m_disp3dmodel->Flag_Actor){
-        QMessageBox::critical(this, "错误", "模型不存在");
-        return ;
-    }
-
-
-    int index = ui->cbox_ScalarSelect->currentIndex();
-    qDebug() << index;
-    switch(index){
-        case 0:
-            m_disp3dmodel->SetupColorMapping("Displacement_X");
-            break;
-        case 1:
-            m_disp3dmodel->SetupColorMapping("Displacement_Y");
-            break;
-        case 2:
-            m_disp3dmodel->SetupColorMapping("Displacement_Z");
-            break;
-        case 3:
-            m_disp3dmodel->SetupColorMapping("Strain");
-            break;
-        case 4:
-            m_disp3dmodel->SetupColorMapping("Temperature");
-            break;
-        default:
-            qDebug() << "Invalid index!";
-            return;
-    }
-}
-
-void disp3dwindow::on_pbtn_ScalarClear_clicked()
-{
-    if(!m_disp3dmodel->Flag_Actor){
-        QMessageBox::critical(this, "错误", "模型不存在");
-        return ;
-    }
-    m_disp3dmodel->OFFScalars();
-}
-
-void disp3dwindow::on_cbox_XOZGrid_clicked(bool checked)
-{
-    if(Flag_ShowGrid)
-        m_disp3dbackground->ShowGridXZ(checked);
-    else
-        return;
-}
-
-void disp3dwindow::on_cbox_XOYGrid_clicked(bool checked)
-{
-    if(Flag_ShowGrid)
-        m_disp3dbackground->ShowGridXY(checked);
-    else
-        return;
-}
-
-void disp3dwindow::on_cbox_ZOYGrid_clicked(bool checked)
-{
-    if(Flag_ShowGrid)
-        m_disp3dbackground->ShowGridYZ(checked);
-    else
-        return;
-}
-
-void disp3dwindow::on_cbox_CareamLockAble_clicked(bool checked)
-{
-    m_disp3dmodel->CameraLock(checked);
-}
-
-void disp3dwindow::on_cbox_FellowAble_clicked(bool checked)
-{
-    m_disp3dmodel->CameraFellow(checked);
-    if(checked == false){
-        m_disp3dmodel->GetVTKRenderer()->ResetCamera();
-        m_disp3dmodel->GetVTKRenderWindow()->Render();
     }
 }

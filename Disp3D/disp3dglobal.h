@@ -5,7 +5,7 @@
 #include <vtkTextActor.h>
 #include <vtkActor.h>
 #include <vtkSmartPointer.h>
-#include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
 
 typedef struct SelectedPointEntity{
     vtkTextActor* keyPointText;
@@ -14,19 +14,19 @@ typedef struct SelectedPointEntity{
 
 struct ModelScalars
 {
-    vtkSmartPointer<vtkDoubleArray> dispX;   // X方向位移
-    vtkSmartPointer<vtkDoubleArray> dispY;   // Y方向位移
-    vtkSmartPointer<vtkDoubleArray> dispZ;   // Z方向位移
-    vtkSmartPointer<vtkDoubleArray> strain;  // 应变
-    vtkSmartPointer<vtkDoubleArray> temp;    // 温度
+    vtkSmartPointer<vtkFloatArray> dispX;   // X方向位移
+    vtkSmartPointer<vtkFloatArray> dispY;   // Y方向位移
+    vtkSmartPointer<vtkFloatArray> dispZ;   // Z方向位移
+    vtkSmartPointer<vtkFloatArray> strain;  // 应变
+    vtkSmartPointer<vtkFloatArray> temp;    // 温度
 
     void Init()
     {
-        dispX = vtkSmartPointer<vtkDoubleArray>::New();
-        dispY = vtkSmartPointer<vtkDoubleArray>::New();
-        dispZ = vtkSmartPointer<vtkDoubleArray>::New();
-        strain = vtkSmartPointer<vtkDoubleArray>::New();
-        temp = vtkSmartPointer<vtkDoubleArray>::New();
+        dispX = vtkSmartPointer<vtkFloatArray>::New();
+        dispY = vtkSmartPointer<vtkFloatArray>::New();
+        dispZ = vtkSmartPointer<vtkFloatArray>::New();
+        strain = vtkSmartPointer<vtkFloatArray>::New();
+        temp = vtkSmartPointer<vtkFloatArray>::New();
 
         dispX->SetName("Displacement_X");
         dispY->SetName("Displacement_Y");
@@ -35,8 +35,6 @@ struct ModelScalars
         temp->SetName("Temperature");
     }
 };
-
-
 
 
 #endif // DISP3DGLOBAL_H

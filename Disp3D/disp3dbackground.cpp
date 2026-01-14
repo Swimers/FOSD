@@ -22,31 +22,8 @@ disp3dbackground::disp3dbackground(vtkRenderer *renderer, vtkSmartPointer<vtkRen
 
 disp3dbackground::~disp3dbackground()
 {
-    if (m_renderer) {
-        if (axe) {
-            m_renderer->RemoveActor(axe);
-            axe->Delete();
-            axe = nullptr;
-        }
-        if (axesGridActor_XZ) {
-            m_renderer->RemoveActor(axesGridActor_XZ);
-        }
-        if (axesGridActor_XY) {
-            m_renderer->RemoveActor(axesGridActor_XY);
-        }
-        if (axesGridActor_YZ) {
-            m_renderer->RemoveActor(axesGridActor_YZ);
-        }
-    }
 
-    axesGridActor_XZ = nullptr;
-    axesGridActor_XY = nullptr;
-    axesGridActor_YZ = nullptr;
-
-    m_renderer = nullptr;
-    m_renderWindow = nullptr;
 }
-
 
 bool disp3dbackground::SetVtkRenderBackColor(double r, double g, double b)
 {
@@ -117,81 +94,42 @@ void disp3dbackground::SetAxesLength(int size)
     }
 }
 
-vtkSmartPointer<vtkActor> disp3dbackground::CreateGridActor(PlaneType type)
+void disp3dbackground::AddAxesGrid()
 {
-    double step = m_gridRange / m_gridNum;
-
     vtkSmartPointer<vtkAppendPolyData> appendFilter =
         vtkSmartPointer<vtkAppendPolyData>::New();
-
-    for (int i = -m_gridNum; i <= m_gridNum; ++i){
-        double v = i * step;
-
-        vtkSmartPointer<vtkLineSource> line1 = vtkSmartPointer<vtkLineSource>::New();
-        vtkSmartPointer<vtkLineSource> line2 = vtkSmartPointer<vtkLineSource>::New();
-
-        switch (type)
-        {
-        case PLANE_XZ: // Y = 0
-            // 平行 X
-            line1->SetPoint1(-m_gridRange, 0.0, v);
-            line1->SetPoint2( m_gridRange, 0.0, v);
-            // 平行 Z
-            line2->SetPoint1(v, 0.0, -m_gridRange);
-            line2->SetPoint2(v, 0.0,  m_gridRange);
-            break;
-
-        case PLANE_XY: // Z = 0
-            // 平行 X
-            line1->SetPoint1(-m_gridRange, v, 0.0);
-            line1->SetPoint2( m_gridRange, v, 0.0);
-            // 平行 Y
-            line2->SetPoint1(v, -m_gridRange, 0.0);
-            line2->SetPoint2(v,  m_gridRange, 0.0);
-            break;
-
-        case PLANE_YZ: // X = 0
-            // 平行 Y
-            line1->SetPoint1(0.0, -m_gridRange, v);
-            line1->SetPoint2(0.0,  m_gridRange, v);
-            // 平行 Z
-            line2->SetPoint1(0.0, v, -m_gridRange);
-            line2->SetPoint2(0.0, v,  m_gridRange);
-            break;
-        }
-
-        appendFilter->AddInputConnection(line1->GetOutputPort());
-        appendFilter->AddInputConnection(line2->GetOutputPort());
+    double step = m_gridRange / m_gridNum;
+    for (int i = -m_gridNum; i <= m_gridNum; ++i)
+    {
+        double z = i * step;
+        vtkSmartPointer<vtkLineSource> lineX = vtkSmartPointer<vtkLineSource>::New();
+        lineX->SetPoint1(-m_gridRange, 0.0, z);
+        lineX->SetPoint2(m_gridRange, 0.0, z);
+        appendFilter->AddInputConnection(lineX->GetOutputPort());
     }
-
+    for (int i = -m_gridNum; i <= m_gridNum; ++i)
+    {
+        double x = i * step;
+        vtkSmartPointer<vtkLineSource> lineZ = vtkSmartPointer<vtkLineSource>::New();
+        lineZ->SetPoint1(x, 0.0, -m_gridRange);
+        lineZ->SetPoint2(x, 0.0, m_gridRange);
+        appendFilter->AddInputConnection(lineZ->GetOutputPort());
+    }
     vtkSmartPointer<vtkPolyDataMapper> mapper =
         vtkSmartPointer<vtkPolyDataMapper>::New();
     mapper->SetInputConnection(appendFilter->GetOutputPort());
-
-    vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
-    actor->SetMapper(mapper);
-    actor->GetProperty()->SetColor(0.7, 0.7, 0.7);
-    actor->GetProperty()->SetOpacity(0.5);
-    actor->GetProperty()->SetLineWidth(1.0);
-
-    return actor;
+    axesGridActor->SetMapper(mapper);
+    axesGridActor->GetProperty()->SetColor(0.7, 0.7, 0.7);  // 灰色线条
+    axesGridActor->GetProperty()->SetOpacity(0.5);          // 半透明
+    axesGridActor->GetProperty()->SetLineWidth(1.0);
+    m_renderer->AddActor(axesGridActor);
+    axesGridActor->SetVisibility(false);
+    m_renderWindow->Render();
 }
 
-
-void disp3dbackground::AddAxesGrid()
+void disp3dbackground::ShowAxesGrid(bool flag)
 {
-    axesGridActor_XZ = CreateGridActor(PLANE_XZ);
-    axesGridActor_XY = CreateGridActor(PLANE_XY);
-    axesGridActor_YZ = CreateGridActor(PLANE_YZ);
-
-    m_renderer->AddActor(axesGridActor_XZ);
-    m_renderer->AddActor(axesGridActor_XY);
-    m_renderer->AddActor(axesGridActor_YZ);
-
-    axesGridActor_XZ->SetVisibility(false);
-    axesGridActor_XY->SetVisibility(false);
-    axesGridActor_YZ->SetVisibility(false);
-
+    axesGridActor->SetVisibility(flag);
     m_renderWindow->Render();
 }
 
@@ -199,47 +137,40 @@ void disp3dbackground::SetAxesGridSize(int size)
 {
     if (size <= 0)
             return;
-    // remove old actors
-    if (axesGridActor_XZ) m_renderer->RemoveActor(axesGridActor_XZ);
-    if (axesGridActor_XY) m_renderer->RemoveActor(axesGridActor_XY);
-    if (axesGridActor_YZ) m_renderer->RemoveActor(axesGridActor_YZ);
-
-    m_gridRange = 3000 * size / 20;
-    m_gridNum   = 100  * size / 20;
-
-    axesGridActor_XZ = CreateGridActor(PLANE_XZ);
-    axesGridActor_XY = CreateGridActor(PLANE_XY);
-    axesGridActor_YZ = CreateGridActor(PLANE_YZ);
-
-    m_renderer->AddActor(axesGridActor_XZ);
-    m_renderer->AddActor(axesGridActor_XY);
-    m_renderer->AddActor(axesGridActor_YZ);
-
-    axesGridActor_XZ->SetVisibility(false);
-    axesGridActor_XY->SetVisibility(false);
-    axesGridActor_YZ->SetVisibility(false);
-
+    if (axesGridActor){
+        m_renderer->RemoveActor(axesGridActor);
+    }
+    m_gridRange = 3000 * size /20;
+    m_gridNum = 100 * size /20;
+    double step = m_gridRange / m_gridNum;
+    m_gridNum = static_cast<int>(m_gridRange / step);
+    vtkSmartPointer<vtkAppendPolyData> appendFilter =
+        vtkSmartPointer<vtkAppendPolyData>::New();
+    for (int i = -m_gridNum; i <= m_gridNum; ++i){
+        double z = i * step;
+        vtkSmartPointer<vtkLineSource> lineX = vtkSmartPointer<vtkLineSource>::New();
+        lineX->SetPoint1(-m_gridRange, 0.0, z);
+        lineX->SetPoint2(m_gridRange, 0.0, z);
+        appendFilter->AddInputConnection(lineX->GetOutputPort());
+    }
+    for (int i = -m_gridNum; i <= m_gridNum; ++i){
+        double x = i * step;
+        vtkSmartPointer<vtkLineSource> lineZ = vtkSmartPointer<vtkLineSource>::New();
+        lineZ->SetPoint1(x, 0.0, -m_gridRange);
+        lineZ->SetPoint2(x, 0.0, m_gridRange);
+        appendFilter->AddInputConnection(lineZ->GetOutputPort());
+    }
+    vtkSmartPointer<vtkPolyDataMapper> mapper =
+        vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(appendFilter->GetOutputPort());
+    axesGridActor = vtkSmartPointer<vtkActor>::New();
+    axesGridActor->SetMapper(mapper);
+    axesGridActor->GetProperty()->SetColor(0.7, 0.7, 0.7);
+    axesGridActor->GetProperty()->SetOpacity(0.5);
+    axesGridActor->GetProperty()->SetLineWidth(1.0);
+    m_renderer->AddActor(axesGridActor);
     m_renderWindow->Render();
 }
-
-void disp3dbackground::ShowGridXZ(bool flag)
-{
-    axesGridActor_XZ->SetVisibility(flag);
-    m_renderWindow->Render();
-}
-
-void disp3dbackground::ShowGridXY(bool flag)
-{
-    axesGridActor_XY->SetVisibility(flag);
-    m_renderWindow->Render();
-}
-
-void disp3dbackground::ShowGridYZ(bool flag)
-{
-    axesGridActor_YZ->SetVisibility(flag);
-    m_renderWindow->Render();
-}
-
 
 
 

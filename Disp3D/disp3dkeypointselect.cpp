@@ -139,7 +139,7 @@ void disp3dkeypointselect::on_pbtn_AddPoint_clicked()
         m_disp3dmodel->GetVTKRenderer()->GetDisplayPoint(DisplayCord);
 
         double bounds[6];
-        m_disp3dmodel->GetVTKActor()->GetBounds(bounds);
+        m_disp3dmodel->GetVTKRenderer()->ComputeVisiblePropBounds(bounds);
         double dx = bounds[1] - bounds[0];
         double dy = bounds[3] - bounds[2];
         double dz = bounds[5] - bounds[4];

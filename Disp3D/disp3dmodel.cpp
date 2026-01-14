@@ -19,60 +19,30 @@
 #include <vtkProperty.h>
 #include <vtkPointData.h>
 #include <vtkLookupTable.h>
-#include <vtkRenderer.h>
 
 #include <QTextCodec>
 #include <stdio.h>
 
 #include <disp3dinteractor.h>
 
-
-
 disp3dmodel::disp3dmodel()
 {
-    renderWindow = vtkRenderWindow::New();
     renderer = vtkRenderer::New();
     renderWindow->AddRenderer(renderer);
-    iren = vtkRenderWindowInteractor::New();
-    iren->SetRenderWindow(renderWindow);
-    iren->Initialize();
+
+    iren = vtkRenderWindowInteractor::New();            //创建及交互器
+    iren->SetRenderWindow(renderWindow);                //交互器添加窗口
     disp3dinteractor* style = new disp3dinteractor();
-    style->SetDefaultRenderer(renderer);
     style->GetDisplayModelPtr(this);
     iren->SetInteractorStyle(style);
+    style->SetDefaultRenderer(renderer);
 
     renderWindow->Render();
 }
 
 disp3dmodel::~disp3dmodel()
 {
-    ClearKeyPoint();           // 内部会把 keyPointEntity / keyPointText 从 renderer 移除并 Delete
-                               // 并清空 SelectedPointMap
-    rawPointMap.clear();
-    pointDisplace.clear();
-    pointpos.clear();
-    keyPointSet.clear();
-    SelectedPointMap.clear();
 
-    if (renderer && modelActor) {
-        renderer->RemoveActor(modelActor);
-    }
-    if (iren) {
-        auto style = dynamic_cast<disp3dinteractor*>(iren->GetInteractorStyle());
-        if (style) {
-            iren->SetInteractorStyle(nullptr);
-            delete style;
-        }
-        iren->Delete();
-        iren = nullptr;
-    }
-    if (renderer) {
-        if (renderWindow) {
-            renderWindow->RemoveRenderer(renderer);
-        }
-        renderer->Delete();
-        renderer = nullptr;
-    }
 }
 
 void disp3dmodel::PickerGetLabPtr(std::tuple<QLabel *, QLabel *, QLabel *, QLabel *>labels)
@@ -101,7 +71,6 @@ void disp3dmodel::LoadModel(const QString &filePath)
     dynPolyData = vtkSmartPointer<vtkPolyData>::New();
     dynPolyData->DeepCopy(rawPolyData);
     mapper->SetInputData(dynPolyData);
-
     InitScalarsValues(modelScalars, dynPolyData);
 
     modelActor->SetMapper(mapper);
@@ -173,56 +142,6 @@ void disp3dmodel::MergeModel(const QString &filePath)
     //              << " 面数: " << rawPolyData->GetNumberOfPolys();
 }
 
-void disp3dmodel::ResetModel()
-{
-    if (!Flag_Actor || !dynPolyData || !rawPolyData) {
-        return;
-    }
-
-    vtkPoints* points = dynPolyData->GetPoints();
-    if (!points) {
-        return;
-    }
-
-    vtkIdType numPoints = points->GetNumberOfPoints();
-
-    pointDisplace.clear();
-    pointpos.clear();
-
-    QMap<vtkIdType, QVector<double>>::const_iterator it;
-    for (it = rawPointMap.constBegin(); it != rawPointMap.constEnd(); ++it) {
-        vtkIdType id = it.key();
-        const QVector<double> &coords = it.value();
-
-        if (id >= 0 && id < numPoints && coords.size() >= 3) {
-            points->SetPoint(id, coords[0], coords[1], coords[2]);
-        }
-
-        QVector<double> zero(3);
-        zero[0] = 0.0;
-        zero[1] = 0.0;
-        zero[2] = 0.0;
-        pointDisplace.insert(id, zero);
-
-        QVector<double> pos(3);
-        pos[0] = coords[0];
-        pos[1] = coords[1];
-        pos[2] = coords[2];
-        pointpos.insert(id, pos);
-
-        modelScalars.dispX->SetValue(id, 0);
-        modelScalars.dispY->SetValue(id, 0);
-        modelScalars.dispZ->SetValue(id, 0);
-        modelScalars.temp->SetValue(id, 0.01);
-        modelScalars.strain->SetValue(id, 0.01);
-    }
-    MaxDisplace = 0.0;
-
-    dynPolyData->Modified();
-    renderWindow->Render();
-}
-
-
 void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 {
     vtkIdType nPoints = poly->GetNumberOfPoints();
@@ -235,8 +154,8 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
         scalars.dispX->InsertNextValue(0);
         scalars.dispY->InsertNextValue(0);
         scalars.dispZ->InsertNextValue(0);
-        scalars.strain->InsertNextValue(0.1);
-        scalars.temp->InsertNextValue(0.1);
+        scalars.strain->InsertNextValue(static_cast<float>(0.1));
+        scalars.temp->InsertNextValue(static_cast<float>(0.1));
     }
     vtkPointData* pd = poly->GetPointData();
     pd->AddArray(scalars.dispX);
@@ -244,34 +163,23 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
     pd->AddArray(scalars.dispZ);
     pd->AddArray(scalars.strain);
     pd->AddArray(scalars.temp);
-
-    vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
-    lut->SetNumberOfColors(256);
-    lut->SetHueRange(0.6, 0.1);
-    lut->Build();
-    mapper->SetLookupTable(lut);
-    mapper->SelectColorArray("Displacement_X");
+    pd->SetActiveScalars("Displacement_X");
     mapper->ScalarVisibilityOff();
-    mapper->SetScalarRange(0,1);
-    renderWindow->Render();
 }
 
 void disp3dmodel::SetupColorMapping(const std::string &scalarName)
 {
-    mapper->SetScalarRange(0,1);
-    dynPolyData->GetPointData()->SetActiveScalars(scalarName.c_str());
+    mapper->SetInputData(rawPolyData);
+    mapper->SetScalarModeToUsePointData();
     mapper->ScalarVisibilityOn();
-    renderWindow->Render();
-}
-
-void disp3dmodel::OFFScalars()
-{
-    mapper->ScalarVisibilityOff();
-    modelActor->GetProperty()->SetEdgeVisibility(0);
-    modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
-    modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
-    modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.16, 0.582, 0.973);
+    mapper->SelectColorArray(scalarName.c_str());
+    vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
+    lut->SetNumberOfColors(256);
+    lut->SetHueRange(0.66, 0.0);
+    lut->Build();
+    mapper->SetLookupTable(lut);
+    mapper->ScalarVisibilityOn();
+    modelActor->GetProperty()->SetColor(1,1,1);
     renderWindow->Render();
 }
 
@@ -289,8 +197,8 @@ void disp3dmodel::ReadPointQMap(vtkSmartPointer<vtkPolyData> PolyData)
         pointCoords[2] = coords[2];  // z坐标
         //qDebug() << id << coords[0] << coords[1] << coords[2];
         rawPointMap.insert(id, pointCoords);
-        pointpos.insert(id, pointCoords);
     }
+    pointpos = rawPointMap;
 }
 
 void disp3dmodel::FreshKeyPoint()
@@ -419,16 +327,4 @@ void disp3dmodel::ResetCamera(int Index)
     }
 
     renderer->ResetCameraClippingRange();
-}
-
-void disp3dmodel::CameraLock(bool index)
-{
-    disp3dinteractor * style1 = dynamic_cast<disp3dinteractor *>(iren->GetInteractorStyle());
-    style1->Flag_CameraLock = index;
-}
-
-void disp3dmodel::CameraFellow(bool index)
-{
-    disp3dinteractor * style1 = dynamic_cast<disp3dinteractor *>(iren->GetInteractorStyle());
-    style1->Flag_CameraFellow = index;
 }

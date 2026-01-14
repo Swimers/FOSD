@@ -61,58 +61,51 @@ public:
     QDockWidget *dock_Model;
     QWidget *dockWidgetContents;
     QGridLayout *gridLayout_3;
-    QPushButton *pbtn_KeyPointSelect;
-    QHBoxLayout *horizontalLayout_4;
-    QPushButton *pbtn_ScalarSet;
-    QPushButton *pbtn_ScalarClear;
-    QPushButton *pbtn_ModelExport;
+    QPushButton *pbtn_ModelMerge;
+    QLabel *label_5;
+    QFrame *line_2;
+    QFrame *line;
+    QFrame *line_3;
+    QComboBox *comboBox_2;
     QHBoxLayout *horizontalLayout;
     QPushButton *pbtn_ModelLoad;
     QPushButton *pbtn_ModelClear;
-    QFrame *line;
-    QPushButton *pbtn_ModelMerge;
-    QLabel *label_3;
-    QFrame *line_3;
     QPushButton *pbtn_KeyPointEdit;
-    QLabel *label_5;
-    QFrame *line_2;
+    QPushButton *pbtn_KeyPointSelect;
     QComboBox *cbox_FPS;
-    QComboBox *cbox_ScalarSelect;
     QSpacerItem *verticalSpacer;
+    QPushButton *pbtn_ModelExport;
+    QLabel *label_3;
+    QSlider *hsd_ViewPar;
     QDockWidget *dock_View;
     QWidget *dockWidgetContents_2;
     QGridLayout *gridLayout_2;
-    QCheckBox *cbox_GridAble;
     QSlider *hsd_GridSize;
-    QFrame *line_4;
     QCheckBox *cbox_AxisAble;
-    QCheckBox *cbox_CareamLockAble;
-    QCheckBox *cbox_FellowAble;
+    QCheckBox *checkBox_2;
+    QFrame *line_4;
+    QCheckBox *checkBox;
+    QSpacerItem *verticalSpacer_3;
+    QCheckBox *checkBox_4;
     QSlider *hsd_AxisSize;
     QHBoxLayout *horizontalLayout_3;
     QLabel *label_7;
     QComboBox *cbox_SelectView;
     QPushButton *pbtn_SwitchView;
-    QSpacerItem *verticalSpacer_3;
-    QHBoxLayout *horizontalLayout_5;
-    QSpacerItem *horizontalSpacer_6;
-    QCheckBox *cbox_XOZGrid;
-    QCheckBox *cbox_XOYGrid;
-    QCheckBox *cbox_ZOYGrid;
     QDockWidget *dock_Infor;
     QWidget *dockWidgetContents_3;
     QGridLayout *gridLayout;
+    QRadioButton *radioButton_2;
+    QLabel *lab_NumKeyPoints;
     QRadioButton *radioButton_3;
     QRadioButton *radioButton_4;
-    QRadioButton *radioButton;
-    QLabel *lab_MaxDeformation;
-    QPushButton *pushButton_6;
-    QLabel *lab_NumPoints;
-    QRadioButton *radioButton_2;
     QFrame *line_5;
-    QLabel *lab_NumKeyPoints;
-    QLabel *lab_NumPolys;
+    QRadioButton *radioButton;
+    QLabel *lab_NumPoints;
+    QLabel *lab_MaxDeformation;
     QSpacerItem *verticalSpacer_2;
+    QLabel *lab_NumPolys;
+    QPushButton *pushButton_6;
 
     void setupUi(QMainWindow *disp3dwindow)
     {
@@ -121,6 +114,7 @@ public:
         disp3dwindow->resize(1024, 766);
         actionModelDock = new QAction(disp3dwindow);
         actionModelDock->setObjectName(QString::fromUtf8("actionModelDock"));
+        actionModelDock->setCheckable(true);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/icon/Resource/icon/3D_Plot.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionModelDock->setIcon(icon);
@@ -275,31 +269,45 @@ public:
         dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
         gridLayout_3 = new QGridLayout(dockWidgetContents);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        pbtn_KeyPointSelect = new QPushButton(dockWidgetContents);
-        pbtn_KeyPointSelect->setObjectName(QString::fromUtf8("pbtn_KeyPointSelect"));
+        pbtn_ModelMerge = new QPushButton(dockWidgetContents);
+        pbtn_ModelMerge->setObjectName(QString::fromUtf8("pbtn_ModelMerge"));
 
-        gridLayout_3->addWidget(pbtn_KeyPointSelect, 3, 1, 1, 1);
+        gridLayout_3->addWidget(pbtn_ModelMerge, 1, 0, 1, 1);
 
-        horizontalLayout_4 = new QHBoxLayout();
-        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
-        pbtn_ScalarSet = new QPushButton(dockWidgetContents);
-        pbtn_ScalarSet->setObjectName(QString::fromUtf8("pbtn_ScalarSet"));
+        label_5 = new QLabel(dockWidgetContents);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+        label_5->setAlignment(Qt::AlignCenter);
 
-        horizontalLayout_4->addWidget(pbtn_ScalarSet);
+        gridLayout_3->addWidget(label_5, 7, 0, 1, 1);
 
-        pbtn_ScalarClear = new QPushButton(dockWidgetContents);
-        pbtn_ScalarClear->setObjectName(QString::fromUtf8("pbtn_ScalarClear"));
-        pbtn_ScalarClear->setMaximumSize(QSize(40, 16777215));
+        line_2 = new QFrame(dockWidgetContents);
+        line_2->setObjectName(QString::fromUtf8("line_2"));
+        line_2->setFrameShape(QFrame::HLine);
+        line_2->setFrameShadow(QFrame::Sunken);
 
-        horizontalLayout_4->addWidget(pbtn_ScalarClear);
+        gridLayout_3->addWidget(line_2, 4, 0, 1, 2);
 
+        line = new QFrame(dockWidgetContents);
+        line->setObjectName(QString::fromUtf8("line"));
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
 
-        gridLayout_3->addLayout(horizontalLayout_4, 8, 0, 1, 2);
+        gridLayout_3->addWidget(line, 2, 0, 1, 2);
 
-        pbtn_ModelExport = new QPushButton(dockWidgetContents);
-        pbtn_ModelExport->setObjectName(QString::fromUtf8("pbtn_ModelExport"));
+        line_3 = new QFrame(dockWidgetContents);
+        line_3->setObjectName(QString::fromUtf8("line_3"));
+        line_3->setFrameShape(QFrame::HLine);
+        line_3->setFrameShadow(QFrame::Sunken);
 
-        gridLayout_3->addWidget(pbtn_ModelExport, 1, 1, 1, 1);
+        gridLayout_3->addWidget(line_3, 6, 0, 1, 2);
+
+        comboBox_2 = new QComboBox(dockWidgetContents);
+        comboBox_2->addItem(QString());
+        comboBox_2->addItem(QString());
+        comboBox_2->addItem(QString());
+        comboBox_2->setObjectName(QString::fromUtf8("comboBox_2"));
+
+        gridLayout_3->addWidget(comboBox_2, 7, 1, 1, 1);
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -318,48 +326,15 @@ public:
 
         gridLayout_3->addLayout(horizontalLayout, 0, 0, 1, 2);
 
-        line = new QFrame(dockWidgetContents);
-        line->setObjectName(QString::fromUtf8("line"));
-        line->setFrameShape(QFrame::HLine);
-        line->setFrameShadow(QFrame::Sunken);
-
-        gridLayout_3->addWidget(line, 2, 0, 1, 2);
-
-        pbtn_ModelMerge = new QPushButton(dockWidgetContents);
-        pbtn_ModelMerge->setObjectName(QString::fromUtf8("pbtn_ModelMerge"));
-
-        gridLayout_3->addWidget(pbtn_ModelMerge, 1, 0, 1, 1);
-
-        label_3 = new QLabel(dockWidgetContents);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setAlignment(Qt::AlignCenter);
-
-        gridLayout_3->addWidget(label_3, 5, 0, 1, 1);
-
-        line_3 = new QFrame(dockWidgetContents);
-        line_3->setObjectName(QString::fromUtf8("line_3"));
-        line_3->setFrameShape(QFrame::HLine);
-        line_3->setFrameShadow(QFrame::Sunken);
-
-        gridLayout_3->addWidget(line_3, 6, 0, 1, 2);
-
         pbtn_KeyPointEdit = new QPushButton(dockWidgetContents);
         pbtn_KeyPointEdit->setObjectName(QString::fromUtf8("pbtn_KeyPointEdit"));
 
         gridLayout_3->addWidget(pbtn_KeyPointEdit, 3, 0, 1, 1);
 
-        label_5 = new QLabel(dockWidgetContents);
-        label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setAlignment(Qt::AlignCenter);
+        pbtn_KeyPointSelect = new QPushButton(dockWidgetContents);
+        pbtn_KeyPointSelect->setObjectName(QString::fromUtf8("pbtn_KeyPointSelect"));
 
-        gridLayout_3->addWidget(label_5, 7, 0, 1, 1);
-
-        line_2 = new QFrame(dockWidgetContents);
-        line_2->setObjectName(QString::fromUtf8("line_2"));
-        line_2->setFrameShape(QFrame::HLine);
-        line_2->setFrameShadow(QFrame::Sunken);
-
-        gridLayout_3->addWidget(line_2, 4, 0, 1, 2);
+        gridLayout_3->addWidget(pbtn_KeyPointSelect, 3, 1, 1, 1);
 
         cbox_FPS = new QComboBox(dockWidgetContents);
         cbox_FPS->addItem(QString());
@@ -371,17 +346,26 @@ public:
 
         gridLayout_3->addWidget(cbox_FPS, 5, 1, 1, 1);
 
-        cbox_ScalarSelect = new QComboBox(dockWidgetContents);
-        cbox_ScalarSelect->addItem(QString());
-        cbox_ScalarSelect->addItem(QString());
-        cbox_ScalarSelect->addItem(QString());
-        cbox_ScalarSelect->setObjectName(QString::fromUtf8("cbox_ScalarSelect"));
-
-        gridLayout_3->addWidget(cbox_ScalarSelect, 7, 1, 1, 1);
-
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         gridLayout_3->addItem(verticalSpacer, 9, 0, 1, 1);
+
+        pbtn_ModelExport = new QPushButton(dockWidgetContents);
+        pbtn_ModelExport->setObjectName(QString::fromUtf8("pbtn_ModelExport"));
+
+        gridLayout_3->addWidget(pbtn_ModelExport, 1, 1, 1, 1);
+
+        label_3 = new QLabel(dockWidgetContents);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+        label_3->setAlignment(Qt::AlignCenter);
+
+        gridLayout_3->addWidget(label_3, 5, 0, 1, 1);
+
+        hsd_ViewPar = new QSlider(dockWidgetContents);
+        hsd_ViewPar->setObjectName(QString::fromUtf8("hsd_ViewPar"));
+        hsd_ViewPar->setOrientation(Qt::Horizontal);
+
+        gridLayout_3->addWidget(hsd_ViewPar, 8, 0, 1, 2);
 
         dock_Model->setWidget(dockWidgetContents);
         disp3dwindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock_Model);
@@ -393,38 +377,42 @@ public:
         dockWidgetContents_2->setObjectName(QString::fromUtf8("dockWidgetContents_2"));
         gridLayout_2 = new QGridLayout(dockWidgetContents_2);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
-        cbox_GridAble = new QCheckBox(dockWidgetContents_2);
-        cbox_GridAble->setObjectName(QString::fromUtf8("cbox_GridAble"));
-
-        gridLayout_2->addWidget(cbox_GridAble, 1, 0, 1, 1);
-
         hsd_GridSize = new QSlider(dockWidgetContents_2);
         hsd_GridSize->setObjectName(QString::fromUtf8("hsd_GridSize"));
         hsd_GridSize->setOrientation(Qt::Horizontal);
 
         gridLayout_2->addWidget(hsd_GridSize, 1, 1, 1, 1);
 
-        line_4 = new QFrame(dockWidgetContents_2);
-        line_4->setObjectName(QString::fromUtf8("line_4"));
-        line_4->setFrameShape(QFrame::HLine);
-        line_4->setFrameShadow(QFrame::Sunken);
-
-        gridLayout_2->addWidget(line_4, 6, 0, 1, 2);
-
         cbox_AxisAble = new QCheckBox(dockWidgetContents_2);
         cbox_AxisAble->setObjectName(QString::fromUtf8("cbox_AxisAble"));
 
         gridLayout_2->addWidget(cbox_AxisAble, 0, 0, 1, 1);
 
-        cbox_CareamLockAble = new QCheckBox(dockWidgetContents_2);
-        cbox_CareamLockAble->setObjectName(QString::fromUtf8("cbox_CareamLockAble"));
+        checkBox_2 = new QCheckBox(dockWidgetContents_2);
+        checkBox_2->setObjectName(QString::fromUtf8("checkBox_2"));
 
-        gridLayout_2->addWidget(cbox_CareamLockAble, 5, 0, 1, 1);
+        gridLayout_2->addWidget(checkBox_2, 2, 1, 1, 1);
 
-        cbox_FellowAble = new QCheckBox(dockWidgetContents_2);
-        cbox_FellowAble->setObjectName(QString::fromUtf8("cbox_FellowAble"));
+        line_4 = new QFrame(dockWidgetContents_2);
+        line_4->setObjectName(QString::fromUtf8("line_4"));
+        line_4->setFrameShape(QFrame::HLine);
+        line_4->setFrameShadow(QFrame::Sunken);
 
-        gridLayout_2->addWidget(cbox_FellowAble, 5, 1, 1, 1);
+        gridLayout_2->addWidget(line_4, 3, 0, 1, 2);
+
+        checkBox = new QCheckBox(dockWidgetContents_2);
+        checkBox->setObjectName(QString::fromUtf8("checkBox"));
+
+        gridLayout_2->addWidget(checkBox, 1, 0, 1, 1);
+
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_2->addItem(verticalSpacer_3, 7, 0, 1, 1);
+
+        checkBox_4 = new QCheckBox(dockWidgetContents_2);
+        checkBox_4->setObjectName(QString::fromUtf8("checkBox_4"));
+
+        gridLayout_2->addWidget(checkBox_4, 2, 0, 1, 1);
 
         hsd_AxisSize = new QSlider(dockWidgetContents_2);
         hsd_AxisSize->setObjectName(QString::fromUtf8("hsd_AxisSize"));
@@ -458,41 +446,7 @@ public:
         horizontalLayout_3->addWidget(pbtn_SwitchView);
 
 
-        gridLayout_2->addLayout(horizontalLayout_3, 7, 0, 1, 2);
-
-        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        gridLayout_2->addItem(verticalSpacer_3, 8, 0, 1, 1);
-
-        horizontalLayout_5 = new QHBoxLayout();
-        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
-        horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_5->addItem(horizontalSpacer_6);
-
-        cbox_XOZGrid = new QCheckBox(dockWidgetContents_2);
-        cbox_XOZGrid->setObjectName(QString::fromUtf8("cbox_XOZGrid"));
-        cbox_XOZGrid->setMinimumSize(QSize(37, 0));
-        cbox_XOZGrid->setMaximumSize(QSize(37, 16777215));
-
-        horizontalLayout_5->addWidget(cbox_XOZGrid);
-
-        cbox_XOYGrid = new QCheckBox(dockWidgetContents_2);
-        cbox_XOYGrid->setObjectName(QString::fromUtf8("cbox_XOYGrid"));
-        cbox_XOYGrid->setMinimumSize(QSize(37, 0));
-        cbox_XOYGrid->setMaximumSize(QSize(37, 16777215));
-
-        horizontalLayout_5->addWidget(cbox_XOYGrid);
-
-        cbox_ZOYGrid = new QCheckBox(dockWidgetContents_2);
-        cbox_ZOYGrid->setObjectName(QString::fromUtf8("cbox_ZOYGrid"));
-        cbox_ZOYGrid->setMinimumSize(QSize(37, 0));
-        cbox_ZOYGrid->setMaximumSize(QSize(37, 16777215));
-
-        horizontalLayout_5->addWidget(cbox_ZOYGrid);
-
-
-        gridLayout_2->addLayout(horizontalLayout_5, 3, 0, 1, 2);
+        gridLayout_2->addLayout(horizontalLayout_3, 4, 0, 1, 2);
 
         dock_View->setWidget(dockWidgetContents_2);
         disp3dwindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock_View);
@@ -504,6 +458,16 @@ public:
         dockWidgetContents_3->setObjectName(QString::fromUtf8("dockWidgetContents_3"));
         gridLayout = new QGridLayout(dockWidgetContents_3);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        radioButton_2 = new QRadioButton(dockWidgetContents_3);
+        radioButton_2->setObjectName(QString::fromUtf8("radioButton_2"));
+
+        gridLayout->addWidget(radioButton_2, 1, 0, 1, 1);
+
+        lab_NumKeyPoints = new QLabel(dockWidgetContents_3);
+        lab_NumKeyPoints->setObjectName(QString::fromUtf8("lab_NumKeyPoints"));
+
+        gridLayout->addWidget(lab_NumKeyPoints, 2, 1, 1, 1);
+
         radioButton_3 = new QRadioButton(dockWidgetContents_3);
         radioButton_3->setObjectName(QString::fromUtf8("radioButton_3"));
 
@@ -514,31 +478,6 @@ public:
 
         gridLayout->addWidget(radioButton_4, 3, 0, 1, 1);
 
-        radioButton = new QRadioButton(dockWidgetContents_3);
-        radioButton->setObjectName(QString::fromUtf8("radioButton"));
-
-        gridLayout->addWidget(radioButton, 0, 0, 1, 1);
-
-        lab_MaxDeformation = new QLabel(dockWidgetContents_3);
-        lab_MaxDeformation->setObjectName(QString::fromUtf8("lab_MaxDeformation"));
-
-        gridLayout->addWidget(lab_MaxDeformation, 3, 1, 1, 1);
-
-        pushButton_6 = new QPushButton(dockWidgetContents_3);
-        pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
-
-        gridLayout->addWidget(pushButton_6, 5, 0, 1, 2);
-
-        lab_NumPoints = new QLabel(dockWidgetContents_3);
-        lab_NumPoints->setObjectName(QString::fromUtf8("lab_NumPoints"));
-
-        gridLayout->addWidget(lab_NumPoints, 0, 1, 1, 1);
-
-        radioButton_2 = new QRadioButton(dockWidgetContents_3);
-        radioButton_2->setObjectName(QString::fromUtf8("radioButton_2"));
-
-        gridLayout->addWidget(radioButton_2, 1, 0, 1, 1);
-
         line_5 = new QFrame(dockWidgetContents_3);
         line_5->setObjectName(QString::fromUtf8("line_5"));
         line_5->setFrameShape(QFrame::HLine);
@@ -546,19 +485,34 @@ public:
 
         gridLayout->addWidget(line_5, 4, 0, 1, 2);
 
-        lab_NumKeyPoints = new QLabel(dockWidgetContents_3);
-        lab_NumKeyPoints->setObjectName(QString::fromUtf8("lab_NumKeyPoints"));
+        radioButton = new QRadioButton(dockWidgetContents_3);
+        radioButton->setObjectName(QString::fromUtf8("radioButton"));
 
-        gridLayout->addWidget(lab_NumKeyPoints, 2, 1, 1, 1);
+        gridLayout->addWidget(radioButton, 0, 0, 1, 1);
+
+        lab_NumPoints = new QLabel(dockWidgetContents_3);
+        lab_NumPoints->setObjectName(QString::fromUtf8("lab_NumPoints"));
+
+        gridLayout->addWidget(lab_NumPoints, 0, 1, 1, 1);
+
+        lab_MaxDeformation = new QLabel(dockWidgetContents_3);
+        lab_MaxDeformation->setObjectName(QString::fromUtf8("lab_MaxDeformation"));
+
+        gridLayout->addWidget(lab_MaxDeformation, 3, 1, 1, 1);
+
+        verticalSpacer_2 = new QSpacerItem(20, 3, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_2, 6, 0, 1, 1);
 
         lab_NumPolys = new QLabel(dockWidgetContents_3);
         lab_NumPolys->setObjectName(QString::fromUtf8("lab_NumPolys"));
 
         gridLayout->addWidget(lab_NumPolys, 1, 1, 1, 1);
 
-        verticalSpacer_2 = new QSpacerItem(20, 3, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        pushButton_6 = new QPushButton(dockWidgetContents_3);
+        pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
 
-        gridLayout->addItem(verticalSpacer_2, 6, 0, 1, 1);
+        gridLayout->addWidget(pushButton_6, 5, 0, 1, 2);
 
         dock_Infor->setWidget(dockWidgetContents_3);
         disp3dwindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock_Infor);
@@ -597,31 +551,29 @@ public:
         lab_KeyPointNewPos->setText(QApplication::translate("disp3dwindow", "(#,#,#)", nullptr));
         toolBar->setWindowTitle(QApplication::translate("disp3dwindow", "toolBar", nullptr));
         dock_Model->setWindowTitle(QApplication::translate("disp3dwindow", "\346\250\241\345\236\213\351\205\215\347\275\256", nullptr));
-        pbtn_KeyPointSelect->setText(QApplication::translate("disp3dwindow", "\346\213\276\345\217\226\345\205\263\351\224\256\347\202\271", nullptr));
-        pbtn_ScalarSet->setText(QApplication::translate("disp3dwindow", "\351\242\234\350\211\262\346\230\240\345\260\204", nullptr));
-        pbtn_ScalarClear->setText(QApplication::translate("disp3dwindow", "\346\270\205\351\231\244", nullptr));
-        pbtn_ModelExport->setText(QApplication::translate("disp3dwindow", "\346\250\241\345\236\213\345\257\274\345\207\272", nullptr));
+        pbtn_ModelMerge->setText(QApplication::translate("disp3dwindow", "\346\250\241\345\236\213\345\220\210\345\271\266", nullptr));
+        label_5->setText(QApplication::translate("disp3dwindow", "\345\217\257\350\247\206\345\214\226\346\226\271\346\263\225\357\274\232", nullptr));
+        comboBox_2->setItemText(0, QApplication::translate("disp3dwindow", "X\350\275\264\345\220\221\345\217\230\345\275\242", nullptr));
+        comboBox_2->setItemText(1, QApplication::translate("disp3dwindow", "Y\350\275\264\345\220\221\345\217\230\345\275\242", nullptr));
+        comboBox_2->setItemText(2, QApplication::translate("disp3dwindow", "Z\350\275\264\345\220\221\345\217\230\345\275\242", nullptr));
+
         pbtn_ModelLoad->setText(QApplication::translate("disp3dwindow", "\346\250\241\345\236\213\345\257\274\345\205\245", nullptr));
         pbtn_ModelClear->setText(QApplication::translate("disp3dwindow", "\346\270\205\351\231\244", nullptr));
-        pbtn_ModelMerge->setText(QApplication::translate("disp3dwindow", "\346\250\241\345\236\213\345\220\210\345\271\266", nullptr));
-        label_3->setText(QApplication::translate("disp3dwindow", "\345\210\267\346\226\260\347\216\207\357\274\232", nullptr));
         pbtn_KeyPointEdit->setText(QApplication::translate("disp3dwindow", "\347\274\226\350\276\221\345\205\263\351\224\256\347\202\271", nullptr));
-        label_5->setText(QApplication::translate("disp3dwindow", "\345\217\257\350\247\206\345\214\226\346\226\271\346\263\225\357\274\232", nullptr));
+        pbtn_KeyPointSelect->setText(QApplication::translate("disp3dwindow", "\346\213\276\345\217\226\345\205\263\351\224\256\347\202\271", nullptr));
         cbox_FPS->setItemText(0, QApplication::translate("disp3dwindow", "1Hz", nullptr));
         cbox_FPS->setItemText(1, QApplication::translate("disp3dwindow", "10Hz", nullptr));
         cbox_FPS->setItemText(2, QApplication::translate("disp3dwindow", "32Hz", nullptr));
         cbox_FPS->setItemText(3, QApplication::translate("disp3dwindow", "60Hz", nullptr));
         cbox_FPS->setItemText(4, QApplication::translate("disp3dwindow", "144Hz", nullptr));
 
-        cbox_ScalarSelect->setItemText(0, QApplication::translate("disp3dwindow", "X\350\275\264\345\220\221\345\217\230\345\275\242", nullptr));
-        cbox_ScalarSelect->setItemText(1, QApplication::translate("disp3dwindow", "Y\350\275\264\345\220\221\345\217\230\345\275\242", nullptr));
-        cbox_ScalarSelect->setItemText(2, QApplication::translate("disp3dwindow", "Z\350\275\264\345\220\221\345\217\230\345\275\242", nullptr));
-
+        pbtn_ModelExport->setText(QApplication::translate("disp3dwindow", "\346\250\241\345\236\213\345\257\274\345\207\272", nullptr));
+        label_3->setText(QApplication::translate("disp3dwindow", "\345\210\267\346\226\260\347\216\207\357\274\232", nullptr));
         dock_View->setWindowTitle(QApplication::translate("disp3dwindow", "\347\275\221\346\240\274\350\247\206\345\233\276", nullptr));
-        cbox_GridAble->setText(QApplication::translate("disp3dwindow", "\347\275\221\346\240\274\346\230\276\347\244\272", nullptr));
         cbox_AxisAble->setText(QApplication::translate("disp3dwindow", "\345\235\220\346\240\207\350\275\264\346\230\276\347\244\272", nullptr));
-        cbox_CareamLockAble->setText(QApplication::translate("disp3dwindow", "\350\247\206\350\247\222\351\224\201\345\256\232", nullptr));
-        cbox_FellowAble->setText(QApplication::translate("disp3dwindow", "\347\204\246\347\202\271\350\267\237\350\270\252", nullptr));
+        checkBox_2->setText(QApplication::translate("disp3dwindow", "\347\204\246\347\202\271\350\267\237\350\270\252", nullptr));
+        checkBox->setText(QApplication::translate("disp3dwindow", "\347\275\221\346\240\274\346\230\276\347\244\272", nullptr));
+        checkBox_4->setText(QApplication::translate("disp3dwindow", "\350\247\206\350\247\222\351\224\201\345\256\232", nullptr));
         label_7->setText(QApplication::translate("disp3dwindow", "\347\233\270\346\234\272\350\247\206\350\247\222\357\274\232", nullptr));
         cbox_SelectView->setItemText(0, QApplication::translate("disp3dwindow", "\346\255\243\345\211\215", nullptr));
         cbox_SelectView->setItemText(1, QApplication::translate("disp3dwindow", "\345\217\263\344\276\247", nullptr));
@@ -631,19 +583,16 @@ public:
         cbox_SelectView->setItemText(5, QApplication::translate("disp3dwindow", "\346\255\243\345\220\216", nullptr));
 
         pbtn_SwitchView->setText(QApplication::translate("disp3dwindow", "\345\210\207\346\215\242", nullptr));
-        cbox_XOZGrid->setText(QApplication::translate("disp3dwindow", "XOZ", nullptr));
-        cbox_XOYGrid->setText(QApplication::translate("disp3dwindow", "XOY", nullptr));
-        cbox_ZOYGrid->setText(QApplication::translate("disp3dwindow", "ZOY", nullptr));
         dock_Infor->setWindowTitle(QApplication::translate("disp3dwindow", "\345\217\257\350\247\206\345\214\226\345\217\202\346\225\260", nullptr));
+        radioButton_2->setText(QApplication::translate("disp3dwindow", "\344\270\211\350\247\222\345\275\242\346\225\260\357\274\232", nullptr));
+        lab_NumKeyPoints->setText(QString());
         radioButton_3->setText(QApplication::translate("disp3dwindow", "\345\205\263\351\224\256\347\202\271\346\225\260\357\274\232", nullptr));
         radioButton_4->setText(QApplication::translate("disp3dwindow", "\344\270\273\346\226\271\345\220\221\346\234\200\345\244\247\345\217\230\345\275\242\357\274\232", nullptr));
         radioButton->setText(QApplication::translate("disp3dwindow", "\350\212\202\347\202\271\346\225\260\357\274\232", nullptr));
-        lab_MaxDeformation->setText(QString());
-        pushButton_6->setText(QApplication::translate("disp3dwindow", "\345\205\263\351\224\256\347\202\271\345\217\230\345\275\242\346\230\276\347\244\272", nullptr));
         lab_NumPoints->setText(QString());
-        radioButton_2->setText(QApplication::translate("disp3dwindow", "\344\270\211\350\247\222\345\275\242\346\225\260\357\274\232", nullptr));
-        lab_NumKeyPoints->setText(QString());
+        lab_MaxDeformation->setText(QString());
         lab_NumPolys->setText(QString());
+        pushButton_6->setText(QApplication::translate("disp3dwindow", "\345\205\263\351\224\256\347\202\271\345\217\230\345\275\242\346\230\276\347\244\272", nullptr));
     } // retranslateUi
 
 };

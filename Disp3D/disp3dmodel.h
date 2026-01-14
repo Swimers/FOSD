@@ -41,7 +41,6 @@ public:
     void ExportModel(const QString &filePath);
     void UnLoadModel();
     void MergeModel(const QString &filePath);
-    void ResetModel();
     void ReadPointQMap(vtkSmartPointer<vtkPolyData> PolyData);
 
     void FreshKeyPoint();
@@ -52,12 +51,9 @@ public:
     uint GetModelNumKeyPoints();
 
     void ResetCamera(int Index);
-    void CameraLock(bool index);
-    void CameraFellow(bool index);
 
     void InitScalarsValues(ModelScalars &scalars, vtkPolyData* poly);
     void SetupColorMapping(const std::string &scalarName);
-    void OFFScalars();
 
 public:
     bool Flag_Actor = false;
@@ -69,7 +65,6 @@ public:
     QMap<vtkIdType, QVector<double>> pointDisplace; //各点形变量（编号，坐标向量）
     QMap<vtkIdType, QVector<double>> pointpos;      //各点实际位置（编号，坐标向量）
     QSet<vtkIdType> keyPointSet;                    //关键点列表
-    double MaxDisplace = 0;
 
     QMap<vtkIdType, struct SelectedPointEntity> SelectedPointMap;
 
