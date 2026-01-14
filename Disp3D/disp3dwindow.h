@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 #ifndef DISP3DWINDOW_H
 #define DISP3DWINDOW_H
 
@@ -12,16 +13,28 @@
 #include <disp3dfreshmodelthread.h>
 
 #include <IFE.h>
+=======
+﻿#ifndef DISP3DWINDOW_H
+#define DISP3DWINDOW_H
+
+#include <QWidget>
+#include "displaymodel.h"
+>>>>>>> Stashed changes
 
 namespace Ui {
-class disp3dwindow;
+class Disp3DWindow;
 }
 
+<<<<<<< Updated upstream
 class disp3dwindow : public QMainWindow
+=======
+class Disp3DWindow : public QWidget
+>>>>>>> Stashed changes
 {
     Q_OBJECT
 
 public:
+<<<<<<< Updated upstream
     explicit disp3dwindow(QWidget *parent = nullptr);
     ~disp3dwindow();
 
@@ -80,6 +93,19 @@ private:
     disp3dfreshmodelthread *m_disp3dthread = nullptr;
 
     QTimer *freshTimer = nullptr;
+=======
+    explicit Disp3DWindow(QWidget *parent = nullptr);
+    ~Disp3DWindow();
+    void Init();
+
+private slots:
+    void on_btnLoadModel_clicked();
+
+private:
+    Ui::Disp3DWindow *ui;
+    displayModel* displaymodel = nullptr;
+
+>>>>>>> Stashed changes
 };
 
 #endif // DISP3DWINDOW_H

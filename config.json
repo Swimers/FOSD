@@ -1,0 +1,27 @@
+{
+    "ColorMode": 3,
+    "DataSaveFrep": 0,
+    "DataShowFrep": 0,
+    "ModeFlushFrep": 20,
+    "filterCoeff": 0.019999999552965164,
+    "flagPoint1": null,
+    "maxRange": 20.0,
+    "minRange": -150.0,
+    "order": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+    ],
+    "para": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+    ],
+    "pointSize": 0.009999999776482582
+}

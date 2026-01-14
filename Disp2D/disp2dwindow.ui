@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>disp2dwindow</class>
- <widget class="QWidget" name="disp2dwindow">
+ <class>Disp2DWindow</class>
+ <widget class="QWidget" name="Disp2DWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1052</width>
-    <height>689</height>
+    <width>1003</width>
+    <height>744</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QGroupBox" name="TwoD_groupBox_Picture">
      <property name="title">
       <string/>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3" stretch="10,10">
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="10,10">
       <item>
-       <widget class="QLabel" name="lable_Picture">
+       <widget class="QLabel" name="TwoD_Label_picture">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
           <horstretch>0</horstretch>
@@ -35,7 +35,7 @@
          <enum>Qt::AutoText</enum>
         </property>
         <property name="pixmap">
-         <pixmap resource="../resource.qrc">:/resource_disp2d/Resource/resource_disp2d/image6.jpg</pixmap>
+         <pixmap resource="../images.qrc">:/resource/resource_disp2d/image2.jpg</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -46,16 +46,12 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="50,10">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="50,10">
         <item>
-         <widget class="QTableView" name="table_Disp2DPara">
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-         </widget>
+         <widget class="QTableView" name="TwoD_tableView"/>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+         <layout class="QVBoxLayout" name="verticalLayout">
           <property name="leftMargin">
            <number>15</number>
           </property>
@@ -63,23 +59,11 @@
            <number>15</number>
           </property>
           <item>
-           <widget class="QPushButton" name="pbtn_ChangeOriginalCoordinates">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QPushButton" name="Button_ChangeOriginalCoordinates">
             <property name="minimumSize">
              <size>
               <width>0</width>
               <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>50</height>
              </size>
             </property>
             <property name="text">
@@ -88,23 +72,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pbtn_ParaRevise">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QPushButton" name="Button_ParaRevise">
             <property name="minimumSize">
              <size>
               <width>0</width>
               <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>50</height>
              </size>
             </property>
             <property name="text">
@@ -113,23 +85,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pbtn_ChangeBackGround">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QPushButton" name="Button_ChangeBackGround">
             <property name="minimumSize">
              <size>
               <width>0</width>
               <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>50</height>
              </size>
             </property>
             <property name="text">
@@ -138,23 +98,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pbtn_Observe">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QPushButton" name="Button_Observe">
             <property name="minimumSize">
              <size>
               <width>0</width>
               <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>50</height>
              </size>
             </property>
             <property name="text">
@@ -172,7 +120,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="../images.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -23,130 +23,114 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_disp2dwindow
+class Ui_Disp2DWindow
 {
 public:
-    QGridLayout *gridLayout;
+    QGridLayout *gridLayout_2;
     QGroupBox *TwoD_groupBox_Picture;
-    QVBoxLayout *verticalLayout_3;
-    QLabel *lable_Picture;
-    QHBoxLayout *horizontalLayout_2;
-    QTableView *table_Disp2DPara;
-    QVBoxLayout *verticalLayout_4;
-    QPushButton *pbtn_ChangeOriginalCoordinates;
-    QPushButton *pbtn_ParaRevise;
-    QPushButton *pbtn_ChangeBackGround;
-    QPushButton *pbtn_Observe;
+    QVBoxLayout *verticalLayout_2;
+    QLabel *TwoD_Label_picture;
+    QHBoxLayout *horizontalLayout;
+    QTableView *TwoD_tableView;
+    QVBoxLayout *verticalLayout;
+    QPushButton *Button_ChangeOriginalCoordinates;
+    QPushButton *Button_ParaRevise;
+    QPushButton *Button_ChangeBackGround;
+    QPushButton *Button_Observe;
 
-    void setupUi(QWidget *disp2dwindow)
+    void setupUi(QWidget *Disp2DWindow)
     {
-        if (disp2dwindow->objectName().isEmpty())
-            disp2dwindow->setObjectName(QString::fromUtf8("disp2dwindow"));
-        disp2dwindow->resize(1052, 689);
-        gridLayout = new QGridLayout(disp2dwindow);
-        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        TwoD_groupBox_Picture = new QGroupBox(disp2dwindow);
+        if (Disp2DWindow->objectName().isEmpty())
+            Disp2DWindow->setObjectName(QString::fromUtf8("Disp2DWindow"));
+        Disp2DWindow->resize(1003, 744);
+        gridLayout_2 = new QGridLayout(Disp2DWindow);
+        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
+        TwoD_groupBox_Picture = new QGroupBox(Disp2DWindow);
         TwoD_groupBox_Picture->setObjectName(QString::fromUtf8("TwoD_groupBox_Picture"));
-        verticalLayout_3 = new QVBoxLayout(TwoD_groupBox_Picture);
-        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
-        lable_Picture = new QLabel(TwoD_groupBox_Picture);
-        lable_Picture->setObjectName(QString::fromUtf8("lable_Picture"));
+        verticalLayout_2 = new QVBoxLayout(TwoD_groupBox_Picture);
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
+        TwoD_Label_picture = new QLabel(TwoD_groupBox_Picture);
+        TwoD_Label_picture->setObjectName(QString::fromUtf8("TwoD_Label_picture"));
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(lable_Picture->sizePolicy().hasHeightForWidth());
-        lable_Picture->setSizePolicy(sizePolicy);
-        lable_Picture->setTextFormat(Qt::AutoText);
-        lable_Picture->setPixmap(QPixmap(QString::fromUtf8(":/resource_disp2d/Resource/resource_disp2d/image6.jpg")));
-        lable_Picture->setScaledContents(true);
-        lable_Picture->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+        sizePolicy.setHeightForWidth(TwoD_Label_picture->sizePolicy().hasHeightForWidth());
+        TwoD_Label_picture->setSizePolicy(sizePolicy);
+        TwoD_Label_picture->setTextFormat(Qt::AutoText);
+        TwoD_Label_picture->setPixmap(QPixmap(QString::fromUtf8(":/resource/resource_disp2d/image2.jpg")));
+        TwoD_Label_picture->setScaledContents(true);
+        TwoD_Label_picture->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
 
-        verticalLayout_3->addWidget(lable_Picture);
+        verticalLayout_2->addWidget(TwoD_Label_picture);
 
-        horizontalLayout_2 = new QHBoxLayout();
-        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-        table_Disp2DPara = new QTableView(TwoD_groupBox_Picture);
-        table_Disp2DPara->setObjectName(QString::fromUtf8("table_Disp2DPara"));
-        table_Disp2DPara->setStyleSheet(QString::fromUtf8(""));
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        TwoD_tableView = new QTableView(TwoD_groupBox_Picture);
+        TwoD_tableView->setObjectName(QString::fromUtf8("TwoD_tableView"));
 
-        horizontalLayout_2->addWidget(table_Disp2DPara);
+        horizontalLayout->addWidget(TwoD_tableView);
 
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
-        verticalLayout_4->setContentsMargins(15, -1, 15, -1);
-        pbtn_ChangeOriginalCoordinates = new QPushButton(TwoD_groupBox_Picture);
-        pbtn_ChangeOriginalCoordinates->setObjectName(QString::fromUtf8("pbtn_ChangeOriginalCoordinates"));
-        QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Preferred);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(pbtn_ChangeOriginalCoordinates->sizePolicy().hasHeightForWidth());
-        pbtn_ChangeOriginalCoordinates->setSizePolicy(sizePolicy1);
-        pbtn_ChangeOriginalCoordinates->setMinimumSize(QSize(0, 30));
-        pbtn_ChangeOriginalCoordinates->setMaximumSize(QSize(16777215, 50));
+        verticalLayout = new QVBoxLayout();
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        verticalLayout->setContentsMargins(15, -1, 15, -1);
+        Button_ChangeOriginalCoordinates = new QPushButton(TwoD_groupBox_Picture);
+        Button_ChangeOriginalCoordinates->setObjectName(QString::fromUtf8("Button_ChangeOriginalCoordinates"));
+        Button_ChangeOriginalCoordinates->setMinimumSize(QSize(0, 30));
 
-        verticalLayout_4->addWidget(pbtn_ChangeOriginalCoordinates);
+        verticalLayout->addWidget(Button_ChangeOriginalCoordinates);
 
-        pbtn_ParaRevise = new QPushButton(TwoD_groupBox_Picture);
-        pbtn_ParaRevise->setObjectName(QString::fromUtf8("pbtn_ParaRevise"));
-        sizePolicy1.setHeightForWidth(pbtn_ParaRevise->sizePolicy().hasHeightForWidth());
-        pbtn_ParaRevise->setSizePolicy(sizePolicy1);
-        pbtn_ParaRevise->setMinimumSize(QSize(0, 30));
-        pbtn_ParaRevise->setMaximumSize(QSize(16777215, 50));
+        Button_ParaRevise = new QPushButton(TwoD_groupBox_Picture);
+        Button_ParaRevise->setObjectName(QString::fromUtf8("Button_ParaRevise"));
+        Button_ParaRevise->setMinimumSize(QSize(0, 30));
 
-        verticalLayout_4->addWidget(pbtn_ParaRevise);
+        verticalLayout->addWidget(Button_ParaRevise);
 
-        pbtn_ChangeBackGround = new QPushButton(TwoD_groupBox_Picture);
-        pbtn_ChangeBackGround->setObjectName(QString::fromUtf8("pbtn_ChangeBackGround"));
-        sizePolicy1.setHeightForWidth(pbtn_ChangeBackGround->sizePolicy().hasHeightForWidth());
-        pbtn_ChangeBackGround->setSizePolicy(sizePolicy1);
-        pbtn_ChangeBackGround->setMinimumSize(QSize(0, 30));
-        pbtn_ChangeBackGround->setMaximumSize(QSize(16777215, 50));
+        Button_ChangeBackGround = new QPushButton(TwoD_groupBox_Picture);
+        Button_ChangeBackGround->setObjectName(QString::fromUtf8("Button_ChangeBackGround"));
+        Button_ChangeBackGround->setMinimumSize(QSize(0, 30));
 
-        verticalLayout_4->addWidget(pbtn_ChangeBackGround);
+        verticalLayout->addWidget(Button_ChangeBackGround);
 
-        pbtn_Observe = new QPushButton(TwoD_groupBox_Picture);
-        pbtn_Observe->setObjectName(QString::fromUtf8("pbtn_Observe"));
-        sizePolicy1.setHeightForWidth(pbtn_Observe->sizePolicy().hasHeightForWidth());
-        pbtn_Observe->setSizePolicy(sizePolicy1);
-        pbtn_Observe->setMinimumSize(QSize(0, 30));
-        pbtn_Observe->setMaximumSize(QSize(16777215, 50));
+        Button_Observe = new QPushButton(TwoD_groupBox_Picture);
+        Button_Observe->setObjectName(QString::fromUtf8("Button_Observe"));
+        Button_Observe->setMinimumSize(QSize(0, 30));
 
-        verticalLayout_4->addWidget(pbtn_Observe);
+        verticalLayout->addWidget(Button_Observe);
 
 
-        horizontalLayout_2->addLayout(verticalLayout_4);
+        horizontalLayout->addLayout(verticalLayout);
 
-        horizontalLayout_2->setStretch(0, 50);
-        horizontalLayout_2->setStretch(1, 10);
+        horizontalLayout->setStretch(0, 50);
+        horizontalLayout->setStretch(1, 10);
 
-        verticalLayout_3->addLayout(horizontalLayout_2);
+        verticalLayout_2->addLayout(horizontalLayout);
 
-        verticalLayout_3->setStretch(0, 10);
-        verticalLayout_3->setStretch(1, 10);
+        verticalLayout_2->setStretch(0, 10);
+        verticalLayout_2->setStretch(1, 10);
 
-        gridLayout->addWidget(TwoD_groupBox_Picture, 0, 0, 1, 1);
+        gridLayout_2->addWidget(TwoD_groupBox_Picture, 0, 0, 1, 1);
 
 
-        retranslateUi(disp2dwindow);
+        retranslateUi(Disp2DWindow);
 
-        QMetaObject::connectSlotsByName(disp2dwindow);
+        QMetaObject::connectSlotsByName(Disp2DWindow);
     } // setupUi
 
-    void retranslateUi(QWidget *disp2dwindow)
+    void retranslateUi(QWidget *Disp2DWindow)
     {
-        disp2dwindow->setWindowTitle(QApplication::translate("disp2dwindow", "Form", nullptr));
+        Disp2DWindow->setWindowTitle(QApplication::translate("Disp2DWindow", "Form", nullptr));
         TwoD_groupBox_Picture->setTitle(QString());
-        lable_Picture->setText(QString());
-        pbtn_ChangeOriginalCoordinates->setText(QApplication::translate("disp2dwindow", "\345\257\274\345\205\245\345\210\235\345\247\213\345\235\220\346\240\207", nullptr));
-        pbtn_ParaRevise->setText(QApplication::translate("disp2dwindow", "\347\263\273\346\225\260\344\277\256\346\255\243", nullptr));
-        pbtn_ChangeBackGround->setText(QApplication::translate("disp2dwindow", "\346\233\264\346\215\242\350\203\214\346\231\257", nullptr));
-        pbtn_Observe->setText(QApplication::translate("disp2dwindow", "\345\220\257\345\212\250\347\233\221\346\216\247", nullptr));
+        TwoD_Label_picture->setText(QString());
+        Button_ChangeOriginalCoordinates->setText(QApplication::translate("Disp2DWindow", "\345\257\274\345\205\245\345\210\235\345\247\213\345\235\220\346\240\207", nullptr));
+        Button_ParaRevise->setText(QApplication::translate("Disp2DWindow", "\347\263\273\346\225\260\344\277\256\346\255\243", nullptr));
+        Button_ChangeBackGround->setText(QApplication::translate("Disp2DWindow", "\346\233\264\346\215\242\350\203\214\346\231\257", nullptr));
+        Button_Observe->setText(QApplication::translate("Disp2DWindow", "\345\220\257\345\212\250\347\233\221\346\216\247", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class disp2dwindow: public Ui_disp2dwindow {};
+    class Disp2DWindow: public Ui_Disp2DWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE

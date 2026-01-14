@@ -1,56 +1,52 @@
-#ifndef DISP2DWINDOW_H
+﻿#ifndef DISP2DWINDOW_H
 #define DISP2DWINDOW_H
 
 #include <QWidget>
 #include <QStandardItemModel>
 #include <QTimer>
-#include <QDebug>
 #include "IFE.h"
-#include "disp2dpara.h"
+#include "pararevisewindow.h"
 
 class IFE;
 
 namespace Ui {
-class disp2dwindow;
+class Disp2DWindow;
 }
 
-class disp2dwindow : public QWidget
+class Disp2DWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit disp2dwindow(QWidget *parent = nullptr);
-    ~disp2dwindow();
-
+    explicit Disp2DWindow(const QString& privilege,QWidget *parent = nullptr);
+    ~Disp2DWindow();
     void GetStrainPtr(float* strain_float){ife->strain = strain_float;}
     IFE* SendIFEPtr(){return ife;}
 
 private:
-    QStandardItemModel *TwoD_model = new QStandardItemModel();      //二维观测界面表格模型
-    QTimer *timer = new QTimer(this);                               //创建定时器
-    bool Flag_Observe = false;                                      //二维观测界面，观测按钮按下标志位。
+    QStandardItemModel *TwoD_model= new QStandardItemModel();//二维观测界面表格模型
+    QTimer *timer=new QTimer(this);//创建定时器
+    bool observe_flag=false;    //二维观测界面，观测按钮按下标志位。
 
 private:
     enum columntype {POSITION_ORIGINAL,POSITION_DISP,POSITION_FINAL}; //更新表格的位置参数，
 
 private:
-    void InitWindow();
-    void LoadCoordinates(float (&p)[MARKPOINTNUM][3],const columntype num);
+    void initialize_widget();
+    void LoadCoordinates(float (&p)[MARKPOINTNUM][3],const columntype num);     //传入一个MARKPOINTNUM行3列的二维数组，将其显示在表格第2~4、5~7、8~10列
 
 private slots:
-    void UpdatatabelSlot();
-    void on_pbtn_ChangeOriginalCoordinates_clicked();
-    void on_pbtn_ParaRevise_clicked();
-    void on_pbtn_ChangeBackGround_clicked();
-    void on_pbtn_Observe_clicked();
+    void on_Button_ChangeOriginalCoordinates_clicked();
+    void on_Button_ChangeBackGround_clicked();
+    void on_Button_Observe_clicked();
+    void Updatatabel_slot();
 
-    void FreshData();
+    void on_Button_ParaRevise_clicked();
 
 private:
-    Ui::disp2dwindow *ui;
-
-    IFE* ife = nullptr;                     //逆有限单元类，所有有关逆有限单元的计算都在该类中
-    disp2dpara* m_disp2dpara = nullptr;
+    Ui::Disp2DWindow *ui;
+    IFE* ife = nullptr;         //逆有限单元类，所有有关逆有限单元的计算都在该类中
+    ParaReviseWindow* parawindow = nullptr;
 };
 
 #endif // DISP2DWINDOW_H
