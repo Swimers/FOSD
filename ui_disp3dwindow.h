@@ -9,24 +9,26 @@
 #ifndef UI_DISP3DWINDOW_H
 #define UI_DISP3DWINDOW_H
 
+#include <QVTKWidget.h>
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QDockWidget>
-#include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QRadioButton>
-#include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QSplitter>
+#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "QVTKWidget.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -35,31 +37,17 @@ class Ui_disp3dwindow
 public:
     QAction *actionModelDock;
     QAction *actionInforDock;
-    QAction *actionViewDock;
     QAction *actionStart;
     QAction *actionStop;
-    QAction *actionPause;
     QAction *actionReset;
     QWidget *centralwidget;
-    QGridLayout *gridLayout_4;
-    QVTKWidget *vtk_stage;
-    QHBoxLayout *horizontalLayout_2;
-    QSpacerItem *horizontalSpacer;
-    QLabel *label;
-    QLabel *lab_KeyPointID;
-    QSpacerItem *horizontalSpacer_3;
-    QLabel *label_6;
-    QLabel *lab_KeyPointRawPos;
-    QSpacerItem *horizontalSpacer_4;
-    QLabel *label_10;
-    QLabel *lab_KeyPointDisplace;
-    QSpacerItem *horizontalSpacer_5;
-    QLabel *label_8;
-    QLabel *lab_KeyPointNewPos;
-    QSpacerItem *horizontalSpacer_2;
-    QToolBar *toolBar;
+    QGridLayout *gridLayout;
+    QVTKWidget *vtkw_Disp3D;
+    QSplitter *splitter_2;
+    QSplitter *splitter;
     QDockWidget *dock_Model;
     QWidget *dockWidgetContents;
+<<<<<<< Updated upstream
     QGridLayout *gridLayout_3;
     QPushButton *pbtn_KeyPointSelect;
     QHBoxLayout *horizontalLayout_4;
@@ -113,166 +101,115 @@ public:
     QLabel *lab_NumKeyPoints;
     QLabel *lab_NumPolys;
     QSpacerItem *verticalSpacer_2;
+=======
+    QVBoxLayout *verticalLayout_3;
+    QVBoxLayout *verticalLayout_2;
+    QPushButton *pbtn_LoadModel;
+    QHBoxLayout *horizontalLayout;
+    QComboBox *cbox_SelectView;
+    QPushButton *pbtn_ChangeView;
+    QHBoxLayout *horizontalLayout_2;
+    QCheckBox *cbox_DispEdge;
+    QCheckBox *cbox_Fellow;
+    QCheckBox *cbox_DispAxis;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label_4;
+    QLineEdit *edit_SphereSize;
+    QPushButton *pbtn_SetSize;
+    QHBoxLayout *horizontalLayout_8;
+    QSpacerItem *horizontalSpacer_2;
+    QPushButton *pbtn_AddPoint;
+    QSpacerItem *horizontalSpacer;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_5;
+    QComboBox *cbox_FreSeclect;
+    QSpacerItem *verticalSpacer;
+    QGroupBox *groupBox;
+    QGridLayout *gridLayout_3;
+    QLineEdit *edit_ColorMaxRange;
+    QComboBox *cbox_AixalSelect;
+    QPushButton *pbtn_DispAnalysis;
+    QDockWidget *dock_Infor;
+    QWidget *dockWidgetContents_2;
+    QVBoxLayout *verticalLayout_4;
+    QLabel *label_point;
+    QLabel *label_element;
+    QLabel *label_flagpoint;
+    QLabel *label_dispy;
+    QToolBar *toolBar;
+    QStatusBar *statusBar;
+>>>>>>> Stashed changes
 
     void setupUi(QMainWindow *disp3dwindow)
     {
         if (disp3dwindow->objectName().isEmpty())
             disp3dwindow->setObjectName(QString::fromUtf8("disp3dwindow"));
-        disp3dwindow->resize(1024, 766);
+        disp3dwindow->resize(1002, 600);
+        disp3dwindow->setStyleSheet(QString::fromUtf8("QToolBar{\n"
+"background-color: rgb(232, 232, 232);\n"
+"}"));
+        disp3dwindow->setDockOptions(QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks);
         actionModelDock = new QAction(disp3dwindow);
         actionModelDock->setObjectName(QString::fromUtf8("actionModelDock"));
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/icon/Resource/icon/3D_Plot.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/icon/Resource/icon/Model_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionModelDock->setIcon(icon);
         actionInforDock = new QAction(disp3dwindow);
         actionInforDock->setObjectName(QString::fromUtf8("actionInforDock"));
         QIcon icon1;
         icon1.addFile(QString::fromUtf8(":/icon/Resource/icon/Help_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionInforDock->setIcon(icon1);
-        actionViewDock = new QAction(disp3dwindow);
-        actionViewDock->setObjectName(QString::fromUtf8("actionViewDock"));
-        QIcon icon2;
-        icon2.addFile(QString::fromUtf8(":/icon/Resource/icon/Model_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionViewDock->setIcon(icon2);
         actionStart = new QAction(disp3dwindow);
         actionStart->setObjectName(QString::fromUtf8("actionStart"));
-        QIcon icon3;
-        icon3.addFile(QString::fromUtf8(":/icon/Resource/icon/Play_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionStart->setIcon(icon3);
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/icon/Resource/icon/Play_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionStart->setIcon(icon2);
         actionStop = new QAction(disp3dwindow);
         actionStop->setObjectName(QString::fromUtf8("actionStop"));
-        QIcon icon4;
-        icon4.addFile(QString::fromUtf8(":/icon/Resource/icon/Stop_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionStop->setIcon(icon4);
-        actionPause = new QAction(disp3dwindow);
-        actionPause->setObjectName(QString::fromUtf8("actionPause"));
-        QIcon icon5;
-        icon5.addFile(QString::fromUtf8(":/icon/Resource/icon/Pasue_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionPause->setIcon(icon5);
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/icon/Resource/icon/Stop_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionStop->setIcon(icon3);
         actionReset = new QAction(disp3dwindow);
         actionReset->setObjectName(QString::fromUtf8("actionReset"));
-        QIcon icon6;
-        icon6.addFile(QString::fromUtf8(":/icon/Resource/icon/Reset_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionReset->setIcon(icon6);
+        QIcon icon4;
+        icon4.addFile(QString::fromUtf8(":/icon/Resource/icon/Reset_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionReset->setIcon(icon4);
         centralwidget = new QWidget(disp3dwindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-        gridLayout_4 = new QGridLayout(centralwidget);
-        gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
-        vtk_stage = new QVTKWidget(centralwidget);
-        vtk_stage->setObjectName(QString::fromUtf8("vtk_stage"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(vtk_stage->sizePolicy().hasHeightForWidth());
-        vtk_stage->setSizePolicy(sizePolicy);
+        gridLayout = new QGridLayout(centralwidget);
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        vtkw_Disp3D = new QVTKWidget(centralwidget);
+        vtkw_Disp3D->setObjectName(QString::fromUtf8("vtkw_Disp3D"));
+        QPalette palette;
+        QBrush brush(QColor(255, 255, 255, 255));
+        brush.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Base, brush);
+        QBrush brush1(QColor(62, 68, 83, 255));
+        brush1.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Base, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        vtkw_Disp3D->setPalette(palette);
 
-        gridLayout_4->addWidget(vtk_stage, 1, 0, 1, 1);
+        gridLayout->addWidget(vtkw_Disp3D, 0, 0, 1, 1);
 
-        horizontalLayout_2 = new QHBoxLayout();
-        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-        horizontalLayout_2->setSizeConstraint(QLayout::SetNoConstraint);
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_2->addItem(horizontalSpacer);
-
-        label = new QLabel(centralwidget);
-        label->setObjectName(QString::fromUtf8("label"));
-        QSizePolicy sizePolicy1(QSizePolicy::Maximum, QSizePolicy::Minimum);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
-        label->setSizePolicy(sizePolicy1);
-        QFont font;
-        font.setBold(true);
-        font.setWeight(75);
-        label->setFont(font);
-
-        horizontalLayout_2->addWidget(label);
-
-        lab_KeyPointID = new QLabel(centralwidget);
-        lab_KeyPointID->setObjectName(QString::fromUtf8("lab_KeyPointID"));
-        sizePolicy1.setHeightForWidth(lab_KeyPointID->sizePolicy().hasHeightForWidth());
-        lab_KeyPointID->setSizePolicy(sizePolicy1);
-
-        horizontalLayout_2->addWidget(lab_KeyPointID);
-
-        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_2->addItem(horizontalSpacer_3);
-
-        label_6 = new QLabel(centralwidget);
-        label_6->setObjectName(QString::fromUtf8("label_6"));
-        QSizePolicy sizePolicy2(QSizePolicy::Maximum, QSizePolicy::Preferred);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(label_6->sizePolicy().hasHeightForWidth());
-        label_6->setSizePolicy(sizePolicy2);
-        label_6->setFont(font);
-
-        horizontalLayout_2->addWidget(label_6);
-
-        lab_KeyPointRawPos = new QLabel(centralwidget);
-        lab_KeyPointRawPos->setObjectName(QString::fromUtf8("lab_KeyPointRawPos"));
-        sizePolicy2.setHeightForWidth(lab_KeyPointRawPos->sizePolicy().hasHeightForWidth());
-        lab_KeyPointRawPos->setSizePolicy(sizePolicy2);
-
-        horizontalLayout_2->addWidget(lab_KeyPointRawPos);
-
-        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_2->addItem(horizontalSpacer_4);
-
-        label_10 = new QLabel(centralwidget);
-        label_10->setObjectName(QString::fromUtf8("label_10"));
-        sizePolicy2.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
-        label_10->setSizePolicy(sizePolicy2);
-        label_10->setFont(font);
-
-        horizontalLayout_2->addWidget(label_10);
-
-        lab_KeyPointDisplace = new QLabel(centralwidget);
-        lab_KeyPointDisplace->setObjectName(QString::fromUtf8("lab_KeyPointDisplace"));
-        sizePolicy2.setHeightForWidth(lab_KeyPointDisplace->sizePolicy().hasHeightForWidth());
-        lab_KeyPointDisplace->setSizePolicy(sizePolicy2);
-
-        horizontalLayout_2->addWidget(lab_KeyPointDisplace);
-
-        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_2->addItem(horizontalSpacer_5);
-
-        label_8 = new QLabel(centralwidget);
-        label_8->setObjectName(QString::fromUtf8("label_8"));
-        sizePolicy2.setHeightForWidth(label_8->sizePolicy().hasHeightForWidth());
-        label_8->setSizePolicy(sizePolicy2);
-        label_8->setFont(font);
-
-        horizontalLayout_2->addWidget(label_8);
-
-        lab_KeyPointNewPos = new QLabel(centralwidget);
-        lab_KeyPointNewPos->setObjectName(QString::fromUtf8("lab_KeyPointNewPos"));
-        sizePolicy2.setHeightForWidth(lab_KeyPointNewPos->sizePolicy().hasHeightForWidth());
-        lab_KeyPointNewPos->setSizePolicy(sizePolicy2);
-
-        horizontalLayout_2->addWidget(lab_KeyPointNewPos);
-
-        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_2->addItem(horizontalSpacer_2);
-
-
-        gridLayout_4->addLayout(horizontalLayout_2, 2, 0, 1, 1);
-
-        disp3dwindow->setCentralWidget(centralwidget);
-        toolBar = new QToolBar(disp3dwindow);
-        toolBar->setObjectName(QString::fromUtf8("toolBar"));
-        disp3dwindow->addToolBar(Qt::TopToolBarArea, toolBar);
-        dock_Model = new QDockWidget(disp3dwindow);
+        splitter_2 = new QSplitter(centralwidget);
+        splitter_2->setObjectName(QString::fromUtf8("splitter_2"));
+        splitter_2->setOrientation(Qt::Horizontal);
+        splitter = new QSplitter(splitter_2);
+        splitter->setObjectName(QString::fromUtf8("splitter"));
+        splitter->setOrientation(Qt::Vertical);
+        dock_Model = new QDockWidget(splitter);
         dock_Model->setObjectName(QString::fromUtf8("dock_Model"));
+        dock_Model->setMaximumSize(QSize(250, 524287));
+        dock_Model->setFloating(false);
         dock_Model->setFeatures(QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable);
-        dock_Model->setAllowedAreas(Qt::RightDockWidgetArea);
         dockWidgetContents = new QWidget();
         dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
+<<<<<<< Updated upstream
         gridLayout_3 = new QGridLayout(dockWidgetContents);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         pbtn_KeyPointSelect = new QPushButton(dockWidgetContents);
@@ -441,6 +378,22 @@ public:
         horizontalLayout_3->addWidget(label_7);
 
         cbox_SelectView = new QComboBox(dockWidgetContents_2);
+=======
+        verticalLayout_3 = new QVBoxLayout(dockWidgetContents);
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
+        pbtn_LoadModel = new QPushButton(dockWidgetContents);
+        pbtn_LoadModel->setObjectName(QString::fromUtf8("pbtn_LoadModel"));
+        pbtn_LoadModel->setMinimumSize(QSize(0, 25));
+
+        verticalLayout_2->addWidget(pbtn_LoadModel);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        cbox_SelectView = new QComboBox(dockWidgetContents);
+        cbox_SelectView->addItem(QString());
+>>>>>>> Stashed changes
         cbox_SelectView->addItem(QString());
         cbox_SelectView->addItem(QString());
         cbox_SelectView->addItem(QString());
@@ -448,16 +401,18 @@ public:
         cbox_SelectView->addItem(QString());
         cbox_SelectView->addItem(QString());
         cbox_SelectView->setObjectName(QString::fromUtf8("cbox_SelectView"));
+        cbox_SelectView->setMinimumSize(QSize(0, 25));
 
-        horizontalLayout_3->addWidget(cbox_SelectView);
+        horizontalLayout->addWidget(cbox_SelectView);
 
-        pbtn_SwitchView = new QPushButton(dockWidgetContents_2);
-        pbtn_SwitchView->setObjectName(QString::fromUtf8("pbtn_SwitchView"));
-        pbtn_SwitchView->setMaximumSize(QSize(40, 16777215));
+        pbtn_ChangeView = new QPushButton(dockWidgetContents);
+        pbtn_ChangeView->setObjectName(QString::fromUtf8("pbtn_ChangeView"));
+        pbtn_ChangeView->setMinimumSize(QSize(0, 25));
 
-        horizontalLayout_3->addWidget(pbtn_SwitchView);
+        horizontalLayout->addWidget(pbtn_ChangeView);
 
 
+<<<<<<< Updated upstream
         gridLayout_2->addLayout(horizontalLayout_3, 7, 0, 1, 2);
 
         verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -493,12 +448,144 @@ public:
 
 
         gridLayout_2->addLayout(horizontalLayout_5, 3, 0, 1, 2);
+=======
+        verticalLayout_2->addLayout(horizontalLayout);
+>>>>>>> Stashed changes
 
-        dock_View->setWidget(dockWidgetContents_2);
-        disp3dwindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock_View);
-        dock_Infor = new QDockWidget(disp3dwindow);
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        cbox_DispEdge = new QCheckBox(dockWidgetContents);
+        cbox_DispEdge->setObjectName(QString::fromUtf8("cbox_DispEdge"));
+        cbox_DispEdge->setMinimumSize(QSize(0, 25));
+
+        horizontalLayout_2->addWidget(cbox_DispEdge);
+
+        cbox_Fellow = new QCheckBox(dockWidgetContents);
+        cbox_Fellow->setObjectName(QString::fromUtf8("cbox_Fellow"));
+
+        horizontalLayout_2->addWidget(cbox_Fellow);
+
+        cbox_DispAxis = new QCheckBox(dockWidgetContents);
+        cbox_DispAxis->setObjectName(QString::fromUtf8("cbox_DispAxis"));
+
+        horizontalLayout_2->addWidget(cbox_DispAxis);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_2);
+
+        verticalLayout = new QVBoxLayout();
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        label_4 = new QLabel(dockWidgetContents);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+
+        horizontalLayout_3->addWidget(label_4);
+
+        edit_SphereSize = new QLineEdit(dockWidgetContents);
+        edit_SphereSize->setObjectName(QString::fromUtf8("edit_SphereSize"));
+        edit_SphereSize->setMinimumSize(QSize(0, 30));
+
+        horizontalLayout_3->addWidget(edit_SphereSize);
+
+        pbtn_SetSize = new QPushButton(dockWidgetContents);
+        pbtn_SetSize->setObjectName(QString::fromUtf8("pbtn_SetSize"));
+        pbtn_SetSize->setMinimumSize(QSize(0, 30));
+
+        horizontalLayout_3->addWidget(pbtn_SetSize);
+
+
+        verticalLayout->addLayout(horizontalLayout_3);
+
+        horizontalLayout_8 = new QHBoxLayout();
+        horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_8->addItem(horizontalSpacer_2);
+
+        pbtn_AddPoint = new QPushButton(dockWidgetContents);
+        pbtn_AddPoint->setObjectName(QString::fromUtf8("pbtn_AddPoint"));
+        pbtn_AddPoint->setMinimumSize(QSize(0, 30));
+
+        horizontalLayout_8->addWidget(pbtn_AddPoint);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_8->addItem(horizontalSpacer);
+
+
+        verticalLayout->addLayout(horizontalLayout_8);
+
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        label_5 = new QLabel(dockWidgetContents);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+
+        horizontalLayout_4->addWidget(label_5);
+
+        cbox_FreSeclect = new QComboBox(dockWidgetContents);
+        cbox_FreSeclect->addItem(QString());
+        cbox_FreSeclect->addItem(QString());
+        cbox_FreSeclect->addItem(QString());
+        cbox_FreSeclect->addItem(QString());
+        cbox_FreSeclect->addItem(QString());
+        cbox_FreSeclect->setObjectName(QString::fromUtf8("cbox_FreSeclect"));
+        cbox_FreSeclect->setMinimumSize(QSize(0, 30));
+
+        horizontalLayout_4->addWidget(cbox_FreSeclect);
+
+
+        verticalLayout->addLayout(horizontalLayout_4);
+
+
+        verticalLayout_2->addLayout(verticalLayout);
+
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_2->addItem(verticalSpacer);
+
+        groupBox = new QGroupBox(dockWidgetContents);
+        groupBox->setObjectName(QString::fromUtf8("groupBox"));
+        gridLayout_3 = new QGridLayout(groupBox);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
+        gridLayout_3->setContentsMargins(0, 15, 0, -1);
+        edit_ColorMaxRange = new QLineEdit(groupBox);
+        edit_ColorMaxRange->setObjectName(QString::fromUtf8("edit_ColorMaxRange"));
+        edit_ColorMaxRange->setMinimumSize(QSize(0, 30));
+
+        gridLayout_3->addWidget(edit_ColorMaxRange, 1, 1, 1, 1);
+
+        cbox_AixalSelect = new QComboBox(groupBox);
+        cbox_AixalSelect->addItem(QString());
+        cbox_AixalSelect->addItem(QString());
+        cbox_AixalSelect->addItem(QString());
+        cbox_AixalSelect->setObjectName(QString::fromUtf8("cbox_AixalSelect"));
+        cbox_AixalSelect->setMinimumSize(QSize(0, 30));
+
+        gridLayout_3->addWidget(cbox_AixalSelect, 1, 0, 1, 1);
+
+        pbtn_DispAnalysis = new QPushButton(groupBox);
+        pbtn_DispAnalysis->setObjectName(QString::fromUtf8("pbtn_DispAnalysis"));
+        pbtn_DispAnalysis->setMinimumSize(QSize(0, 30));
+
+        gridLayout_3->addWidget(pbtn_DispAnalysis, 2, 1, 1, 1);
+
+        gridLayout_3->setRowStretch(0, 5);
+        gridLayout_3->setColumnStretch(0, 5);
+
+        verticalLayout_2->addWidget(groupBox);
+
+
+        verticalLayout_3->addLayout(verticalLayout_2);
+
+        dock_Model->setWidget(dockWidgetContents);
+        splitter->addWidget(dock_Model);
+        dock_Infor = new QDockWidget(splitter);
         dock_Infor->setObjectName(QString::fromUtf8("dock_Infor"));
+        dock_Infor->setMaximumSize(QSize(300, 524287));
+        dock_Infor->setFloating(false);
         dock_Infor->setFeatures(QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable);
+<<<<<<< Updated upstream
         dock_Infor->setAllowedAreas(Qt::RightDockWidgetArea);
         dockWidgetContents_3 = new QWidget();
         dockWidgetContents_3->setObjectName(QString::fromUtf8("dockWidgetContents_3"));
@@ -506,14 +593,33 @@ public:
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         radioButton_3 = new QRadioButton(dockWidgetContents_3);
         radioButton_3->setObjectName(QString::fromUtf8("radioButton_3"));
+=======
+        dockWidgetContents_2 = new QWidget();
+        dockWidgetContents_2->setObjectName(QString::fromUtf8("dockWidgetContents_2"));
+        verticalLayout_4 = new QVBoxLayout(dockWidgetContents_2);
+        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        label_point = new QLabel(dockWidgetContents_2);
+        label_point->setObjectName(QString::fromUtf8("label_point"));
 
-        gridLayout->addWidget(radioButton_3, 2, 0, 1, 1);
+        verticalLayout_4->addWidget(label_point);
 
-        radioButton_4 = new QRadioButton(dockWidgetContents_3);
-        radioButton_4->setObjectName(QString::fromUtf8("radioButton_4"));
+        label_element = new QLabel(dockWidgetContents_2);
+        label_element->setObjectName(QString::fromUtf8("label_element"));
 
-        gridLayout->addWidget(radioButton_4, 3, 0, 1, 1);
+        verticalLayout_4->addWidget(label_element);
 
+        label_flagpoint = new QLabel(dockWidgetContents_2);
+        label_flagpoint->setObjectName(QString::fromUtf8("label_flagpoint"));
+>>>>>>> Stashed changes
+
+        verticalLayout_4->addWidget(label_flagpoint);
+
+        label_dispy = new QLabel(dockWidgetContents_2);
+        label_dispy->setObjectName(QString::fromUtf8("label_dispy"));
+
+        verticalLayout_4->addWidget(label_dispy);
+
+<<<<<<< Updated upstream
         radioButton = new QRadioButton(dockWidgetContents_3);
         radioButton->setObjectName(QString::fromUtf8("radioButton"));
 
@@ -543,9 +649,15 @@ public:
         line_5->setObjectName(QString::fromUtf8("line_5"));
         line_5->setFrameShape(QFrame::HLine);
         line_5->setFrameShadow(QFrame::Sunken);
+=======
+        dock_Infor->setWidget(dockWidgetContents_2);
+        splitter->addWidget(dock_Infor);
+        splitter_2->addWidget(splitter);
+>>>>>>> Stashed changes
 
-        gridLayout->addWidget(line_5, 4, 0, 1, 2);
+        gridLayout->addWidget(splitter_2, 0, 1, 1, 1);
 
+<<<<<<< Updated upstream
         lab_NumKeyPoints = new QLabel(dockWidgetContents_3);
         lab_NumKeyPoints->setObjectName(QString::fromUtf8("lab_NumKeyPoints"));
 
@@ -562,13 +674,21 @@ public:
 
         dock_Infor->setWidget(dockWidgetContents_3);
         disp3dwindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock_Infor);
+=======
+        disp3dwindow->setCentralWidget(centralwidget);
+        toolBar = new QToolBar(disp3dwindow);
+        toolBar->setObjectName(QString::fromUtf8("toolBar"));
+        toolBar->setMinimumSize(QSize(0, 30));
+        disp3dwindow->addToolBar(Qt::TopToolBarArea, toolBar);
+        statusBar = new QStatusBar(disp3dwindow);
+        statusBar->setObjectName(QString::fromUtf8("statusBar"));
+        disp3dwindow->setStatusBar(statusBar);
+>>>>>>> Stashed changes
 
         toolBar->addAction(actionModelDock);
         toolBar->addAction(actionInforDock);
-        toolBar->addAction(actionViewDock);
         toolBar->addSeparator();
         toolBar->addAction(actionStart);
-        toolBar->addAction(actionPause);
         toolBar->addAction(actionStop);
         toolBar->addAction(actionReset);
 
@@ -582,11 +702,10 @@ public:
         disp3dwindow->setWindowTitle(QApplication::translate("disp3dwindow", "MainWindow", nullptr));
         actionModelDock->setText(QApplication::translate("disp3dwindow", "ModelDock", nullptr));
         actionInforDock->setText(QApplication::translate("disp3dwindow", "InforDock", nullptr));
-        actionViewDock->setText(QApplication::translate("disp3dwindow", "ViewDock", nullptr));
         actionStart->setText(QApplication::translate("disp3dwindow", "Start", nullptr));
         actionStop->setText(QApplication::translate("disp3dwindow", "Stop", nullptr));
-        actionPause->setText(QApplication::translate("disp3dwindow", "Pause", nullptr));
         actionReset->setText(QApplication::translate("disp3dwindow", "Reset", nullptr));
+<<<<<<< Updated upstream
         label->setText(QApplication::translate("disp3dwindow", "\345\275\223\345\211\215\346\213\276\345\217\226\347\202\271\357\274\232", nullptr));
         lab_KeyPointID->setText(QApplication::translate("disp3dwindow", "###", nullptr));
         label_6->setText(QApplication::translate("disp3dwindow", "\345\210\235\345\247\213\345\235\220\346\240\207\357\274\232", nullptr));
@@ -627,9 +746,19 @@ public:
         cbox_SelectView->setItemText(1, QApplication::translate("disp3dwindow", "\345\217\263\344\276\247", nullptr));
         cbox_SelectView->setItemText(2, QApplication::translate("disp3dwindow", "\345\267\246\344\276\247", nullptr));
         cbox_SelectView->setItemText(3, QApplication::translate("disp3dwindow", "\344\270\212\346\226\271", nullptr));
+=======
+        dock_Model->setWindowTitle(QApplication::translate("disp3dwindow", "\346\250\241\345\236\213", nullptr));
+        pbtn_LoadModel->setText(QApplication::translate("disp3dwindow", "\345\257\274\345\205\245\346\250\241\345\236\213\346\225\260\346\215\256", nullptr));
+        cbox_SelectView->setItemText(0, QApplication::translate("disp3dwindow", "\346\255\243\346\226\271", nullptr));
+        cbox_SelectView->setItemText(1, QApplication::translate("disp3dwindow", "\345\267\246\344\276\247", nullptr));
+        cbox_SelectView->setItemText(2, QApplication::translate("disp3dwindow", "\345\220\216\346\226\271", nullptr));
+        cbox_SelectView->setItemText(3, QApplication::translate("disp3dwindow", "\345\217\263\344\276\247", nullptr));
+>>>>>>> Stashed changes
         cbox_SelectView->setItemText(4, QApplication::translate("disp3dwindow", "\344\270\213\346\226\271", nullptr));
-        cbox_SelectView->setItemText(5, QApplication::translate("disp3dwindow", "\346\255\243\345\220\216", nullptr));
+        cbox_SelectView->setItemText(5, QApplication::translate("disp3dwindow", "\344\270\212\346\226\271", nullptr));
+        cbox_SelectView->setItemText(6, QApplication::translate("disp3dwindow", "\346\255\243\344\270\212", nullptr));
 
+<<<<<<< Updated upstream
         pbtn_SwitchView->setText(QApplication::translate("disp3dwindow", "\345\210\207\346\215\242", nullptr));
         cbox_XOZGrid->setText(QApplication::translate("disp3dwindow", "XOZ", nullptr));
         cbox_XOYGrid->setText(QApplication::translate("disp3dwindow", "XOY", nullptr));
@@ -644,6 +773,35 @@ public:
         radioButton_2->setText(QApplication::translate("disp3dwindow", "\344\270\211\350\247\222\345\275\242\346\225\260\357\274\232", nullptr));
         lab_NumKeyPoints->setText(QString());
         lab_NumPolys->setText(QString());
+=======
+        pbtn_ChangeView->setText(QApplication::translate("disp3dwindow", "\345\210\207\346\215\242\350\247\206\350\247\222", nullptr));
+        cbox_DispEdge->setText(QApplication::translate("disp3dwindow", "\350\276\271\347\274\230\346\230\276\347\244\272", nullptr));
+        cbox_Fellow->setText(QApplication::translate("disp3dwindow", "\347\204\246\347\202\271\350\267\237\350\270\252", nullptr));
+        cbox_DispAxis->setText(QApplication::translate("disp3dwindow", "\345\235\220\346\240\207\350\275\264", nullptr));
+        label_4->setText(QApplication::translate("disp3dwindow", "\345\205\263\351\224\256\347\202\271\345\244\247\345\260\217", nullptr));
+        pbtn_SetSize->setText(QApplication::translate("disp3dwindow", "\345\244\247\345\260\217\350\256\276\347\275\256", nullptr));
+        pbtn_AddPoint->setText(QApplication::translate("disp3dwindow", "\346\267\273\345\212\240\345\205\263\351\224\256\347\202\271", nullptr));
+        label_5->setText(QApplication::translate("disp3dwindow", "\345\210\267\346\226\260\351\242\221\347\216\207", nullptr));
+        cbox_FreSeclect->setItemText(0, QApplication::translate("disp3dwindow", "1hz", nullptr));
+        cbox_FreSeclect->setItemText(1, QApplication::translate("disp3dwindow", "10hz", nullptr));
+        cbox_FreSeclect->setItemText(2, QApplication::translate("disp3dwindow", "20hz", nullptr));
+        cbox_FreSeclect->setItemText(3, QApplication::translate("disp3dwindow", "50hz", nullptr));
+        cbox_FreSeclect->setItemText(4, QApplication::translate("disp3dwindow", "100hz", nullptr));
+
+        groupBox->setTitle(QString());
+        edit_ColorMaxRange->setText(QApplication::translate("disp3dwindow", "30", nullptr));
+        cbox_AixalSelect->setItemText(0, QApplication::translate("disp3dwindow", "x\346\226\271\345\220\221\345\217\230\345\275\242", nullptr));
+        cbox_AixalSelect->setItemText(1, QApplication::translate("disp3dwindow", "y\346\226\271\345\220\221\345\217\230\345\275\242", nullptr));
+        cbox_AixalSelect->setItemText(2, QApplication::translate("disp3dwindow", "z\346\226\271\345\220\221\345\217\230\345\275\242", nullptr));
+
+        pbtn_DispAnalysis->setText(QApplication::translate("disp3dwindow", "\351\242\234\350\211\262\346\230\240\345\260\204", nullptr));
+        dock_Infor->setWindowTitle(QApplication::translate("disp3dwindow", "\344\277\241\346\201\257", nullptr));
+        label_point->setText(QApplication::translate("disp3dwindow", "\350\212\202\347\202\271\346\225\260:", nullptr));
+        label_element->setText(QApplication::translate("disp3dwindow", "\345\215\225\345\205\203\346\225\260:", nullptr));
+        label_flagpoint->setText(QApplication::translate("disp3dwindow", "\345\205\263\351\224\256\347\202\271\346\225\260:", nullptr));
+        label_dispy->setText(QApplication::translate("disp3dwindow", "\344\270\273\346\226\271\345\220\221\346\234\200\345\244\247\345\217\230\345\275\242:", nullptr));
+        toolBar->setWindowTitle(QApplication::translate("disp3dwindow", "toolBar", nullptr));
+>>>>>>> Stashed changes
     } // retranslateUi
 
 };

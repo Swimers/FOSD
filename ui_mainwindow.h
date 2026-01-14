@@ -51,7 +51,11 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
+<<<<<<< Updated upstream
         MainWindow->resize(1240, 958);
+=======
+        MainWindow->resize(1240, 750);
+>>>>>>> Stashed changes
         QIcon icon;
         QString iconThemeName = QString::fromUtf8("D:\\CommonFiles\\Projects_And_Works\\SummerProject\\Qt_Software\\TestVersion\\Test3\\Resource\\icon\\UserIcon2.png");
         if (QIcon::hasThemeIcon(iconThemeName)) {

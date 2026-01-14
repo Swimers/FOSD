@@ -6,228 +6,501 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>766</height>
+    <width>1002</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QToolBar{
+background-color: rgb(232, 232, 232);
+}</string>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_4">
-    <item row="1" column="0">
-     <widget class="QVTKWidget" name="vtk_stage" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QVTKWidget" name="vtkw_Disp3D" native="true">
+      <property name="palette">
+       <palette>
+        <active>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>62</red>
+            <green>68</green>
+            <blue>83</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </active>
+        <inactive>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>62</red>
+            <green>68</green>
+            <blue>83</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </inactive>
+        <disabled>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>62</red>
+            <green>68</green>
+            <blue>83</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>62</red>
+            <green>68</green>
+            <blue>83</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </disabled>
+       </palette>
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetNoConstraint</enum>
+    <item row="0" column="1">
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QDockWidget" name="dock_Model">
+        <property name="maximumSize">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>250</width>
+          <height>524287</height>
          </size>
         </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="floating">
+         <bool>false</bool>
         </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
+        <property name="features">
+         <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable</set>
         </property>
-        <property name="text">
-         <string>当前拾取点：</string>
+        <property name="windowTitle">
+         <string>模型</string>
         </property>
+        <widget class="QWidget" name="dockWidgetContents">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QPushButton" name="pbtn_LoadModel">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>导入模型数据</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QComboBox" name="cbox_SelectView">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>正方</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>左侧</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>后方</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>右侧</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>下方</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>上方</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>正上</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pbtn_ChangeView">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>切换视角</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QCheckBox" name="cbox_DispEdge">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>边缘显示</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cbox_Fellow">
+                <property name="text">
+                 <string>焦点跟踪</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cbox_DispAxis">
+                <property name="text">
+                 <string>坐标轴</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>关键点大小</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="edit_SphereSize">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pbtn_SetSize">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>大小设置</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
+                <item>
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pbtn_AddPoint">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>添加关键点</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QLabel" name="label_5">
+                  <property name="text">
+                   <string>刷新频率</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="cbox_FreSeclect">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>1hz</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>10hz</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>20hz</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>50hz</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>100hz</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox">
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_3" rowstretch="5,0,0" columnstretch="5,0">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>15</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="edit_ColorMaxRange">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>30</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QComboBox" name="cbox_AixalSelect">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>x方向变形</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>y方向变形</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>z方向变形</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QPushButton" name="pbtn_DispAnalysis">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>颜色映射</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lab_KeyPointID">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>###</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
+       <widget class="QDockWidget" name="dock_Infor">
+        <property name="maximumSize">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>300</width>
+          <height>524287</height>
          </size>
         </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_6">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="floating">
+         <bool>false</bool>
         </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
+        <property name="features">
+         <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable</set>
         </property>
-        <property name="text">
-         <string>初始坐标：</string>
+        <property name="windowTitle">
+         <string>信息</string>
         </property>
+        <widget class="QWidget" name="dockWidgetContents_2">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_point">
+            <property name="text">
+             <string>节点数:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_element">
+            <property name="text">
+             <string>单元数:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_flagpoint">
+            <property name="text">
+             <string>关键点数:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_dispy">
+            <property name="text">
+             <string>主方向最大变形:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lab_KeyPointRawPos">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>(#,#,#)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_10">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>变形量：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lab_KeyPointDisplace">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>(#,#,#)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_8">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>当前坐标：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lab_KeyPointNewPos">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>(#,#,#)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>30</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -239,13 +512,12 @@
    </attribute>
    <addaction name="actionModelDock"/>
    <addaction name="actionInforDock"/>
-   <addaction name="actionViewDock"/>
    <addaction name="separator"/>
    <addaction name="actionStart"/>
-   <addaction name="actionPause"/>
    <addaction name="actionStop"/>
    <addaction name="actionReset"/>
   </widget>
+<<<<<<< Updated upstream
   <widget class="QDockWidget" name="dock_Model">
    <property name="features">
     <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable</set>
@@ -764,10 +1036,13 @@
     </layout>
    </widget>
   </widget>
+=======
+  <widget class="QStatusBar" name="statusBar"/>
+>>>>>>> Stashed changes
   <action name="actionModelDock">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/3D_Plot.png</normaloff>:/icon/Resource/icon/3D_Plot.png</iconset>
+    <iconset>
+     <normaloff>:/icon/Resource/icon/Model_icon.png</normaloff>:/icon/Resource/icon/Model_icon.png</iconset>
    </property>
    <property name="text">
     <string>ModelDock</string>
@@ -775,25 +1050,16 @@
   </action>
   <action name="actionInforDock">
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset>
      <normaloff>:/icon/Resource/icon/Help_icon.png</normaloff>:/icon/Resource/icon/Help_icon.png</iconset>
    </property>
    <property name="text">
     <string>InforDock</string>
    </property>
   </action>
-  <action name="actionViewDock">
-   <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Model_icon.png</normaloff>:/icon/Resource/icon/Model_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>ViewDock</string>
-   </property>
-  </action>
   <action name="actionStart">
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset>
      <normaloff>:/icon/Resource/icon/Play_icon.png</normaloff>:/icon/Resource/icon/Play_icon.png</iconset>
    </property>
    <property name="text">
@@ -802,25 +1068,16 @@
   </action>
   <action name="actionStop">
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset>
      <normaloff>:/icon/Resource/icon/Stop_icon.png</normaloff>:/icon/Resource/icon/Stop_icon.png</iconset>
    </property>
    <property name="text">
     <string>Stop</string>
    </property>
   </action>
-  <action name="actionPause">
-   <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Pasue_icon.png</normaloff>:/icon/Resource/icon/Pasue_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Pause</string>
-   </property>
-  </action>
   <action name="actionReset">
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset>
      <normaloff>:/icon/Resource/icon/Reset_icon.png</normaloff>:/icon/Resource/icon/Reset_icon.png</iconset>
    </property>
    <property name="text">
@@ -832,11 +1089,9 @@
   <customwidget>
    <class>QVTKWidget</class>
    <extends>QWidget</extends>
-   <header>QVTKWidget.h</header>
+   <header location="global">QVTKWidget.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resource.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -557,7 +557,11 @@ void connectwindow::UpDataTable()
     int CheckedCH_SUM = 0;
     //数据表格显示
     for (int i=0;i<MAX_CHANNELS;i++) {
+<<<<<<< Updated upstream
         QMutexLocker locker(&mutexAnalyze);
+=======
+        QMutexLocker locker(&analyzeMutex);
+>>>>>>> Stashed changes
         CheckedCH_SUM += m_DataTask->channel_counts[i] * Flag_CH[i];
     }
 
@@ -565,7 +569,11 @@ void connectwindow::UpDataTable()
     model->setItem(9,2,new QStandardItem(""));
     if (Flag_ConnectUDP == 1){ //该语句为了防止循环错乱
         for(int i=0;i<CheckedCH_SUM;i++){
+<<<<<<< Updated upstream
             QMutexLocker locker(&mutexAnalyze);
+=======
+            QMutexLocker locker(&analyzeMutex);
+>>>>>>> Stashed changes
             this->model->setItem(i,0,new QStandardItem (m_DataTask->FBG_count[i])) ;
             this->model->setItem(i,1,new QStandardItem (m_DataTask->wavelength[i]));
             if (Flag_Strain == 1){
@@ -605,7 +613,11 @@ void connectwindow::Show_Plot(QCustomPlot *customPlot)
         value.push_back(tmp_y);
     }
     for(int k=0;k<7;k++){
+<<<<<<< Updated upstream
         QMutexLocker locker(&mutexAnalyze);
+=======
+        QMutexLocker locker(&analyzeMutex);
+>>>>>>> Stashed changes
         for(int i=0;i<m_DataTask->CH_point[k];i++){
            value[k][m_DataTask->data_x_trans[k][i]]=m_DataTask->data_y_trans[k][i];
        }

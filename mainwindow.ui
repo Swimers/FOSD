@@ -7,7 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>1240</width>
+<<<<<<< Updated upstream
     <height>958</height>
+=======
+    <height>750</height>
+>>>>>>> Stashed changes
    </rect>
   </property>
   <property name="windowTitle">
@@ -138,7 +142,11 @@
          <string>调 解 仪</string>
         </property>
         <property name="icon">
+<<<<<<< Updated upstream
          <iconset resource="resource.qrc">
+=======
+         <iconset>
+>>>>>>> Stashed changes
           <normaloff>:/icon/Resource/icon/Menu.png</normaloff>:/icon/Resource/icon/Menu.png</iconset>
         </property>
         <property name="iconSize">
@@ -176,7 +184,11 @@
          <string>二维验证</string>
         </property>
         <property name="icon">
+<<<<<<< Updated upstream
          <iconset resource="resource.qrc">
+=======
+         <iconset>
+>>>>>>> Stashed changes
           <normaloff>:/icon/Resource/icon/2D_Plot.png</normaloff>:/icon/Resource/icon/2D_Plot.png</iconset>
         </property>
         <property name="iconSize">
@@ -202,7 +214,11 @@
          <string>变 形 场</string>
         </property>
         <property name="icon">
+<<<<<<< Updated upstream
          <iconset resource="resource.qrc">
+=======
+         <iconset>
+>>>>>>> Stashed changes
           <normaloff>:/icon/Resource/icon/3D_Plot.png</normaloff>:/icon/Resource/icon/3D_Plot.png</iconset>
         </property>
         <property name="iconSize">
@@ -274,7 +290,11 @@
          <string>用户管理</string>
         </property>
         <property name="icon">
+<<<<<<< Updated upstream
          <iconset resource="resource.qrc">
+=======
+         <iconset>
+>>>>>>> Stashed changes
           <normaloff>:/icon/Resource/icon/UserManage.png</normaloff>:/icon/Resource/icon/UserManage.png</iconset>
         </property>
         <property name="iconSize">
@@ -306,7 +326,11 @@
          <string>退出系统</string>
         </property>
         <property name="icon">
+<<<<<<< Updated upstream
          <iconset resource="resource.qrc">
+=======
+         <iconset>
+>>>>>>> Stashed changes
           <normaloff>:/icon/Resource/icon/TurnOff.png</normaloff>:/icon/Resource/icon/TurnOff.png</iconset>
         </property>
         <property name="iconSize">
@@ -330,8 +354,12 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+<<<<<<< Updated upstream
  <resources>
   <include location="resource.qrc"/>
  </resources>
+=======
+ <resources/>
+>>>>>>> Stashed changes
  <connections/>
 </ui>

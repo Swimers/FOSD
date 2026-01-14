@@ -1,29 +1,38 @@
 #include "disp3dinteractor.h"
+#include "disp3ddeginedata.h"
 
 #include "vtkAutoInit.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkCallbackCommand.h"
-#include "vtkRenderer.h"
 #include "vtkPointPicker.h"
-#include "vtkTextProperty.h"
+#include "vtkRendererCollection.h"
+#include "vtkRenderWindow.h"
 #include "vtkSphereSource.h"
 #include "vtkPolyDataMapper.h"
+#include "vtkTextActor.h"
+#include "vtkTextProperty.h"
+#include "vtkProperty.h"
+#include "vtkCamera.h"
+#include "vtkMath.h"
+#include "vtkRenderer.h"
 
 #include <QDebug>
 #include <QString>
-#include <QtMath>
 
-vtkStandardNewMacro(disp3dinteractor);
+vtkStandardNewMacro(disp3dinteractor);  //自动生成 New()方法以及一些必要的类型信息函数
 
 disp3dinteractor::disp3dinteractor()
 {
-    m_TextActor = vtkTextActor::New();
-    m_SphereActor = vtkActor::New();
-    Flag_Pick = false;
+    textmapper = nullptr;
+    textActor = nullptr;
+    pickflag = false;
+    this->actor = vtkTextActor::New();
+    this->actor_sphere = vtkActor::New();
+    this->actor_text = vtkVectorText::New();
 }
 
 disp3dinteractor::~disp3dinteractor()
 {
+<<<<<<< Updated upstream
     if (m_disp3dmodel && Flag_Pick) {
         ClearPicker();
     }
@@ -50,6 +59,41 @@ disp3dinteractor::~disp3dinteractor()
     lab_KeyPointNewPos   = nullptr;
 
     style = nullptr;
+=======
+    if (textmapper)
+    textmapper->Delete();
+    if (textActor)
+    textActor -> Delete();
+    if (actor_sphere)
+    actor_sphere->Delete();
+    this->actor->Delete();
+}
+
+void disp3dinteractor::setGrid(vtkUnstructuredGrid* Grid)
+{
+    this->Grid = Grid;                                                  //保存网格数据的引用
+    long long number = Grid->GetNumberOfPoints();                       //获取网格中的点数量
+    pickpointIDset = new int[static_cast<unsigned long long>(number)];  //为拾取点 ID 数组分配内存
+    pointactor = new vtkActor*[static_cast<unsigned long long>(number)];//为点的 Actor 数组分配内存
+}
+
+vtkUnstructuredGrid* disp3dinteractor::getGrid()    //返回 disp3dinteractor 类中存储的 vtkUnstructuredGrid 对象指针
+{
+    return this->Grid;
+}
+
+DisplyNodeInfo disp3dinteractor::GetPickPointInfo()
+{
+    double(*point)[4] = new double[pickernumber][4];
+    vtkPoints *points = this->Grid->GetPoints();
+    for (unsigned long long i = 0; i < pickernumber; i++){
+        point[i][0] = pickpointIDset[i];
+        point[i][1] = points->GetPoint(pickpointIDset[i])[0];
+        point[i][2] = points->GetPoint(pickpointIDset[i])[1];
+        point[i][3] = points->GetPoint(pickpointIDset[i])[2];
+    }
+    return point;
+>>>>>>> Stashed changes
 }
 
 void disp3dinteractor::OnLeftButtonDown()
@@ -58,24 +102,29 @@ void disp3dinteractor::OnLeftButtonDown()
 
     int* pos = this->GetInteractor()->GetEventPosition();
     vtkPointPicker * pick1 = vtkPointPicker::New();
-    pick1->SetTolerance(0.009);
-    pick1->Pick(pos[0], pos[1], 0, m_disp3dmodel->GetVTKRenderer());
-    vtkIdType ID = pick1->GetPointId();
-
-    char text[20] = { '\0' }; // 存放要显示的文本内容（节点编号）
-
-    if (ID != -1){
-        if(m_disp3dmodel->keyPointSet.contains(ID)){
-            QVector<double> RawPos = m_disp3dmodel->rawPointMap.value(ID);
-            QVector<double> Displace = m_disp3dmodel->pointDisplace.value(ID);
-            QVector<double> NewPos = m_disp3dmodel->pointpos.value(ID);
-
-            // 将三维世界坐标转换为屏幕显示坐标
+    //pick1->SetTolerance(0.005);
+    pick1->SetTolerance(0.005);
+    pick1->Pick(pos[0], pos[1], 0, this->GetDefaultRenderer());
+    char text[10] = { '\0'};
+    if (pick1->GetPointId() != -1)
+    {
+        vtkIdType ID = pick1->GetPointId()+1;
+        if (m_disp3dmodel->SolidModeNodePointToFlagPoint.find(ID)!= m_disp3dmodel->SolidModeNodePointToFlagPoint.end())
+        {
+            worldPoint[0] = m_disp3dmodel->new_node_info1[ID]->x_cord;
+            worldPoint[1] = m_disp3dmodel->new_node_info1[ID]->y_cord;
+            worldPoint[2] = m_disp3dmodel->new_node_info1[ID]->z_cord;
+            double worldPoint1[3];
+            worldPoint1[0] = worldPoint[0] + m_disp3dmodel->Displacefactor*m_disp3dmodel->PointDisplaceSet[ID]->xdisplace;
+            worldPoint1[1] = worldPoint[1] + m_disp3dmodel->Displacefactor*m_disp3dmodel->PointDisplaceSet[ID]->ydisplace;
+            worldPoint1[2] = worldPoint[2] + m_disp3dmodel->Displacefactor*m_disp3dmodel->PointDisplaceSet[ID]->zdisplace;
+            OldID = ID;
             double DisplayCord[3];
-            m_disp3dmodel->GetVTKRenderer()->SetWorldPoint(NewPos[0], NewPos[1], NewPos[2], 1.0);
-            m_disp3dmodel->GetVTKRenderer()->WorldToDisplay();
-            m_disp3dmodel->GetVTKRenderer()->GetDisplayPoint(DisplayCord);
+            this->GetDefaultRenderer()->SetWorldPoint(worldPoint1[0], worldPoint1[1], worldPoint1[2], 1.0);
+            this->GetDefaultRenderer()->WorldToDisplay();
+            this->GetDefaultRenderer()->GetDisplayPoint(DisplayCord);
 
+<<<<<<< Updated upstream
             sprintf(text, "%d", static_cast<int>(ID));
             m_TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1])); // 设置屏幕显示位置
             m_TextActor->SetInput(text);                                     // 显示文本
@@ -90,13 +139,36 @@ void disp3dinteractor::OnLeftButtonDown()
             double dz = bounds[5] - bounds[4];
             double diag = std::sqrt(dx*dx + dy*dy + dz*dz);
             double radius = std::max(1e-6, diag * 0.008);               //自适应小球半径计算
+=======
+            sprintf(text,"%d", m_disp3dmodel->SolidModeNodePointToFlagPoint[ID]);
+            //创建文本
+            //actor->SetDisplayPosition(pos[0], pos[1]);
+            actor->SetDisplayPosition(DisplayCord[0], DisplayCord[1]);
+            //actor->SetPosition(m_disp3dmodel->new_node_info1[ID]->x_cord,m_disp3dmodel->new_node_info1[ID]->y_cord,m_disp3dmodel->new_node_info1[ID]->z_cord);
+            actor->SetInput(text);
+            actor->GetTextProperty()->SetColor(1, 0, 0);
+            actor->GetTextProperty()->SetFontSize(20);
+            this->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer()->AddActor2D(actor);
 
+            if(Flag_Fellow){
+                vtkCamera* camera = this->GetCurrentRenderer()->GetActiveCamera();
+                double focalPoint[3];
+                focalPoint[0] = worldPoint[0];
+                focalPoint[1] = worldPoint[1];
+                focalPoint[2] = worldPoint[2];
+                camera->SetFocalPoint(focalPoint);
+                refreshPickPointText();
+                this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+                this->Interactor->GetRenderWindow()->Render();
+            }
+>>>>>>> Stashed changes
+
+            //创建小球
             vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
-            sphereSource->SetRadius(radius);                            // 设置小球半径
-            sphereSource->SetPhiResolution(6);                         // 设置小球面数
-            sphereSource->SetThetaResolution(6);
+            sphereSource->SetRadius(0.003);
             vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
             mapper->SetInputConnection(sphereSource->GetOutputPort());
+<<<<<<< Updated upstream
             m_SphereActor->SetMapper(mapper);
             m_SphereActor->SetPosition(NewPos[0], NewPos[1], NewPos[2]); // 设置小球位置（初始坐标）
             if(Flag_CameraFellow && !Flag_CameraLock){
@@ -104,62 +176,67 @@ void disp3dinteractor::OnLeftButtonDown()
                 camera->SetFocalPoint(NewPos[0], NewPos[1], NewPos[2]);
             }
             m_disp3dmodel->GetVTKRenderer()->AddActor(m_SphereActor);
+=======
+            actor_sphere->SetMapper(mapper);
+            actor_sphere->SetPosition(worldPoint[0], worldPoint[1],worldPoint[2]);
+            this->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer()->AddActor(actor_sphere);
+            this->GetInteractor()->GetRenderWindow()->Render();
+>>>>>>> Stashed changes
 
-            m_disp3dmodel->GetVTKRenderWindow()->Render();
-
-            QString PointID = QString::number(ID);
-            QString PointRawPos = QString("(%1, %2, %3)")
-                                   .arg(QString::number(RawPos[0], 'f', 2))
-                                   .arg(QString::number(RawPos[1], 'f', 2))
-                                   .arg(QString::number(RawPos[2], 'f', 2));
-            QString PointDisplace = QString("(%1, %2, %3)")
-                                        .arg(QString::number(Displace[0], 'f', 2))
-                                        .arg(QString::number(Displace[1], 'f', 2))
-                                        .arg(QString::number(Displace[2], 'f', 2));
-            QString PointNewPos = QString("(%1, %2, %3)")
-                                   .arg(QString::number(NewPos[0], 'f', 2))
-                                   .arg(QString::number(NewPos[1], 'f', 2))
-                                   .arg(QString::number(NewPos[2], 'f', 2));
-            lab_KeyPointID->setText(PointID);
-            lab_KeyPointRawPos->setText(PointRawPos);
-            lab_KeyPointDisplace->setText(PointDisplace);
-            lab_KeyPointNewPos->setText(PointNewPos);
-
-            Flag_Pick = true;
-            OldID = ID;
+            QString str0 = QString("当前拾取点: %1").arg(m_disp3dmodel->SolidModeNodePointToFlagPoint[ID]);
+            QString str1 = QString("初始坐标:(%1, %2, %3)")
+                               .arg(QString::number(worldPoint[0]*1000, 'f', 2))
+                               .arg(QString::number(worldPoint[1]*1000, 'f', 2))
+                               .arg(QString::number(worldPoint[2]*1000, 'f', 2));
+            QString str2 = QString("变形量:(%1, %2, %3)")
+                               .arg(QString::number(m_disp3dmodel->PointDisplaceSet[ID]->xdisplace*1000, 'f', 2))
+                               .arg(QString::number(m_disp3dmodel->PointDisplaceSet[ID]->ydisplace*1000, 'f', 2))
+                               .arg(QString::number(m_disp3dmodel->PointDisplaceSet[ID]->zdisplace*1000, 'f', 2));
+            QString str3 = QString("当前坐标:(%1, %2, %3)")
+                               .arg(QString::number(worldPoint[0]*1000+m_disp3dmodel->PointDisplaceSet[ID]->xdisplace*1000, 'f', 2))
+                               .arg(QString::number(worldPoint[1]*1000+m_disp3dmodel->PointDisplaceSet[ID]->ydisplace*1000, 'f', 2))
+                               .arg(QString::number(worldPoint[2]*1000+m_disp3dmodel->PointDisplaceSet[ID]->zdisplace*1000, 'f', 2));
+            this->label0->setText(str0);
+            this->label1->setText(str1);
+            this->label2->setText(str2);
+            this->label3->setText(str3);
+            pickflag = true;
         }
-        else {
-            if (Flag_Pick == true) {                
-                ClearPicker();
-                lab_KeyPointID->setText("非关键点");
-                Flag_Pick = false;
+        else{
+            if(pickflag == true){
+                this->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor2D(actor);
+                this->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor(actor_sphere);
+                this->GetInteractor()->GetRenderWindow()->Render();
+                pickflag = false;
             }
         }
     }
-
-    RefreshText();
 }
 
 void disp3dinteractor::OnRightButtonDown()
 {
-    Flag_RightButtonPressed = true;
-    GetInteractor()->GetEventPosition(this->LastX, this->LastY);
-    GetInteractor()->GetRenderWindow()->SetCurrentCursor(VTK_CURSOR_SIZEALL);
-    GrabFocus(this->EventCallbackCommand);
-
-    ClearPicker();
-    RefreshText();
-}
-
-void disp3dinteractor::OnRightButtonUp()
-{
-    Flag_RightButtonPressed = false;
-    ReleaseFocus();
-    GetInteractor()->GetRenderWindow()->SetCurrentCursor(VTK_CURSOR_DEFAULT);
+    // 调用基类的右键按下事件处理函数
+    vtkInteractorStyleTrackballCamera::OnRightButtonDown();
+    // 在这里添加您的自定义右键按下事件处理代码
+    if(pickflag == true)
+    {
+        this->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor2D(actor);
+        this->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor(actor_sphere);
+        QString str0 = "当前拾取点:";
+        QString str1 = "初始坐标:(*,*,*)";
+        QString str2 = "变形量:(*,*,*)";
+        QString str3 = "当前坐标:(*,*,*)";
+        this->label0->setText(str0);
+        this->label1->setText(str1);
+        this->label2->setText(str2);
+        this->label3->setText(str3);
+        pickflag = false;
+    }
 }
 
 void disp3dinteractor::OnMouseMove()
 {
+<<<<<<< Updated upstream
     if(Flag_CameraLock){
         return;
     }
@@ -212,6 +289,9 @@ void disp3dinteractor::OnMouseMove()
             return;
         }
     }
+=======
+    vtkInteractorStyleTrackballCamera::OnMouseMove();
+>>>>>>> Stashed changes
 }
 
 void disp3dinteractor::OnKeyUp()
@@ -219,52 +299,116 @@ void disp3dinteractor::OnKeyUp()
     return;
 }
 
+//相机移动
 void disp3dinteractor::OnKeyDown()
 {
-    RefreshText();
-    m_disp3dmodel->FreshKeyPoint();
+    vtkRenderWindowInteractor* iren = this->GetInteractor();
+    std::string key = iren->GetKeySym();
+    vtkCamera* camera = this->GetCurrentRenderer()->GetActiveCamera();
+
+    // 获取相机当前方向
+    double forward[3], right[3], up[3];
+
+    // 计算相机前进方向（视线方向）
+    camera->GetDirectionOfProjection(forward);
+    forward[0] *= -1.0; forward[1] *= -1.0; forward[2] *= -1.0; // 取反，因为相机看向负Z轴
+
+    // 计算相机右方向（垂直于视线和上方向）
+    camera->GetViewUp(up);
+    vtkMath::Cross(forward, up, right);
+
+    // 归一化向量
+    vtkMath::Normalize(forward);
+    vtkMath::Normalize(right);
+    vtkMath::Normalize(up);
+    // 根据按键移动相机
+    const double moveFactor = 0.01;
+    double pos[3], focalPoint[3];
+    camera->GetPosition(pos);         // 获取当前位置
+    camera->GetFocalPoint(focalPoint); // 获取当前焦点
+    if (key == "d") { // 左移
+        pos[0] -= right[0] * moveFactor;
+        pos[1] -= right[1] * moveFactor;
+        pos[2] -= right[2] * moveFactor;
+        focalPoint[0] -= right[0] * moveFactor;
+        focalPoint[1] -= right[1] * moveFactor;
+        focalPoint[2] -= right[2] * moveFactor;
+    } else if (key == "a") { // 右移
+        pos[0] += right[0] * moveFactor;
+        pos[1] += right[1] * moveFactor;
+        pos[2] += right[2] * moveFactor;
+        focalPoint[0] += right[0] * moveFactor;
+        focalPoint[1] += right[1] * moveFactor;
+        focalPoint[2] += right[2] * moveFactor;
+    } else if (key == "q") { // 上移
+        pos[0] += up[0] * moveFactor;
+        pos[1] += up[1] * moveFactor;
+        pos[2] += up[2] * moveFactor;
+        focalPoint[0] += up[0] * moveFactor;
+        focalPoint[1] += up[1] * moveFactor;
+        focalPoint[2] += up[2] * moveFactor;
+    } else if (key == "e") { // 下移
+        pos[0] -= up[0] * moveFactor;
+        pos[1] -= up[1] * moveFactor;
+        pos[2] -= up[2] * moveFactor;
+        focalPoint[0] -= up[0] * moveFactor;
+        focalPoint[1] -= up[1] * moveFactor;
+        focalPoint[2] -= up[2] * moveFactor;
+    }
+    camera->SetPosition(pos);         // 设置新位置
+    camera->SetFocalPoint(focalPoint); // 设置新焦点
+    refreshPickPointText();
+    this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+    this->Interactor->GetRenderWindow()->Render();
 }
 
 void disp3dinteractor::Rotate()
 {
     vtkInteractorStyleTrackballCamera::Rotate();
-    RefreshText();
-    m_disp3dmodel->FreshKeyPoint();
+    refreshPickPointText();
+    this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+    this->Interactor->GetRenderWindow()->Render();
 }
 
 void disp3dinteractor::Spin()
 {
     vtkInteractorStyleTrackballCamera::Spin();
-    RefreshText();
-    m_disp3dmodel->FreshKeyPoint();
+    refreshPickPointText();
+    this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+    this->Interactor->GetRenderWindow()->Render();
+
 }
 
 void disp3dinteractor::Pan()
 {
     vtkInteractorStyleTrackballCamera::Pan();
-    RefreshText();
-    m_disp3dmodel->FreshKeyPoint();
+    refreshPickPointText();
+    this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+    this->Interactor->GetRenderWindow()->Render();
 }
 
 void disp3dinteractor::Dolly()
 {
     vtkInteractorStyleTrackballCamera::Dolly();
-    RefreshText();
-    m_disp3dmodel->FreshKeyPoint();
+    refreshPickPointText();
+    this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+    this->Interactor->GetRenderWindow()->Render();
 }
 
 void disp3dinteractor::OnMouseWheelForward()
 {
     vtkInteractorStyleTrackballCamera::OnMouseWheelForward();
-    RefreshText();
-    m_disp3dmodel->FreshKeyPoint();
+    refreshPickPointText();
+    this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+    this->Interactor->GetRenderWindow()->Render();
 }
 
 void disp3dinteractor::OnMouseWheelBackward()
 {
     vtkInteractorStyleTrackballCamera::OnMouseWheelBackward();
-    RefreshText();
-    m_disp3dmodel->FreshKeyPoint();
+    refreshPickPointText();
+    this->m_disp3dmodel->refreshFlagPointTextPoisiton();
+    this->Interactor->GetRenderWindow()->Render();
 }
 
 void disp3dinteractor::OnKeyPress()
@@ -277,66 +421,84 @@ void disp3dinteractor::OnKeyRelease()
     return;
 }
 
-void disp3dinteractor::RefreshText()
+double *disp3dinteractor::caculatePos(double x, double y, double z)
 {
-    if(Flag_Pick){
+    double point[3];
+    double * minpointcord = new double[4];
+    //int nodenum;
+    vtkPoints *points = Grid->GetPoints();
+    int pointnum = points->GetNumberOfPoints();
+    double minlength = 100000.0;
+    for (int i = 0; i < pointnum; i++){
+        if ((!findpointID(i))){ //先判断当前的点有没有被拾取，如果有直接跳过，如果没有，参与比较
+            point[0] = points->GetPoint(i)[0];
+            point[1] = points->GetPoint(i)[1];
+            point[2] = points->GetPoint(i)[2];
+            double lengh = caculatelength(point[0], point[1], point[2], x, y, z);
+            if (lengh - minlength<0){
+                minlength = lengh;
+                minpointcord[0] = point[0];
+                minpointcord[1] = point[1];
+                minpointcord[2] = point[2];
+                minpointcord[3] = i;
+            }
+        }
+    }
+    return minpointcord;
+}
+
+double disp3dinteractor::caculatelength(double x1, double y1, double z1, double x2, double y2, double z2)
+{
+    return sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2) + (z1 - z2)*(z1 - z2));
+}
+
+bool disp3dinteractor::findpointID(int number)
+{
+    bool found = false;
+    for (int i = 0; i<pickernumber&&!found; i++){
+        if (pickpointIDset[i]==number){
+            found = true;
+        }
+    }
+    return found;
+}
+
+void disp3dinteractor::refreshPickPointText()
+{
+    if(pickflag)
+    {
         double DisplayCord[3];
-        QVector<double> RawPos = m_disp3dmodel->rawPointMap.value(OldID);
-        QVector<double> Displace = m_disp3dmodel->pointDisplace.value(OldID);
-        QVector<double> NewPos = m_disp3dmodel->pointpos.value(OldID);
-
-        m_disp3dmodel->GetVTKRenderer()->SetWorldPoint(NewPos[0], NewPos[1], NewPos[2], 1.0);
-        m_disp3dmodel->GetVTKRenderer()->WorldToDisplay();
-        m_disp3dmodel->GetVTKRenderer()->GetDisplayPoint(DisplayCord);
-
-        m_TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1]));
-        m_SphereActor->SetPosition(NewPos[0],NewPos[1],NewPos[2]);
-
-        m_disp3dmodel->GetVTKRenderWindow()->Render();
-//        qDebug() << static_cast<int>(DisplayCord[0]) << static_cast<int>(DisplayCord[1]);
-//        qDebug() << NewPos[0]<< NewPos[1] << NewPos[2];
-//        qDebug() << 1;
+        double worldPoint1[3];
+        worldPoint1[0] = worldPoint[0] + m_disp3dmodel->Displacefactor*m_disp3dmodel->PointDisplaceSet[OldID]->xdisplace;
+        worldPoint1[1] = worldPoint[1] + m_disp3dmodel->Displacefactor*m_disp3dmodel->PointDisplaceSet[OldID]->ydisplace;
+        worldPoint1[2] = worldPoint[2] + m_disp3dmodel->Displacefactor*m_disp3dmodel->PointDisplaceSet[OldID]->zdisplace;
+        this->GetDefaultRenderer()->SetWorldPoint(worldPoint1[0], worldPoint1[1], worldPoint1[2], 1.0);
+        this->GetDefaultRenderer()->WorldToDisplay();
+        this->GetDefaultRenderer()->GetDisplayPoint(DisplayCord);
+        actor->SetDisplayPosition(DisplayCord[0], DisplayCord[1]);
+        actor_sphere->SetPosition(worldPoint1[0],worldPoint1[1],worldPoint1[2]);
+        QString str0 = QString("当前拾取点: %1").arg(m_disp3dmodel->SolidModeNodePointToFlagPoint[OldID]);
+        QString str1 = QString("初始坐标:(%1, %2, %3)")
+                           .arg(QString::number(worldPoint[0]*1000, 'f', 2))
+                           .arg(QString::number(worldPoint[1]*1000, 'f', 2))
+                           .arg(QString::number(worldPoint[2]*1000, 'f', 2));
+        QString str2 = QString("变形量:(%1, %2, %3)")
+                           .arg(QString::number(m_disp3dmodel->PointDisplaceSet[OldID]->xdisplace*1000, 'f', 2))
+                           .arg(QString::number(m_disp3dmodel->PointDisplaceSet[OldID]->ydisplace*1000, 'f', 2))
+                           .arg(QString::number(m_disp3dmodel->PointDisplaceSet[OldID]->zdisplace*1000, 'f', 2));
+        QString str3 = QString("当前坐标:(%1, %2, %3)")
+                           .arg(QString::number(worldPoint[0]*1000+m_disp3dmodel->PointDisplaceSet[OldID]->xdisplace*1000, 'f', 2))
+                           .arg(QString::number(worldPoint[1]*1000+m_disp3dmodel->PointDisplaceSet[OldID]->ydisplace*1000, 'f', 2))
+                           .arg(QString::number(worldPoint[2]*1000+m_disp3dmodel->PointDisplaceSet[OldID]->zdisplace*1000, 'f', 2));
+        this->label0->setText(str0);
+        this->label1->setText(str1);
+        this->label2->setText(str2);
+        this->label3->setText(str3);
     }
 }
 
-void disp3dinteractor::ClearPicker()
+void disp3dinteractor::setpickflag(bool flag)
 {
-    if(Flag_Pick == true){
-        m_disp3dmodel->GetVTKRenderer()->RemoveActor2D(m_TextActor);
-        m_disp3dmodel->GetVTKRenderer()->RemoveActor(m_SphereActor);
-
-        QString str0 = "###";
-        QString str1 = "(#,#,#)";
-
-        lab_KeyPointID->setText(str0);
-        lab_KeyPointRawPos->setText(str1);
-        lab_KeyPointDisplace->setText(str1);
-        lab_KeyPointNewPos->setText(str1);
-
-        m_disp3dmodel->GetVTKRenderWindow()->Render();
-
-        Flag_Pick = false;
-    }
+    pickflag = flag;
 }
 
-void disp3dinteractor::RefreshSelectedPoints()
-{
-    if(Flag_Pick){
-        double DisplayCord[3];
-        QVector<double> RawPos = m_disp3dmodel->rawPointMap.value(OldID);
-        QVector<double> Displace = m_disp3dmodel->pointDisplace.value(OldID);
-        QVector<double> NewPos = m_disp3dmodel->pointpos.value(OldID);
-
-        m_disp3dmodel->GetVTKRenderer()->SetWorldPoint(NewPos[0], NewPos[1], NewPos[2], 1.0);
-        m_disp3dmodel->GetVTKRenderer()->WorldToDisplay();
-        m_disp3dmodel->GetVTKRenderer()->GetDisplayPoint(DisplayCord);
-
-        m_TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1]));
-        m_SphereActor->SetPosition(NewPos[0],NewPos[1],NewPos[2]);
-
-        m_disp3dmodel->GetVTKRenderWindow()->Render();
-//        qDebug() << static_cast<int>(DisplayCord[0]) << static_cast<int>(DisplayCord[1]);
-//        qDebug() << NewPos[0]<< NewPos[1] << NewPos[2];
-//        qDebug() << 1;
-    }
-}

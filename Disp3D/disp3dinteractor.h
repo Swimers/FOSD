@@ -1,17 +1,20 @@
 #ifndef DISP3DINTERACTOR_H
 #define DISP3DINTERACTOR_H
 
+//重载交互方式
+
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkTextMapper.h>
 #include <vtkTextActor.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkDataSetMapper.h>
 #include <vtkActor.h>
-#include <vtkInteractorObserver.h>
 #include <math.h>
 
 #include "disp3dmodel.h"
 #include "vtkVectorText.h"
+
+typedef double(*DisplyNodeInfo)[4];
 
 class disp3dinteractor: public vtkInteractorStyleTrackballCamera
 {
@@ -19,15 +22,30 @@ public:
     disp3dinteractor();
     ~disp3dinteractor();
 
+public:
+    vtkTextActor* actor;
+    vtkActor* actor_sphere;
+    vtkVectorText* actor_text;
+
+    QLabel * label0;
+    QLabel * label1;
+    QLabel * label2;
+    QLabel * label3;
+
+public:
+    bool Flag_Fellow;
+
     static disp3dinteractor* New(); //内存管理
     void GetDisplayModelPtr(disp3dmodel* ptr){m_disp3dmodel = ptr;}
 
-public: //重定向交互功能
-    virtual void OnLeftButtonDown();    //鼠标左键按下
-    virtual void OnRightButtonDown();   //鼠标右键按下
-    virtual void OnRightButtonUp();     //鼠标右键释放
-    virtual void OnMouseMove();         //鼠标移动事件
+    void setpickflag(bool flag);                //设置是否拾取
+    void setGrid(vtkUnstructuredGrid* Grid);    //设置数据集
+    vtkUnstructuredGrid* getGrid();             //获取数据
+    DisplyNodeInfo GetPickPointInfo();          //获取拾取点信息
 
+    virtual void OnLeftButtonDown();    //鼠标左键按下
+    virtual void OnRightButtonDown();
+    virtual void OnMouseMove();         //鼠标移动事件
     virtual void OnKeyUp();             //键盘键弹起
     virtual void OnKeyDown();           //键盘键按下
     virtual void Rotate();              //鼠标旋转事件
@@ -39,6 +57,7 @@ public: //重定向交互功能
     virtual void OnKeyPress();          //
     virtual void OnKeyRelease();        //
 
+<<<<<<< Updated upstream
 public: //函数
     void RefreshText();
     void ClearPicker();
@@ -63,11 +82,29 @@ public: //变量
     vtkActor* m_SphereActor;
 
     vtkIdType OldID;
+=======
+    double * caculatePos(double x, double y, double z); //计算位置
+    double caculatelength(double x1, double y1, double z1, double x2, double y2, double z2);//计算两点的距离
+    bool findpointID(int number); //查找点的ID
+    void refreshPickPointText();
+>>>>>>> Stashed changes
 
 private:
-    disp3dinteractor* style;
+    double worldPoint[3];   //记录当前pick点的三维位置;更新使用
+    vtkIdType OldID;
 
-    disp3dmodel* m_disp3dmodel;
+protected:
+    disp3dinteractor *style;
+    disp3dmodel * m_disp3dmodel;
+
+    vtkTextMapper*textmapper;       //二维文本映射器
+    vtkActor2D* textActor;          //显示位移文本的数据
+    vtkUnstructuredGrid* Grid;      //显示模型的数据集
+    bool pickflag;                  //拾取标记
+    int * pickpointIDset = nullptr; //拾取点的ID
+    unsigned long long pickernumber = 0;
+    vtkActor **pointactor = nullptr;//拾取点的Actor数组
+
 
 };
 

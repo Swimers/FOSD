@@ -100,7 +100,11 @@ void analyzepackets::processMain()
     FLOATA data_count_xy;
     QDateTime dateTime = QDateTime::currentDateTime();
     QString strTime = dateTime.toString("yyyy-MM-dd hh:mm:ss");
+<<<<<<< Updated upstream
     QMutexLocker locker(&mutexAnalyze);
+=======
+    QMutexLocker locker(&analyzeMutex);
+>>>>>>> Stashed changes
     //数组初始化
     for(int j=0;j<1024;j++){
         FBG_count[j]  = "";
@@ -212,7 +216,11 @@ void analyzepackets::analyzeData(const QByteArray datagram)
 
 void analyzepackets::updateData()
 {
+<<<<<<< Updated upstream
     QMutexLocker locker(&mutexStrain);
+=======
+    QMutexLocker locker(&strainMutex);
+>>>>>>> Stashed changes
     for (int i = 0; i < 1024; i++){
         strain_float[i] = this->NewStrain[i];
     }

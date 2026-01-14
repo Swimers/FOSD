@@ -76,6 +76,11 @@ void MainWindow::InitMainwindow()
     connect(ui->switch_Style, SIGNAL(toggled(bool)), this, SLOT(switchUiStyle(bool)));
     connect(this, SIGNAL(setUiBlacked()), m_connectwindow, SLOT(SwitchToB()));
     connect(this, SIGNAL(setUiWhited()), m_connectwindow, SLOT(SwitchToW()));
+<<<<<<< Updated upstream
+=======
+    connect(this, SIGNAL(setUiBlacked()), m_disp3dwindow, SLOT(SwitchToB()));
+    connect(this, SIGNAL(setUiWhited()), m_disp3dwindow, SLOT(SwitchToW()));
+>>>>>>> Stashed changes
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
