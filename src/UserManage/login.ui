@@ -81,7 +81,7 @@ QPushButton:disabled, QToolButton:disabled, QCommandLinkButton:disabled{
     <item row="0" column="0">
      <widget class="QFrame" name="frame">
       <property name="styleSheet">
-       <string notr="true">background-image: url(:/backgrounds/Resource/backgrounds/jianbian_background.png);</string>
+       <string notr="true">background-image: url(:/background/backgrounds/jianbian_background.png);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -170,8 +170,8 @@ border-radius:60px;
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset resource="../resource.qrc">
-             <normaloff>:/icon/Resource/icon/UserIcon.png</normaloff>:/icon/Resource/icon/UserIcon.png</iconset>
+            <iconset resource="../res/resource.qrc">
+             <normaloff>:/icon/icon/UserIcon.png</normaloff>:/icon/icon/UserIcon.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -485,7 +485,7 @@ font: 10pt &quot;黑体&quot;;</string>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="../res/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

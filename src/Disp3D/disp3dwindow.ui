@@ -766,8 +766,8 @@
   </widget>
   <action name="actionModelDock">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/3D_Plot.png</normaloff>:/icon/Resource/icon/3D_Plot.png</iconset>
+    <iconset resource="../res/resource.qrc">
+     <normaloff>:/icon/icon/3D_Plot.png</normaloff>:/icon/icon/3D_Plot.png</iconset>
    </property>
    <property name="text">
     <string>ModelDock</string>
@@ -775,8 +775,8 @@
   </action>
   <action name="actionInforDock">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Help_icon.png</normaloff>:/icon/Resource/icon/Help_icon.png</iconset>
+    <iconset resource="../res/resource.qrc">
+     <normaloff>:/icon/icon/Help_icon.png</normaloff>:/icon/icon/Help_icon.png</iconset>
    </property>
    <property name="text">
     <string>InforDock</string>
@@ -784,8 +784,8 @@
   </action>
   <action name="actionViewDock">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Model_icon.png</normaloff>:/icon/Resource/icon/Model_icon.png</iconset>
+    <iconset resource="../res/resource.qrc">
+     <normaloff>:/icon/icon/Model_icon.png</normaloff>:/icon/icon/Model_icon.png</iconset>
    </property>
    <property name="text">
     <string>ViewDock</string>
@@ -793,8 +793,8 @@
   </action>
   <action name="actionStart">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Play_icon.png</normaloff>:/icon/Resource/icon/Play_icon.png</iconset>
+    <iconset resource="../res/resource.qrc">
+     <normaloff>:/icon/icon/Play_icon.png</normaloff>:/icon/icon/Play_icon.png</iconset>
    </property>
    <property name="text">
     <string>Start</string>
@@ -802,8 +802,8 @@
   </action>
   <action name="actionStop">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Stop_icon.png</normaloff>:/icon/Resource/icon/Stop_icon.png</iconset>
+    <iconset resource="../res/resource.qrc">
+     <normaloff>:/icon/icon/Stop_icon.png</normaloff>:/icon/icon/Stop_icon.png</iconset>
    </property>
    <property name="text">
     <string>Stop</string>
@@ -811,8 +811,8 @@
   </action>
   <action name="actionPause">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Pasue_icon.png</normaloff>:/icon/Resource/icon/Pasue_icon.png</iconset>
+    <iconset resource="../res/resource.qrc">
+     <normaloff>:/icon/icon/Pasue_icon.png</normaloff>:/icon/icon/Pasue_icon.png</iconset>
    </property>
    <property name="text">
     <string>Pause</string>
@@ -820,8 +820,8 @@
   </action>
   <action name="actionReset">
    <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/icon/Resource/icon/Reset_icon.png</normaloff>:/icon/Resource/icon/Reset_icon.png</iconset>
+    <iconset resource="../res/resource.qrc">
+     <normaloff>:/icon/icon/Reset_icon.png</normaloff>:/icon/icon/Reset_icon.png</iconset>
    </property>
    <property name="text">
     <string>Reset</string>
@@ -836,7 +836,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="../res/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

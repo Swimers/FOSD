@@ -33,111 +33,108 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-INCLUDEPATH += ./UserManage \
-               ./Disp2D \
-               ./Disp3D \
-               ./Math \
-               ./Connect \
-               ./Dependence \
-               ./Communication \
-               ./Dependence/CustomUi \
-
+INCLUDEPATH +=  $$PWD/src/main \
+                $$PWD/src/UserManage \
+                $$PWD/src/Disp2D \
+                $$PWD/src/Disp3D \
+                $$PWD/src/Math \
+                $$PWD/src/Connect \
+                $$PWD/src/Dependence \
+                $$PWD/src/Communication \
+                $$PWD/src/Dependence/CustomUi \
 
 SOURCES += \
-        main.cpp \
-        UserManage\login.cpp \
-    mainwindow.cpp \
-    UserManage/userregister.cpp \
-    UserManage/usermanage.cpp \
-    UserManage/userforget.cpp \
-    Connect/connectdebug.cpp \
-    Disp2D/disp2dpara.cpp \
-    Disp2D/disp2dwindow.cpp \
-    Connect/qcustomplot.cpp \
-    Connect/connectwindow.cpp \
-    Connect/connectdebug.cpp \
-    Connect/connectwindow.cpp \
-    Connect/qcpdocumentobject.cpp \
-    Dependence/global.cpp \
-    Dependence/IFE.cpp \
-    Dependence/database.cpp \
-    Communication/serialtask.cpp \
-    Communication/analyzepackets.cpp \
-    Communication/udptask.cpp \
-    Communication/tcptask.cpp \
-    Dependence/CustomUi/switchcontrol.cpp \
-    Disp3D/disp3dbackground.cpp \
-    Disp3D/disp3dfreshmodelthread.cpp \
-    Disp3D/disp3dinteractor.cpp \
-    Disp3D/disp3dkeypointedit.cpp \
-    Disp3D/disp3dkeypointselect.cpp \
-    Disp3D/disp3dmodel.cpp \
-    Disp3D/disp3dwindow.cpp
+        $$PWD/src/main/main.cpp \
+        $$PWD/src/main/mainwindow.cpp \
+        $$PWD/src/UserManage/login.cpp \
+        $$PWD/src/UserManage/userregister.cpp \
+        $$PWD/src/UserManage/usermanage.cpp \
+        $$PWD/src/UserManage/userforget.cpp \
+        $$PWD/src/Connect/connectdebug.cpp \
+        $$PWD/src/Connect/qcustomplot.cpp \
+        $$PWD/src/Connect/connectwindow.cpp \
+        $$PWD/src/Connect/connectdebug.cpp \
+        $$PWD/src/Connect/connectwindow.cpp \
+        $$PWD/src/Connect/qcpdocumentobject.cpp \
+        $$PWD/src/Dependence/global.cpp \
+        $$PWD/src/Dependence/IFE.cpp \
+        $$PWD/src/Dependence/database.cpp \
+        $$PWD/src/Dependence/CustomUi/switchcontrol.cpp \
+        $$PWD/src/Communication/serialtask.cpp \
+        $$PWD/src/Communication/analyzepackets.cpp \
+        $$PWD/src/Communication/udptask.cpp \
+        $$PWD/src/Communication/tcptask.cpp \
+        $$PWD/src/Disp2D/disp2dpara.cpp \
+        $$PWD/src/Disp2D/disp2dwindow.cpp \
+        $$PWD/src/Disp3D/disp3dbackground.cpp \
+        $$PWD/src/Disp3D/disp3dfreshmodelthread.cpp \
+        $$PWD/src/Disp3D/disp3dinteractor.cpp \
+        $$PWD/src/Disp3D/disp3dkeypointedit.cpp \
+        $$PWD/src/Disp3D/disp3dkeypointselect.cpp \
+        $$PWD/src/Disp3D/disp3dmodel.cpp \
+        $$PWD/src/Disp3D/disp3dwindow.cpp \
 
 HEADERS += \
-        UserManage\login.h \
-    mainwindow.h \
-    UserManage/userregister.h \
-    UserManage/usermanage.h \
-    UserManage/userforget.h \
-    Connect/connectdebug.h \
-    Disp2D/disp2dwindow.h \
-    Disp2D/disp2dpara.h \
-    Connect/qcustomplot.h \
-    Connect/connectwindow.h \
-    Connect/connectdebug.h \
-    Connect/connectwindow.h \
-    Connect/qcpdocumentobject.h \
-    Dependence/Timer.h \
-    Dependence/global.h \
-    Dependence/IFE.h \
-    Dependence/database.h \
-    Communication/serialtask.h \
-    Communication/analyzepackets.h \
-    Communication/udptask.h \
-    Communication/udptask.h \
-    Communication/tcptask.h \
-    Communication/pocketsconfig.h \
-    Dependence/CustomUi/switchcontrol.h \
-    Disp3D/disp3dbackground.h \
-    Disp3D/disp3dfreshmodelthread.h \
-    Disp3D/disp3dglobal.h \
-    Disp3D/disp3dinteractor.h \
-    Disp3D/disp3dkeypointedit.h \
-    Disp3D/disp3dkeypointselect.h \
-    Disp3D/disp3dmodel.h \
-    Disp3D/disp3dwindow.h
+        $$PWD/src/main/mainwindow.h \
+        $$PWD/src/UserManage/login.h \
+        $$PWD/src/UserManage/userregister.h \
+        $$PWD/src/UserManage/usermanage.h \
+        $$PWD/src/UserManage/userforget.h \
+        $$PWD/src/Disp2D/disp2dwindow.h \
+        $$PWD/src/Disp2D/disp2dpara.h \
+        $$PWD/src/Connect/connectdebug.h \
+        $$PWD/src/Connect/qcustomplot.h \
+        $$PWD/src/Connect/connectwindow.h \
+        $$PWD/src/Connect/connectdebug.h \
+        $$PWD/src/Connect/connectwindow.h \
+        $$PWD/src/Connect/qcpdocumentobject.h \
+        $$PWD/src/Dependence/Timer.h \
+        $$PWD/src/Dependence/global.h \
+        $$PWD/src/Dependence/IFE.h \
+        $$PWD/src/Dependence/database.h \
+        $$PWD/src/Dependence/CustomUi/switchcontrol.h \
+        $$PWD/src/Communication/serialtask.h \
+        $$PWD/src/Communication/analyzepackets.h \
+        $$PWD/src/Communication/udptask.h \
+        $$PWD/src/Communication/udptask.h \
+        $$PWD/src/Communication/tcptask.h \
+        $$PWD/src/Communication/pocketsconfig.h \
+        $$PWD/src/Disp3D/disp3dbackground.h \
+        $$PWD/src/Disp3D/disp3dfreshmodelthread.h \
+        $$PWD/src/Disp3D/disp3dglobal.h \
+        $$PWD/src/Disp3D/disp3dinteractor.h \
+        $$PWD/src/Disp3D/disp3dkeypointedit.h \
+        $$PWD/src/Disp3D/disp3dkeypointselect.h \
+        $$PWD/src/Disp3D/disp3dmodel.h \
+        $$PWD/src/Disp3D/disp3dwindow.h \
 
 FORMS += \
-        UserManage\login.ui \
-    mainwindow.ui \
-    UserManage/userregister.ui \
-    UserManage/usermanage.ui \
-    UserManage/userforget.ui \
-    Connect/connectdebug.ui \
-    Disp2D/disp2dwindow.ui \
-    Disp2D/disp2dpara.ui \
-    Connect/connectwindow.ui \
-    Disp3D/disp3dkeypointedit.ui \
-    Disp3D/disp3dkeypointselect.ui \
-    Disp3D/disp3dwindow.ui
+        $$PWD/src/main/mainwindow.ui \
+        $$PWD/src/UserManage/login.ui \
+        $$PWD/src/UserManage/userregister.ui \
+        $$PWD/src/UserManage/usermanage.ui \
+        $$PWD/src/UserManage/userforget.ui \
+        $$PWD/src/Connect/connectdebug.ui \
+        $$PWD/src/Connect/connectwindow.ui \
+        $$PWD/src/Disp2D/disp2dwindow.ui \
+        $$PWD/src/Disp2D/disp2dpara.ui \
+        $$PWD/src/Disp3D/disp3dkeypointedit.ui \
+        $$PWD/src/Disp3D/disp3dkeypointselect.ui \
+        $$PWD/src/Disp3D/disp3dwindow.ui
+
+RESOURCES += \
+    $$PWD/res/resource.qrc \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES += \
-    resource.qrc
-
 win32:CONFIG(release, debug|release):{
-
-VTK_DIR = $$clean_path($$PWD/VTK/VTK-release)
+VTK_DIR = $$clean_path($$PWD/lib/VTK/VTK-release)
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2/vtkhdf5
 LIBS += -L$$VTK_DIR/lib
-
-# 下面库名照你原来的继续加（建议逐步精简）
 LIBS += $$VTK_DIR/lib/vtkCommonColor-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkCommonComputationalGeometry-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkCommonCore-8.2.lib
@@ -269,11 +266,10 @@ LIBS += $$VTK_DIR/lib/vtkzlib-8.2.lib
 
 
 else:win32:CONFIG(debug, debug|release):{
-VTK_DIR = $$clean_path($$PWD/VTK/VTK-debug)
+VTK_DIR = $$clean_path($$PWD/lib/VTK/VTK-debug)
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2/vtkhdf5
 LIBS += -L$$VTK_DIR/lib
-
 LIBS +=$$VTK_DIR/lib/vtkChartsCore-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkCommonColor-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkCommonComputationalGeometry-8.2D.lib
@@ -400,3 +396,30 @@ LIBS +=$$VTK_DIR/lib/vtkViewsInfovis-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkViewsQt-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkzlib-8.2D.lib
 }
+
+# ===================== 定义统一的构建根目录 =====================
+# $$PWD 表示.pro文件所在的当前目录（项目根目录）
+# 所有构建产物都集中到 项目根目录/build 下，便于统一管理
+BUILD_ROOT = $$PWD/build
+
+win32:CONFIG(release, debug|release):{
+    BUILD_MODE = release
+}
+else:win32:CONFIG(debug, debug|release):{
+    BUILD_MODE = debug
+}
+
+DESTDIR = $$BUILD_ROOT/bin/$$BUILD_MODE
+OBJECTS_DIR = $$BUILD_ROOT/obj/$$BUILD_MODE
+MOC_DIR = $$BUILD_ROOT/generated/moc/$$BUILD_MODE
+UI_DIR = $$BUILD_ROOT/generated/ui/$$BUILD_MODE
+RCC_DIR = $$BUILD_ROOT/generated/rcc/$$BUILD_MODE
+
+# 指定编译器输出的警告/错误日志
+QMAKE_CXXFLAGS += -Wall
+# 确保目录不存在时自动创建
+!exists($$BUILD_ROOT) {
+    system(mkdir -p $$BUILD_ROOT)  # Linux/Mac
+    system(mkdir $$BUILD_ROOT)     # Windows（qmake会自动兼容）
+}
+
