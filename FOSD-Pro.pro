@@ -43,6 +43,7 @@ INCLUDEPATH +=  $$PWD/src/main \
                 $$PWD/src/Dependence \
                 $$PWD/src/Communication \
                 $$PWD/src/Dependence/CustomUi \
+                $$PWD/lib/CustomUi \
 
 SOURCES += \
         $$PWD/src/main/main.cpp \
@@ -58,7 +59,6 @@ SOURCES += \
         $$PWD/src/Dependence/global.cpp \
         $$PWD/src/Dependence/IFE.cpp \
         $$PWD/src/Dependence/database.cpp \
-        $$PWD/src/Dependence/CustomUi/switchcontrol.cpp \
         $$PWD/src/Communication/serialtask.cpp \
         $$PWD/src/Communication/analyzepackets.cpp \
         $$PWD/src/Communication/udptask.cpp \
@@ -72,6 +72,7 @@ SOURCES += \
         $$PWD/src/Disp3D/disp3dkeypointselect.cpp \
         $$PWD/src/Disp3D/disp3dmodel.cpp \
         $$PWD/src/Disp3D/disp3dwindow.cpp \
+        lib/CustomUi/switchcontrol.cpp
 
 HEADERS += \
         $$PWD/src/main/mainwindow.h \
@@ -89,7 +90,6 @@ HEADERS += \
         $$PWD/src/Dependence/global.h \
         $$PWD/src/Dependence/IFE.h \
         $$PWD/src/Dependence/database.h \
-        $$PWD/src/Dependence/CustomUi/switchcontrol.h \
         $$PWD/src/Communication/serialtask.h \
         $$PWD/src/Communication/analyzepackets.h \
         $$PWD/src/Communication/udptask.h \
@@ -104,6 +104,7 @@ HEADERS += \
         $$PWD/src/Disp3D/disp3dkeypointselect.h \
         $$PWD/src/Disp3D/disp3dmodel.h \
         $$PWD/src/Disp3D/disp3dwindow.h \
+        lib/CustomUi/switchcontrol.h
 
 FORMS += \
         $$PWD/src/main/mainwindow.ui \
