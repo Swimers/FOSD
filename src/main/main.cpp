@@ -1,11 +1,21 @@
 #include "login.h"
 #include <QApplication>
+#include <QSurfaceFormat>
+
 #include <vtkOutputWindow.h>
 #include <vtkAutoInit.h>
-
+#include <QVTKOpenGLNativeWidget.h>
 
 int main(int argc, char *argv[])
 {
+    QSurfaceFormat format;
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+    format.setVersion(3, 2);  // 指定 OpenGL 版本
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    format.setSamples(4);  // 抗锯齿
+    QSurfaceFormat::setDefaultFormat(format);
+
     QApplication a(argc, argv);
     //MainWindow w;
     //w.show();

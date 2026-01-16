@@ -4,19 +4,19 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui
+QT += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
                                   QT += printsupport
                                   QT += serialport
                                   QT += network
-                                  QT += widgets opengl
 
 CODECFORSRC = UTF-8
 CODECFORTR = UTF-8
 
-msvc:QMAKE_CXXFLAGS += /utf-8
-win32:QMAKE_CXXFLAGS += /utf-8
+QMAKE_CXXFLAGS += /utf-8
+QMAKE_CFLAGS += /utf-8
 
 TARGET = FOSD-Pro
 TEMPLATE = app
@@ -55,6 +55,8 @@ SOURCES += \
         $$PWD/src/Connect/connectdebug.cpp \
         $$PWD/src/Connect/qcustomplot.cpp \
         $$PWD/src/Connect/connectwindow.cpp \
+        $$PWD/src/Connect/connectdebug.cpp \
+        $$PWD/src/Connect/connectwindow.cpp \
         $$PWD/src/Connect/qcpdocumentobject.cpp \
         $$PWD/src/Dependence/global.cpp \
         $$PWD/src/Dependence/IFE.cpp \
@@ -84,6 +86,8 @@ HEADERS += \
         $$PWD/src/Disp2D/disp2dpara.h \
         $$PWD/src/Connect/connectdebug.h \
         $$PWD/src/Connect/qcustomplot.h \
+        $$PWD/src/Connect/connectwindow.h \
+        $$PWD/src/Connect/connectdebug.h \
         $$PWD/src/Connect/connectwindow.h \
         $$PWD/src/Connect/qcpdocumentobject.h \
         $$PWD/src/Dependence/Timer.h \
@@ -261,6 +265,7 @@ LIBS += $$VTK_DIR/lib/vtkViewsInfovis-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkViewsQt-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkzlib-8.2.lib
 }
+
 else:win32:CONFIG(debug, debug|release):{
 VTK_DIR = $$clean_path($$PWD/lib/VTK/VTK-debug)
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
@@ -392,157 +397,16 @@ LIBS +=$$VTK_DIR/lib/vtkViewsInfovis-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkViewsQt-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkzlib-8.2D.lib
 }
-else:unix {
-VTK_ROOT = $$PWD/lib/VTK/VTK-Linux-debug
-VTK_INCLUDE_DIR = $$VTK_ROOT/include/vtk-8.2
-VTK_LIB_DIR     = $$VTK_ROOT/lib
-INCLUDEPATH += $$VTK_INCLUDE_DIR
-DEPENDPATH += $$VTK_INCLUDE_DIR
-LIBS += -L$$VTK_LIB_DIR
-LIBS += -lvtkChartsCore-8.2
-LIBS += -lvtkCommonCore-8.2
-LIBS += -lvtkCommonDataModel-8.2
-LIBS += -lvtkChartsCore-8.2
-LIBS += -lvtkCommonColor-8.2
-LIBS += -lvtkCommonComputationalGeometry-8.2
-LIBS += -lvtkCommonCore-8.2
-LIBS += -lvtkCommonDataModel-8.2
-LIBS += -lvtkCommonExecutionModel-8.2
-LIBS += -lvtkCommonMath-8.2
-LIBS += -lvtkCommonMisc-8.2
-LIBS += -lvtkCommonSystem-8.2
-LIBS += -lvtkCommonTransforms-8.2
-LIBS += -lvtkDICOMParser-8.2
-LIBS += -lvtkDomainsChemistry-8.2
-LIBS += -lvtkDomainsChemistryOpenGL2-8.2
-LIBS += -lvtkdoubleconversion-8.2
-LIBS += -lvtkexodusII-8.2
-LIBS += -lvtkexpat-8.2
-LIBS += -lvtkFiltersAMR-8.2
-LIBS += -lvtkFiltersCore-8.2
-LIBS += -lvtkFiltersExtraction-8.2
-LIBS += -lvtkFiltersFlowPaths-8.2
-LIBS += -lvtkFiltersGeneral-8.2
-LIBS += -lvtkFiltersGeneric-8.2
-LIBS += -lvtkFiltersGeometry-8.2
-LIBS += -lvtkFiltersHybrid-8.2
-LIBS += -lvtkFiltersHyperTree-8.2
-LIBS += -lvtkFiltersImaging-8.2
-LIBS += -lvtkFiltersModeling-8.2
-LIBS += -lvtkFiltersParallel-8.2
-LIBS += -lvtkFiltersParallelImaging-8.2
-LIBS += -lvtkFiltersPoints-8.2
-LIBS += -lvtkFiltersProgrammable-8.2
-LIBS += -lvtkFiltersSelection-8.2
-LIBS += -lvtkFiltersSMP-8.2
-LIBS += -lvtkFiltersSources-8.2
-LIBS += -lvtkFiltersStatistics-8.2
-LIBS += -lvtkFiltersTexture-8.2
-LIBS += -lvtkFiltersTopology-8.2
-LIBS += -lvtkFiltersVerdict-8.2
-LIBS += -lvtkfreetype-8.2
-LIBS += -lvtkGeovisCore-8.2
-LIBS += -lvtkgl2ps-8.2
-LIBS += -lvtkglew-8.2
-LIBS += -lvtkGUISupportQt-8.2
-LIBS += -lvtkGUISupportQtSQL-8.2
-LIBS += -lvtkhdf5-8.2
-LIBS += -lvtkhdf5_hl-8.2
-LIBS += -lvtkImagingColor-8.2
-LIBS += -lvtkImagingCore-8.2
-LIBS += -lvtkImagingFourier-8.2
-LIBS += -lvtkImagingGeneral-8.2
-LIBS += -lvtkImagingHybrid-8.2
-LIBS += -lvtkImagingMath-8.2
-LIBS += -lvtkImagingMorphological-8.2
-LIBS += -lvtkImagingSources-8.2
-LIBS += -lvtkImagingStatistics-8.2
-LIBS += -lvtkImagingStencil-8.2
-LIBS += -lvtkInfovisCore-8.2
-LIBS += -lvtkInfovisLayout-8.2
-LIBS += -lvtkInteractionImage-8.2
-LIBS += -lvtkInteractionStyle-8.2
-LIBS += -lvtkInteractionWidgets-8.2
-LIBS += -lvtkIOAMR-8.2
-LIBS += -lvtkIOAsynchronous-8.2
-LIBS += -lvtkIOCityGML-8.2
-LIBS += -lvtkIOCore-8.2
-LIBS += -lvtkIOEnSight-8.2
-LIBS += -lvtkIOExodus-8.2
-LIBS += -lvtkIOExport-8.2
-LIBS += -lvtkIOExportOpenGL2-8.2
-LIBS += -lvtkIOExportPDF-8.2
-LIBS += -lvtkIOGeometry-8.2
-LIBS += -lvtkIOImage-8.2
-LIBS += -lvtkIOImport-8.2
-LIBS += -lvtkIOInfovis-8.2
-LIBS += -lvtkIOLegacy-8.2
-LIBS += -lvtkIOLSDyna-8.2
-LIBS += -lvtkIOMINC-8.2
-LIBS += -lvtkIOMovie-8.2
-LIBS += -lvtkIONetCDF-8.2
-LIBS += -lvtkIOParallel-8.2
-LIBS += -lvtkIOParallelXML-8.2
-LIBS += -lvtkIOPLY-8.2
-LIBS += -lvtkIOSegY-8.2
-LIBS += -lvtkIOSQL-8.2
-LIBS += -lvtkIOTecplotTable-8.2
-LIBS += -lvtkIOVeraOut-8.2
-LIBS += -lvtkIOVideo-8.2
-LIBS += -lvtkIOXML-8.2
-LIBS += -lvtkIOXMLParser-8.2
-LIBS += -lvtkjpeg-8.2
-LIBS += -lvtkjsoncpp-8.2
-LIBS += -lvtklibharu-8.2
-LIBS += -lvtklz4-8.2
-LIBS += -lvtklzma-8.2
-LIBS += -lvtkmetaio-8.2
-LIBS += -lvtkNetCDF-8.2
-LIBS += -lvtkogg-8.2
-LIBS += -lvtkParallelCore-8.2
-LIBS += -lvtkpng-8.2
-LIBS += -lvtkproj-8.2
-LIBS += -lvtkpugixml-8.2
-LIBS += -lvtkRenderingAnnotation-8.2
-LIBS += -lvtkRenderingContext2D-8.2
-LIBS += -lvtkRenderingContextOpenGL2-8.2
-LIBS += -lvtkRenderingCore-8.2
-LIBS += -lvtkRenderingFreeType-8.2
-LIBS += -lvtkRenderingGL2PSOpenGL2-8.2
-LIBS += -lvtkRenderingImage-8.2
-LIBS += -lvtkRenderingLabel-8.2
-LIBS += -lvtkRenderingLOD-8.2
-LIBS += -lvtkRenderingOpenGL2-8.2
-LIBS += -lvtkRenderingQt-8.2
-LIBS += -lvtkRenderingVolume-8.2
-LIBS += -lvtkRenderingVolumeOpenGL2-8.2
-LIBS += -lvtksqlite-8.2
-LIBS += -lvtksys-8.2
-LIBS += -lvtktheora-8.2
-LIBS += -lvtktiff-8.2
-LIBS += -lvtkverdict-8.2
-LIBS += -lvtkViewsContext2D-8.2
-LIBS += -lvtkViewsCore-8.2
-LIBS += -lvtkViewsInfovis-8.2
-LIBS += -lvtkViewsQt-8.2
-LIBS += -lvtkzlib-8.2
-}
 
+# ===================== 定义统一的构建根目录 =====================
+BUILD_ROOT = $$PWD/build
 
-win32 {         SYSTEM_NAME = windows}
-unix:!macx {    SYSTEM_NAME = linux}
-macx {          SYSTEM_NAME = macos}
-
-BUILD_ROOT = $$PWD/build/$$SYSTEM_NAME
-
-CONFIG(release, debug|release) {
+win32:CONFIG(release, debug|release):{
     BUILD_MODE = release
-} else:CONFIG(debug, debug|release) {
-    BUILD_MODE = debug
-} else {
+}
+else:win32:CONFIG(debug, debug|release):{
     BUILD_MODE = debug
 }
-
 
 DESTDIR = $$BUILD_ROOT/bin/$$BUILD_MODE
 OBJECTS_DIR = $$BUILD_ROOT/obj/$$BUILD_MODE
@@ -550,23 +414,8 @@ MOC_DIR = $$BUILD_ROOT/generated/moc/$$BUILD_MODE
 UI_DIR = $$BUILD_ROOT/generated/ui/$$BUILD_MODE
 RCC_DIR = $$BUILD_ROOT/generated/rcc/$$BUILD_MODE
 
-QMAKE_CXXFLAGS += -Wall
-
-BUILD_DIRS = $$BUILD_ROOT \
-             $$DESTDIR \
-             $$OBJECTS_DIR \
-             $$MOC_DIR \
-             $$UI_DIR \
-             $$RCC_DIR
-for(dir, BUILD_DIRS) {
-    !exists($$dir) {
-        win32 {
-            system(md $$shell_path($$dir))
-        }
-        unix {
-            system(mkdir -p $$shell_path($$dir))
-        }
-    }
+!exists($$BUILD_ROOT) {
+    system(mkdir -p $$BUILD_ROOT)  # Linux/Mac
+    system(mkdir $$BUILD_ROOT)     # Windows（qmake会自动兼容）
 }
-
 

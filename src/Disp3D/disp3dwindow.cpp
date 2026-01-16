@@ -10,11 +10,10 @@
 #include <QFileDialog>
 
 #include <vtkPolyDataMapper.h>
-
 #include <vtkAutoInit.h>
-VTK_MODULE_INIT(vtkRenderingOpenGL2);    // 必须有：OpenGL 渲染后端
-VTK_MODULE_INIT(vtkInteractionStyle);    // 交互风格
-VTK_MODULE_INIT(vtkRenderingFreeType);   // 文本渲染（若用到）
+#include <QVTKOpenGLNativeWidget.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkRenderer.h>
 
 disp3dwindow::disp3dwindow(QWidget *parent) :
     QMainWindow(parent),
@@ -60,7 +59,9 @@ disp3dwindow::~disp3dwindow()
 void disp3dwindow::InitWindow()
 {
     m_disp3dmodel = new disp3dmodel();
-    ui->vtk_stage->SetRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
+
+    //ui->vtk_stage->SetRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
+    ui->vtk_openGL->SetRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
 
     ui->dock_Infor->setVisible(false);
 

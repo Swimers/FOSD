@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QWidget>
+#include <QVTKOpenGLNativeWidget.h>
 
 #include <disp3dmodel.h>
 #include <disp3dbackground.h>
@@ -27,6 +29,7 @@ public:
 
 public:
     void InitPointInfor();
+    void InitWindow();
 
 private slots:
     void on_checkBox_3_clicked(bool checked);
@@ -62,7 +65,6 @@ private slots:
 public slots:
     void RefreshStage();
     void RefreshInfor();
-    void InitWindow();
     void GetIFEPtr(IFE * exife){ife = exife;}
 
 public:
