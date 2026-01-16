@@ -26,13 +26,13 @@
 
 #include <disp3dinteractor.h>
 
-
-
 disp3dmodel::disp3dmodel()
 {
-    renderWindow = vtkRenderWindow::New();
+    renderWindow = vtkGenericOpenGLRenderWindow::New();
+
     renderer = vtkRenderer::New();
     renderWindow->AddRenderer(renderer);
+
     iren = vtkRenderWindowInteractor::New();
     iren->SetRenderWindow(renderWindow);
     iren->Initialize();

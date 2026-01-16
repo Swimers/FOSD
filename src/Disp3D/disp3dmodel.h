@@ -21,6 +21,10 @@
 #include <vtkTextActor.h>
 #include <vtkSTLReader.h>
 
+#include <QVTKOpenGLNativeWidget.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkRenderer.h>
+
 #include <disp3dglobal.h>
 
 class disp3dmodel
@@ -30,7 +34,7 @@ public:
     ~disp3dmodel();
 
 public:
-    vtkRenderWindow* GetVTKRenderWindow(){return renderWindow;}
+    vtkGenericOpenGLRenderWindow* GetVTKRenderWindow(){return renderWindow;}
     vtkRenderer* GetVTKRenderer(){return renderer;}
     vtkActor* GetVTKActor(){return modelActor;}
 
@@ -78,7 +82,7 @@ public:
     int displacefactor = 2;
 
 private:
-    vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();    //声明窗口指针
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
     vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     vtkSmartPointer<vtkActor> modelActor = vtkSmartPointer<vtkActor>::New();

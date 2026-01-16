@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui
+QT += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
                                   QT += printsupport
@@ -265,7 +266,6 @@ LIBS += $$VTK_DIR/lib/vtkViewsQt-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkzlib-8.2.lib
 }
 
-
 else:win32:CONFIG(debug, debug|release):{
 VTK_DIR = $$clean_path($$PWD/lib/VTK/VTK-debug)
 INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
@@ -399,8 +399,6 @@ LIBS +=$$VTK_DIR/lib/vtkzlib-8.2D.lib
 }
 
 # ===================== 定义统一的构建根目录 =====================
-# $$PWD 表示.pro文件所在的当前目录（项目根目录）
-# 所有构建产物都集中到 项目根目录/build 下，便于统一管理
 BUILD_ROOT = $$PWD/build
 
 win32:CONFIG(release, debug|release):{
@@ -416,9 +414,6 @@ MOC_DIR = $$BUILD_ROOT/generated/moc/$$BUILD_MODE
 UI_DIR = $$BUILD_ROOT/generated/ui/$$BUILD_MODE
 RCC_DIR = $$BUILD_ROOT/generated/rcc/$$BUILD_MODE
 
-# 指定编译器输出的警告/错误日志
-QMAKE_CXXFLAGS += -Wall
-# 确保目录不存在时自动创建
 !exists($$BUILD_ROOT) {
     system(mkdir -p $$BUILD_ROOT)  # Linux/Mac
     system(mkdir $$BUILD_ROOT)     # Windows（qmake会自动兼容）

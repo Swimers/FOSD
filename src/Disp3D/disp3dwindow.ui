@@ -15,17 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_4">
-    <item row="1" column="0">
-     <widget class="QVTKWidget" name="vtk_stage" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
+    <item row="2" column="0" colspan="2">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="sizeConstraint">
        <enum>QLayout::SetNoConstraint</enum>
@@ -224,6 +214,22 @@
        </spacer>
       </item>
      </layout>
+    </item>
+    <item row="1" column="1">
+     <widget class="QVTKOpenGLNativeWidget" name="vtk_openGL">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>800</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -766,7 +772,7 @@
   </widget>
   <action name="actionModelDock">
    <property name="icon">
-    <iconset resource="../res/resource.qrc">
+    <iconset resource="../../res/resource.qrc">
      <normaloff>:/icon/icon/3D_Plot.png</normaloff>:/icon/icon/3D_Plot.png</iconset>
    </property>
    <property name="text">
@@ -775,7 +781,7 @@
   </action>
   <action name="actionInforDock">
    <property name="icon">
-    <iconset resource="../res/resource.qrc">
+    <iconset resource="../../res/resource.qrc">
      <normaloff>:/icon/icon/Help_icon.png</normaloff>:/icon/icon/Help_icon.png</iconset>
    </property>
    <property name="text">
@@ -784,7 +790,7 @@
   </action>
   <action name="actionViewDock">
    <property name="icon">
-    <iconset resource="../res/resource.qrc">
+    <iconset resource="../../res/resource.qrc">
      <normaloff>:/icon/icon/Model_icon.png</normaloff>:/icon/icon/Model_icon.png</iconset>
    </property>
    <property name="text">
@@ -793,7 +799,7 @@
   </action>
   <action name="actionStart">
    <property name="icon">
-    <iconset resource="../res/resource.qrc">
+    <iconset resource="../../res/resource.qrc">
      <normaloff>:/icon/icon/Play_icon.png</normaloff>:/icon/icon/Play_icon.png</iconset>
    </property>
    <property name="text">
@@ -802,7 +808,7 @@
   </action>
   <action name="actionStop">
    <property name="icon">
-    <iconset resource="../res/resource.qrc">
+    <iconset resource="../../res/resource.qrc">
      <normaloff>:/icon/icon/Stop_icon.png</normaloff>:/icon/icon/Stop_icon.png</iconset>
    </property>
    <property name="text">
@@ -811,7 +817,7 @@
   </action>
   <action name="actionPause">
    <property name="icon">
-    <iconset resource="../res/resource.qrc">
+    <iconset resource="../../res/resource.qrc">
      <normaloff>:/icon/icon/Pasue_icon.png</normaloff>:/icon/icon/Pasue_icon.png</iconset>
    </property>
    <property name="text">
@@ -820,7 +826,7 @@
   </action>
   <action name="actionReset">
    <property name="icon">
-    <iconset resource="../res/resource.qrc">
+    <iconset resource="../../res/resource.qrc">
      <normaloff>:/icon/icon/Reset_icon.png</normaloff>:/icon/icon/Reset_icon.png</iconset>
    </property>
    <property name="text">
@@ -830,13 +836,13 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVTKWidget</class>
-   <extends>QWidget</extends>
-   <header>QVTKWidget.h</header>
+   <class>QVTKOpenGLNativeWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">QVTKOpenGLNativeWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../res/resource.qrc"/>
+  <include location="../../res/resource.qrc"/>
  </resources>
  <connections/>
 </ui>
