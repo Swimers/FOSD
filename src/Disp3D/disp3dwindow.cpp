@@ -79,12 +79,11 @@ void disp3dwindow::InitWindow()
 
     InitPointInfor();
 
-    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
-    if(m_disp3dmodel->Flag_Actor)
-    RefreshInfor();
+//    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
+//    if(m_disp3dmodel->Flag_Actor)
+//    RefreshInfor();
 
     connect(freshTimer,SIGNAL(timeout()),this,SLOT(RefreshStage()));
-
 }
 
 void disp3dwindow::InitPointInfor()

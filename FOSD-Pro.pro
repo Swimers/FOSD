@@ -5,12 +5,16 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += opengl
+
+QT += waylandcompositor
+LIBS += -lwayland-server -lxkbcommon
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
                                   QT += printsupport
                                   QT += serialport
                                   QT += network
-                                  QT += widgets opengl
+                                  QT += widgets
 
 CODECFORSRC = UTF-8
 CODECFORTR = UTF-8

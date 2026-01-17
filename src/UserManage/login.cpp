@@ -28,7 +28,7 @@ void loginwindow::ReadInit(const QString &key, QStringList &value)
     QSettings config(path, QSettings::IniFormat);
     QVariant variant = config.value(QString("config/") + key);
     value = variant.toStringList();
-    qDebug() << "Read" << key << ":" << value;  // 调试信息
+    //qDebug() << "Read" << key << ":" << value;  // 调试信息
 }
 
 void loginwindow::WriteInit(const QString &key, const QStringList &value)
@@ -38,7 +38,7 @@ void loginwindow::WriteInit(const QString &key, const QStringList &value)
     config.beginGroup("config");
     config.setValue(key, value);
     config.endGroup();
-    qDebug() << "Write" << key << ":" << value;  // 调试信息
+    //qDebug() << "Write" << key << ":" << value;  // 调试信息
 }
 
 loginwindow* loginwindow::getInstance()

@@ -35,7 +35,7 @@
          <enum>Qt::AutoText</enum>
         </property>
         <property name="pixmap">
-         <pixmap resource="../res/resource.qrc">:/disp2d/disp2d/image2.jpg</pixmap>
+         <pixmap resource="../../res/resource.qrc">:/disp2d/disp2d/image2.jpg</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -172,7 +172,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../res/resource.qrc"/>
+  <include location="../../res/resource.qrc"/>
  </resources>
  <connections/>
 </ui>
