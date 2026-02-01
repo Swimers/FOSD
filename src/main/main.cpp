@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     //MainWindow w;
     //w.show();
     //屏蔽vtkOutputWindow窗口及其发出的警告
-    //vtkOutputWindow::SetGlobalWarningDisplay(0); //加入
+    vtkOutputWindow::SetGlobalWarningDisplay(0); //加入
 
     //加载qss文件
 //    QFile qssFile("./QSS/MacOS.qss");//1.
