@@ -59,15 +59,27 @@ disp3dwindow::~disp3dwindow()
 
 void disp3dwindow::InitWindow()
 {
-    qDebug() << 1 ;
+    m_vtkrenderwindow = ui->vtk_openGL->GetRenderWindow();
+
     m_disp3dmodel = new disp3dmodel();
-    qDebug() << 1 ;
+    m_disp3dmodel->SetRenderWindow(m_vtkrenderwindow);
+    m_vtkrenderwindow->AddRenderer(m_disp3dmodel->GetVTKRenderer());
+
+    m_iren = ui->vtk_openGL->GetInteractor();
+    m_disp3dmodel->SetInteractor(m_iren);
+    disp3dinteractor *style = disp3dinteractor::New();
+    style->GetDisplayModelPtr(m_disp3dmodel);
+    m_iren->SetInteractorStyle(style);
+    style->SetDefaultRenderer(m_disp3dmodel->GetVTKRenderer());
+    style->Delete();  //智能指针管理，这里可以Delete
+
+    //原版本render传递逻辑
     //ui->vtk_stage->SetRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
-    ui->vtk_openGL->setRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
+    //ui->vtk_openGL->setRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
+
     m_disp3dmodel->initdisp3dmodel();
-    qDebug() << 1 ;
+
     ui->dock_Infor->setVisible(false);
-    qDebug() << 1 ;
     m_disp3dbackground = new disp3dbackground(m_disp3dmodel->GetVTKRenderer(),m_disp3dmodel->GetVTKRenderWindow());
     m_disp3dbackground->SetVtkRenderBackGradient(0.625,0.6797,0.762,0.109, 0.1797, 0.2773);
     m_disp3dbackground->AddAxesActor();

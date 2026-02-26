@@ -7,6 +7,7 @@
 #include <QVector>
 #include <QSet>
 
+#include <vtkPolyDataMapper.h>
 #include <vtkAutoInit.h>
 #include <vtkRenderWindow.h>
 #include <vtkSmartPointer.h>
@@ -28,15 +29,28 @@
 
 class disp3dmodel
 {
+private:
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+    vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+    vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
+    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    vtkSmartPointer<vtkActor> modelActor = vtkSmartPointer<vtkActor>::New();
+
+    vtkSmartPointer<vtkRenderer>renderer = vtkSmartPointer<vtkRenderer>::New();                                                                    //声明渲染器
+    vtkRenderWindowInteractor * iren;
+    vtkSmartPointer<vtkPolyData> rawPolyData = nullptr;
+
 public:
     disp3dmodel();
     ~disp3dmodel();
     void initdisp3dmodel();
 
 public:
-    vtkGenericOpenGLRenderWindow* GetVTKRenderWindow(){return renderWindow;}
+    vtkGenericOpenGLRenderWindow* GetVTKRenderWindow(){return m_renderWindow;}
     vtkRenderer* GetVTKRenderer(){return renderer;}
     vtkActor* GetVTKActor(){return modelActor;}
+    void SetInteractor(vtkRenderWindowInteractor* interactor) { iren = interactor; }
+    void SetRenderWindow(vtkRenderWindow* renWin) {renderWindow = renWin; }
 
     void PickerGetLabPtr(std::tuple<QLabel *,QLabel *,QLabel *,QLabel *>);
     void PickerClear();
@@ -81,15 +95,6 @@ public:
 
     int displacefactor = 2;
 
-private:
-    vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-    vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
-    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    vtkSmartPointer<vtkActor> modelActor = vtkSmartPointer<vtkActor>::New();
-
-    vtkRenderer * renderer;                                                                     //声明渲染器
-    vtkRenderWindowInteractor * iren;
-    vtkSmartPointer<vtkPolyData> rawPolyData = nullptr;
 };
 
 #endif // DISP3DMODEL_H

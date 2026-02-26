@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QWidget>
 #include <QVTKOpenGLNativeWidget.h>
+#include <vtkRenderWidget.h>
 
 #include <disp3dmodel.h>
 #include <disp3dbackground.h>
@@ -80,6 +81,9 @@ private:
     disp3dbackground *m_disp3dbackground = nullptr;
     disp3dinteractor *m_disp3dinteractor = nullptr;
     disp3dfreshmodelthread *m_disp3dthread = nullptr;
+
+    vtkRenderWindow *m_vtkrenderwindow = nullptr;
+    vtkRenderWindowInteractor *m_iren = nullptr;
 
     QTimer *freshTimer = nullptr;
 };

@@ -14,10 +14,10 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SERIALPORT_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_WAYLANDCOMPOSITOR_LIB -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_SERIALPORT_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -Wall -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -Isrc/main -Isrc/UserManage -Isrc/Disp2D -Isrc/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -Isrc/Connect -Isrc/Dependence -Isrc/Communication -Ilib/CustomUi -Ilib/VTK/VTK-Linux-debug/include/vtk-8.2 -I../../../Qt5.12.12/5.12.12/gcc_64/include -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore -Ibuild/linux/generated/moc/debug -isystem /usr/include/libdrm -Ibuild/linux/generated/ui/debug -I../../../Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++
+INCPATH       = -I. -Isrc/main -Isrc/UserManage -Isrc/Disp2D -Isrc/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -Isrc/Connect -Isrc/Dependence -Isrc/Communication -Ilib/CustomUi -Ilib/VTK/VTK-Linux-debug/include/vtk-8.2 -I../../../Qt5.12.12/5.12.12/gcc_64/include -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtQml -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore -Ibuild/linux/generated/moc/debug -isystem /usr/include/libdrm -Ibuild/linux/generated/ui/debug -I../../../Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = FOSD-Pro1.0.0
 DISTDIR = /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/obj/debug/FOSD-Pro1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/lib -lvtkChartsCore-8.2 -lvtkCommonColor-8.2 -lvtkCommonComputationalGeometry-8.2 -lvtkCommonCore-8.2 -lvtkCommonDataModel-8.2 -lvtkCommonExecutionModel-8.2 -lvtkCommonMath-8.2 -lvtkCommonMisc-8.2 -lvtkCommonSystem-8.2 -lvtkCommonTransforms-8.2 -lvtkDICOMParser-8.2 -lvtkDomainsChemistry-8.2 -lvtkDomainsChemistryOpenGL2-8.2 -lvtkdoubleconversion-8.2 -lvtkexodusII-8.2 -lvtkexpat-8.2 -lvtkFiltersAMR-8.2 -lvtkFiltersCore-8.2 -lvtkFiltersExtraction-8.2 -lvtkFiltersFlowPaths-8.2 -lvtkFiltersGeneral-8.2 -lvtkFiltersGeneric-8.2 -lvtkFiltersGeometry-8.2 -lvtkFiltersHybrid-8.2 -lvtkFiltersHyperTree-8.2 -lvtkFiltersImaging-8.2 -lvtkFiltersModeling-8.2 -lvtkFiltersParallel-8.2 -lvtkFiltersParallelImaging-8.2 -lvtkFiltersPoints-8.2 -lvtkFiltersProgrammable-8.2 -lvtkFiltersSelection-8.2 -lvtkFiltersSMP-8.2 -lvtkFiltersSources-8.2 -lvtkFiltersStatistics-8.2 -lvtkFiltersTexture-8.2 -lvtkFiltersTopology-8.2 -lvtkFiltersVerdict-8.2 -lvtkfreetype-8.2 -lvtkGeovisCore-8.2 -lvtkgl2ps-8.2 -lvtkglew-8.2 -lvtkGUISupportQt-8.2 -lvtkGUISupportQtSQL-8.2 -lvtkhdf5-8.2 -lvtkhdf5_hl-8.2 -lvtkImagingColor-8.2 -lvtkImagingCore-8.2 -lvtkImagingFourier-8.2 -lvtkImagingGeneral-8.2 -lvtkImagingHybrid-8.2 -lvtkImagingMath-8.2 -lvtkImagingMorphological-8.2 -lvtkImagingSources-8.2 -lvtkImagingStatistics-8.2 -lvtkImagingStencil-8.2 -lvtkInfovisCore-8.2 -lvtkInfovisLayout-8.2 -lvtkInteractionImage-8.2 -lvtkInteractionStyle-8.2 -lvtkInteractionWidgets-8.2 -lvtkIOAMR-8.2 -lvtkIOAsynchronous-8.2 -lvtkIOCityGML-8.2 -lvtkIOCore-8.2 -lvtkIOEnSight-8.2 -lvtkIOExodus-8.2 -lvtkIOExport-8.2 -lvtkIOExportOpenGL2-8.2 -lvtkIOExportPDF-8.2 -lvtkIOGeometry-8.2 -lvtkIOImage-8.2 -lvtkIOImport-8.2 -lvtkIOInfovis-8.2 -lvtkIOLegacy-8.2 -lvtkIOLSDyna-8.2 -lvtkIOMINC-8.2 -lvtkIOMovie-8.2 -lvtkIONetCDF-8.2 -lvtkIOParallel-8.2 -lvtkIOParallelXML-8.2 -lvtkIOPLY-8.2 -lvtkIOSegY-8.2 -lvtkIOSQL-8.2 -lvtkIOTecplotTable-8.2 -lvtkIOVeraOut-8.2 -lvtkIOVideo-8.2 -lvtkIOXML-8.2 -lvtkIOXMLParser-8.2 -lvtkjpeg-8.2 -lvtkjsoncpp-8.2 -lvtklibharu-8.2 -lvtklz4-8.2 -lvtklzma-8.2 -lvtkmetaio-8.2 -lvtkNetCDF-8.2 -lvtkogg-8.2 -lvtkParallelCore-8.2 -lvtkpng-8.2 -lvtkproj-8.2 -lvtkpugixml-8.2 -lvtkRenderingAnnotation-8.2 -lvtkRenderingContext2D-8.2 -lvtkRenderingContextOpenGL2-8.2 -lvtkRenderingCore-8.2 -lvtkRenderingFreeType-8.2 -lvtkRenderingGL2PSOpenGL2-8.2 -lvtkRenderingImage-8.2 -lvtkRenderingLabel-8.2 -lvtkRenderingLOD-8.2 -lvtkRenderingOpenGL2-8.2 -lvtkRenderingQt-8.2 -lvtkRenderingVolume-8.2 -lvtkRenderingVolumeOpenGL2-8.2 -lvtksqlite-8.2 -lvtksys-8.2 -lvtktheora-8.2 -lvtktiff-8.2 -lvtkverdict-8.2 -lvtkViewsContext2D-8.2 -lvtkViewsCore-8.2 -lvtkViewsInfovis-8.2 -lvtkViewsQt-8.2 -lvtkzlib-8.2 /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5OpenGL.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5PrintSupport.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Widgets.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Gui.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5SerialPort.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Network.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Core.so -lGL -lpthread   
+LIBS          = $(SUBLIBS) -L/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/lib -lvtkChartsCore-8.2 -lvtkCommonColor-8.2 -lvtkCommonComputationalGeometry-8.2 -lvtkCommonCore-8.2 -lvtkCommonDataModel-8.2 -lvtkCommonExecutionModel-8.2 -lvtkCommonMath-8.2 -lvtkCommonMisc-8.2 -lvtkCommonSystem-8.2 -lvtkCommonTransforms-8.2 -lvtkDICOMParser-8.2 -lvtkDomainsChemistry-8.2 -lvtkDomainsChemistryOpenGL2-8.2 -lvtkdoubleconversion-8.2 -lvtkexodusII-8.2 -lvtkexpat-8.2 -lvtkFiltersAMR-8.2 -lvtkFiltersCore-8.2 -lvtkFiltersExtraction-8.2 -lvtkFiltersFlowPaths-8.2 -lvtkFiltersGeneral-8.2 -lvtkFiltersGeneric-8.2 -lvtkFiltersGeometry-8.2 -lvtkFiltersHybrid-8.2 -lvtkFiltersHyperTree-8.2 -lvtkFiltersImaging-8.2 -lvtkFiltersModeling-8.2 -lvtkFiltersParallel-8.2 -lvtkFiltersParallelImaging-8.2 -lvtkFiltersPoints-8.2 -lvtkFiltersProgrammable-8.2 -lvtkFiltersSelection-8.2 -lvtkFiltersSMP-8.2 -lvtkFiltersSources-8.2 -lvtkFiltersStatistics-8.2 -lvtkFiltersTexture-8.2 -lvtkFiltersTopology-8.2 -lvtkFiltersVerdict-8.2 -lvtkfreetype-8.2 -lvtkGeovisCore-8.2 -lvtkgl2ps-8.2 -lvtkglew-8.2 -lvtkGUISupportQt-8.2 -lvtkGUISupportQtSQL-8.2 -lvtkhdf5-8.2 -lvtkhdf5_hl-8.2 -lvtkImagingColor-8.2 -lvtkImagingCore-8.2 -lvtkImagingFourier-8.2 -lvtkImagingGeneral-8.2 -lvtkImagingHybrid-8.2 -lvtkImagingMath-8.2 -lvtkImagingMorphological-8.2 -lvtkImagingSources-8.2 -lvtkImagingStatistics-8.2 -lvtkImagingStencil-8.2 -lvtkInfovisCore-8.2 -lvtkInfovisLayout-8.2 -lvtkInteractionImage-8.2 -lvtkInteractionStyle-8.2 -lvtkInteractionWidgets-8.2 -lvtkIOAMR-8.2 -lvtkIOAsynchronous-8.2 -lvtkIOCityGML-8.2 -lvtkIOCore-8.2 -lvtkIOEnSight-8.2 -lvtkIOExodus-8.2 -lvtkIOExport-8.2 -lvtkIOExportOpenGL2-8.2 -lvtkIOExportPDF-8.2 -lvtkIOGeometry-8.2 -lvtkIOImage-8.2 -lvtkIOImport-8.2 -lvtkIOInfovis-8.2 -lvtkIOLegacy-8.2 -lvtkIOLSDyna-8.2 -lvtkIOMINC-8.2 -lvtkIOMovie-8.2 -lvtkIONetCDF-8.2 -lvtkIOParallel-8.2 -lvtkIOParallelXML-8.2 -lvtkIOPLY-8.2 -lvtkIOSegY-8.2 -lvtkIOSQL-8.2 -lvtkIOTecplotTable-8.2 -lvtkIOVeraOut-8.2 -lvtkIOVideo-8.2 -lvtkIOXML-8.2 -lvtkIOXMLParser-8.2 -lvtkjpeg-8.2 -lvtkjsoncpp-8.2 -lvtklibharu-8.2 -lvtklz4-8.2 -lvtklzma-8.2 -lvtkmetaio-8.2 -lvtkNetCDF-8.2 -lvtkogg-8.2 -lvtkParallelCore-8.2 -lvtkpng-8.2 -lvtkproj-8.2 -lvtkpugixml-8.2 -lvtkRenderingAnnotation-8.2 -lvtkRenderingContext2D-8.2 -lvtkRenderingContextOpenGL2-8.2 -lvtkRenderingCore-8.2 -lvtkRenderingFreeType-8.2 -lvtkRenderingGL2PSOpenGL2-8.2 -lvtkRenderingImage-8.2 -lvtkRenderingLabel-8.2 -lvtkRenderingLOD-8.2 -lvtkRenderingOpenGL2-8.2 -lvtkRenderingQt-8.2 -lvtkRenderingVolume-8.2 -lvtkRenderingVolumeOpenGL2-8.2 -lvtksqlite-8.2 -lvtksys-8.2 -lvtktheora-8.2 -lvtktiff-8.2 -lvtkverdict-8.2 -lvtkViewsContext2D-8.2 -lvtkViewsCore-8.2 -lvtkViewsInfovis-8.2 -lvtkViewsQt-8.2 -lvtkzlib-8.2 /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5OpenGL.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5PrintSupport.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Widgets.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5WaylandCompositor.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Quick.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Gui.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Qml.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Network.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5SerialPort.so /home/ubuntu/Qt5.12.12/5.12.12/gcc_64/lib/libQt5Core.so -lGL -lpthread -lwayland-server -lxkbcommon   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -1512,8 +1512,6 @@ build/linux/generated/moc/debug/moc_mainwindow.cpp: src/main/mainwindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
@@ -1603,7 +1601,7 @@ build/linux/generated/moc/debug/moc_mainwindow.cpp: src/main/mainwindow.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QThread \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/main/mainwindow.h -o build/linux/generated/moc/debug/moc_mainwindow.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/main/mainwindow.h -o build/linux/generated/moc/debug/moc_mainwindow.cpp
 
 build/linux/generated/moc/debug/moc_login.cpp: src/UserManage/login.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QMainWindow \
@@ -2238,8 +2236,6 @@ build/linux/generated/moc/debug/moc_login.cpp: src/UserManage/login.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
@@ -2331,7 +2327,7 @@ build/linux/generated/moc/debug/moc_login.cpp: src/UserManage/login.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QJsonDocument \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/login.h -o build/linux/generated/moc/debug/moc_login.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/login.h -o build/linux/generated/moc/debug/moc_login.cpp
 
 build/linux/generated/moc/debug/moc_userregister.cpp: src/UserManage/userregister.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -2439,7 +2435,7 @@ build/linux/generated/moc/debug/moc_userregister.cpp: src/UserManage/userregiste
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/userregister.h -o build/linux/generated/moc/debug/moc_userregister.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/userregister.h -o build/linux/generated/moc/debug/moc_userregister.cpp
 
 build/linux/generated/moc/debug/moc_usermanage.cpp: src/UserManage/usermanage.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -2549,7 +2545,7 @@ build/linux/generated/moc/debug/moc_usermanage.cpp: src/UserManage/usermanage.h 
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qsettings.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/usermanage.h -o build/linux/generated/moc/debug/moc_usermanage.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/usermanage.h -o build/linux/generated/moc/debug/moc_usermanage.cpp
 
 build/linux/generated/moc/debug/moc_userforget.cpp: src/UserManage/userforget.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -2657,7 +2653,7 @@ build/linux/generated/moc/debug/moc_userforget.cpp: src/UserManage/userforget.h 
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/userforget.h -o build/linux/generated/moc/debug/moc_userforget.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UserManage/userforget.h -o build/linux/generated/moc/debug/moc_userforget.cpp
 
 build/linux/generated/moc/debug/moc_disp2dwindow.cpp: src/Disp2D/disp2dwindow.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -2777,7 +2773,7 @@ build/linux/generated/moc/debug/moc_disp2dwindow.cpp: src/Disp2D/disp2dwindow.h 
 		src/Disp2D/disp2dpara.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp2D/disp2dwindow.h -o build/linux/generated/moc/debug/moc_disp2dwindow.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp2D/disp2dwindow.h -o build/linux/generated/moc/debug/moc_disp2dwindow.cpp
 
 build/linux/generated/moc/debug/moc_disp2dpara.cpp: src/Disp2D/disp2dpara.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -2888,7 +2884,7 @@ build/linux/generated/moc/debug/moc_disp2dpara.cpp: src/Disp2D/disp2dpara.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMutex \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp2D/disp2dpara.h -o build/linux/generated/moc/debug/moc_disp2dpara.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp2D/disp2dpara.h -o build/linux/generated/moc/debug/moc_disp2dpara.cpp
 
 build/linux/generated/moc/debug/moc_connectdebug.cpp: src/Connect/connectdebug.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -2996,7 +2992,7 @@ build/linux/generated/moc/debug/moc_connectdebug.cpp: src/Connect/connectdebug.h
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/connectdebug.h -o build/linux/generated/moc/debug/moc_connectdebug.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/connectdebug.h -o build/linux/generated/moc/debug/moc_connectdebug.cpp
 
 build/linux/generated/moc/debug/moc_qcustomplot.cpp: src/Connect/qcustomplot.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qglobal.h \
@@ -3502,7 +3498,7 @@ build/linux/generated/moc/debug/moc_qcustomplot.cpp: src/Connect/qcustomplot.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimeZone \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/qcustomplot.h -o build/linux/generated/moc/debug/moc_qcustomplot.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/qcustomplot.h -o build/linux/generated/moc/debug/moc_qcustomplot.cpp
 
 build/linux/generated/moc/debug/moc_connectwindow.cpp: src/Connect/connectwindow.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -4085,7 +4081,7 @@ build/linux/generated/moc/debug/moc_connectwindow.cpp: src/Connect/connectwindow
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtNetwork/QTcpServer \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/connectwindow.h -o build/linux/generated/moc/debug/moc_connectwindow.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/connectwindow.h -o build/linux/generated/moc/debug/moc_connectwindow.cpp
 
 build/linux/generated/moc/debug/moc_qcpdocumentobject.cpp: src/Connect/qcpdocumentobject.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
@@ -4594,7 +4590,7 @@ build/linux/generated/moc/debug/moc_qcpdocumentobject.cpp: src/Connect/qcpdocume
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimeZone \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/qcpdocumentobject.h -o build/linux/generated/moc/debug/moc_qcpdocumentobject.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Connect/qcpdocumentobject.h -o build/linux/generated/moc/debug/moc_qcpdocumentobject.cpp
 
 build/linux/generated/moc/debug/moc_serialtask.cpp: src/Communication/serialtask.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
@@ -4656,7 +4652,7 @@ build/linux/generated/moc/debug/moc_serialtask.cpp: src/Communication/serialtask
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QByteArray \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/serialtask.h -o build/linux/generated/moc/debug/moc_serialtask.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/serialtask.h -o build/linux/generated/moc/debug/moc_serialtask.cpp
 
 build/linux/generated/moc/debug/moc_analyzepackets.cpp: src/Communication/analyzepackets.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
@@ -5240,7 +5236,7 @@ build/linux/generated/moc/debug/moc_analyzepackets.cpp: src/Communication/analyz
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtNetwork/QTcpServer \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/analyzepackets.h -o build/linux/generated/moc/debug/moc_analyzepackets.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/analyzepackets.h -o build/linux/generated/moc/debug/moc_analyzepackets.cpp
 
 build/linux/generated/moc/debug/moc_udptask.cpp: src/Communication/udptask.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
@@ -5545,7 +5541,7 @@ build/linux/generated/moc/debug/moc_udptask.cpp: src/Communication/udptask.h \
 		src/Dependence/Timer.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/udptask.h -o build/linux/generated/moc/debug/moc_udptask.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/udptask.h -o build/linux/generated/moc/debug/moc_udptask.cpp
 
 build/linux/generated/moc/debug/moc_udptask.cpp: src/Communication/udptask.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
@@ -5850,7 +5846,7 @@ build/linux/generated/moc/debug/moc_udptask.cpp: src/Communication/udptask.h \
 		src/Dependence/Timer.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/udptask.h -o build/linux/generated/moc/debug/moc_udptask.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/udptask.h -o build/linux/generated/moc/debug/moc_udptask.cpp
 
 build/linux/generated/moc/debug/moc_tcptask.cpp: src/Communication/tcptask.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
@@ -5979,7 +5975,7 @@ build/linux/generated/moc/debug/moc_tcptask.cpp: src/Communication/tcptask.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/tcptask.h -o build/linux/generated/moc/debug/moc_tcptask.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Communication/tcptask.h -o build/linux/generated/moc/debug/moc_tcptask.cpp
 
 build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp: src/Disp3D/disp3dkeypointedit.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -6089,10 +6085,9 @@ build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp: src/Disp3D/disp3dkey
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAutoInit.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDebugLeaksManager.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommonCoreModule.h \
@@ -6111,11 +6106,10 @@ build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp: src/Disp3D/disp3dkey
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStrStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTimeStamp.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObject.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObjectBase.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkIndent.h \
@@ -6124,18 +6118,6 @@ build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp: src/Disp3D/disp3dkey
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAtomicTypeConcepts.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSetGet.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWeakPointerBase.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkNew.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
@@ -6206,6 +6188,15 @@ build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp: src/Disp3D/disp3dkey
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qt_windows.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopengles2ext.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopenglext.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGenericOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderer.h \
@@ -6219,7 +6210,7 @@ build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp: src/Disp3D/disp3dkey
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDoubleArray.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp3D/disp3dkeypointedit.h -o build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp3D/disp3dkeypointedit.h -o build/linux/generated/moc/debug/moc_disp3dkeypointedit.cpp
 
 build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp: src/Disp3D/disp3dkeypointselect.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -6329,10 +6320,9 @@ build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp: src/Disp3D/disp3dk
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAutoInit.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDebugLeaksManager.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommonCoreModule.h \
@@ -6351,11 +6341,10 @@ build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp: src/Disp3D/disp3dk
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStrStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTimeStamp.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObject.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObjectBase.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkIndent.h \
@@ -6364,18 +6353,6 @@ build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp: src/Disp3D/disp3dk
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAtomicTypeConcepts.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSetGet.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWeakPointerBase.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkNew.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
@@ -6446,6 +6423,15 @@ build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp: src/Disp3D/disp3dk
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qt_windows.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopengles2ext.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopenglext.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGenericOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderer.h \
@@ -6459,7 +6445,7 @@ build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp: src/Disp3D/disp3dk
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDoubleArray.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp3D/disp3dkeypointselect.h -o build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp3D/disp3dkeypointselect.h -o build/linux/generated/moc/debug/moc_disp3dkeypointselect.cpp
 
 build/linux/generated/moc/debug/moc_disp3dwindow.cpp: src/Disp3D/disp3dwindow.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QMainWindow \
@@ -6622,11 +6608,6 @@ build/linux/generated/moc/debug/moc_disp3dwindow.cpp: src/Disp3D/disp3dwindow.h 
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
@@ -6721,7 +6702,7 @@ build/linux/generated/moc/debug/moc_disp3dwindow.cpp: src/Disp3D/disp3dwindow.h 
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMutex \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp3D/disp3dwindow.h -o build/linux/generated/moc/debug/moc_disp3dwindow.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Disp3D/disp3dwindow.h -o build/linux/generated/moc/debug/moc_disp3dwindow.cpp
 
 build/linux/generated/moc/debug/moc_switchcontrol.cpp: lib/CustomUi/switchcontrol.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
@@ -6832,7 +6813,7 @@ build/linux/generated/moc/debug/moc_switchcontrol.cpp: lib/CustomUi/switchcontro
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
 		build/linux/generated/moc/debug/moc_predefs.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/bin/moc
-	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include lib/CustomUi/switchcontrol.h -o build/linux/generated/moc/debug/moc_switchcontrol.cpp
+	/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/bin/moc $(DEFINES) --include /home/ubuntu/文档/GitHub/FOSD_Project/build/linux/generated/moc/debug/moc_predefs.h -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/mkspecs/linux-g++ -I/home/ubuntu/文档/GitHub/FOSD_Project -I/home/ubuntu/文档/GitHub/FOSD_Project/src/main -I/home/ubuntu/文档/GitHub/FOSD_Project/src/UserManage -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp2D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Disp3D -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Math -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Connect -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Dependence -I/home/ubuntu/文档/GitHub/FOSD_Project/src/Communication -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/CustomUi -I/home/ubuntu/文档/GitHub/FOSD_Project/lib/VTK/VTK-Linux-debug/include/vtk-8.2 -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtOpenGL -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtPrintSupport -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWidgets -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtWaylandCompositor -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQuick -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtGui -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtQml -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtNetwork -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtSerialPort -I/home/ubuntu/Qt5.12.12/5.12.12/gcc_64/include/QtCore -I/usr/include/c++/15 -I/usr/include/x86_64-linux-gnu/c++/15 -I/usr/include/c++/15/backward -I/usr/lib/gcc/x86_64-linux-gnu/15/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include lib/CustomUi/switchcontrol.h -o build/linux/generated/moc/debug/moc_switchcontrol.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -8293,8 +8274,6 @@ build/linux/obj/debug/main.o: src/main/main.cpp src/UserManage/login.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
@@ -9019,8 +8998,6 @@ build/linux/obj/debug/mainwindow.o: src/main/mainwindow.cpp ../../../Qt5.12.12/5
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
@@ -9109,11 +9086,19 @@ build/linux/obj/debug/mainwindow.o: src/main/mainwindow.cpp ../../../Qt5.12.12/5
 		src/Disp3D/disp3dfreshmodelthread.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QThread \
 		build/linux/generated/ui/debug/ui_mainwindow.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QIcon \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QStackedWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
+		lib/CustomUi/switchcontrol.h \
 		src/UserManage/login.h \
 		src/UserManage/userforget.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QJsonObject \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QJsonDocument \
-		lib/CustomUi/switchcontrol.h
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QJsonDocument
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/linux/obj/debug/mainwindow.o src/main/mainwindow.cpp
 
 build/linux/obj/debug/login.o: src/UserManage/login.cpp src/UserManage/login.h \
@@ -9749,8 +9734,6 @@ build/linux/obj/debug/login.o: src/UserManage/login.cpp src/UserManage/login.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
@@ -9840,7 +9823,19 @@ build/linux/obj/debug/login.o: src/UserManage/login.cpp src/UserManage/login.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QThread \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QJsonObject \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QJsonDocument \
-		build/linux/generated/ui/debug/ui_login.h
+		build/linux/generated/ui/debug/ui_login.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QIcon \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QCheckBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFrame \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QToolButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/linux/obj/debug/login.o src/UserManage/login.cpp
 
 build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserManage/userregister.h \
@@ -9948,11 +9943,52 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvector2d.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
 		build/linux/generated/ui/debug/ui_userregister.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcombobox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlineedit.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpen.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
 		src/UserManage/login.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QMainWindow \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qmainwindow.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabwidget.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
 		src/UserManage/userforget.h \
 		src/main/mainwindow.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QButtonGroup \
@@ -9961,9 +9997,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSettings \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qsettings.h \
 		src/Connect/connectwindow.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
@@ -9974,8 +10007,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSharedPointer \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QPainter \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpainter.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextoption.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpen.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QPainterPath \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QPaintEvent \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QMouseEvent \
@@ -10028,8 +10059,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QtCoreDepends \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractanimation.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstracteventdispatcher.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractitemmodel.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractnativeeventfilter.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractproxymodel.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractstate.h \
@@ -10043,7 +10072,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcborarray.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcborvalue.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcborcommon.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/quuid.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcbormap.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcborstream.h \
@@ -10051,7 +10079,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcollator.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcommandlineoption.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcommandlineparser.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcryptographichash.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qdeadlinetimer.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qelapsedtimer.h \
@@ -10140,11 +10167,9 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QtGuiDepends \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qabstracttextdocumentlayout.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextlayout.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextformat.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qglyphrun.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qrawfont.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qfontdatabase.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextcursor.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextdocument.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qaccessible.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qaccessiblebridge.h \
@@ -10158,8 +10183,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qgenericmatrix.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qgenericplugin.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qgenericpluginfactory.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qiconengine.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qiconengineplugin.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qimageiohandler.h \
@@ -10211,39 +10234,21 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextdocumentwriter.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextlist.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtexttable.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtguiversion.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QtWidgets \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QtWidgetsDepends \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemview.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractscrollarea.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qaccessiblewidget.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qaction.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcalendarwidget.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcheckbox.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcolordialog.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdialog.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcolormap.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcolumnview.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcombobox.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcommandlinkbutton.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcommonstyle.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcompleter.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdatawidgetmapper.h \
@@ -10283,7 +10288,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgroupbox.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qheaderview.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qinputdialog.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlineedit.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qitemdelegate.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qitemeditorfactory.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qkeyeventtransition.h \
@@ -10311,7 +10315,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QScrollerProperties \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qscrollerproperties.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMetaType \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qshortcut.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qsizegrip.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qspinbox.h \
@@ -10477,8 +10480,6 @@ build/linux/obj/debug/userregister.o: src/UserManage/userregister.cpp src/UserMa
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
@@ -10678,6 +10679,50 @@ build/linux/obj/debug/usermanage.o: src/UserManage/usermanage.cpp src/UserManage
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSettings \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qsettings.h \
 		build/linux/generated/ui/debug/ui_usermanage.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcombobox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFrame \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlineedit.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpen.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QDebug \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QMessageBox \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qmessagebox.h \
@@ -10789,7 +10834,49 @@ build/linux/obj/debug/userforget.o: src/UserManage/userforget.cpp src/UserManage
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvector2d.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
-		build/linux/generated/ui/debug/ui_userforget.h
+		build/linux/generated/ui/debug/ui_userforget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcombobox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlineedit.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpen.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/linux/obj/debug/userforget.o src/UserManage/userforget.cpp
 
 build/linux/obj/debug/connectdebug.o: src/Connect/connectdebug.cpp src/Connect/connectdebug.h \
@@ -10896,7 +10983,35 @@ build/linux/obj/debug/connectdebug.o: src/Connect/connectdebug.cpp src/Connect/c
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvector2d.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
-		build/linux/generated/ui/debug/ui_connectdebug.h
+		build/linux/generated/ui/debug/ui_connectdebug.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlineedit.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpen.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/linux/obj/debug/connectdebug.o src/Connect/connectdebug.cpp
 
 build/linux/obj/debug/qcustomplot.o: src/Connect/qcustomplot.cpp src/Connect/qcustomplot.h \
@@ -11983,6 +12098,22 @@ build/linux/obj/debug/connectwindow.o: src/Connect/connectwindow.cpp src/Connect
 		src/Communication/tcptask.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtNetwork/QTcpServer \
 		build/linux/generated/ui/debug/ui_connectwindow.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QCheckBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFrame \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGroupBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHeaderView \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPlainTextEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QTabWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QTableView \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QTextEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTextStream \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QDir \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFileDialog \
@@ -13811,13 +13942,37 @@ build/linux/obj/debug/disp2dpara.o: src/Disp2D/disp2dpara.cpp src/Disp2D/disp2dp
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QString \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMutex \
 		build/linux/generated/ui/debug/ui_disp2dpara.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGroupBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgroupbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlineedit.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextcursor.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextformat.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpen.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QIntValidator \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
@@ -13941,6 +14096,47 @@ build/linux/obj/debug/disp2dwindow.o: src/Disp2D/disp2dwindow.cpp src/Disp2D/dis
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMutex \
 		src/Disp2D/disp2dpara.h \
 		build/linux/generated/ui/debug/ui_disp2dwindow.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGroupBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgroupbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHeaderView \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qheaderview.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qitemselectionmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QTableView \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtableview.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QFile \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFileDialog \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qfiledialog.h \
@@ -14221,10 +14417,10 @@ build/linux/obj/debug/disp3dfreshmodelthread.o: src/Disp3D/disp3dfreshmodelthrea
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvector2d.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAutoInit.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDebugLeaksManager.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommonCoreModule.h \
@@ -14243,11 +14439,10 @@ build/linux/obj/debug/disp3dfreshmodelthread.o: src/Disp3D/disp3dfreshmodelthrea
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStrStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTimeStamp.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObject.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObjectBase.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkIndent.h \
@@ -14256,19 +14451,6 @@ build/linux/obj/debug/disp3dfreshmodelthread.o: src/Disp3D/disp3dfreshmodelthrea
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAtomicTypeConcepts.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSetGet.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWeakPointerBase.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkNew.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
@@ -14339,6 +14521,15 @@ build/linux/obj/debug/disp3dfreshmodelthread.o: src/Disp3D/disp3dfreshmodelthrea
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qt_windows.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopengles2ext.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopenglext.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGenericOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderer.h \
@@ -14526,21 +14717,7 @@ build/linux/obj/debug/disp3dinteractor.o: src/Disp3D/disp3dinteractor.cpp src/Di
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvector2d.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
@@ -14587,6 +14764,15 @@ build/linux/obj/debug/disp3dinteractor.o: src/Disp3D/disp3dinteractor.cpp src/Di
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qt_windows.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopengles2ext.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopenglext.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGenericOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderer.h \
@@ -14723,10 +14909,9 @@ build/linux/obj/debug/disp3dkeypointedit.o: src/Disp3D/disp3dkeypointedit.cpp sr
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAutoInit.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDebugLeaksManager.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommonCoreModule.h \
@@ -14745,11 +14930,10 @@ build/linux/obj/debug/disp3dkeypointedit.o: src/Disp3D/disp3dkeypointedit.cpp sr
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStrStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTimeStamp.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObject.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObjectBase.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkIndent.h \
@@ -14758,18 +14942,6 @@ build/linux/obj/debug/disp3dkeypointedit.o: src/Disp3D/disp3dkeypointedit.cpp sr
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAtomicTypeConcepts.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSetGet.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWeakPointerBase.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkNew.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
@@ -14840,6 +15012,15 @@ build/linux/obj/debug/disp3dkeypointedit.o: src/Disp3D/disp3dkeypointedit.cpp sr
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qt_windows.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopengles2ext.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopenglext.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGenericOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderer.h \
@@ -14852,6 +15033,50 @@ build/linux/obj/debug/disp3dkeypointedit.o: src/Disp3D/disp3dkeypointedit.cpp sr
 		src/Disp3D/disp3dglobal.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDoubleArray.h \
 		build/linux/generated/ui/debug/ui_disp3dkeypointedit.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcombobox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QDockWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdockwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFrame \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlineedit.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qpen.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QTabWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QString \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QDebug \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCubeSource.h \
@@ -14968,10 +15193,9 @@ build/linux/obj/debug/disp3dkeypointselect.o: src/Disp3D/disp3dkeypointselect.cp
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QLabel \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlabel.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qframe.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAutoInit.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDebugLeaksManager.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommonCoreModule.h \
@@ -14990,11 +15214,10 @@ build/linux/obj/debug/disp3dkeypointselect.o: src/Disp3D/disp3dkeypointselect.cp
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStrStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTimeStamp.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObject.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObjectBase.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkIndent.h \
@@ -15003,18 +15226,6 @@ build/linux/obj/debug/disp3dkeypointselect.o: src/Disp3D/disp3dkeypointselect.cp
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAtomicTypeConcepts.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSetGet.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWeakPointerBase.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkNew.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
@@ -15085,6 +15296,15 @@ build/linux/obj/debug/disp3dkeypointselect.o: src/Disp3D/disp3dkeypointselect.cp
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qt_windows.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopengles2ext.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopenglext.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGenericOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderer.h \
@@ -15097,6 +15317,52 @@ build/linux/obj/debug/disp3dkeypointselect.o: src/Disp3D/disp3dkeypointselect.cp
 		src/Disp3D/disp3dglobal.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDoubleArray.h \
 		build/linux/generated/ui/debug/ui_disp3dkeypointselect.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcombobox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qicon.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QDockWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdockwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFrame \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHeaderView \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qheaderview.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qitemselectionmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QRadioButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qradiobutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QTableWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtablewidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtableview.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QMessageBox \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qmessagebox.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdialog.h \
@@ -15213,10 +15479,10 @@ build/linux/obj/debug/disp3dmodel.o: src/Disp3D/disp3dmodel.cpp src/Disp3D/disp3
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvector2d.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qtouchdevice.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAutoInit.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkDebugLeaksManager.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommonCoreModule.h \
@@ -15235,11 +15501,10 @@ build/linux/obj/debug/disp3dmodel.o: src/Disp3D/disp3dmodel.cpp src/Disp3D/disp3
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOStrStreamWrapper.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTimeStamp.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFiltersCoreModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObject.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkObjectBase.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkIndent.h \
@@ -15248,19 +15513,6 @@ build/linux/obj/debug/disp3dmodel.o: src/Disp3D/disp3dmodel.cpp src/Disp3D/disp3
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkAtomicTypeConcepts.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSetGet.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWeakPointerBase.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QWidget \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindow.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkNew.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
@@ -15331,6 +15583,15 @@ build/linux/obj/debug/disp3dmodel.o: src/Disp3D/disp3dmodel.cpp src/Disp3D/disp3
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qt_windows.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopengles2ext.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qopenglext.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGUISupportQtModule.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGL2Module.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderingOpenGLConfigure.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWin32Header.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderWindowInteractor.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkCommand.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QObject \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkTDxConfigure.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkGenericOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkOpenGLRenderWindow.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkRenderer.h \
@@ -15363,6 +15624,7 @@ build/linux/obj/debug/disp3dmodel.o: src/Disp3D/disp3dmodel.cpp src/Disp3D/disp3
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkFieldData.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkLookupTable.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkScalarsToColors.h \
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkVersion.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTextCodec \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtextcodec.h \
 		src/Disp3D/disp3dinteractor.h \
@@ -15533,11 +15795,6 @@ build/linux/obj/debug/disp3dwindow.o: src/Disp3D/disp3dwindow.cpp src/Disp3D/dis
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointer.h \
 		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkSmartPointerBase.h \
 		src/Disp3D/disp3dmodel.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/QVTKWidget.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkToolkits.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMap \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVector \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QSet \
@@ -15631,20 +15888,63 @@ build/linux/obj/debug/disp3dwindow.o: src/Disp3D/disp3dwindow.cpp src/Disp3D/dis
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QString \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QMutex \
 		build/linux/generated/ui/debug/ui_disp3dwindow.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QAction \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qaction.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QCheckBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcheckbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QComboBox \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qcombobox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QDockWidget \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdockwidget.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFrame \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QGridLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QRadioButton \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qradiobutton.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSlider \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QSpacerItem \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QToolBar \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qtoolbar.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QDebug \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QMessageBox \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qmessagebox.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qdialog.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QVBoxLayout \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayout.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qgridlayout.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/QFileDialog \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtWidgets/qfiledialog.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qdir.h \
 		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qfileinfo.h \
-		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkPolyDataMapper.h
+		lib/VTK/VTK-Linux-debug/include/vtk-8.2/vtkPolyDataMapper.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/QTimer \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qtimer.h \
+		../../../Qt5.12.12/5.12.12/gcc_64/include/QtCore/qbasictimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/linux/obj/debug/disp3dwindow.o src/Disp3D/disp3dwindow.cpp
 
 build/linux/obj/debug/switchcontrol.o: lib/CustomUi/switchcontrol.cpp ../../../Qt5.12.12/5.12.12/gcc_64/include/QtGui/QPainter \

@@ -16,6 +16,10 @@ int main(int argc, char *argv[])
     format.setSamples(4);  // 抗锯齿
     QSurfaceFormat::setDefaultFormat(format);
 
+    VTK_MODULE_INIT(vtkRenderingOpenGL2);
+    VTK_MODULE_INIT(vtkInteractionStyle);
+    VTK_MODULE_INIT(vtkRenderingFreeType);
+
     QApplication a(argc, argv);
     //MainWindow w;
     //w.show();

@@ -5,4 +5,7 @@ build/
 lib/VTK/VTK-Linux-debug/lib/vtk-9.5/
 # 忽略 VTK 9.5 的头文件目录
 lib/VTK/VTK-Linux-debug/include/vtk-9.5/
+# 忽略 Qt Creator 用户配置文件
+*.pro.user
+*.pro.user.*
 
