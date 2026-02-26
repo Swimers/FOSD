@@ -20,6 +20,7 @@
 #include <vtkPointData.h>
 #include <vtkLookupTable.h>
 #include <vtkRenderer.h>
+#include <vtkVersion.h>
 
 #include <QTextCodec>
 #include <stdio.h>
@@ -28,20 +29,16 @@
 
 disp3dmodel::disp3dmodel()
 {
+    std::cout << "VTK Version: " << vtkVersion::GetVTKVersion() << std::endl;
+
+    // 2. 创建渲染窗口
+    // ... (你的创建代码，先保留原来的Generic窗口用于测试) ...
     renderWindow = vtkGenericOpenGLRenderWindow::New();
 
-    renderer = vtkRenderer::New();
-    renderWindow->AddRenderer(renderer);
-
-    iren = vtkRenderWindowInteractor::New();
-    iren->SetRenderWindow(renderWindow);
-    iren->Initialize();
-    disp3dinteractor* style = new disp3dinteractor();
-    style->SetDefaultRenderer(renderer);
-    style->GetDisplayModelPtr(this);
-    iren->SetInteractorStyle(style);
-
-    renderWindow->Render();
+    // 3. 在调用任何可能触发OpenGL的操作前，检查窗口状态
+    std::cout << "Window ID: " << renderWindow->GetWindowName() << std::endl;
+    std::cout << "Display ID: " << renderWindow->GetDisplayFramebuffer() << std::endl;
+    std::cout << "Is Current? " << (renderWindow->IsCurrent() ? "Yes" : "No") << std::endl;
 }
 
 disp3dmodel::~disp3dmodel()
@@ -73,6 +70,20 @@ disp3dmodel::~disp3dmodel()
         renderer->Delete();
         renderer = nullptr;
     }
+}
+
+void disp3dmodel::initdisp3dmodel()
+{
+    renderer = vtkRenderer::New();
+    renderWindow->AddRenderer(renderer);
+    iren = vtkRenderWindowInteractor::New();
+    iren->SetRenderWindow(renderWindow);
+    iren->Initialize();
+    disp3dinteractor* style = new disp3dinteractor();
+    style->SetDefaultRenderer(renderer);
+    style->GetDisplayModelPtr(this);
+    iren->SetInteractorStyle(style);
+    renderWindow->Render();
 }
 
 void disp3dmodel::PickerGetLabPtr(std::tuple<QLabel *, QLabel *, QLabel *, QLabel *>labels)

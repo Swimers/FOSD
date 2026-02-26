@@ -102,6 +102,7 @@ void disp3dbackground::AddAxesActor()
 
 void disp3dbackground::ShowAxes(bool flag)
 {
+    m_renderWindow->Render();
     axe->SetVisibility(flag);           //true为可见，false为不可见
     m_renderWindow->Render();
 }

@@ -2,7 +2,6 @@
 #define DISP3DMODEL_H
 
 #include <QLabel>
-#include <QVTKWidget.h>
 #include <QWidget>
 #include <QMap>
 #include <QVector>
@@ -32,6 +31,7 @@ class disp3dmodel
 public:
     disp3dmodel();
     ~disp3dmodel();
+    void initdisp3dmodel();
 
 public:
     vtkGenericOpenGLRenderWindow* GetVTKRenderWindow(){return renderWindow;}

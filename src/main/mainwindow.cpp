@@ -18,8 +18,10 @@ MainWindow::MainWindow(const QString& privilege,QWidget *parent) :
     setWindowIcon(QIcon(":/icon/Resource/icon/favicon.ico"));
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
-    qDebug() << "MianThreadNum:" << QThread::currentThreadId();
+    //qDebug() << "MianThreadNum:" << QThread::currentThreadId();
 
+    qDebug() << "MianThreadNum:";
+                qDebug() << "MianThreadNum:";
     InitMainwindow();
 }
 
