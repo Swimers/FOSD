@@ -8,6 +8,7 @@
 
 int main(int argc, char *argv[])
 {
+    //OpenGL congif
     QSurfaceFormat format;
     format.setRenderableType(QSurfaceFormat::OpenGL);
     format.setVersion(3, 2);  // 指定 OpenGL 版本
@@ -32,10 +33,6 @@ int main(int argc, char *argv[])
 //        a.setStyleSheet(qssFile.readAll());//3.
 //    }
 //    qssFile.close();//4.
-
-//    VTK_MODULE_INIT(vtkRenderingOpenGL2);    // 必须有：OpenGL 渲染后端
-//    VTK_MODULE_INIT(vtkInteractionStyle);    // 交互风格
-//    VTK_MODULE_INIT(vtkRenderingFreeType);   // 文本渲染（若用到）
 
     loginwindow * m_loginwindow = loginwindow::getInstance();
     m_loginwindow->show();
