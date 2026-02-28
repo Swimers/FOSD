@@ -69,7 +69,9 @@ FORMS += \
     src/app/user/login.ui \
     src/app/user/userforget.ui \
     src/app/user/usermanage.ui \
-    src/app/user/userregister.ui
+    src/app/user/userregister.ui \
+    src/app/disp3d/trackingpointmanager.ui \
+    src/app/disp3d/trackingpointdatatable.ui
 
 HEADERS += \
     src/app/conncect/connectdebug.h \
@@ -101,7 +103,9 @@ HEADERS += \
     src/core/model/disp3dglobal.h \
     src/core/model/disp3dinteractor.h \
     src/core/model/disp3dmodel.h \
-    src/core/model/trackingpoint.h
+    src/core/model/trackingpoint.h \
+    src/app/disp3d/trackingpointmanager.h \
+    src/app/disp3d/trackingpointdatatable.h
 
 SOURCES += \
     src/app/conncect/connectdebug.cpp \
@@ -131,7 +135,9 @@ SOURCES += \
     src/core/model/disp3dfreshmodelthread.cpp \
     src/core/model/disp3dinteractor.cpp \
     src/core/model/disp3dmodel.cpp \
-    src/core/model/trackingpoint.cpp
+    src/core/model/trackingpoint.cpp \
+    src/app/disp3d/trackingpointmanager.cpp \
+    src/app/disp3d/trackingpointdatatable.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \

@@ -14,6 +14,10 @@
 #include <disp3dkeypointselect.h>
 #include <disp3dfreshmodelthread.h>
 
+#include <trackingpointdatatable.h>
+#include <trackingpointmanager.h>
+#include <trackingpoint.h>
+
 #include <IFE.h>
 
 namespace Ui {
@@ -63,6 +67,9 @@ private slots:
     void on_cbox_CareamLockAble_clicked(bool checked);
     void on_cbox_FellowAble_clicked(bool checked);
 
+    void on_actionTrackingPoints_triggered();
+    void on_actionTrackingPointData_triggered();
+
 public slots:
     void RefreshStage();
     void RefreshInfor();
@@ -81,6 +88,8 @@ private:
     disp3dbackground *m_disp3dbackground = nullptr;
     disp3dinteractor *m_disp3dinteractor = nullptr;
     disp3dfreshmodelthread *m_disp3dthread = nullptr;
+
+    trackingpoint *m_trackingpoint = nullptr;
 
     vtkRenderWindow *m_vtkrenderwindow = nullptr;
     vtkRenderWindowInteractor *m_iren = nullptr;

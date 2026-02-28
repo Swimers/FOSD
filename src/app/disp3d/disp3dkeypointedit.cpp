@@ -56,8 +56,8 @@ disp3dkeypointedit* disp3dkeypointedit::instance(QWidget *parent)
 
 void disp3dkeypointedit::UpDataKeyInfor()
 {
-    ui->lab_NumPoint->setText(QString::number(m_disp3dmodel->GetModelNumPoints()));
-    ui->lab_NumKeyPoint->setText(QString::number(m_disp3dmodel->GetModelNumKeyPoints()));
+    ui->lab_NumPoint->setText(QString::number(m_disp3dmodel->ModelPointsNum));
+    ui->lab_NumKeyPoint->setText(QString::number(m_disp3dmodel->ModelKeyPointsNum));
 
     ui->cbox_IDKeyPoint->clear();
     QList<vtkIdType> idList = m_disp3dmodel->keyPointSet.values();

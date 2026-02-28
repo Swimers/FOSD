@@ -128,6 +128,11 @@ void disp3dmodel::LoadModel(const QString &filePath)
 
     ReadPointQMap(dynPolyData);
     Flag_Actor = true;
+
+    GetModelPointsNum();
+    GetModelPolysNum();
+    GetModelKeyPointsNum();
+    GetModelSize();
 }
 
 void disp3dmodel::ExportModel(const QString &filePath)
@@ -356,22 +361,33 @@ void disp3dmodel::ClearKeyPoint()
     renderWindow->Render();
 }
 
-uint disp3dmodel::GetModelNumPoints()
+void disp3dmodel::GetModelPointsNum()
 {
     vtkIdType numPoints = rawPolyData->GetNumberOfPoints();
-    return static_cast<uint>(numPoints);
+    ModelPointsNum = static_cast<uint>(numPoints);
 }
 
-uint disp3dmodel::GetModelNumPolys()
+void disp3dmodel::GetModelPolysNum()
 {
     vtkIdType numPolys = rawPolyData->GetNumberOfPolys();
-    return static_cast<uint>(numPolys);
+    ModelPolysNum = static_cast<uint>(numPolys);
 }
 
-uint disp3dmodel::GetModelNumKeyPoints()
+void disp3dmodel::GetModelKeyPointsNum()
 {
     vtkIdType numKeyPoints = keyPointSet.size();
-    return static_cast<uint>(numKeyPoints);
+    ModelKeyPointsNum = static_cast<uint>(numKeyPoints);
+}
+
+void disp3dmodel::GetModelSize()
+{
+    double bounds[6];
+    modelActor->GetBounds(bounds);
+    double dx = bounds[1] - bounds[0];
+    double dy = bounds[3] - bounds[2];
+    double dz = bounds[5] - bounds[4];
+    double diag = std::sqrt(dx*dx + dy*dy + dz*dz);
+    ModelSize = std::max(1e-6, diag * 0.008);
 }
 
 void disp3dmodel::ResetCamera(int Index)

@@ -2,6 +2,7 @@
 #include "ui_disp3dwindow.h"
 
 #include <disp3dbackground.h>
+#include <trackingpoint.h>
 
 #include <stdio.h>
 #include <QDebug>
@@ -72,19 +73,21 @@ void disp3dwindow::InitWindow()
     m_iren->SetInteractorStyle(style);
     style->SetDefaultRenderer(m_disp3dmodel->GetVTKRenderer());
     style->Delete();  //智能指针管理，这里可以Delete
-
+    m_disp3dmodel->GetVTKRenderWindow()->Render();
     //原版本render传递逻辑
     //ui->vtk_stage->SetRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
     //ui->vtk_openGL->setRenderWindow(m_disp3dmodel->GetVTKRenderWindow());
+    //m_disp3dmodel->initdisp3dmodel();
 
-    m_disp3dmodel->initdisp3dmodel();
-
-    ui->dock_Infor->setVisible(false);
-    m_disp3dbackground = new disp3dbackground(m_disp3dmodel->GetVTKRenderer(),m_disp3dmodel->GetVTKRenderWindow());
+    m_disp3dbackground = new disp3dbackground(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
     m_disp3dbackground->SetVtkRenderBackGradient(0.625,0.6797,0.762,0.109, 0.1797, 0.2773);
     m_disp3dbackground->AddAxesActor();
     m_disp3dbackground->AddAxesGrid();
 
+    m_trackingpoint = new trackingpoint(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
+    m_trackingpoint->SetDisplayModel(m_disp3dmodel);
+
+    ui->dock_Infor->setVisible(false);
     ui->actionReset->setDisabled(true);
     ui->actionStart->setDisabled(false);
     ui->actionStop->setEnabled(false);
@@ -94,9 +97,10 @@ void disp3dwindow::InitWindow()
 
     InitPointInfor();
 
-//    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
-//    if(m_disp3dmodel->Flag_Actor)
-//    RefreshInfor();
+    // 测试代码段，初始化加载模型
+    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/yj7-waiyi20241213_asm.stp-曲面实体.step.STL");
+    if(m_disp3dmodel->Flag_Actor)
+    RefreshInfor();
 
     connect(freshTimer,SIGNAL(timeout()),this,SLOT(RefreshStage()));
 }
@@ -116,9 +120,9 @@ void disp3dwindow::InitPointInfor()
 
 void disp3dwindow::RefreshInfor()
 {
-    ui->lab_NumPoints->setText(QString::number(m_disp3dmodel->GetModelNumPoints()));
-    ui->lab_NumPolys->setText(QString::number(m_disp3dmodel->GetModelNumPolys()));
-    ui->lab_NumKeyPoints->setText(QString::number(m_disp3dmodel->GetModelNumKeyPoints()));
+    ui->lab_NumPoints->setText(QString::number(m_disp3dmodel->ModelPointsNum));
+    ui->lab_NumPolys->setText(QString::number(m_disp3dmodel->ModelPolysNum));
+    ui->lab_NumKeyPoints->setText(QString::number(m_disp3dmodel->ModelKeyPointsNum));
     ui->lab_MaxDeformation->setText("00.00");
 }
 
@@ -286,7 +290,6 @@ void disp3dwindow::on_pbtn_KeyPointSelect_clicked()
         m_disp3dkeypointselect->GetDisplayModelPtr(m_disp3dmodel);
         m_disp3dkeypointselect->UpDataKeyInfor();
         m_disp3dkeypointselect->InitWindow();
-
     }
     else {
         QMessageBox::critical(this, "错误", "模型不存在");
@@ -456,5 +459,33 @@ void disp3dwindow::on_cbox_FellowAble_clicked(bool checked)
     if(checked == false){
         m_disp3dmodel->GetVTKRenderer()->ResetCamera();
         m_disp3dmodel->GetVTKRenderWindow()->Render();
+    }
+}
+
+void disp3dwindow::on_actionTrackingPoints_triggered()
+{
+    if(m_disp3dmodel->Flag_Actor){
+        trackingpointmanager *m_trackingpointmanager = trackingpointmanager::instance();
+        m_trackingpointmanager->SetDisplayModel(m_disp3dmodel);
+        m_trackingpointmanager->SetTrackingPoint(m_trackingpoint);
+        m_trackingpointmanager->show();
+
+    }
+    else {
+        QMessageBox::critical(this, "错误", "模型不存在");
+    }
+}
+
+void disp3dwindow::on_actionTrackingPointData_triggered()
+{
+    if(m_disp3dmodel->Flag_Actor){
+        trackingpointdatatable *m_trackingpointdatatable = trackingpointdatatable::instance();
+        m_trackingpointdatatable->SetDisplayModel(m_disp3dmodel);
+        m_trackingpointdatatable->SetTrackingPoint(m_trackingpoint);
+        m_trackingpointdatatable->show();
+
+    }
+    else {
+        QMessageBox::critical(this, "错误", "模型不存在");
     }
 }

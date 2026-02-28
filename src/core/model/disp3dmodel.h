@@ -65,14 +65,18 @@ public:
     void FreshKeyPoint();
     void ClearKeyPoint();
 
-    uint GetModelNumPoints();
-    uint GetModelNumPolys();
-    uint GetModelNumKeyPoints();
+    //模型参数相关
+    void GetModelPointsNum();
+    void GetModelPolysNum();
+    void GetModelKeyPointsNum();
+    void GetModelSize();
 
+    //相机相关
     void ResetCamera(int Index);
     void CameraLock(bool index);
     void CameraFellow(bool index);
 
+    //映射相关
     void InitScalarsValues(ModelScalars &scalars, vtkPolyData* poly);
     void SetupColorMapping(const std::string &scalarName);
     void OFFScalars();
@@ -87,7 +91,13 @@ public:
     QMap<vtkIdType, QVector<double>> pointDisplace; //各点形变量（编号，坐标向量）
     QMap<vtkIdType, QVector<double>> pointpos;      //各点实际位置（编号，坐标向量）
     QSet<vtkIdType> keyPointSet;                    //关键点列表
-    double MaxDisplace = 0;
+
+    double MaxDisplace = 0; //最大形变
+
+    uint ModelPointsNum;
+    uint ModelPolysNum;
+    uint ModelKeyPointsNum;
+    double ModelSize;
 
     QMap<vtkIdType, struct SelectedPointEntity> SelectedPointMap;
 

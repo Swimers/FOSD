@@ -80,8 +80,8 @@ void disp3dkeypointselect::InitWindow()
 
 void disp3dkeypointselect::UpDataKeyInfor()
 {
-    ui->lab_NumPoints->setText(QString::number(m_disp3dmodel->GetModelNumPoints()));
-    ui->lab_NumKeyPoints->setText(QString::number(m_disp3dmodel->GetModelNumKeyPoints()));
+    ui->lab_NumPoints->setText(QString::number(m_disp3dmodel->ModelPointsNum));
+    ui->lab_NumKeyPoints->setText(QString::number(m_disp3dmodel->ModelKeyPointsNum));
 
     if(!m_disp3dmodel->keyPointSet.isEmpty()){
         QList<vtkIdType> idList = m_disp3dmodel->keyPointSet.values();
