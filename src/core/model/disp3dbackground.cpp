@@ -14,7 +14,7 @@
 #include <vtkAppendPolyData.h>
 #include <vtkPolyDataMapper.h>
 
-disp3dbackground::disp3dbackground(vtkRenderer *renderer, vtkSmartPointer<vtkRenderWindow> renderWindow)
+disp3dbackground::disp3dbackground( vtkSmartPointer<vtkRenderer> renderer, vtkSmartPointer<vtkRenderWindow> renderWindow)
 {
     m_renderer =  renderer;
     m_renderWindow = renderWindow;

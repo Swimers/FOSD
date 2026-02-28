@@ -101,11 +101,11 @@ void disp3dmodel::LoadModel(const QString &filePath)
 {
     modelScalars.Init();
 
-    // Win
-    //QTextCodec *codec = QTextCodec::codecForName("GBK");
-    //std::string localPath = codec->fromUnicode(filePath).data(); //中文路径的兼容性
+    QTextCodec *codec = QTextCodec::codecForName("GBK");
+    std::string localPath = codec->fromUnicode(filePath).data(); //中文路径的兼容性
 
-    std::string localPath = filePath.toStdString();
+    //std::string localPath = filePath.toStdString();
+
     reader->SetFileName(localPath.c_str());
     reader->Update();
     rawPolyData = reader->GetOutput();

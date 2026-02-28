@@ -10,7 +10,7 @@ enum PlaneType { PLANE_XZ, PLANE_XY, PLANE_YZ };
 class disp3dbackground
 {
 public:
-    disp3dbackground(vtkRenderer* renderer,vtkSmartPointer<vtkRenderWindow> renderWindow);
+    disp3dbackground(vtkSmartPointer<vtkRenderer> renderer,vtkSmartPointer<vtkRenderWindow> renderWindow);
     ~disp3dbackground();
 
 public:
@@ -30,7 +30,7 @@ public:
     void ShowGridYZ(bool);
 
 private:
-    vtkRenderer* m_renderer = nullptr;
+    vtkSmartPointer<vtkRenderer> m_renderer = nullptr;
     vtkSmartPointer<vtkRenderWindow> m_renderWindow = nullptr;    //声明窗口指针
 
     vtkAxesActor* axe = nullptr;

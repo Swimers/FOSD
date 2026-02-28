@@ -38,23 +38,25 @@
 > FOSD-Pro 后版本开始沿用下述项目结构
 ```
 {{项目仓库名}}/
-├── bulid/              # 编译构建结果(Debug|Release在统一目录下)
-|   ├── bin/        
-|   ├── generated/
-|   ├── obj/
-|   └── Makefile 
+├── bulid/              # 编译构建结果(Debug|Release在统一目录下)(不进行同步)
+|   ├── Window
+|   └── Linux
 ├── config/             # 软件配置文件
+├── Data/               # 相关模型/点阵数据
+├── Doc/                # 说明相关文档
 ├── lib/                # 软件依赖核心库
+|   ├── CustomUi        # 外界UI控件依赖库
 |   └── VTK/            # VTK的Debug|Release Win版本编译结果
 ├── res/                # 资源库
 ├── src/                # 核心源代码目录
-│   ├── main
-│   ├── Connect         # 通信界面
-│   ├── Communication   # 通信接口函数
-│   ├── Dependence      # 依赖计算函数
-│   ├── Disp2D          # 二维显示界面
-│   ├── Disp3D          # 三维显示界面
-│   └── UserManage      # 用户管理
+│   ├── main.cpp
+│   ├── app             # Qt UI界面(.cpp/.h/.ui)
+│   ├── communication   # 通信接口函数
+│   ├── core            # 核心代码/函数
+│   ├── protocol        # 通信解码协议
+│   ├── test            # 测试代码
+|   ├── visualization   # 可视化代码
+│   └── utils           # 通用功能单元
 ├── FOSD-Pro.pro        # Qmake编译配置
 └── README.md           # 项目说明文档（本文档）
 ```

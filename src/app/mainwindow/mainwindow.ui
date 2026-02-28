@@ -138,7 +138,7 @@
          <string>调 解 仪</string>
         </property>
         <property name="icon">
-         <iconset resource="res/resource.qrc">
+         <iconset resource="../../../res/resource.qrc">
           <normaloff>:/icon/icon/Menu.png</normaloff>:/icon/icon/Menu.png</iconset>
         </property>
         <property name="iconSize">
@@ -176,7 +176,7 @@
          <string>二维验证</string>
         </property>
         <property name="icon">
-         <iconset resource="res/resource.qrc">
+         <iconset resource="../../../res/resource.qrc">
           <normaloff>:/icon/icon/2D_Plot.png</normaloff>:/icon/icon/2D_Plot.png</iconset>
         </property>
         <property name="iconSize">
@@ -202,7 +202,7 @@
          <string>变 形 场</string>
         </property>
         <property name="icon">
-         <iconset resource="res/resource.qrc">
+         <iconset resource="../../../res/resource.qrc">
           <normaloff>:/icon/icon/3D_Plot.png</normaloff>:/icon/icon/3D_Plot.png</iconset>
         </property>
         <property name="iconSize">
@@ -274,7 +274,7 @@
          <string>用户管理</string>
         </property>
         <property name="icon">
-         <iconset resource="res/resource.qrc">
+         <iconset resource="../../../res/resource.qrc">
           <normaloff>:/icon/icon/UserManage.png</normaloff>:/icon/icon/UserManage.png</iconset>
         </property>
         <property name="iconSize">
@@ -306,7 +306,7 @@
          <string>退出系统</string>
         </property>
         <property name="icon">
-         <iconset resource="res/resource.qrc">
+         <iconset resource="../../../res/resource.qrc">
           <normaloff>:/icon/icon/TurnOff.png</normaloff>:/icon/icon/TurnOff.png</iconset>
         </property>
         <property name="iconSize">
@@ -331,7 +331,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="res/resource.qrc"/>
+  <include location="../../../res/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

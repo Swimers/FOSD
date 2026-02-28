@@ -7,8 +7,10 @@
 QT       += core gui
 QT       += opengl
 
-QT += waylandcompositor
-LIBS += -lwayland-server -lxkbcommon
+win32 {         SYSTEM_NAME = windows}
+unix:!macx {    QT += waylandcompositor
+                LIBS += -lwayland-server -lxkbcommon}
+macx {          SYSTEM_NAME = macos}
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
                                   QT += printsupport
@@ -38,90 +40,98 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-INCLUDEPATH +=  $$PWD/src/main \
-                $$PWD/src/UserManage \
-                $$PWD/src/Disp2D \
-                $$PWD/src/Disp3D \
-                $$PWD/src/Math \
-                $$PWD/src/Connect \
-                $$PWD/src/Dependence \
-                $$PWD/src/Communication \
-                $$PWD/lib/CustomUi \
+INCLUDEPATH +=  src/main \
+                src/app/conncect \
+                src/app/disp2d \
+                src/app/disp3d \
+                src/app/mainwindow \
+                src/app/user \
+                src/communication \
+                src/core/IFE \
+                src/core/model \
+                src/protocol \
+                src/utils/database \
+                src/utils/global \
+                src/utils/QCustomPlot \
+                src/utils/Timers \
+                lib/CustomUi \
 
-SOURCES += \
-        $$PWD/src/main/main.cpp \
-        $$PWD/src/main/mainwindow.cpp \
-        $$PWD/src/UserManage/login.cpp \
-        $$PWD/src/UserManage/userregister.cpp \
-        $$PWD/src/UserManage/usermanage.cpp \
-        $$PWD/src/UserManage/userforget.cpp \
-        $$PWD/src/Connect/connectdebug.cpp \
-        $$PWD/src/Connect/qcustomplot.cpp \
-        $$PWD/src/Connect/connectwindow.cpp \
-        $$PWD/src/Connect/qcpdocumentobject.cpp \
-        $$PWD/src/Dependence/global.cpp \
-        $$PWD/src/Dependence/IFE.cpp \
-        $$PWD/src/Dependence/database.cpp \
-        $$PWD/src/Communication/serialtask.cpp \
-        $$PWD/src/Communication/analyzepackets.cpp \
-        $$PWD/src/Communication/udptask.cpp \
-        $$PWD/src/Communication/tcptask.cpp \
-        $$PWD/src/Disp2D/disp2dpara.cpp \
-        $$PWD/src/Disp2D/disp2dwindow.cpp \
-        $$PWD/src/Disp3D/disp3dbackground.cpp \
-        $$PWD/src/Disp3D/disp3dfreshmodelthread.cpp \
-        $$PWD/src/Disp3D/disp3dinteractor.cpp \
-        $$PWD/src/Disp3D/disp3dkeypointedit.cpp \
-        $$PWD/src/Disp3D/disp3dkeypointselect.cpp \
-        $$PWD/src/Disp3D/disp3dmodel.cpp \
-        $$PWD/src/Disp3D/disp3dwindow.cpp \
-        $$PWD/lib/CustomUi/switchcontrol.cpp \
-
-HEADERS += \
-        $$PWD/src/main/mainwindow.h \
-        $$PWD/src/UserManage/login.h \
-        $$PWD/src/UserManage/userregister.h \
-        $$PWD/src/UserManage/usermanage.h \
-        $$PWD/src/UserManage/userforget.h \
-        $$PWD/src/Disp2D/disp2dwindow.h \
-        $$PWD/src/Disp2D/disp2dpara.h \
-        $$PWD/src/Connect/connectdebug.h \
-        $$PWD/src/Connect/qcustomplot.h \
-        $$PWD/src/Connect/connectwindow.h \
-        $$PWD/src/Connect/qcpdocumentobject.h \
-        $$PWD/src/Dependence/Timer.h \
-        $$PWD/src/Dependence/global.h \
-        $$PWD/src/Dependence/IFE.h \
-        $$PWD/src/Dependence/database.h \
-        $$PWD/src/Communication/serialtask.h \
-        $$PWD/src/Communication/analyzepackets.h \
-        $$PWD/src/Communication/udptask.h \
-        $$PWD/src/Communication/udptask.h \
-        $$PWD/src/Communication/tcptask.h \
-        $$PWD/src/Communication/pocketsconfig.h \
-        $$PWD/src/Disp3D/disp3dbackground.h \
-        $$PWD/src/Disp3D/disp3dfreshmodelthread.h \
-        $$PWD/src/Disp3D/disp3dglobal.h \
-        $$PWD/src/Disp3D/disp3dinteractor.h \
-        $$PWD/src/Disp3D/disp3dkeypointedit.h \
-        $$PWD/src/Disp3D/disp3dkeypointselect.h \
-        $$PWD/src/Disp3D/disp3dmodel.h \
-        $$PWD/src/Disp3D/disp3dwindow.h \
-        $$PWD/lib/CustomUi/switchcontrol.h \
 
 FORMS += \
-        $$PWD/src/main/mainwindow.ui \
-        $$PWD/src/UserManage/login.ui \
-        $$PWD/src/UserManage/userregister.ui \
-        $$PWD/src/UserManage/usermanage.ui \
-        $$PWD/src/UserManage/userforget.ui \
-        $$PWD/src/Connect/connectdebug.ui \
-        $$PWD/src/Connect/connectwindow.ui \
-        $$PWD/src/Disp2D/disp2dwindow.ui \
-        $$PWD/src/Disp2D/disp2dpara.ui \
-        $$PWD/src/Disp3D/disp3dkeypointedit.ui \
-        $$PWD/src/Disp3D/disp3dkeypointselect.ui \
-        $$PWD/src/Disp3D/disp3dwindow.ui
+    src/app/conncect/connectdebug.ui \
+    src/app/conncect/connectwindow.ui \
+    src/app/disp2d/disp2dpara.ui \
+    src/app/disp2d/disp2dwindow.ui \
+    src/app/disp3d/disp3dkeypointedit.ui \
+    src/app/disp3d/disp3dkeypointselect.ui \
+    src/app/disp3d/disp3dwindow.ui \
+    src/app/mainwindow/mainwindow.ui \
+    src/app/user/login.ui \
+    src/app/user/userforget.ui \
+    src/app/user/usermanage.ui \
+    src/app/user/userregister.ui
+
+HEADERS += \
+    src/app/conncect/connectdebug.h \
+    src/app/conncect/connectwindow.h \
+    src/app/disp2d/disp2dpara.h \
+    src/app/disp2d/disp2dwindow.h \
+    src/app/disp3d/disp3dkeypointedit.h \
+    src/app/disp3d/disp3dkeypointselect.h \
+    src/app/disp3d/disp3dwindow.h \
+    src/app/mainwindow/mainwindow.h \
+    src/app/user/login.h \
+    src/app/user/userforget.h \
+    src/app/user/usermanage.h \
+    src/app/user/userregister.h \
+    src/communication/serialtask.h \
+    src/communication/tcptask.h \
+    src/communication/udptask.h \
+    src/core/IFE/IFE.h \
+    src/protocol/analyzepackets.h \
+    src/protocol/pocketsconfig.h \
+    src/utils/database/database.h \
+    src/utils/global/global.h \
+    src/utils/QCustomPlot/qcpdocumentobject.h \
+    src/utils/QCustomPlot/qcustomplot.h \
+    src/utils/Timers/Timer.h \
+    lib/CustomUi/switchcontrol.h \
+    src/core/model/disp3dbackground.h \
+    src/core/model/disp3dfreshmodelthread.h \
+    src/core/model/disp3dglobal.h \
+    src/core/model/disp3dinteractor.h \
+    src/core/model/disp3dmodel.h \
+    src/core/model/trackingpoint.h
+
+SOURCES += \
+    src/app/conncect/connectdebug.cpp \
+    src/app/conncect/connectwindow.cpp \
+    src/app/disp2d/disp2dpara.cpp \
+    src/app/disp2d/disp2dwindow.cpp \
+    src/app/disp3d/disp3dkeypointedit.cpp \
+    src/app/disp3d/disp3dkeypointselect.cpp \
+    src/app/disp3d/disp3dwindow.cpp \
+    src/app/mainwindow/mainwindow.cpp \
+    src/app/user/login.cpp \
+    src/app/user/userforget.cpp \
+    src/app/user/usermanage.cpp \
+    src/app/user/userregister.cpp \
+    src/communication/serialtask.cpp \
+    src/communication/tcptask.cpp \
+    src/communication/udptask.cpp \
+    src/core/IFE/IFE.cpp \
+    src/protocol/analyzepackets.cpp \
+    src/utils/database/database.cpp \
+    src/utils/global/global.cpp \
+    src/utils/QCustomPlot/qcpdocumentobject.cpp \
+    src/utils/QCustomPlot/qcustomplot.cpp \
+    src/main.cpp \
+    lib/CustomUi/switchcontrol.cpp \
+    src/core/model/disp3dbackground.cpp \
+    src/core/model/disp3dfreshmodelthread.cpp \
+    src/core/model/disp3dinteractor.cpp \
+    src/core/model/disp3dmodel.cpp \
+    src/core/model/trackingpoint.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \

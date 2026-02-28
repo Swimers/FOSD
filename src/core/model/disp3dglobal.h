@@ -36,7 +36,4 @@ struct ModelScalars
     }
 };
 
-
-
-
 #endif // DISP3DGLOBAL_H
