@@ -24,7 +24,6 @@ public:
     vtkSmartPointer<vtkActor> CreateGridActor(PlaneType type);
     void AddAxesGrid();
     void SetAxesGridSize(int size);
-
     void ShowGridXZ(bool);
     void ShowGridXY(bool);
     void ShowGridYZ(bool);
@@ -39,7 +38,7 @@ private:
     vtkSmartPointer<vtkActor> axesGridActor_XY;  // Z=0 平面
     vtkSmartPointer<vtkActor> axesGridActor_YZ;  // X=0 平面
 
-    double m_gridRange = 3000.0;
+    double m_gridRange = 100000.0;
     int m_gridNum = 100;
 };
 

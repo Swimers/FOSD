@@ -9,7 +9,7 @@
 #include <connectwindow.h>
 #include <disp2dwindow.h>
 #include <disp3dwindow.h>
-
+#include <rainbowife.h>
 
 namespace Ui {
 class MainWindow;

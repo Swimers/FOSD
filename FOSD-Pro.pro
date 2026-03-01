@@ -48,6 +48,7 @@ INCLUDEPATH +=  src/main \
                 src/app/user \
                 src/communication \
                 src/core/IFE \
+                src/core/RainbowIFE \
                 src/core/model \
                 src/protocol \
                 src/utils/database \
@@ -72,7 +73,8 @@ FORMS += \
     src/app/user/usermanage.ui \
     src/app/user/userregister.ui \
     src/app/disp3d/trackingpointmanager.ui \
-    src/app/disp3d/trackingpointdatatable.ui
+    src/app/disp3d/trackingpointdatatable.ui \
+    src/app/mainwindow/rainbowmainwindow.ui
 
 HEADERS += \
     src/app/conncect/connectdebug.h \
@@ -109,7 +111,8 @@ HEADERS += \
     src/app/disp3d/trackingpointdatatable.h \
     src/core/RainbowIFE/rainbowife.h \
     src/core/RainbowIFE/rainbowloadcalibration.h \
-    src/utils/Storage/DataStorageThread.h
+    src/utils/Storage/DataStorageThread.h \
+    src/app/mainwindow/rainbowmainwindow.h
 
 SOURCES += \
     src/app/conncect/connectdebug.cpp \
@@ -144,7 +147,8 @@ SOURCES += \
     src/app/disp3d/trackingpointdatatable.cpp \
     src/core/RainbowIFE/rainbowife.cpp \
     src/core/RainbowIFE/rainbowloadcalibration.cpp \
-    src/utils/Storage/DataStorageThread.cpp
+    src/utils/Storage/DataStorageThread.cpp \
+    src/app/mainwindow/rainbowmainwindow.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \

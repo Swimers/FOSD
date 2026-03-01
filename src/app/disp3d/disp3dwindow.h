@@ -19,6 +19,7 @@
 #include <trackingpoint.h>
 
 #include <IFE.h>
+#include <rainbowife.h>
 
 namespace Ui {
 class disp3dwindow;
@@ -74,6 +75,7 @@ public slots:
     void RefreshStage();
     void RefreshInfor();
     void GetIFEPtr(IFE * exife){ife = exife;}
+    void GetRainbowIFEPtr(rainbowIFE * ptr){m_rainbowIFE = ptr;}
 
 public:
     int FPS;
@@ -82,6 +84,8 @@ private:
     Ui::disp3dwindow *ui;
 
     IFE * ife = nullptr;
+    rainbowIFE *m_rainbowIFE =nullptr;
+
     bool Flag_ShowGrid;
 
     disp3dmodel *m_disp3dmodel = nullptr;

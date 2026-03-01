@@ -104,13 +104,14 @@ void disp3dbackground::ShowAxes(bool flag)
 {
     m_renderWindow->Render();
     axe->SetVisibility(flag);           //true为可见，false为不可见
+    SetAxesLength(50);
     m_renderWindow->Render();
 }
 
 void disp3dbackground::SetAxesLength(int size)
 {
     double normalized = size / 100.0;
-    double scaleFactor = 10000.0;
+    double scaleFactor = 50000.0;
     double actualLength = scaleFactor * pow(normalized, 2.0);
     axe->SetTotalLength(actualLength, actualLength, actualLength);
     if (m_renderWindow) {
@@ -172,7 +173,7 @@ vtkSmartPointer<vtkActor> disp3dbackground::CreateGridActor(PlaneType type)
     vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
     actor->SetMapper(mapper);
     actor->GetProperty()->SetColor(0.7, 0.7, 0.7);
-    actor->GetProperty()->SetOpacity(0.5);
+    actor->GetProperty()->SetOpacity(0.1);
     actor->GetProperty()->SetLineWidth(1.0);
 
     return actor;
