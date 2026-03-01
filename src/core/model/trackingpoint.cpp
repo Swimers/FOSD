@@ -129,7 +129,7 @@ void trackingpoint::CreatTrackingPoint(uint id, const QString &name, double x, d
     tp->currentDisp[1] = 0.0;
     tp->currentDisp[2] = 0.0;
     tp->visible = true;
-    tp->textVisible = true;  // 默认隐藏文本标签
+    tp->textVisible = false;  // 默认隐藏文本标签
 
     // 创建球体
     tp->sphereActor = CreateSphereSource(x,y,z);

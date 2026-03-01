@@ -98,8 +98,8 @@ void disp3dwindow::InitWindow()
     InitPointInfor();
 
     // 测试代码段，初始化加载模型
-    //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/yj7-waiyi20241213_asm.stp-曲面实体.step.STL");
-    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
+    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/rainbow.stl");
+    //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
 

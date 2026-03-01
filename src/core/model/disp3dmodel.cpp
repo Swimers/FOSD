@@ -20,6 +20,8 @@
 #include <vtkLookupTable.h>
 #include <vtkRenderer.h>
 #include <vtkVersion.h>
+#include <vtkTransform.h>
+#include <vtkTransformPolyDataFilter.h>
 
 #include <QTextCodec>
 #include <stdio.h>
@@ -109,6 +111,23 @@ void disp3dmodel::LoadModel(const QString &filePath)
     reader->SetFileName(localPath.c_str());
     reader->Update();
     rawPolyData = reader->GetOutput();
+
+//    // ========== 新增：模型平移核心逻辑 ==========
+//    // 1. 创建平移变换对象，设置x/y/z方向的平移量
+//    vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+//    transform->Translate(-12.15, -754.94, -13642.09); // 平移核心API
+
+//    // 2. 创建PolyData变换过滤器，将平移应用到模型数据
+//    vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
+//    transformFilter->SetInputData(rawPolyData); // 输入原始模型数据
+//    transformFilter->SetTransform(transform);   // 绑定平移变换规则
+//    transformFilter->Update();                  // 执行变换计算
+
+//    // 3. 获取平移后的模型数据
+//    vtkPolyData* translatedPolyData = transformFilter->GetOutput();
+//    rawPolyData->DeepCopy(translatedPolyData);
+//    // ========== 平移逻辑结束 ==========
+
     dynPolyData = vtkSmartPointer<vtkPolyData>::New();
     dynPolyData->DeepCopy(rawPolyData);
     mapper->SetInputData(dynPolyData);
