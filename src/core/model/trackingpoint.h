@@ -34,6 +34,7 @@ public:
     vtkCaptionActor2D *CreateTextActor(double x, double y, double z);
 
     void CreatTrackingPoint(uint id, const QString& name, double x, double y, double z);
+    void ResetTrackingPoint();
     void DeleteTrackingPoint();
     void ClearTrackingPoint();
 

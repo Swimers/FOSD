@@ -30,7 +30,7 @@
 class disp3dmodel
 {
 private:
-    vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+    //vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
     vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
     vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
@@ -46,7 +46,7 @@ public:
     void initdisp3dmodel();
 
 public:
-    vtkGenericOpenGLRenderWindow* GetVTKRenderWindow(){return m_renderWindow;}
+    vtkRenderWindow* GetVTKRenderWindow(){return renderWindow;}
     vtkRenderer* GetVTKRenderer(){return renderer;}
     vtkActor* GetVTKActor(){return modelActor;}
     void SetInteractor(vtkRenderWindowInteractor* interactor) { iren = interactor; }
@@ -93,6 +93,7 @@ public:
     QSet<vtkIdType> keyPointSet;                    //关键点列表
 
     double MaxDisplace = 0; //最大形变
+    double Displacefactor = 1;
 
     uint ModelPointsNum;
     uint ModelPolysNum;

@@ -98,7 +98,8 @@ void disp3dwindow::InitWindow()
     InitPointInfor();
 
     // 测试代码段，初始化加载模型
-    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/yj7-waiyi20241213_asm.stp-曲面实体.step.STL");
+    //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/yj7-waiyi20241213_asm.stp-曲面实体.step.STL");
+    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
 
@@ -317,15 +318,17 @@ void disp3dwindow::on_actionStart_triggered()
         QMessageBox::critical(this, "错误", "模型不存在");
         return ;
     }
+
     ui->actionStart->setDisabled(true);
     ui->actionReset->setDisabled(true);
-
     ui->actionPause->setEnabled(true);
     ui->actionStop->setEnabled(true);
+
     freshTimer->start(1000/FPS);
     if(m_disp3dthread == nullptr){  //这里使用线程的方式计算数据，如果采用定时器的话，会造成界面很卡
         m_disp3dthread = new disp3dfreshmodelthread(this);
         m_disp3dthread->GetPtr(m_disp3dmodel, ife);
+        m_disp3dthread->GetTrackingPointPtr(m_trackingpoint);
         m_disp3dthread->start();
     }
     m_disp3dthread->startThread();
@@ -365,6 +368,8 @@ void disp3dwindow::on_actionPause_triggered()
 void disp3dwindow::on_actionReset_triggered()
 {
     m_disp3dmodel->ResetModel();
+    m_trackingpoint->ResetTrackingPoint();
+
     ui->actionStart->setEnabled(true);
 
     ui->actionReset->setDisabled(true);

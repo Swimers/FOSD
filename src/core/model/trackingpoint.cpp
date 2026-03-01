@@ -75,8 +75,8 @@ bool trackingpoint::LoadTrackingPointsFromFile(const QString &filePath)
 vtkActor *trackingpoint::CreateSphereSource(double x, double y, double z)
 {
     vtkSphereSource *sphereSource = vtkSphereSource::New();             // 创建vtkSphereSource对象
-    sphereSource->SetThetaResolution(3);                                // 经度分段（越小面数越少）
-    sphereSource->SetPhiResolution(3);                                  // 纬度分段（越小面数越少）
+    sphereSource->SetThetaResolution(4);                                // 经度分段（越小面数越少）
+    sphereSource->SetPhiResolution(4);                                  // 纬度分段（越小面数越少）
     sphereSource->Update();                                             // 请求数据
     vtkPolyDataMapper *sphereMapper = vtkPolyDataMapper::New();         // 创建映射器对象
     sphereMapper->SetInputConnection(sphereSource->GetOutputPort());    // 输入vtkSphereSource对象数据
@@ -84,7 +84,7 @@ vtkActor *trackingpoint::CreateSphereSource(double x, double y, double z)
     sphereActor->SetMapper(sphereMapper);
     sphereActor->SetPosition(x, y, z);                                  // 设置小球的位置为世界坐标
     sphereActor->GetProperty()->SetColor(0, 1, 0);                      // 设置小球对象为红色
-    sphereActor->SetScale(m_disp3dmodel->ModelSize / 2);                // 设置小球的大小
+    sphereActor->SetScale(m_disp3dmodel->ModelSize / 2);                    // 设置小球的大小
     return sphereActor;                                                 // 返回红色小球对象
 }
 
@@ -129,7 +129,7 @@ void trackingpoint::CreatTrackingPoint(uint id, const QString &name, double x, d
     tp->currentDisp[1] = 0.0;
     tp->currentDisp[2] = 0.0;
     tp->visible = true;
-    tp->textVisible = false;  // 默认隐藏文本标签
+    tp->textVisible = true;  // 默认隐藏文本标签
 
     // 创建球体
     tp->sphereActor = CreateSphereSource(x,y,z);
@@ -143,6 +143,27 @@ void trackingpoint::CreatTrackingPoint(uint id, const QString &name, double x, d
 
     m_renderwindow->Render();
     qDebug() << "添加追踪点:" << id << name << "坐标:(" << x << "," << y << "," << z << ")";
+}
+
+void trackingpoint::ResetTrackingPoint()
+{
+    for (TrackingPoint *tp : trackingPoints) {
+        tp->currentDisp[0] = 0.0;
+        tp->currentDisp[1] = 0.0;
+        tp->currentDisp[2] = 0.0;
+
+        if (tp->visible) {
+            // 更新球体位置
+            tp->sphereActor->SetPosition(tp->originalPos);
+            tp->sphereActor->Modified();
+            // 更新文本标签内容和3D附着点位置
+            char dispText[100];
+            sprintf(dispText, "(%.3f, %.3f, %.3f)", tp->currentDisp[0], tp->currentDisp[1], tp->currentDisp[2]);
+            tp->textActor->SetCaption(dispText);
+            tp->textActor->SetAttachmentPoint(tp->originalPos);
+            tp->textActor->Modified();
+        }
+    }
 }
 
 void trackingpoint::ClearTrackingPoint()
