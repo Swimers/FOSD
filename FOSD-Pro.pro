@@ -54,6 +54,7 @@ INCLUDEPATH +=  src/main \
                 src/utils/global \
                 src/utils/QCustomPlot \
                 src/utils/Timers \
+                src/utils/Storage \
                 lib/CustomUi \
 
 
@@ -105,7 +106,10 @@ HEADERS += \
     src/core/model/disp3dmodel.h \
     src/core/model/trackingpoint.h \
     src/app/disp3d/trackingpointmanager.h \
-    src/app/disp3d/trackingpointdatatable.h
+    src/app/disp3d/trackingpointdatatable.h \
+    src/core/RainbowIFE/rainbowife.h \
+    src/core/RainbowIFE/rainbowloadcalibration.h \
+    src/utils/Storage/DataStorageThread.h
 
 SOURCES += \
     src/app/conncect/connectdebug.cpp \
@@ -137,7 +141,10 @@ SOURCES += \
     src/core/model/disp3dmodel.cpp \
     src/core/model/trackingpoint.cpp \
     src/app/disp3d/trackingpointmanager.cpp \
-    src/app/disp3d/trackingpointdatatable.cpp
+    src/app/disp3d/trackingpointdatatable.cpp \
+    src/core/RainbowIFE/rainbowife.cpp \
+    src/core/RainbowIFE/rainbowloadcalibration.cpp \
+    src/utils/Storage/DataStorageThread.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \
