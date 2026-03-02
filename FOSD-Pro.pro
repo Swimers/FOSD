@@ -148,7 +148,8 @@ SOURCES += \
     src/core/RainbowIFE/rainbowife.cpp \
     src/core/RainbowIFE/rainbowloadcalibration.cpp \
     src/utils/Storage/DataStorageThread.cpp \
-    src/app/mainwindow/rainbowmainwindow.cpp
+    src/app/mainwindow/rainbowmainwindow.cpp \
+    src/fosdplugin.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \
