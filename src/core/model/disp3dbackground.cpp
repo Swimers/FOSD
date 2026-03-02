@@ -13,6 +13,13 @@
 #include <vtkLineSource.h>
 #include <vtkAppendPolyData.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkPlaneSource.h>
+#include <vtkJPEGReader.h>
+#include <vtkPNGReader.h>
+#include <vtkTexture.h>
+#include <vtkCamera.h>
+#include <vtkSphereSource.h>
+#include <vtkTextureMapToSphere.h>
 
 disp3dbackground::disp3dbackground(vtkSmartPointer<vtkRenderer> renderer, vtkSmartPointer<vtkRenderWindow> renderWindow)
 {
@@ -179,7 +186,6 @@ vtkSmartPointer<vtkActor> disp3dbackground::CreateGridActor(PlaneType type)
     return actor;
 }
 
-
 void disp3dbackground::AddAxesGrid()
 {
     axesGridActor_XZ = CreateGridActor(PLANE_XZ);
@@ -242,6 +248,195 @@ void disp3dbackground::ShowGridYZ(bool flag)
     m_renderWindow->Render();
 }
 
+void disp3dbackground::CreateWorld()
+{
+    vtkActor* ground = CreateGroundWithTexture(200);
+    m_renderer->AddActor(ground);
+    vtkActor* sky = CreateSkyDome(700);
+    m_renderer->AddActor(sky);
 
+    vtkCamera* camera = m_renderer->GetActiveCamera();
+    double focalPoint[3] = {0.0, 0.0, 0.0};
+    double viewDir[3] = {0.0, -1.0, 0.3};  // 带一点仰角更像飞行视角
+    double len = std::sqrt(viewDir[0]*viewDir[0] +
+                           viewDir[1]*viewDir[1] +
+                           viewDir[2]*viewDir[2]);
+    viewDir[0] /= len;
+    viewDir[1] /= len;
+    viewDir[2] /= len;
+    double distance = 20000.0;  // 根据你的飞机尺度调整（100~500常用）
+    double position[3];
+    position[0] = focalPoint[0] - viewDir[0] * distance;
+    position[1] = focalPoint[1] - viewDir[1] * distance;
+    position[2] = focalPoint[2] - viewDir[2] * distance;
+    camera->SetPosition(position);       // 动态位置（非固定）
+    m_renderWindow->Render();
+}
+
+vtkActor *disp3dbackground::CreateGround(double modelSize)
+{
+    vtkPlaneSource* plane = vtkPlaneSource::New();
+
+    double scale = modelSize * 50.0;
+
+    plane->SetOrigin(-scale, -scale, 0);
+    plane->SetPoint1(scale, -scale, 0);
+    plane->SetPoint2(-scale, scale, 0);
+    plane->Update();
+
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    mapper->SetInputConnection(plane->GetOutputPort());
+
+    vtkActor* groundActor = vtkActor::New();
+    groundActor->SetMapper(mapper);
+    groundActor->GetProperty()->SetColor(0.3, 0.6, 0.3); // 草绿色
+    groundActor->GetProperty()->SetAmbient(0.8); // 防止太暗
+    groundActor->GetProperty()->LightingOff();   // 更像背景地面
+    groundActor->SetPosition(0, -modelSize * 30.0, -modelSize * 2.0);
+
+    return groundActor;
+}
+
+vtkActor *disp3dbackground::CreateSkyPlane(double modelSize)
+{
+    vtkPlaneSource* plane = vtkPlaneSource::New();
+
+    double scale = modelSize * 80.0;
+
+    plane->SetOrigin(-scale, 0, -scale);
+    plane->SetPoint1(scale, 0, -scale);
+    plane->SetPoint2(-scale, 0, scale);
+    plane->Update();
+
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    mapper->SetInputConnection(plane->GetOutputPort());
+    vtkActor* skyActor = vtkActor::New();
+    skyActor->SetMapper(mapper);
+    skyActor->GetProperty()->SetColor(0.6, 0.85, 1.0);
+    skyActor->GetProperty()->LightingOff();
+    skyActor->GetProperty()->SetAmbient(1.0);
+    skyActor->SetPosition(0, modelSize * 50.0, 0);
+
+    return skyActor;
+}
+
+vtkActor *disp3dbackground::CreateGroundWithTexture(double modelSize)
+{
+    vtkPlaneSource* plane = vtkPlaneSource::New();
+
+    double scale = modelSize * 5000.0;
+    double groundY = -modelSize * 500; // 地面位于 Y 负方向远处
+
+    // ===== 关键修改：固定Y，变化X和Z（XOZ平面）=====
+    plane->SetOrigin(-scale, groundY, -scale);   // 左下
+    plane->SetPoint1(scale,  groundY, -scale);   // 右下（X方向）
+    plane->SetPoint2(-scale, groundY,  scale);   // 左上（Z方向）
+    plane->Update();
+
+    // ===== 读取贴图 =====
+    vtkJPEGReader* reader = vtkJPEGReader::New();
+    reader->SetFileName("D:/CommonFiles/Projects_And_Works/Github/FOSD_Project/res/pic/ground.jpg");  // 草地/跑道图片
+    reader->Update();
+
+    vtkTexture* texture = vtkTexture::New();
+    texture->SetInputConnection(reader->GetOutputPort());
+
+    texture->InterpolateOn();     // 平滑
+    texture->RepeatOn();          // 允许重复贴图（关键）
+
+    // ===== 映射器 =====
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    mapper->SetInputConnection(plane->GetOutputPort());
+
+    vtkActor* groundActor = vtkActor::New();
+    groundActor->SetMapper(mapper);
+    groundActor->SetTexture(texture);
+
+    // 关闭光照，避免地面发黑
+    groundActor->GetProperty()->LightingOff();
+
+    // 放到 Y 负方向远处
+    groundActor->SetPosition(0, -modelSize * 40.0, -modelSize * 2.0);
+
+    return groundActor;
+}
+
+vtkActor *disp3dbackground::CreateSkyPlaneWithTexture(double modelSize)
+{
+    vtkPlaneSource* plane = vtkPlaneSource::New();
+
+    double scale = modelSize * 5000.0;
+    double groundY = modelSize * 500; // 地面位于 Y 负方向远处
+
+    // ===== 关键修改：固定Y，变化X和Z（XOZ平面）=====
+    plane->SetOrigin(-scale, groundY, -scale);   // 左下
+    plane->SetPoint1(scale,  groundY, -scale);   // 右下（X方向）
+    plane->SetPoint2(-scale, groundY,  scale);   // 左上（Z方向）
+    plane->Update();
+
+    vtkJPEGReader* reader = vtkJPEGReader::New();
+    reader->SetFileName("D:/CommonFiles/Projects_And_Works/Github/FOSD_Project/res/pic/sky.jpg");
+    reader->Update();
+
+    vtkTexture* texture = vtkTexture::New();
+    texture->SetInputConnection(reader->GetOutputPort());
+    texture->InterpolateOn();
+
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    mapper->SetInputConnection(plane->GetOutputPort());
+
+    vtkActor* actor = vtkActor::New();
+    actor->SetMapper(mapper);
+    actor->SetTexture(texture);
+    actor->GetProperty()->LightingOff();
+
+    actor->SetPosition(0, modelSize * 60.0, 0);
+
+    return actor;
+}
+
+vtkActor *disp3dbackground::CreateSkyDome(double modelSize)
+{
+    // 1. 创建球体（天空穹顶）
+    vtkSphereSource* sphere = vtkSphereSource::New();
+    sphere->SetRadius(modelSize * 2000.0);
+    sphere->SetThetaResolution(32);
+    sphere->SetPhiResolution(32);
+    sphere->SetCenter(0.0, -600000, 0.0);
+    sphere->Update();
+
+    // 2. 生成球面纹理坐标（关键步骤！！！）
+    vtkTextureMapToSphere* textureMap = vtkTextureMapToSphere::New();
+    textureMap->SetInputConnection(sphere->GetOutputPort());
+    textureMap->PreventSeamOn();  // 防止贴图接缝
+    textureMap->Update();
+
+    // 3. 读取天空贴图
+    vtkJPEGReader* reader = vtkJPEGReader::New();
+    reader->SetFileName("D:/CommonFiles/Projects_And_Works/Github/FOSD_Project/res/pic/sky.jpg");
+    reader->Update();
+
+    // 4. 创建纹理对象
+    vtkTexture* texture = vtkTexture::New();
+    texture->SetInputConnection(reader->GetOutputPort());
+    texture->InterpolateOn();          // 平滑贴图
+    texture->RepeatOff();              // 不重复贴图
+
+    // 5. 映射器（注意输入改为textureMap）
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    mapper->SetInputConnection(textureMap->GetOutputPort());
+
+    // 6. 创建天空Actor
+    vtkActor* skyActor = vtkActor::New();
+    skyActor->SetMapper(mapper);
+    skyActor->SetTexture(texture);
+
+    // 7. 关键：天空球内部可见（你这点是对的）
+    skyActor->GetProperty()->BackfaceCullingOff();
+    skyActor->GetProperty()->FrontfaceCullingOn();
+    skyActor->GetProperty()->LightingOff();  // 天空不受光照影响
+
+    return skyActor;
+}
 
 

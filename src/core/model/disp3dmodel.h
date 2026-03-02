@@ -105,7 +105,6 @@ public:
     ModelScalars modelScalars;      //颜色映射表
 
     int displacefactor = 2;
-
 };
 
 #endif // DISP3DMODEL_H

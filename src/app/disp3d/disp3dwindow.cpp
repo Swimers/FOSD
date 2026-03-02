@@ -80,9 +80,10 @@ void disp3dwindow::InitWindow()
     //m_disp3dmodel->initdisp3dmodel();
 
     m_disp3dbackground = new disp3dbackground(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
-    m_disp3dbackground->SetVtkRenderBackGradient(0.625,0.6797,0.762,0.109, 0.1797, 0.2773);
+    m_disp3dbackground->SetVtkRenderBackGradient(0.53, 0.81, 0.98, 0.87, 0.94, 1.0);
     m_disp3dbackground->AddAxesActor();
     m_disp3dbackground->AddAxesGrid();
+    m_disp3dbackground->GetModel(m_disp3dmodel);
 
     m_trackingpoint = new trackingpoint(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
     m_trackingpoint->SetDisplayModel(m_disp3dmodel);
@@ -99,6 +100,8 @@ void disp3dwindow::InitWindow()
 
     // 测试代码段，初始化加载模型
     m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/rainbow.stl");
+    m_disp3dbackground->CreateWorld();
+    m_disp3dmodel->GetVTKRenderWindow()->Render();
     //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
@@ -147,6 +150,8 @@ void disp3dwindow::on_pbtn_ModelLoad_clicked()
         QString filePath = QFileDialog::getOpenFileName(this, tr("选择文件"), "", filter);
         if (!filePath.isEmpty()) {
             m_disp3dmodel->LoadModel(filePath);
+            m_disp3dbackground->CreateWorld();
+            m_disp3dmodel->GetVTKRenderWindow()->Render();
             RefreshInfor();
         }
         else {

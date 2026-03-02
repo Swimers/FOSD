@@ -139,7 +139,7 @@ void disp3dmodel::LoadModel(const QString &filePath)
     modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
     modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
     modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.16, 0.582, 0.973);
+    modelActor->GetProperty()->SetColor(0.9529, 0.8510, 0.3490);
 
     renderer->AddActor(modelActor);
     renderer->ResetCamera();
@@ -306,7 +306,7 @@ void disp3dmodel::OFFScalars()
     modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
     modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
     modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.16, 0.582, 0.973);
+    modelActor->GetProperty()->SetColor(0.9529, 0.8510, 0.3490);
     renderWindow->Render();
 }
 
