@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //加载qss文件
-    QFile qssFile("./res/QSS/MacOS.qss");//1.
+    QFile qssFile("./data/QSS/MaterialDark-B.qss");//1.
     if(qssFile.open(QFile::ReadOnly)){//2.
         a.setStyleSheet(qssFile.readAll());//3.
     }
