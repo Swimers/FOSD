@@ -134,8 +134,8 @@ void disp3dwindow::RefreshStage()
 {
     m_disp3dmodel->GetVTKRenderWindow()->Render();
     char str[8];
-    sprintf(str, "%0.4f", m_disp3dmodel->MaxDisplace);
-    ui->lab_MaxDeformation->setText(QString(str));
+    //sprintf(str, "%0.4f", m_disp3dmodel->MaxDisplace);
+    //ui->lab_MaxDeformation->setText(QString(str));
 }
 
 void disp3dwindow::on_checkBox_3_clicked(bool checked)
@@ -332,7 +332,8 @@ void disp3dwindow::on_actionStart_triggered()
     freshTimer->start(1000/FPS);
     if(m_disp3dthread == nullptr){  //这里使用线程的方式计算数据，如果采用定时器的话，会造成界面很卡
         m_disp3dthread = new disp3dfreshmodelthread(this);
-        m_disp3dthread->GetPtr(m_disp3dmodel, ife);
+        m_disp3dthread->GetModelPtr(m_disp3dmodel);
+        m_disp3dthread->GetRainbowIFE(m_rainbowIFE);
         m_disp3dthread->GetTrackingPointPtr(m_trackingpoint);
         m_disp3dthread->start();
     }

@@ -134,6 +134,15 @@ void rainbowIFE::shapefunction(double x_para,double y_para,double z_para,double 
 0.914273800000000,	0.166287510000000,	0.369393890000000,
 0.157058618217253,	-0.986047232229701,	0.0551518577896113};
 
+    //****临时修改，限制-2300< z <2300 的点不运算
+    if((z_para >= -2300) && (z_para <= 2300)){
+        disp[0] = 0;
+        disp[1] = 0;
+        disp[2] = 0;
+        return;
+    }
+
+
     // double node_u_beam[14] = {0,
     //                0,
     //                0,
@@ -534,11 +543,27 @@ void rainbowIFE::saveConfig(const QString &filePath)
 #include "global.h"
 void rainbowIFE::calculateDisp()
 {
-    //传递传感器应变值
+//    //传递传感器应变值
+//    QMutexLocker locker(&mutexStrain);
+//    for (int i = 0; i < 16; ++i) {
+//        node_u[i] = all_data.free[i];
+//    }
+
     QMutexLocker locker(&mutexStrain);
-    for (int i = 0; i < 16; ++i) {
-        node_u[i] = all_data.free[i];
-    }
-
-
+    node_u[0]  = 0.0891408696770668;
+    node_u[1]  = -0.018775571137666702;
+    node_u[2]  = -8.148399353027344;
+    node_u[3]  = -101.8877182006836;
+    node_u[4]  = -318.6768798828125;
+    node_u[5]  = 0.0598243810236454;
+    node_u[6]  = -0.036320462822914124;
+    node_u[7]  = -0.020937006920576096;
+    node_u[8]  = -0.010799256153404713;
+    node_u[9]  = -0.004124469123780727;
+    node_u[10] = -2.8583545684814453;
+    node_u[11] = -25.96009063720703;
+    node_u[12] = 96.00071716308594;
+    node_u[13] = -0.028599070385098457;
+    node_u[14] = -0.05329131335020065;
+    node_u[15] = -0.007998616434633732;
 }

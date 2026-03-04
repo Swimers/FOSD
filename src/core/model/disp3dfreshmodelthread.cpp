@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #include <vtkCaptionActor2D.h>
-
+#include <global.h>
 #include <trackingpoint.h>
 
 disp3dfreshmodelthread::disp3dfreshmodelthread(QObject *parent):QThread(parent)
@@ -49,14 +49,21 @@ void disp3dfreshmodelthread::run()
 {
     while (!isInterruptionRequested()){
         if (!isPaused){
-            ife->calculateDisp();                           //步骤1：调用有限元求解器计算最新位移场
+            m_rainbowIFE->calculateDisp();                           //步骤1：调用有限元求解器计算最新位移场
             double Globalbeampointdisplace[3];
+
+            double node_u_local[16];
+            {
+                QMutexLocker locker(&mutexStrain);
+                memcpy(node_u_local, m_rainbowIFE->node_u, sizeof(node_u_local));
+            }
 
             for (auto it = m_disp3dmodel->rawPointMap.begin(); it != m_disp3dmodel->rawPointMap.end(); ++it) {// 步骤2：for循环遍历模型每个点
                 vtkIdType pid = it.key();
                 const QVector<double>& p0 = it.value();//原始点坐标
 
-                ife->ShapeFunction_New(p0[0],p0[1],ife->node_u,Globalbeampointdisplace);        //步骤3：调用有限元插值得到每点位移
+                //m_rainbowIFE->ShapeFunction_New(p0[0],p0[1],ife->node_u,Globalbeampointdisplace); //杭研单机翼       //步骤3：调用有限元插值得到每点位移
+                m_rainbowIFE->shapefunction(p0[0], p0[1], p0[2], node_u_local, Globalbeampointdisplace);
 
                 QVector<double> p(3),dp(3);
                 for (int i=0; i<3; i++) {               //步骤4：循环更新最大变形位移
@@ -90,7 +97,8 @@ void disp3dfreshmodelthread::run()
                 double disp[3];
                 // 使用形函数计算该点的位移（使用局部副本）
 
-                ife->ShapeFunction_New(tp->originalPos[0],tp->originalPos[1],ife->node_u,disp);
+                //ife->ShapeFunction_New(tp->originalPos[0],tp->originalPos[1],ife->node_u,disp);      //单机翼单点测试
+                m_rainbowIFE->shapefunction(tp->originalPos[0], tp->originalPos[1], tp->originalPos[2], node_u_local, Globalbeampointdisplace);
 
 //                ife->shapefunction(tp->originalPos[0],  // x (毫米)
 //                                   tp->originalPos[1],  // y
