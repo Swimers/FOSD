@@ -152,6 +152,7 @@ void disp3dmodel::LoadModel(const QString &filePath)
     GetModelPolysNum();
     GetModelKeyPointsNum();
     GetModelSize();
+    AllKeyPoint();
 }
 
 void disp3dmodel::ExportModel(const QString &filePath)
@@ -257,7 +258,6 @@ void disp3dmodel::ResetModel()
     renderWindow->Render();
 }
 
-
 void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 {
     vtkIdType nPoints = poly->GetNumberOfPoints();
@@ -325,6 +325,14 @@ void disp3dmodel::ReadPointQMap(vtkSmartPointer<vtkPolyData> PolyData)
         //qDebug() << id << coords[0] << coords[1] << coords[2];
         rawPointMap.insert(id, pointCoords);
         pointpos.insert(id, pointCoords);
+    }
+}
+
+void disp3dmodel::AllKeyPoint()
+{
+    for (auto it = rawPointMap.constBegin(); it != rawPointMap.constEnd(); ++it){
+        vtkIdType id = it.key();
+        keyPointSet.insert(id);
     }
 }
 

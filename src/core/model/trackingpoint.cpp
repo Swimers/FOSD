@@ -84,7 +84,7 @@ vtkActor *trackingpoint::CreateSphereSource(double x, double y, double z)
     sphereActor->SetMapper(sphereMapper);
     sphereActor->SetPosition(x, y, z);                                  // 设置小球的位置为世界坐标
     sphereActor->GetProperty()->SetColor(0, 1, 0);                      // 设置小球对象为红色
-    sphereActor->SetScale(m_disp3dmodel->ModelSize / 2);                    // 设置小球的大小
+    sphereActor->SetScale(m_disp3dmodel->ModelSize / 1.2);                    // 设置小球的大小
     return sphereActor;                                                 // 返回红色小球对象
 }
 

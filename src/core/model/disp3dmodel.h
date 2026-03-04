@@ -62,6 +62,7 @@ public:
     void ResetModel();
     void ReadPointQMap(vtkSmartPointer<vtkPolyData> PolyData);
 
+    void AllKeyPoint();
     void FreshKeyPoint();
     void ClearKeyPoint();
 

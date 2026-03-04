@@ -375,9 +375,9 @@ void disp3dwindow::on_actionReset_triggered()
 {
     m_disp3dmodel->ResetModel();
     m_trackingpoint->ResetTrackingPoint();
+    m_disp3dmodel->ResetModel();
 
     ui->actionStart->setEnabled(true);
-
     ui->actionReset->setDisabled(true);
     ui->actionPause->setDisabled(true);
     ui->actionStop->setDisabled(true);

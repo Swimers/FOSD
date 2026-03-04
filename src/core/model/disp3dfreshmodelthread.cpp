@@ -96,9 +96,8 @@ void disp3dfreshmodelthread::run()
             for (TrackingPoint *tp : m_trackingpoint->trackingPoints) { //步骤7: 更新追踪点坐标/模型/文本
                 double disp[3];
                 // 使用形函数计算该点的位移（使用局部副本）
-
                 //ife->ShapeFunction_New(tp->originalPos[0],tp->originalPos[1],ife->node_u,disp);      //单机翼单点测试
-                m_rainbowIFE->shapefunction(tp->originalPos[0], tp->originalPos[1], tp->originalPos[2], node_u_local, Globalbeampointdisplace);
+                m_rainbowIFE->shapefunction(tp->originalPos[0], tp->originalPos[1], tp->originalPos[2], node_u_local, disp);
 
 //                ife->shapefunction(tp->originalPos[0],  // x (毫米)
 //                                   tp->originalPos[1],  // y

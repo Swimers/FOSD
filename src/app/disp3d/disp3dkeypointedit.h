@@ -38,6 +38,9 @@ private slots:
     void on_pbtn_ClearCube_clicked();
     void on_pushButton_clicked();
 
+public:
+    void SelectAll();
+
 signals:
     void SelectSuccess();
 
