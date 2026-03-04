@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1091</width>
+    <height>823</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -94,7 +94,7 @@
          <string>退出系统</string>
         </property>
         <property name="icon">
-         <iconset resource="../../../../../Qt_Software/2025-12-09/resource.qrc">
+         <iconset>
           <normaloff>:/icon/Resource/icon/TurnOff.png</normaloff>:/icon/Resource/icon/TurnOff.png</iconset>
         </property>
         <property name="iconSize">
@@ -174,8 +174,6 @@
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="../../../../../Qt_Software/2025-12-09/resource.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

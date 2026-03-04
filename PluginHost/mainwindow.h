@@ -15,6 +15,13 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    static bool loadPlugin(const char* dllName);
+    static void unloadPlugin();
+
+private slots:
+    void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
