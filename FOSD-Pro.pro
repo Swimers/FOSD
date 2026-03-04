@@ -41,6 +41,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 INCLUDEPATH +=  src/main \
+                src/test \
                 src/app/conncect \
                 src/app/disp2d \
                 src/app/disp3d \
@@ -112,7 +113,8 @@ HEADERS += \
     src/core/RainbowIFE/rainbowife.h \
     src/core/RainbowIFE/rainbowloadcalibration.h \
     src/utils/Storage/DataStorageThread.h \
-    src/app/mainwindow/rainbowmainwindow.h
+    src/app/mainwindow/rainbowmainwindow.h \
+    src/test/teststorge.h
 
 SOURCES += \
     src/app/conncect/connectdebug.cpp \
@@ -150,7 +152,8 @@ SOURCES += \
     src/utils/Storage/DataStorageThread.cpp \
     src/app/mainwindow/rainbowmainwindow.cpp \
     src/fosdplugin.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/test/teststorge.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \

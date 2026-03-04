@@ -99,9 +99,12 @@ void disp3dwindow::InitWindow()
     InitPointInfor();
 
     // 测试代码段，初始化加载模型
-    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/rainbow.stl");
+    m_disp3dmodel->LoadModel("data/model/rainbow.stl");
+    m_disp3dmodel->Flag_Actor = true;
     m_disp3dbackground->CreateWorld();
     m_disp3dmodel->GetVTKRenderWindow()->Render();
+    m_trackingpoint->LoadTrackingPointsFromFile("data/trackingpoint/tracking_points_example_modified.csv");
+
     //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
@@ -134,8 +137,10 @@ void disp3dwindow::RefreshStage()
 {
     m_disp3dmodel->GetVTKRenderWindow()->Render();
     char str[8];
-    //sprintf(str, "%0.4f", m_disp3dmodel->MaxDisplace);
-    //ui->lab_MaxDeformation->setText(QString(str));
+    if(m_disp3dmodel){
+        QString maxDeformStr = QString::number(m_disp3dmodel->MaxDisplace, 'f', 4);
+        ui->lab_MaxDeformation->setText(maxDeformStr);
+    }
 }
 
 void disp3dwindow::on_checkBox_3_clicked(bool checked)
@@ -480,7 +485,7 @@ void disp3dwindow::on_actionTrackingPoints_triggered()
         m_trackingpointmanager->SetDisplayModel(m_disp3dmodel);
         m_trackingpointmanager->SetTrackingPoint(m_trackingpoint);
         m_trackingpointmanager->show();
-
+        m_trackingpointmanager->RefreshTable();
     }
     else {
         QMessageBox::critical(this, "错误", "模型不存在");

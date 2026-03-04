@@ -6,6 +6,8 @@
 #include <disp3dwindow.h>
 #include <rainbowife.h>
 
+#include <teststorge.h>
+
 namespace Ui {
 class RainbowMainWindow;
 }
@@ -40,6 +42,14 @@ private:
 
     disp3dwindow *m_disp3dwindow;
     rainbowIFE *m_rainbowIFE;
+
+//    typedef struct NET_SEND_BUFF4 {
+//        float strian[12];
+//        float temper[12];
+//        float free[16];
+//    }NET_SEND_BUFF4;
+    QTimer* m_testTimer = nullptr;  // 定时器指针
+    NET_SEND_BUFF4 m_testData;      // 预定义的测试数据
 
     QPoint p;
 };

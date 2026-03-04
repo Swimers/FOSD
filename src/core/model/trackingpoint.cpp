@@ -142,7 +142,7 @@ void trackingpoint::CreatTrackingPoint(uint id, const QString &name, double x, d
     trackingPoints.append(tp);
 
     m_renderwindow->Render();
-    qDebug() << "添加追踪点:" << id << name << "坐标:(" << x << "," << y << "," << z << ")";
+    //qDebug() << "添加追踪点:" << id << name << "坐标:(" << x << "," << y << "," << z << ")";
 }
 
 void trackingpoint::ResetTrackingPoint()

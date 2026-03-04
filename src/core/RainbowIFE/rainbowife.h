@@ -6,6 +6,7 @@
 #include <QMutex>
 
 //#include "data.h"
+#include <teststorge.h>
 #include "DataStorageThread.h"
 
 // 该宏意味着定值，即只初始化8行表格
@@ -15,6 +16,7 @@
 class rainbowIFE: public QObject
 {
     Q_OBJECT
+
 public:
     explicit rainbowIFE(QObject *parent = nullptr);
     ~rainbowIFE();
@@ -179,16 +181,17 @@ public:
     void loadConfig(const QString& filePath);  //导入配置
     void saveConfig(const QString& filePath);  //保存配置
 
-    typedef struct NET_SEND_BUFF4 {
-        float strian[12];
-        float temper[12];
-        float free[16];
-    }NET_SEND_BUFF4;
+//    typedef struct NET_SEND_BUFF4 {
+//        float strian[12];
+//        float temper[12];
+//        float free[16];
+//    }NET_SEND_BUFF4;
 
     NET_SEND_BUFF4 all_data;
 
 public slots:
     //void getDemoData(const DWR_FOSD::NET_SEND_BUFF4 data);
+    void GetDataTest(const NET_SEND_BUFF4 data);   //用于测试存储线路
 
 private:
     int getUnit(double x,double y);

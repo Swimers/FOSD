@@ -106,7 +106,7 @@ void DataStorageThread::writeToFile(const QList<StorageData>& dataList) {
     }
 
     // 确保输出目录存在
-    QString outputDir = path + "/Data/ouput";
+    QString outputDir = path + "/ouput";
     QDir dir;
     if (!dir.exists(outputDir)) {
         if (!dir.mkpath(outputDir)) {

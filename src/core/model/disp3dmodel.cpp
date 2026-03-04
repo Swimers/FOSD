@@ -148,11 +148,11 @@ void disp3dmodel::LoadModel(const QString &filePath)
     ReadPointQMap(dynPolyData);
     Flag_Actor = true;
 
+    AllKeyPoint();
     GetModelPointsNum();
     GetModelPolysNum();
     GetModelKeyPointsNum();
     GetModelSize();
-    AllKeyPoint();
 }
 
 void disp3dmodel::ExportModel(const QString &filePath)
