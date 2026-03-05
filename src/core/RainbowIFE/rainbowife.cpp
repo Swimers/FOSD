@@ -1,4 +1,4 @@
-#include "rainbowIFE.h"
+#include "rainbowife.h"
 
 #include "global.h"
 

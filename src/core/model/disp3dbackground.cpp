@@ -335,7 +335,7 @@ vtkActor *disp3dbackground::CreateGroundWithTexture(double modelSize)
 
     // ===== 读取贴图 =====
     vtkJPEGReader* reader = vtkJPEGReader::New();
-    reader->SetFileName("D:/CommonFiles/Projects_And_Works/Github/FOSD_Project/res/pic/ground.jpg");  // 草地/跑道图片
+    reader->SetFileName("data/pic/ground.jpg");  // 草地/跑道图片
     reader->Update();
 
     vtkTexture* texture = vtkTexture::New();
@@ -375,7 +375,7 @@ vtkActor *disp3dbackground::CreateSkyPlaneWithTexture(double modelSize)
     plane->Update();
 
     vtkJPEGReader* reader = vtkJPEGReader::New();
-    reader->SetFileName("D:/CommonFiles/Projects_And_Works/Github/FOSD_Project/res/pic/sky.jpg");
+    reader->SetFileName("data/pic/sky.jpg");
     reader->Update();
 
     vtkTexture* texture = vtkTexture::New();
@@ -413,7 +413,7 @@ vtkActor *disp3dbackground::CreateSkyDome(double modelSize)
 
     // 3. 读取天空贴图
     vtkJPEGReader* reader = vtkJPEGReader::New();
-    reader->SetFileName("D:/CommonFiles/Projects_And_Works/Github/FOSD_Project/res/pic/sky.jpg");
+    reader->SetFileName("data/pic/sky.jpg");
     reader->Update();
 
     // 4. 创建纹理对象

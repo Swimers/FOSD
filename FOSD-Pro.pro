@@ -47,7 +47,7 @@ INCLUDEPATH +=  src/main \
                 src/app/disp3d \
                 src/app/mainwindow \
                 src/app/user \
-                src/communication \
+                src/Communication \
                 src/core/IFE \
                 src/core/RainbowIFE \
                 src/core/model \
@@ -90,9 +90,9 @@ HEADERS += \
     src/app/user/userforget.h \
     src/app/user/usermanage.h \
     src/app/user/userregister.h \
-    src/communication/serialtask.h \
-    src/communication/tcptask.h \
-    src/communication/udptask.h \
+    src/Communication/serialtask.h \
+    src/Communication/tcptask.h \
+    src/Communication/udptask.h \
     src/core/IFE/IFE.h \
     src/protocol/analyzepackets.h \
     src/protocol/pocketsconfig.h \
@@ -129,9 +129,9 @@ SOURCES += \
     src/app/user/userforget.cpp \
     src/app/user/usermanage.cpp \
     src/app/user/userregister.cpp \
-    src/communication/serialtask.cpp \
-    src/communication/tcptask.cpp \
-    src/communication/udptask.cpp \
+    src/Communication/serialtask.cpp \
+    src/Communication/tcptask.cpp \
+    src/Communication/udptask.cpp \
     src/core/IFE/IFE.cpp \
     src/protocol/analyzepackets.cpp \
     src/utils/database/database.cpp \
@@ -152,7 +152,6 @@ SOURCES += \
     src/utils/Storage/DataStorageThread.cpp \
     src/app/mainwindow/rainbowmainwindow.cpp \
     src/fosdplugin.cpp \
-    src/main.cpp \
     src/test/teststorge.cpp
 
 RESOURCES += \

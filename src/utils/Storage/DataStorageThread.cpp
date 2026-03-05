@@ -9,6 +9,9 @@
 #include <QDateTime>
 #include <QDebug>
 
+const int DataStorageThread::BATCH_SIZE;
+const int DataStorageThread::MAX_WAIT_MS;
+
 DataStorageThread::DataStorageThread(QObject* parent) : QThread(parent) {
 }
 
