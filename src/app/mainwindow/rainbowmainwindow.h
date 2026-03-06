@@ -24,6 +24,9 @@ public:
     bool Flag_Style;
     bool Flag_WindowFull;
 
+    disp3dwindow *m_disp3dwindow;
+    rainbowIFE *m_rainbowIFE;
+
 private slots:
     void on_pbtn_TurnOff_clicked();
     void on_pbtn_Minimize_clicked();
@@ -32,6 +35,7 @@ private slots:
 
 private:
     void InitMainwindow();
+    void DataTest();
 
 protected:
     void mouseMoveEvent(QMouseEvent *e);
@@ -40,14 +44,6 @@ protected:
 private:
     Ui::RainbowMainWindow *ui;
 
-    disp3dwindow *m_disp3dwindow;
-    rainbowIFE *m_rainbowIFE;
-
-//    typedef struct NET_SEND_BUFF4 {
-//        float strian[12];
-//        float temper[12];
-//        float free[16];
-//    }NET_SEND_BUFF4;
     QTimer* m_testTimer = nullptr;  // 定时器指针
     NET_SEND_BUFF4 m_testData;      // 预定义的测试数据
 

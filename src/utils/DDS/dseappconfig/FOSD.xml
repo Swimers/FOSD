@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--本文件是自动生成的配置文件-->
+<!--<name>和<description>为只读标签-->
+<!--<componentIO>标签的topic、service和type为只读属性，不可修改，否则会引起被配置的程序执行崩溃；其他属性为可配置属性-->
+<!--其中type为"CONVERT"的componentIO，其inDomainID和outDomainID不能取相同的值-->
+<componentConfig>
+    <name>FOSD</name>
+    <author>yhx</author>
+    <version>0.0.0.0</version>
+    <institution>CETC</institution>
+    <subsystem>example_subsystem</subsystem>
+    <csci>example_csci</csci>
+    <description></description>
+    <componentIOs>
+        <componentIO topic="NET_SEND_BUFF4" type="INPUT" domainID="11" recordEnable="false" recordMode="local" />
+
+    </componentIOs>
+    <!-- 传输质量配置，用于配置消息传输的可靠性 -->
+    <!-- 一个主题唯一对应一种传输质量类型，使用该QoS需在发布端和订阅端同时修改配置，只使用默认传输质量类型无需修改该部分配置 -->
+    <reliabilityInfos>
+        <!-- 可靠传输(RELIABLE) 适用场景：保证传输数据在网络波动情况下可靠传输(ACKNACK)，单报文长度小于等于64988字节 -->
+        <!--<reliabilityInfo type="RELIABLE" topic="rel" max_sample="32"/>-->
+        <!-- 可靠长报文传输(RELIABLE_LONG_MESSAGE) 适用场景：可靠传输单报文长度大于64988字节，小于等于1MB，超过1MB不保证可靠性 -->
+        <!--<reliabilityInfo type="RELIABLE_LONG_MESSAGE" topic="rlm" max_sample="32"/>-->
+
+    </reliabilityInfos>
+    <!-- 持久化配置，用于配置后启动软件配置项接收历史消息 -->
+    <!-- 一个主题唯一对应一套持久化配置，使用该QoS需在发布端和订阅端同时修改配置，不使用持久化配置无需修改该部分配置 -->
+    <durabilityInfos>
+        <!--<durabilityInfo topic="test1" history_depth="20"/>-->
+        <!--<durabilityInfo topic="test2" history_depth="30"/>-->
+
+    </durabilityInfos>
+    <!-- TSN优先级配置，用于配置主题消息的优先级 -->
+    <!-- 一个主题只能配置一个优先级，优先级的取值范围是0～7，仅在使用TSN网络时有效 -->
+    <tsnPriorityInfos>
+        <!--<tsnPriorityInfo topic="test1" prio="1"/>-->
+        <!--<tsnPriorityInfo topic="test2" prio="6"/>-->
+
+    </tsnPriorityInfos>
+    <!-- 组播订阅，用于配置订阅端通过组播地址接收某主题 -->
+    <!-- 对于单个组件，一个主题只能配置一个组播订阅地址，不使用组播订阅无需修改该部分配置 -->
+    <multicastSubInfos>
+        <!--<multicastSubInfo topic="test1" multicast_ip="224.255.0.1"/>-->
+        <!--<multicastSubInfo topic="test2" multicast_ip="224.255.0.2"/>-->
+
+    </multicastSubInfos>
+    <recordConfig>
+        <!--以下配置只针对es记录模式-->
+        <esHost>elasticsearch.admin.svc.cluster.local</esHost>
+        <pubsub>
+            <!--写入线程数-->
+            <threadNum>5</threadNum>
+            <!--写入索引名（数据表名）-->
+            <indexName>rollover-record-rtidds-pubsub</indexName>
+            <!--批量写入，即数据到达这一数量向数据库批量写入-->
+            <bulkSize>100</bulkSize>
+            <!--提交时间间隔（单位为秒），即使数据未达到bulkSize，若距离上次提交时间已达到submitInterval，也向数据库写入-->
+            <submitInterval>2</submitInterval>
+        </pubsub>
+        <service>
+            <!--写入线程数-->
+            <threadNum>5</threadNum>
+            <!--写入索引名（数据表名）-->
+            <indexName>rollover-record-rtidds-service</indexName>
+            <!--批量写入，即数据到达这一数量向数据库批量写入-->
+            <bulkSize>100</bulkSize>
+            <!--提交时间间隔（单位为秒），即使数据未达到bulkSize，若距离上次提交时间已达到submitInterval，也向数据库写入-->
+            <submitInterval>2</submitInterval>
+        </service>
+    </recordConfig>
+</componentConfig>

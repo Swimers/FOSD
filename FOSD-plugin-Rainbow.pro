@@ -1,46 +1,56 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2025-06-26T11:13:38
+# Project: FOSD-16CH
+# Type   : Qt Plugin Library
+# Notes  : 已整理依赖、输出目录、源码分组及注释
 #
 #-------------------------------------------------
 
-QT       += core gui
-QT       += opengl
+#==================================================
+# 1. Qt 模块配置
+#==================================================
+QT += core gui
+
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets printsupport
+    QT += printsupport
+    QT += serialport
+    QT += network
+    QT += widgets
+    QT += core gui
+    QT += opengl
+}
+
+#源码/翻译编码（按需启用）
+CODECFORSRC = UTF-8
+CODECFORTR  = UTF-8
+
+# Windows 下 MSVC 可启用 UTF-8 编译选项（按需启用）
+# QMAKE_CXXFLAGS += /utf-8
+# QMAKE_CFLAGS   += /utf-8
+
+
+#==================================================
+# 2. 工程基本配置
+#==================================================
+CONFIG += c++11 plugin
+TEMPLATE = lib
+TARGET = FOSD-16CH
+
+# 启用 Qt 废弃 API 警告
+DEFINES += QT_DEPRECATED_WARNINGS
+
+# 如需禁止 Qt 6.0 以前废弃接口，可打开下面宏
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 win32 {         SYSTEM_NAME = windows}
 unix:!macx {    QT += waylandcompositor
                 LIBS += -lwayland-server -lxkbcommon}
 macx {          SYSTEM_NAME = macos}
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
-                                  QT += printsupport
-                                  QT += serialport
-                                  QT += network
-                                  QT += widgets
-
-CODECFORSRC = UTF-8
-CODECFORTR = UTF-8
-
-msvc:QMAKE_CXXFLAGS += /utf-8
-win32:QMAKE_CXXFLAGS += /utf-8
-
-TARGET   = FOSD_ProPlugin        # 建议不要带 '-'，否则生成的库名和加载时容易踩坑
-TEMPLATE = lib
-CONFIG  += plugin                # 或 shared（二选一；plugin 更贴合插件语义）
-
-# The following define makes your compiler emit warnings if you use
-# any feature of Qt which has been marked as deprecated (the exact warnings
-# depend on your compiler). Please consult the documentation of the
-# deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
-
-# You can also make your code fail to compile if you use deprecated APIs.
-# In order to do so, uncomment the following line.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-CONFIG += c++11
-
+#==================================================
+# 3. 工程内头文件搜索路径
+#==================================================
 INCLUDEPATH +=  src/main \
                 src/app/conncect \
                 src/app/disp2d \
@@ -60,25 +70,52 @@ INCLUDEPATH +=  src/main \
                 src/test \
                 lib/CustomUi \
 
+#==================================================
+# 4. 源文件
+#==================================================
+SOURCES += \
+    src/app/conncect/connectdebug.cpp \
+    src/app/conncect/connectwindow.cpp \
+    src/app/disp2d/disp2dpara.cpp \
+    src/app/disp2d/disp2dwindow.cpp \
+    src/app/disp3d/disp3dkeypointedit.cpp \
+    src/app/disp3d/disp3dkeypointselect.cpp \
+    src/app/disp3d/disp3dwindow.cpp \
+    src/app/disp3d/dispdata.cpp \
+    src/app/mainwindow/mainwindow.cpp \
+    src/app/user/login.cpp \
+    src/app/user/userforget.cpp \
+    src/app/user/usermanage.cpp \
+    src/app/user/userregister.cpp \
+    src/Communication/serialtask.cpp \
+    src/Communication/tcptask.cpp \
+    src/Communication/udptask.cpp \
+    src/core/IFE/IFE.cpp \
+    src/protocol/analyzepackets.cpp \
+    src/protocol/data.cpp \
+    src/rainbowfosdplugin.cpp \
+    src/test/teststorge.cpp \
+    src/utils/database/database.cpp \
+    src/utils/global/global.cpp \
+    src/utils/QCustomPlot/qcpdocumentobject.cpp \
+    src/utils/QCustomPlot/qcustomplot.cpp \
+    lib/CustomUi/switchcontrol.cpp \
+    src/core/model/disp3dbackground.cpp \
+    src/core/model/disp3dfreshmodelthread.cpp \
+    src/core/model/disp3dinteractor.cpp \
+    src/core/model/disp3dmodel.cpp \
+    src/core/model/trackingpoint.cpp \
+    src/app/disp3d/trackingpointmanager.cpp \
+    src/app/disp3d/trackingpointdatatable.cpp \
+    src/core/RainbowIFE/rainbowife.cpp \
+    src/core/RainbowIFE/rainbowloadcalibration.cpp \
+    src/utils/Storage/DataStorageThread.cpp \
+    src/app/mainwindow/rainbowmainwindow.cpp
 
-FORMS += \
-    src/app/conncect/connectdebug.ui \
-    src/app/conncect/connectwindow.ui \
-    src/app/disp2d/disp2dpara.ui \
-    src/app/disp2d/disp2dwindow.ui \
-    src/app/disp3d/disp3dkeypointedit.ui \
-    src/app/disp3d/disp3dkeypointselect.ui \
-    src/app/disp3d/disp3dwindow.ui \
-    src/app/disp3d/dispdata.ui \
-    src/app/mainwindow/mainwindow.ui \
-    src/app/user/login.ui \
-    src/app/user/userforget.ui \
-    src/app/user/usermanage.ui \
-    src/app/user/userregister.ui \
-    src/app/disp3d/trackingpointmanager.ui \
-    src/app/disp3d/trackingpointdatatable.ui \
-    src/app/mainwindow/rainbowmainwindow.ui
 
+#==================================================
+# 5. 头文件
+#==================================================
 HEADERS += \
     src/app/conncect/connectdebug.h \
     src/app/conncect/connectwindow.h \
@@ -98,6 +135,7 @@ HEADERS += \
     src/Communication/udptask.h \
     src/core/IFE/IFE.h \
     src/protocol/analyzepackets.h \
+    src/protocol/data.h \
     src/protocol/pocketsconfig.h \
     src/test/teststorge.h \
     src/utils/database/database.h \
@@ -119,317 +157,165 @@ HEADERS += \
     src/utils/Storage/DataStorageThread.h \
     src/app/mainwindow/rainbowmainwindow.h
 
-SOURCES += \
-    src/app/conncect/connectdebug.cpp \
-    src/app/conncect/connectwindow.cpp \
-    src/app/disp2d/disp2dpara.cpp \
-    src/app/disp2d/disp2dwindow.cpp \
-    src/app/disp3d/disp3dkeypointedit.cpp \
-    src/app/disp3d/disp3dkeypointselect.cpp \
-    src/app/disp3d/disp3dwindow.cpp \
-    src/app/disp3d/dispdata.cpp \
-    src/app/mainwindow/mainwindow.cpp \
-    src/app/user/login.cpp \
-    src/app/user/userforget.cpp \
-    src/app/user/usermanage.cpp \
-    src/app/user/userregister.cpp \
-    src/Communication/serialtask.cpp \
-    src/Communication/tcptask.cpp \
-    src/Communication/udptask.cpp \
-    src/core/IFE/IFE.cpp \
-    src/protocol/analyzepackets.cpp \
-    src/test/teststorge.cpp \
-    src/utils/database/database.cpp \
-    src/utils/global/global.cpp \
-    src/utils/QCustomPlot/qcpdocumentobject.cpp \
-    src/utils/QCustomPlot/qcustomplot.cpp \
-    lib/CustomUi/switchcontrol.cpp \
-    src/core/model/disp3dbackground.cpp \
-    src/core/model/disp3dfreshmodelthread.cpp \
-    src/core/model/disp3dinteractor.cpp \
-    src/core/model/disp3dmodel.cpp \
-    src/core/model/trackingpoint.cpp \
-    src/app/disp3d/trackingpointmanager.cpp \
-    src/app/disp3d/trackingpointdatatable.cpp \
-    src/core/RainbowIFE/rainbowife.cpp \
-    src/core/RainbowIFE/rainbowloadcalibration.cpp \
-    src/utils/Storage/DataStorageThread.cpp \
-    src/app/mainwindow/rainbowmainwindow.cpp \
-    src/fosdplugin.cpp
 
+
+#==================================================
+# 6. UI 界面文件
+#==================================================
+FORMS += \
+    src/app/conncect/connectdebug.ui \
+    src/app/conncect/connectwindow.ui \
+    src/app/disp2d/disp2dpara.ui \
+    src/app/disp2d/disp2dwindow.ui \
+    src/app/disp3d/disp3dkeypointedit.ui \
+    src/app/disp3d/disp3dkeypointselect.ui \
+    src/app/disp3d/disp3dwindow.ui \
+    src/app/disp3d/dispdata.ui \
+    src/app/mainwindow/mainwindow.ui \
+    src/app/user/login.ui \
+    src/app/user/userforget.ui \
+    src/app/user/usermanage.ui \
+    src/app/user/userregister.ui \
+    src/app/disp3d/trackingpointmanager.ui \
+    src/app/disp3d/trackingpointdatatable.ui \
+    src/app/mainwindow/rainbowmainwindow.ui
+
+
+#==================================================
+# 7. Qt 资源文件
+#==================================================
 RESOURCES += \
     $$PWD/res/resource.qrc \
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release):{
-VTK_DIR = $$clean_path($$PWD/lib/VTK/VTK-release)
-INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
-INCLUDEPATH += $$VTK_DIR/include/vtk-8.2/vtkhdf5
-LIBS += -L$$VTK_DIR/lib
-LIBS += $$VTK_DIR/lib/vtkCommonColor-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonComputationalGeometry-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonColor-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonComputationalGeometry-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonDataModel-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonExecutionModel-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonMath-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonMisc-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonSystem-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkCommonTransforms-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkDICOMParser-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkDomainsChemistry-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkDomainsChemistryOpenGL2-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkdoubleconversion-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkexodusII-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkexpat-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersAMR-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersExtraction-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersFlowPaths-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersGeneral-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersGeneric-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersGeometry-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersHybrid-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersHyperTree-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersImaging-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersModeling-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersParallel-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersParallelImaging-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersPoints-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersProgrammable-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersSelection-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersSMP-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersSources-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersStatistics-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersTexture-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersTopology-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkFiltersVerdict-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkfreetype-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkGeovisCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkgl2ps-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkglew-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkGUISupportQt-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkGUISupportQtSQL-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkhdf5-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkhdf5_hl-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingColor-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingFourier-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingGeneral-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingHybrid-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingMath-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingMorphological-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingSources-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingStatistics-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkImagingStencil-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkInfovisCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkInfovisLayout-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkInteractionImage-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkInteractionStyle-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkInteractionWidgets-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOAMR-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOAsynchronous-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOCityGML-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOEnSight-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOExodus-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOExport-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOExportOpenGL2-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOExportPDF-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOGeometry-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOImage-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOImport-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOInfovis-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOLegacy-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOLSDyna-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOMINC-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOMovie-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIONetCDF-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOParallel-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOParallelXML-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOPLY-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOSegY-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOSQL-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOTecplotTable-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOVeraOut-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOVideo-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOXML-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkIOXMLParser-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkjpeg-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkjsoncpp-8.2.lib
-LIBS += $$VTK_DIR/lib/vtklibharu-8.2.lib
-LIBS += $$VTK_DIR/lib/vtklibxml2-8.2.lib
-LIBS += $$VTK_DIR/lib/vtklz4-8.2.lib
-LIBS += $$VTK_DIR/lib/vtklzma-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkmetaio-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkNetCDF-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkogg-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkParallelCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkpng-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkproj-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkpugixml-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingAnnotation-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingContext2D-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingContextOpenGL2-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingFreeType-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingGL2PSOpenGL2-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingImage-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingLabel-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingLOD-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingOpenGL2-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingQt-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingVolume-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkRenderingVolumeOpenGL2-8.2.lib
-LIBS += $$VTK_DIR/lib/vtksqlite-8.2.lib
-LIBS += $$VTK_DIR/lib/vtksys-8.2.lib
-LIBS += $$VTK_DIR/lib/vtktheora-8.2.lib
-LIBS += $$VTK_DIR/lib/vtktiff-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkverdict-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkViewsContext2D-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkViewsCore-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkViewsInfovis-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkViewsQt-8.2.lib
-LIBS += $$VTK_DIR/lib/vtkzlib-8.2.lib
-}
-else:win32:CONFIG(debug, debug|release):{
-VTK_DIR = $$clean_path($$PWD/lib/VTK/VTK-debug)
-INCLUDEPATH += $$VTK_DIR/include/vtk-8.2
-INCLUDEPATH += $$VTK_DIR/include/vtk-8.2/vtkhdf5
-LIBS += -L$$VTK_DIR/lib
-LIBS +=$$VTK_DIR/lib/vtkChartsCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonColor-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonComputationalGeometry-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonDataModel-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonExecutionModel-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonMath-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonMisc-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonSystem-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkCommonTransforms-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkDICOMParser-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkDomainsChemistry-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkDomainsChemistryOpenGL2-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkdoubleconversion-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkexodusII-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkexpat-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersAMR-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersExtraction-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersFlowPaths-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersGeneral-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersGeneric-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersGeometry-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersHybrid-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersHyperTree-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersImaging-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersModeling-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersParallel-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersParallelImaging-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersPoints-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersProgrammable-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersSelection-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersSMP-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersSources-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersStatistics-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersTexture-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersTopology-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkFiltersVerdict-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkfreetype-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkGeovisCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkgl2ps-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkglew-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkGUISupportQt-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkGUISupportQtSQL-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkhdf5-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkhdf5_hl-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingColor-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingFourier-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingGeneral-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingHybrid-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingMath-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingMorphological-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingSources-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingStatistics-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkImagingStencil-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkInfovisCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkInfovisLayout-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkInteractionImage-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkInteractionStyle-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkInteractionWidgets-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOAMR-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOAsynchronous-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOCityGML-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOEnSight-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOExodus-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOExport-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOExportOpenGL2-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOExportPDF-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOGeometry-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOImage-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOImport-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOInfovis-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOLegacy-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOLSDyna-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOMINC-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOMovie-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIONetCDF-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOParallel-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOParallelXML-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOPLY-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOSegY-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOSQL-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOTecplotTable-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOVeraOut-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOVideo-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOXML-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkIOXMLParser-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkjpeg-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkjsoncpp-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtklibharu-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtklibxml2-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtklz4-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtklzma-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkmetaio-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkNetCDF-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkogg-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkParallelCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkpng-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkproj-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkpugixml-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingAnnotation-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingContext2D-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingContextOpenGL2-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingFreeType-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingGL2PSOpenGL2-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingImage-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingLabel-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingLOD-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingOpenGL2-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingQt-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingVolume-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkRenderingVolumeOpenGL2-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtksqlite-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtksys-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtktheora-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtktiff-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkverdict-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkViewsContext2D-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkViewsCore-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkViewsInfovis-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkViewsQt-8.2D.lib
-LIBS +=$$VTK_DIR/lib/vtkzlib-8.2D.lib
-}
-else:unix {
+#==================================================
+# 8. 输出目录配置
+#==================================================
+# 插件编译输出目录：
+# 编译生成的 libFOSD-16CH.so（或对应平台动态库）
+# 将输出到 MPCIF 客户端插件目录下，便于宿主程序直接加载
+HOMEDIR = $$(HOME)
+MPCIF_PATH = $$HOMEDIR/mpcif
+
+DESTDIR = $$MPCIF_PATH/clients/FOSD_XD/lib
+
+message([INFO] HOME       = $$HOMEDIR)
+message([INFO] MPCIF_PATH = $$MPCIF_PATH)
+message([INFO] DESTDIR    = $$DESTDIR)
+
+
+#==================================================
+# 9. 全局宏定义
+#==================================================
+DEFINES += \
+    Linux \
+    RTI_UNIX \
+    TIXML_USEL
+
+
+#==================================================
+# 10. 本地 DDS/FOSD 专用库
+#==================================================
+# FOSD 自有 DDS 接口头文件及库
+INCLUDEPATH += src/utils/DDS \
+               src/utils/DDS/include \
+               src/utils/DDS/include/dds
+
+LIBS += src/utils/DDS/lib/libFOSD.so
+
+message([INFO] Local FOSD LIBS = $$LIBS)
+
+
+#==================================================
+# 11. RTI DDS / DSE 平台相关依赖
+#==================================================
+MDS_DIR = /usr/local/rtidds
+
+# RTI DDS 头文件
+INCLUDEPATH += \
+    $${MDS_DIR}/include \
+    $${MDS_DIR}/include/ndds \
+    /usr/local/dseapp/include
+
+# DSE 平台相关库
+LIBS += -L/usr/local/dseapp/lib \
+    -lXmlParser \
+    -lDsePrometheus \
+    -lSimpleThreadServer \
+    -lServerBase \
+    -lEsInsert \
+    -lDseDdsManagerRti \
+    -lDseAuth
+
+# RTI DDS 核心库
+LIBS += -L$${MDS_DIR}/lib \
+    -lnddscpp \
+    -lnddsc \
+    -lnddscore
+
+
+#==================================================
+# 12. VTK 图形显示相关依赖
+#==================================================
+VTK_PREFIX = /home/cring/FOSD/vtk8.2.0
+
+# VTK 头文件
+INCLUDEPATH += $$VTK_PREFIX/include/vtk-8.2
+
+# VTK 库
+LIBS += -L$$VTK_PREFIX/lib \
+    -lvtkCommonCore-8.2 \
+    -lvtkCommonDataModel-8.2 \
+    -lvtkCommonExecutionModel-8.2 \
+    -lvtkCommonMath-8.2 \
+    -lvtkCommonMisc-8.2 \
+    -lvtkCommonSystem-8.2 \
+    -lvtkCommonTransforms-8.2 \
+    -lvtkCommonComputationalGeometry-8.2 \
+    -lvtkCommonColor-8.2 \
+    -lvtkFiltersCore-8.2 \
+    -lvtkFiltersGeneral-8.2 \
+    -lvtkFiltersGeometry-8.2 \
+    -lvtkFiltersSources-8.2 \
+    -lvtkFiltersExtraction-8.2 \
+    -lvtkFiltersSelection-8.2 \
+    -lvtkFiltersStatistics-8.2 \
+    -lvtkRenderingCore-8.2 \
+    -lvtkRenderingAnnotation-8.2 \
+    -lvtkRenderingOpenGL2-8.2 \
+    -lvtkRenderingFreeType-8.2 \
+    -lvtkRenderingQt-8.2 \
+    -lvtkGUISupportQt-8.2 \
+    -lvtkInteractionStyle-8.2 \
+    -lvtkInteractionWidgets-8.2 \
+    -lvtkInfovisCore-8.2 \
+    -lvtkViewsCore-8.2 \
+    -lvtkIOCore-8.2 \
+    -lvtkIOGeometry-8.2 \
+    -lvtkIOImage-8.2 \
+    -lvtkIOLegacy-8.2 \
+    -lvtkIOXML-8.2 \
+    -lvtkIOXMLParser-8.2 \
+    -lvtkImagingCore-8.2 \
+    -lvtkImagingFourier-8.2 \
+    -lvtkDICOMParser-8.2 \
+    -lvtkmetaio-8.2 \
+    -lvtksys-8.2 \
+    -lvtkfreetype-8.2 \
+    -lvtkzlib-8.2 \
+    -lvtklzma-8.2 \
+    -lvtklz4-8.2 \
+    -lvtkexpat-8.2 \
+    -lvtkjpeg-8.2 \
+    -lvtktiff-8.2 \
+    -lvtkdoubleconversion-8.2 \
+    -lvtkglew-8.2 \
+    -lGL \
+    -lX11 \
+    -lXt \
+    -lXext
+
+#test
 VTK_ROOT = $$PWD/lib/VTK/VTK-Linux-debug
 VTK_INCLUDE_DIR = $$VTK_ROOT/include/vtk-8.2
 VTK_LIB_DIR     = $$VTK_ROOT/lib
@@ -563,14 +449,72 @@ LIBS += -lvtkViewsCore-8.2
 LIBS += -lvtkViewsInfovis-8.2
 LIBS += -lvtkViewsQt-8.2
 LIBS += -lvtkzlib-8.2
-}
 
-unix:!macx {
-    QMAKE_LFLAGS += -Wl,-rpath,'$$ORIGIN'
-    QMAKE_LFLAGS += -Wl,-rpath,'$$ORIGIN/../lib'
-    QMAKE_LFLAGS += -Wl,-rpath,'$$VTK_LIB_DIR'
-}
 
+#==================================================
+# 13. MPCIF 平台头文件路径
+#==================================================
+INCLUDEPATH += \
+    $$MPCIF_PATH/include/_3rdDepends/proj/include \
+    $$MPCIF_PATH/include/OWS \
+    $$MPCIF_PATH/include/cgis \
+    $$MPCIF_PATH/include/cgis/attr \
+    $$MPCIF_PATH/include/cgis/dmfmap \
+    $$MPCIF_PATH/include/cgis/global \
+    $$MPCIF_PATH/include/cgis/global/mapdata \
+    $$MPCIF_PATH/include/cgis/item \
+    $$MPCIF_PATH/include/cgis/view \
+    $$MPCIF_PATH/include/basics/csstub \
+    $$MPCIF_PATH/include/basics/ctoolset/ipf \
+    $$MPCIF_PATH/include/basics/ctoolset/openthreads \
+    $$MPCIF_PATH/include/basics/ctoolset/sqlite \
+    $$MPCIF_PATH/include/ui/uimgr \
+    $$MPCIF_PATH/include/ui/remotedialog \
+    $$MPCIF_PATH/include/procm \
+    $$MPCIF_PATH/include/dock \
+    $$MPCIF_PATH/include/rcmenu \
+    $$MPCIF_PATH/include/dds \
+    $$MPCIF_PATH/include/remotedialog \
+    $$MPCIF_PATH/include/toppanel \
+    $$MPCIF_PATH/include/ui/ica \
+    $$MPCIF_PATH/include/plot \
+    $$MPCIF_PATH/include/plotinterface \
+    $$MPCIF_PATH/include/basics/remotenotifier \
+    $$MPCIF_PATH/include/utils/MQManager \
+    $$MPCIF_PATH/include/utils/MQUtil \
+    $$MPCIF_PATH/include
+
+#==================================================
+# 14. MPCIF 平台链接库
+#==================================================
+LIBS += -L$$HOMEDIR/mpcif/lib \
+    -lUIMgrd \
+    -lCommonToold \
+    -lGISEngined \
+    -lclient_stubd \
+    -lipfopenthreadsd \
+    -lipfsqlited \
+    -lserver_stubd \
+    -lICAlibd \
+    -lPlotApid \
+    -lPlotInterface \
+    -lRemoteDialog_Clientd \
+    -lMQManager \
+    -lMQUtils
+
+
+#==================================================
+# 15. 部署说明（保留模板）
+#==================================================
+## Default rules for deployment.
+# qnx: target.path = /tmp/$${TARGET}/bin
+# else: unix:!android: target.path = /opt/$${TARGET}/bin
+# !isEmpty(target.path): INSTALLS += target
+
+
+#==================================================
+# 16. 编译中间产物存放地址
+#==================================================
 win32 {         SYSTEM_NAME = windows}
 unix:!macx {    SYSTEM_NAME = linux}
 macx {          SYSTEM_NAME = macos}

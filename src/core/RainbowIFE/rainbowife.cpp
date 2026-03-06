@@ -531,47 +531,47 @@ void rainbowIFE::calculateDisp()
 //    node_u[15] = -0.007998616434633732;
 }
 
-//void rainbowIFE::getDemoData(const DWR_FOSD::NET_SEND_BUFF4 data) {
+void rainbowIFE::getDemoData(const DWR_FOSD::NET_SEND_BUFF4 data) {
 
-//    // 只在数据复制时持有锁，尽快释放
-//    {
-//        QMutexLocker locker(&strainMutex);
-//        for (int i = 0; i < 12; i++){
-//            all_data.strian[i] = data.strian[i];
-//        }
-//        for (int i = 0; i < 12; i++){
-//            all_data.temper[i] = data.temper[i];
-//        }
-//        for (int i = 0; i < 16; i++){
-//            all_data.free[i] = data.free[i];
-//        }
-//    }  // 锁在此释放
+    // 只在数据复制时持有锁，尽快释放
+    {
+        QMutexLocker locker(&mutexStrain);
+        for (int i = 0; i < 12; i++){
+            all_data.strian[i] = data.strian[i];
+        }
+        for (int i = 0; i < 12; i++){
+            all_data.temper[i] = data.temper[i];
+        }
+        for (int i = 0; i < 16; i++){
+            all_data.free[i] = data.free[i];
+        }
+    }  // 锁在此释放
 
-//    // 如果启用了存储，将数据入队到存储线程
-//    if (m_storageEnabled && m_storageThread != nullptr) {
-//        StorageData storageData;
+    // 如果启用了存储，将数据入队到存储线程
+    if (m_storageEnabled && m_storageThread != nullptr) {
+        StorageData storageData;
 
-//        // 复制数据
-//        for (int i = 0; i < 12; i++) {
-//            storageData.strian[i] = data.strian[i];
-//            storageData.temper[i] = data.temper[i];
-//        }
-//        for (int i = 0; i < 16; i++) {
-//            storageData.free[i] = data.free[i];
-//        }
+        // 复制数据
+        for (int i = 0; i < 12; i++) {
+            storageData.strian[i] = data.strian[i];
+            storageData.temper[i] = data.temper[i];
+        }
+        for (int i = 0; i < 16; i++) {
+            storageData.free[i] = data.free[i];
+        }
 
-//        // 添加时间戳
-//        storageData.timestamp = QTime::currentTime().toString("hh_mm_ss");
+        // 添加时间戳
+        storageData.timestamp = QTime::currentTime().toString("hh_mm_ss");
 
-//        // 入队（非阻塞操作）
-//        m_storageThread->enqueueData(storageData);
-//    }
+        // 入队（非阻塞操作）
+        m_storageThread->enqueueData(storageData);
+    }
 
-//    // 调试输出（可选，生产环境可注释掉以提高性能）
-//    // for (int i = 0; i < 11; i++) {
-//    //     qDebug() << all_data.free[i];
-//    // }
-//}
+    // 调试输出（可选，生产环境可注释掉以提高性能）
+    // for (int i = 0; i < 11; i++) {
+    //     qDebug() << all_data.free[i];
+    // }
+}
 
 //测试使用接收数据
 void rainbowIFE::GetDataTest(const NET_SEND_BUFF4 data)

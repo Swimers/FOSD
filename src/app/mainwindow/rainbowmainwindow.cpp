@@ -35,7 +35,10 @@ void RainbowMainWindow::InitMainwindow()
     layout->addWidget(m_disp3dwindow);
     ui->centralContentWidget->setLayout(layout);
 
+}
 
+void RainbowMainWindow::DataTest()
+{
     //测试存储线程部分代码
     m_testTimer = new QTimer(this);  // 指定父对象，自动管理内存
     m_testTimer->setInterval(25);    // 设置定时器间隔为50毫秒
