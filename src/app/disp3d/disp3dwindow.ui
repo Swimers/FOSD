@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1038</width>
+    <width>1050</width>
     <height>775</height>
    </rect>
   </property>
@@ -254,6 +254,7 @@
    <addaction name="separator"/>
    <addaction name="actionTrackingPoints"/>
    <addaction name="actionTrackingPointData"/>
+   <addaction name="actionBackData"/>
   </widget>
   <widget class="QDockWidget" name="dock_Model">
    <property name="features">
@@ -850,6 +851,11 @@
    </property>
    <property name="toolTip">
     <string>显示追踪点变形量数据表</string>
+   </property>
+  </action>
+  <action name="actionBackData">
+   <property name="text">
+    <string>回传数据</string>
    </property>
   </action>
  </widget>

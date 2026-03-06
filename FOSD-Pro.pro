@@ -75,7 +75,8 @@ FORMS += \
     src/app/user/userregister.ui \
     src/app/disp3d/trackingpointmanager.ui \
     src/app/disp3d/trackingpointdatatable.ui \
-    src/app/mainwindow/rainbowmainwindow.ui
+    src/app/mainwindow/rainbowmainwindow.ui \
+    src/app/disp3d/dispdata.ui
 
 HEADERS += \
     src/app/conncect/connectdebug.h \
@@ -114,7 +115,8 @@ HEADERS += \
     src/core/RainbowIFE/rainbowloadcalibration.h \
     src/utils/Storage/DataStorageThread.h \
     src/app/mainwindow/rainbowmainwindow.h \
-    src/test/teststorge.h
+    src/test/teststorge.h \
+    src/app/disp3d/dispdata.h
 
 SOURCES += \
     src/app/conncect/connectdebug.cpp \
@@ -153,7 +155,8 @@ SOURCES += \
     src/app/mainwindow/rainbowmainwindow.cpp \
     src/fosdplugin.cpp \
     src/main.cpp \
-    src/test/teststorge.cpp
+    src/test/teststorge.cpp \
+    src/app/disp3d/dispdata.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \

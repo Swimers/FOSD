@@ -505,3 +505,11 @@ void disp3dwindow::on_actionTrackingPointData_triggered()
         QMessageBox::critical(this, "错误", "模型不存在");
     }
 }
+
+void disp3dwindow::on_actionBackData_triggered()
+{
+    dispdata *m_dispdata = new dispdata(this);
+    m_dispdata->GetRainbowIFE(m_rainbowIFE);
+    m_dispdata->exec();
+    delete m_dispdata;
+}
