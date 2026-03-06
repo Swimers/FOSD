@@ -18,6 +18,8 @@
 #include <trackingpointmanager.h>
 #include <trackingpoint.h>
 
+#include <dispdata.h>
+
 #include <IFE.h>
 #include <rainbowife.h>
 
@@ -70,6 +72,7 @@ private slots:
 
     void on_actionTrackingPoints_triggered();
     void on_actionTrackingPointData_triggered();
+    void on_actionBackData_triggered();
 
 public slots:
     void RefreshStage();
