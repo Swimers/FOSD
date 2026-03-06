@@ -4,12 +4,12 @@
 #include <QMainWindow>
 #include <QMessageBox>
 
-#include <windows.h>
+#include <dlfcn.h>
 #include <cstdio>
 
 using PluginFn = void (*)();
 
-static HMODULE g_plugin = nullptr;
+static void* g_plugin = nullptr;
 static PluginFn g_start = nullptr;
 static PluginFn g_init  = nullptr;
 static PluginFn g_stop  = nullptr;
@@ -21,33 +21,37 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    if (!loadPlugin("FOSD_ProPlugin.dll")) {
-        QMessageBox::critical(nullptr, "PluginHost", "Failed to load plugin DLL or symbols.");
+    if (!loadPlugin("./libFOSD_ProPlugin.so")) {
+        QMessageBox::critical(this, "PluginHost", "Failed to load plugin SO or symbols.");
     }
 }
 
 MainWindow::~MainWindow()
 {
+    unloadPlugin();
     delete ui;
 }
 
-bool MainWindow::loadPlugin(const char *dllName)
+bool MainWindow::loadPlugin(const char *soName)
 {
-    g_plugin = LoadLibraryA(dllName);
+    g_plugin = dlopen(soName, RTLD_NOW);
     if (!g_plugin) {
-        std::printf("[Host] LoadLibrary failed: %s\n", dllName);
+        std::printf("[Host] dlopen failed: %s\n", dlerror());
         return false;
     }
 
-    g_start    = (PluginFn)GetProcAddress(g_plugin, "dllStartPlugin");
-    g_init     = (PluginFn)GetProcAddress(g_plugin, "dllInitialisePlugin");
-    g_stop     = (PluginFn)GetProcAddress(g_plugin, "dllStopPlugin");
-    g_shutdown = (PluginFn)GetProcAddress(g_plugin, "dllShutdownPlugin");
+    dlerror(); // 清空旧错误
 
-    if (!g_start || !g_init || !g_stop || !g_shutdown) {
-        std::printf("[Host] GetProcAddress failed. "
-                    "start=%p init=%p stop=%p shutdown=%p\n",
-                    (void*)g_start, (void*)g_init, (void*)g_stop, (void*)g_shutdown);
+    g_start    = reinterpret_cast<PluginFn>(dlsym(g_plugin, "dllStartPlugin"));
+    g_init     = reinterpret_cast<PluginFn>(dlsym(g_plugin, "dllInitialisePlugin"));
+    g_stop     = reinterpret_cast<PluginFn>(dlsym(g_plugin, "dllStopPlugin"));
+    g_shutdown = reinterpret_cast<PluginFn>(dlsym(g_plugin, "dllShutdownPlugin"));
+
+    const char* err = dlerror();
+    if (err) {
+        std::printf("[Host] dlsym failed: %s\n", err);
+        dlclose(g_plugin);
+        g_plugin = nullptr;
         return false;
     }
 
@@ -58,15 +62,19 @@ bool MainWindow::loadPlugin(const char *dllName)
 void MainWindow::unloadPlugin()
 {
     if (g_plugin) {
-        FreeLibrary(g_plugin);
+        dlclose(g_plugin);
         g_plugin = nullptr;
+        g_start = nullptr;
+        g_init = nullptr;
+        g_stop = nullptr;
+        g_shutdown = nullptr;
     }
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    g_start();
-    g_init();
+    if (g_start) g_start();
+    if (g_init)  g_init();
 }
 
 void MainWindow::on_pushButton_2_clicked()

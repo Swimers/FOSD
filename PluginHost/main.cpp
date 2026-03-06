@@ -2,7 +2,6 @@
 #include <QMainWindow>
 #include <QMessageBox>
 
-#include <windows.h>
 #include <cstdio>
 
 #include <mainwindow.h>

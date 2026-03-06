@@ -32,7 +32,7 @@ static void initOnce()
 
     // 3) QSS：注意这是全局样式，若宿主也设置样式可能冲突（但你要的话可以保留）
     if (qApp) {
-        QFile qssFile("./res/QSS/MacOS.qss");
+        QFile qssFile("data/QSS/MaterialDark-B.qss");
         if (qssFile.open(QFile::ReadOnly)) {
             qApp->setStyleSheet(qssFile.readAll());
             qssFile.close();

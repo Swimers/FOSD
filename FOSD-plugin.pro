@@ -47,7 +47,7 @@ INCLUDEPATH +=  src/main \
                 src/app/disp3d \
                 src/app/mainwindow \
                 src/app/user \
-                src/communication \
+                src/Communication \
                 src/core/IFE \
                 src/core/RainbowIFE \
                 src/core/model \
@@ -57,6 +57,7 @@ INCLUDEPATH +=  src/main \
                 src/utils/QCustomPlot \
                 src/utils/Timers \
                 src/utils/Storage \
+                src/test \
                 lib/CustomUi \
 
 
@@ -68,6 +69,7 @@ FORMS += \
     src/app/disp3d/disp3dkeypointedit.ui \
     src/app/disp3d/disp3dkeypointselect.ui \
     src/app/disp3d/disp3dwindow.ui \
+    src/app/disp3d/dispdata.ui \
     src/app/mainwindow/mainwindow.ui \
     src/app/user/login.ui \
     src/app/user/userforget.ui \
@@ -85,17 +87,19 @@ HEADERS += \
     src/app/disp3d/disp3dkeypointedit.h \
     src/app/disp3d/disp3dkeypointselect.h \
     src/app/disp3d/disp3dwindow.h \
+    src/app/disp3d/dispdata.h \
     src/app/mainwindow/mainwindow.h \
     src/app/user/login.h \
     src/app/user/userforget.h \
     src/app/user/usermanage.h \
     src/app/user/userregister.h \
-    src/communication/serialtask.h \
-    src/communication/tcptask.h \
-    src/communication/udptask.h \
+    src/Communication/serialtask.h \
+    src/Communication/tcptask.h \
+    src/Communication/udptask.h \
     src/core/IFE/IFE.h \
     src/protocol/analyzepackets.h \
     src/protocol/pocketsconfig.h \
+    src/test/teststorge.h \
     src/utils/database/database.h \
     src/utils/global/global.h \
     src/utils/QCustomPlot/qcpdocumentobject.h \
@@ -123,16 +127,18 @@ SOURCES += \
     src/app/disp3d/disp3dkeypointedit.cpp \
     src/app/disp3d/disp3dkeypointselect.cpp \
     src/app/disp3d/disp3dwindow.cpp \
+    src/app/disp3d/dispdata.cpp \
     src/app/mainwindow/mainwindow.cpp \
     src/app/user/login.cpp \
     src/app/user/userforget.cpp \
     src/app/user/usermanage.cpp \
     src/app/user/userregister.cpp \
-    src/communication/serialtask.cpp \
-    src/communication/tcptask.cpp \
-    src/communication/udptask.cpp \
+    src/Communication/serialtask.cpp \
+    src/Communication/tcptask.cpp \
+    src/Communication/udptask.cpp \
     src/core/IFE/IFE.cpp \
     src/protocol/analyzepackets.cpp \
+    src/test/teststorge.cpp \
     src/utils/database/database.cpp \
     src/utils/global/global.cpp \
     src/utils/QCustomPlot/qcpdocumentobject.cpp \
