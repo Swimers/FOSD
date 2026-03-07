@@ -40,6 +40,7 @@ void RainbowMainWindow::InitMainwindow()
     m_testTimer = new QTimer(this);  // 指定父对象，自动管理内存
     m_testTimer->setInterval(25);    // 设置定时器间隔为50毫秒
     m_testTimer->setTimerType(Qt::PreciseTimer);  // 高精度定时器（可选，提升精度）
+    m_testData.flag = 179;
     m_testData.strian[0] = -9.999999747378752e-06;
     m_testData.strian[1] = 7.999999797903001e-05;
     m_testData.strian[2] = 0.001500000013038516;

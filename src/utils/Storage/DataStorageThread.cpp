@@ -138,7 +138,19 @@ void DataStorageThread::writeToFile(const QList<StorageData>& dataList) {
     // qDebug() << "DataStorageThread: 写入" << dataList.size() << "条数据";
 }
 
+#include <QtEndian>
+
 QString DataStorageThread::formatDataLine(const StorageData& data) {
+
+    qint32 flag = qToBigEndian<qint32>(data.flag);
+    QByteArray flagBytes(reinterpret_cast<const char*>(&flag), 4);
+    QByteArray flagHex = flagBytes.toHex();
+
+    QStringList flagHexList;
+    for (int i = 0; i < flagHex.size(); i += 2) {
+        flagHexList << QString::fromLatin1(flagHex.mid(i, 2));
+    }
+
     QStringList strianStrList;
     for (int i = 0; i < 12; ++i) {
         strianStrList << QString::number(data.strian[i]);
@@ -155,7 +167,50 @@ QString DataStorageThread::formatDataLine(const StorageData& data) {
     }
 
     return data.timestamp + " " +
+           flagHexList.join(" ") + " " +
            strianStrList.join(" ") + " " +
            temperStrList.join(" ") + " " +
            freeStrList.join(" ") + "\n";
+}
+
+QString DataStorageThread::formatDataLine2(const StorageData& data)
+{
+    QByteArray rawData;
+    rawData.reserve(4 + 12 * 4 + 12 * 4 + 16 * 4);
+
+    // 1. flag 按 4 字节写入
+    qint32 flag = qToBigEndian<qint32>(data.flag);
+    rawData.append(reinterpret_cast<const char*>(&flag), 4);
+
+    // 2. strian 按 float 原始4字节写入
+    for (int i = 0; i < 12; ++i) {
+        rawData.append(reinterpret_cast<const char*>(&data.strian[i]), sizeof(float));
+    }
+
+    // 3. temper 按 float 原始4字节写入
+    for (int i = 0; i < 12; ++i) {
+        rawData.append(reinterpret_cast<const char*>(&data.temper[i]), sizeof(float));
+    }
+
+    // 4. free 按 float 原始4字节写入
+    for (int i = 0; i < 16; ++i) {
+        rawData.append(reinterpret_cast<const char*>(&data.free[i]), sizeof(float));
+    }
+
+    // 转成十六进制字符串，例如 "00b213a3..."
+    QByteArray hexData = rawData.toHex();
+
+    // 插入空格，变成 "00 b2 13 a3 ..."
+    QString hexString;
+    hexString.reserve(hexData.size() + hexData.size() / 2);
+
+    for (int i = 0; i < hexData.size(); i += 2) {
+        if (i > 0) {
+            hexString += ' ';
+        }
+        hexString += QString::fromLatin1(hexData.mid(i, 2));
+    }
+
+    // timestamp 保持原始格式
+    return data.timestamp + " " + hexString + "\n";
 }

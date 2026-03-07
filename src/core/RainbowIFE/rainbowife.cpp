@@ -589,6 +589,7 @@ void rainbowIFE::GetDataTest(const NET_SEND_BUFF4 data)
 
     if (m_storageEnabled && m_storageThread != nullptr) {
         StorageData storageData;
+        storageData.flag = data.flag;
         for (int i = 0; i < 12; i++) {
             storageData.strian[i] = data.strian[i];
             storageData.temper[i] = data.temper[i];

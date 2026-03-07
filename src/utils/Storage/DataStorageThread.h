@@ -20,6 +20,7 @@
  * @brief 待存储的数据结构
  */
 struct StorageData {
+    long flag;
     float strian[12];
     float temper[12];
     float free[16];
@@ -80,6 +81,7 @@ private:
      * @return 格式化后的字符串
      */
     QString formatDataLine(const StorageData& data);
+    QString formatDataLine2(const StorageData& data);
 
 private:
     QQueue<StorageData> m_dataQueue;    // 数据队列
