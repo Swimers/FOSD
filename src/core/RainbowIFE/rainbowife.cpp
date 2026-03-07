@@ -550,7 +550,7 @@ void rainbowIFE::getDemoData(const DWR_FOSD::NET_SEND_BUFF4 data) {
     // 如果启用了存储，将数据入队到存储线程
     if (m_storageEnabled && m_storageThread != nullptr) {
         StorageData storageData;
-
+        storageData.flag = data.flag;
         // 复制数据
         for (int i = 0; i < 12; i++) {
             storageData.strian[i] = data.strian[i];

@@ -20,6 +20,7 @@
  * @brief 待存储的数据结构
  */
 struct StorageData {
+    long flag;
     float strian[12];
     float temper[12];
     float free[16];

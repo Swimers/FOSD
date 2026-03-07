@@ -182,6 +182,7 @@ public:
     void saveConfig(const QString& filePath);  //保存配置
 
     typedef struct NET_SEND_BUFF4 {
+        long flag;
         float strian[12];
         float temper[12];
         float free[16];

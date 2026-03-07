@@ -141,7 +141,19 @@ void DataStorageThread::writeToFile(const QList<StorageData>& dataList) {
     // qDebug() << "DataStorageThread: 写入" << dataList.size() << "条数据";
 }
 
+#include <QtEndian>
+
 QString DataStorageThread::formatDataLine(const StorageData& data) {
+
+    qint32 flag = qToBigEndian<qint32>(data.flag);
+    QByteArray flagBytes(reinterpret_cast<const char*>(&flag), 4);
+    QByteArray flagHex = flagBytes.toHex();
+
+    QStringList flagHexList;
+    for (int i = 0; i < flagHex.size(); i += 2) {
+        flagHexList << QString::fromLatin1(flagHex.mid(i, 2));
+    }
+
     QStringList strianStrList;
     for (int i = 0; i < 12; ++i) {
         strianStrList << QString::number(data.strian[i]);
@@ -158,6 +170,7 @@ QString DataStorageThread::formatDataLine(const StorageData& data) {
     }
 
     return data.timestamp + " " +
+           flagHexList.join(" ") + " " +
            strianStrList.join(" ") + " " +
            temperStrList.join(" ") + " " +
            freeStrList.join(" ") + "\n";

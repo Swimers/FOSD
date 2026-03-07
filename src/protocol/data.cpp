@@ -40,6 +40,7 @@ void DemoData::listen() {
         }
         // Convert big-endian float payload to host-endian.
         DWR_FOSD::NET_SEND_BUFF4 converted = message;
+        converted.flag = message.flag;
         for (int i = 0; i < 12; i++) {
             converted.strian[i] = bigEndianToHostFloat(message.strian[i]);
         }
@@ -56,7 +57,7 @@ void DemoData::listen() {
 
 void DemoData::getDemoData(const DWR_FOSD::NET_SEND_BUFF4 data) {
 
-    QMutexLocker locker(&strainMutex);
+    QMutexLocker locker(&mutexStrain);
     // 大端转主机序
     for (int i = 0; i < 12; i++){
         all_data.strian[i] = bigEndianToHostFloat(data.strian[i]);
