@@ -24,6 +24,8 @@ public:
     void startAutoRefresh(int intervalMs);
     void stopAutoRefresh();
 
+    QString formatTableNumber(float value, int fixedPrecision);
+
     // 弃用
     void GetPackPtr(analyzepackets *ptr){m_dataParser = ptr;}
     // 从IFE获取数据

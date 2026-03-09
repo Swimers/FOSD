@@ -68,20 +68,34 @@ dispdata::~dispdata()
 void dispdata::refreshTable()
 {
     QMutexLocker locker(&mutexStrain);
-    for (int i = 0; i < 12; ++i){
+
+    for (int i = 0; i < 12; ++i) {
         strain_array[i] = m_rainbowIFE->all_data.strian[i];
         temperature_array[i] = m_rainbowIFE->all_data.temper[i];
     }
-    for (int i = 0; i < 16; ++i){
+
+    for (int i = 0; i < 16; ++i) {
         freedom_array[i] = m_rainbowIFE->all_data.free[i];
     }
 
-    for (int i = 0; i < 12; ++i){
-        ui->tableWidget->item(i, 1)->setText(QString::number(strain_array[i], 'f', 6));
-        ui->tableWidget->item(i, 2)->setText(QString::number(temperature_array[i], 'f', 2));
+    for (int i = 0; i < 12; ++i) {
+        if (ui->tableWidget->item(i, 1)) {
+            ui->tableWidget->item(i, 1)->setText(formatTableNumber(strain_array[i], 3));
+        }
+        if (ui->tableWidget->item(i, 2)) {
+            if((temperature_array[i] > 300) || (temperature_array[i] < -30)){
+                ui->tableWidget->item(i, 2)->setText("######");
+            }
+            else {
+                ui->tableWidget->item(i, 2)->setText(formatTableNumber(temperature_array[i], 3));
+            }
+        }
     }
-    for (int i = 0; i < 16; ++i){
-        ui->tableWidget->item(i, 3)->setText(QString::number(freedom_array[i], 'f', 4));
+
+    for (int i = 0; i < 16; ++i) {
+        if (ui->tableWidget->item(i, 3)) {
+            ui->tableWidget->item(i, 3)->setText(formatTableNumber(freedom_array[i], 3));
+        }
     }
 }
 
@@ -95,6 +109,20 @@ void dispdata::stopAutoRefresh() {
     if (m_refreshTimer) {
         m_refreshTimer->stop();
     }
+}
+
+QString dispdata::formatTableNumber(float value, int fixedPrecision)
+{
+    if (value == 0.0f) {
+        return QString::number(0.0, 'f', fixedPrecision);
+    }
+
+    double absVal = qAbs(value);
+
+    if (absVal < 1e-4)
+        return QString::number(value, 'e', 2);   // 科学计数法
+
+    return QString::number(value, 'f', fixedPrecision);
 }
 
 void dispdata::on_checkBox_toggled(bool checked)
