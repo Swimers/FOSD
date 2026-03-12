@@ -508,6 +508,8 @@ void rainbowIFE::calculateDisp()
 {
     //传递传感器应变值
     QMutexLocker locker(&mutexStrain);
+    swapFreeArray(all_data);
+    limitAndZero(all_data);
     for (int i = 0; i < 16; ++i) {
         node_u[i] = all_data.free[i];
     }
@@ -605,4 +607,42 @@ void rainbowIFE::GetDataTest(const NET_SEND_BUFF4 data)
     // for (int i = 0; i < 11; i++) {
     //     qDebug() << all_data.free[i];
     // }
+}
+
+void rainbowIFE::swapFreeArray(NET_SEND_BUFF4 &data)
+{
+    for(int i = 0; i < 8; ++i)
+    {
+        qSwap(data.free[i], data.free[i + 8]);
+    }
+}
+
+void rainbowIFE::limitAndZero(NET_SEND_BUFF4 &data)
+{
+
+    bool exceed = false;
+    for (int i = 0; i < 8; ++i) {
+        if (std::fabs(data.free[i]) > threshold[i]) {
+            exceed = true;
+            break;
+        }
+    }
+    if (exceed) {
+        for (int i = 0; i < 8; ++i) {
+            data.free[i] = 0.0;
+        }
+    }
+
+    exceed = false;
+    for (int i = 0; i < 8; ++i) {
+        if (std::fabs(data.free[i + 8]) > threshold[i]) {
+            exceed = true;
+            break;
+        }
+    }
+    if (exceed) {
+        for (int i = 0; i < 8; ++i) {
+            data.free[i + 8] = 0.0;
+        }
+    }
 }

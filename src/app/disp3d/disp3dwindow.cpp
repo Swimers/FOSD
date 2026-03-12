@@ -92,6 +92,7 @@ void disp3dwindow::InitWindow()
     ui->actionReset->setDisabled(true);
     ui->actionStart->setDisabled(false);
     ui->actionStop->setEnabled(false);
+    ui->actionPause->setDisabled(true);
 
     freshTimer = new QTimer(this);
     FPS = ui->cbox_FPS->currentText().left(ui->cbox_FPS->currentText().indexOf('H')).toInt();
