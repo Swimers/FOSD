@@ -50,6 +50,7 @@ private:
 //    }NET_SEND_BUFF4;
     QTimer* m_testTimer = nullptr;  // 定时器指针
     NET_SEND_BUFF4 m_testData;      // 预定义的测试数据
+    NET_SEND_BUFF4 m_testData2;      // 预定义的测试数据
 
     QPoint p;
 };

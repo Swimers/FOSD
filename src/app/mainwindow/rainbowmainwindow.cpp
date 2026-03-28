@@ -8,6 +8,15 @@
 #include <teststorge.h>
 #include <testb3pocket.h>
 
+static float bigEndianToHostFloat(float value) {
+    quint32 tmp;
+    memcpy(&tmp, &value, sizeof(float));
+    tmp = qFromBigEndian(tmp);
+    float result;
+    memcpy(&result, &tmp, sizeof(float));
+    return result;
+}
+
 RainbowMainWindow::RainbowMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RainbowMainWindow)
@@ -166,13 +175,25 @@ void RainbowMainWindow::InitMainwindow()
 //    m_testData.temper[10] = 10.5506;
 //    m_testData.temper[11] = 14.2964;
 
-    QString b3 = "00 00 00 b3 ac c5 27 b7 ac c5 a7 38 a6 9b c4 3a 17 b7 51 3a 9c 50 88 b8 ed 0d be ba 17 b7 51 39 ac c5 27 37 9a d2 f1 39 b5 db dc 35 6f 12 83 b9 11 0d 10 b7 8a a3 6f 41 20 d1 4a 41 cf 73 85 41 b3 a6 74 41 38 1f 57 41 f0 7c 4a 41 0f 6f c8 c6 c4 0a 8c c7 8a 03 5d 41 3f 3f 5f 41 49 12 ba 41 4a c6 8a c7 a6 62 b9 3d e0 e5 9b bc bc 16 04 c1 f2 19 cf c2 14 bfa 3 c3 78 d2 76 3d 59 13 07 bd 1d 05 b0 bc 5d ef 30 bc 8e 26 87 bb 48 ef 36 c0 44 ae cf c1 5e 00 c0 42 99 48 ea bc fe 47 5a bd a1 0c 03 bc ba 00 00 00";
+    //QString b3 = "00 00 00 b3 ac c5 27 b7 ac c5 a7 38 a6 9b c4 3a 17 b7 51 3a 9c 50 88 b8 ed 0d be ba 49 d5 ae b7 ac c5 27 37 a4 d5 e9 39 38 89 cb b5 00 a2 90 b8 51 1c 02 b8 7a c4 34 41 50 49 37 41 d0 87 db 41 91 1e d8 41 cf f3 c8 41 ef da d3 41 0f 6f c8 c6 c4 0a 8c c7 7a c4 b4 41 41 68 d2 41 3d cf 55 41 22 52 41 41 3a de 25 bc 30 3e 19 3a b8 d2 1d be fc 8b 64 40 a5 e3 6b 42 42 6f 8a bb 68 ca 99 bc 34 19 87 3a 5d ef 30 bc 8e 26 87 bb 48 ef 36 c0 44 ae cf c1 5e 00 c0 42 99 48 ea bc fe 47 5a bd a1 0c 03 bc ba 00 00 00";
+
+    //降低
+    //QString b3 = "00 00 00 b3 ac c5 27 b7 ac c5 a7 38 a6 9b c4 3a 17 b7 51 3a 9c 50 88 b8 ed 0d be ba e6 8c d8 b7 ac c5 27 37 b3 18 f1 39 84 e8 0e b5 b4 f5 93 b8 0d 93 ff b7 d9 8b 3a 41 50 49 37 41 9e 09 e0 41 91 1e d8 41 3d cf cb 41 ef da d3 41 0f 6f c8 c6 c4 0a 8c c7 f8 49 b8 41 95 0b d2 41 92 24 59 41 22 52 41 41 b4 ed 43 bc d8 92 61 3a c0 b4 84 bd 98 c9 a1 40 9e 6e 85 42 d7 97 ac bb c5 6b 9d bc 20 df ad 3a 5d ef 30 bc 8e 26 87 bb 48 ef 36 c0 44 ae cf c1 5e 00 c0 42 99 48 ea bc fe 47 5a bd a1 0c 03 bc ba 00 00 00";
+
+    //抬升
+    QString b3 = "00 00 00 b3 ac c5 27 b7 ac c5 a7 38 a6 9b c4 3a 17 b7 51 3a 9c 50 88 b8 ed 0d be ba 49 d5 ae b7 ac c5 27 37 a4 d5 e9 39 46 3f 86 b5 a9 d0 90 b8 51 1c 02 b8 7a c4 34 41 50 49 37 41 d0 87 db 41 91 1e d8 41 cf f3 c8 41 ef da d3 41 0f 6f c8 c6 c4 0a 8c c7 7a c4 b4 41 41 68 d2 41 3d cf 55 41 22 52 41 41 aa 5f 25 bc fc cd 16 3a d8 82 22 be 58 fb 60 40 10 6a 6b 42 33 c8 89 bb 4e cd 99 bc 8e 16 85 3a 5d ef 30 bc 8e 26 87 bb 48 ef 36 c0 44 ae cf c1 5e 00 c0 42 99 48 ea bc fe 47 5a bd a1 0c 03 bc ba 00 00 00";
 
     testb3pocket *m_testb3pocket = new testb3pocket();
 
     m_testData = m_testb3pocket->AnalysisB3(b3);
 
-    connect(m_testTimer, &QTimer::timeout, this, [this](){m_rainbowIFE->GetDataTest(m_testData);});
+    for (int i = 0; i < 16; i++) {
+        int srcIndex = (i < 8) ? (i + 8) : (i - 8);
+        m_testData2.free[i] = m_testData.free[srcIndex];
+        //m_testData2.free[i] = bigEndianToHostFloat(m_testData.free[srcIndex]);
+    }
+
+    connect(m_testTimer, &QTimer::timeout, this, [this](){m_rainbowIFE->GetDataTest(m_testData2);});
     m_testTimer->start();
 }
 

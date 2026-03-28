@@ -508,7 +508,7 @@ void rainbowIFE::calculateDisp()
 {
     //传递传感器应变值
     QMutexLocker locker(&mutexStrain);
-    swapFreeArray(all_data);
+    //swapFreeArray(all_data);
     limitAndZero(all_data);
     for (int i = 0; i < 16; ++i) {
         node_u[i] = all_data.free[i];
