@@ -5,6 +5,12 @@ testb3pocket::testb3pocket()
 
 }
 
+testb3pocket::~testb3pocket()
+{
+
+}
+
+
 static float littleEndianBytesToFloat(const uchar *p)
 {
     quint32 u = qFromLittleEndian<quint32>(p);

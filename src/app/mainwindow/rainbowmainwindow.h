@@ -8,6 +8,10 @@
 
 #include <teststorge.h>
 
+#include <QPointer>
+#include <atomic>
+#include <memory>
+
 namespace Ui {
 class RainbowMainWindow;
 }
@@ -42,6 +46,8 @@ private:
 
     disp3dwindow *m_disp3dwindow;
     rainbowIFE *m_rainbowIFE;
+
+    std::shared_ptr<std::atomic_bool> m_liveflag;
 
 //    typedef struct NET_SEND_BUFF4 {
 //        float strian[12];

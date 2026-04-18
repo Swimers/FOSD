@@ -511,7 +511,8 @@ void rainbowIFE::calculateDisp()
     //swapFreeArray(all_data);
     limitAndZero(all_data);
     for (int i = 0; i < 16; ++i) {
-        node_u[i] = all_data.free[i];
+        int srcIndex = (i < 8) ? (i + 8) : (i - 8);
+        node_u[i] = all_data.free[srcIndex];
     }
 
 //    QMutexLocker locker(&mutexStrain);
