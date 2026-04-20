@@ -6,6 +6,10 @@
 #include <global.h>
 #include <trackingpoint.h>
 
+#include <QFile>
+#include <QTextStream>
+#include <QtMath>
+
 disp3dfreshmodelthread::disp3dfreshmodelthread(QObject *parent):QThread(parent)
 {
 
@@ -64,6 +68,47 @@ void disp3dfreshmodelthread::run()
 
                 //m_rainbowIFE->ShapeFunction_New(p0[0],p0[1],ife->node_u,Globalbeampointdisplace); //杭研单机翼       //步骤3：调用有限元插值得到每点位移
                 m_rainbowIFE->shapefunction(p0[0], p0[1], p0[2], node_u_local, Globalbeampointdisplace);
+                // 判断是否为指定坐标点，若是则保存当前三轴位移 disp 到 txt
+
+                {
+                    const double eps = 1e-2;
+
+                    double x = p0[0];
+                    double y = p0[1];
+                    double z = p0[2];
+
+                    bool isPointNeg =
+                        (qAbs(x - 7931.09) < eps) &&
+                        (qAbs(y - 121.16) < eps) &&
+                        (qAbs(z + 13500.00) < eps);
+
+                    bool isPointPos =
+                        (qAbs(x - 7931.09) < eps) &&
+                        (qAbs(y - 121.16) < eps) &&
+                        (qAbs(z - 13500.00) < eps);
+
+                    if (isPointNeg) {
+                        QFile file("D:/disp_point_neg13500.txt");
+                        if (file.open(QIODevice::Append | QIODevice::Text)) {
+                            QTextStream out(&file);
+                            out.setRealNumberNotation(QTextStream::FixedNotation);
+                            out.setRealNumberPrecision(6);
+
+                            out << Globalbeampointdisplace[0] << " " << Globalbeampointdisplace[1] << " " << Globalbeampointdisplace[2] << "\n";
+                        }
+                    }
+
+                    if (isPointPos) {
+                        QFile file("D:/disp_point_pos13500.txt");
+                        if (file.open(QIODevice::Append | QIODevice::Text)) {
+                            QTextStream out(&file);
+                            out.setRealNumberNotation(QTextStream::FixedNotation);
+                            out.setRealNumberPrecision(6);
+
+                            out << Globalbeampointdisplace[0] << " " << Globalbeampointdisplace[1] << " " << Globalbeampointdisplace[2] << "\n";
+                        }
+                    }
+                }
 
                 QVector<double> p(3),dp(3);
                 for (int i=0; i<3; i++) {               //步骤4：循环更新最大变形位移
@@ -89,9 +134,9 @@ void disp3dfreshmodelthread::run()
                 pts->SetPoint(pid, p[0], p[1], p[2]);
             }
 
-            normalizeScalarArray(m_disp3dmodel->modelScalars.dispX);    //步骤6: 更新所有关联点的位移映射关系
-            normalizeScalarArray(m_disp3dmodel->modelScalars.dispY);
-            normalizeScalarArray(m_disp3dmodel->modelScalars.dispZ);
+            // normalizeScalarArray(m_disp3dmodel->modelScalars.dispX);    //步骤6: 更新所有关联点的位移映射关系
+            // normalizeScalarArray(m_disp3dmodel->modelScalars.dispY);
+            // normalizeScalarArray(m_disp3dmodel->modelScalars.dispZ);
 
             for (TrackingPoint *tp : m_trackingpoint->trackingPoints) { //步骤7: 更新追踪点坐标/模型/文本
                 double disp[3];

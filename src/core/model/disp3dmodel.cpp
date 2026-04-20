@@ -293,7 +293,7 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 
 void disp3dmodel::SetupColorMapping(const std::string &scalarName)
 {
-    mapper->SetScalarRange(0,1);
+    mapper->SetScalarRange(0,50);
     dynPolyData->GetPointData()->SetActiveScalars(scalarName.c_str());
     mapper->ScalarVisibilityOn();
     renderWindow->Render();

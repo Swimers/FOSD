@@ -28,6 +28,8 @@ public:
     bool Flag_Style;
     bool Flag_WindowFull;
 
+    bool ParseOneFrame(const QString& line);   // 解析一帧
+
 private slots:
     void on_pbtn_TurnOff_clicked();
     void on_pbtn_Minimize_clicked();
@@ -36,6 +38,7 @@ private slots:
 
 private:
     void InitMainwindow();
+    void InitMainwindow_refresh();
 
 protected:
     void mouseMoveEvent(QMouseEvent *e);
@@ -54,9 +57,13 @@ private:
 //        float temper[12];
 //        float free[16];
 //    }NET_SEND_BUFF4;
+
     QTimer* m_testTimer = nullptr;  // 定时器指针
     NET_SEND_BUFF4 m_testData;      // 预定义的测试数据
     NET_SEND_BUFF4 m_testData2;      // 预定义的测试数据
+
+    QFile* m_dataFile = nullptr;
+    QTextStream* m_dataStream = nullptr;
 
     QPoint p;
 };
