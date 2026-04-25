@@ -7,10 +7,16 @@
 QT       += core gui
 QT       += opengl
 
-win32 {         SYSTEM_NAME = windows}
-unix:!macx {    QT += waylandcompositor
-                LIBS += -lwayland-server -lxkbcommon}
-macx {          SYSTEM_NAME = macos}
+win32 {
+    SYSTEM_NAME = windows
+}
+unix:!macx {
+    QT += waylandcompositor
+    LIBS += -lwayland-server -lxkbcommon
+}
+macx {
+    SYSTEM_NAME = macos
+}
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
                                   QT += printsupport
@@ -571,11 +577,17 @@ LIBS += -lvtkzlib-8.2
 }
 
 
-win32 {         SYSTEM_NAME = windows}
-unix:!macx {    SYSTEM_NAME = linux}
-macx {          SYSTEM_NAME = macos}
+win32 {
+    SYSTEM_NAME = windows
+}
+unix:!macx {
+    SYSTEM_NAME = linux
+}
+macx {
+    SYSTEM_NAME = macos
+}
 
-BUILD_ROOT = $$PWD/build/$$SYSTEM_NAME
+BUILD_ROOT = $$PWD/build/QMake/$$SYSTEM_NAME
 
 CONFIG(release, debug|release) {
     BUILD_MODE = release
