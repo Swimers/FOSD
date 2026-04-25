@@ -117,7 +117,8 @@ HEADERS += \
     src/app/mainwindow/rainbowmainwindow.h \
     src/test/teststorge.h \
     src/app/disp3d/dispdata.h \
-    src/test/testb3pocket.h
+    src/test/testdatainjector.h \
+    src/test/testsavepointsdisp.h
 
 SOURCES += \
     src/app/conncect/connectdebug.cpp \
@@ -158,7 +159,8 @@ SOURCES += \
     src/main.cpp \
     src/test/teststorge.cpp \
     src/app/disp3d/dispdata.cpp \
-    src/test/testb3pocket.cpp
+    src/test/testdatainjector.cpp \
+    src/test/testsavepointsdisp.cpp
 
 RESOURCES += \
     $$PWD/res/resource.qrc \

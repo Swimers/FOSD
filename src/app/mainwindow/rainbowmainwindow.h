@@ -6,7 +6,7 @@
 #include <disp3dwindow.h>
 #include <rainbowife.h>
 
-#include <teststorge.h>
+#include "testdatainjector.h"
 
 #include <QPointer>
 #include <atomic>
@@ -28,8 +28,6 @@ public:
     bool Flag_Style;
     bool Flag_WindowFull;
 
-    bool ParseOneFrame(const QString& line);   // 解析一帧
-
 private slots:
     void on_pbtn_TurnOff_clicked();
     void on_pbtn_Minimize_clicked();
@@ -38,7 +36,6 @@ private slots:
 
 private:
     void InitMainwindow();
-    void InitMainwindow_refresh();
 
 protected:
     void mouseMoveEvent(QMouseEvent *e);
@@ -52,18 +49,13 @@ private:
 
     std::shared_ptr<std::atomic_bool> m_liveflag;
 
+    TestDataInjector* m_testInjector = nullptr;
+
 //    typedef struct NET_SEND_BUFF4 {
 //        float strian[12];
 //        float temper[12];
 //        float free[16];
 //    }NET_SEND_BUFF4;
-
-    QTimer* m_testTimer = nullptr;  // 定时器指针
-    NET_SEND_BUFF4 m_testData;      // 预定义的测试数据
-    NET_SEND_BUFF4 m_testData2;      // 预定义的测试数据
-
-    QFile* m_dataFile = nullptr;
-    QTextStream* m_dataStream = nullptr;
 
     QPoint p;
 };

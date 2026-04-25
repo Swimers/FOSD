@@ -8,10 +8,15 @@
 #include <IFE.h>
 #include <rainbowife.h>
 
+#include <testsavepointsdisp.h>
+
+
 class disp3dfreshmodelthread: public QThread
 {
 public:
     explicit disp3dfreshmodelthread(QObject *parent);
+    ~disp3dfreshmodelthread() override;
+
     void startThread() {isPaused = false; start();}
     void pauseThread() {isPaused = true;}
 
@@ -34,6 +39,9 @@ private:
     IFE* ife;
     rainbowIFE *m_rainbowIFE;
     QLabel* label;
+
+    testsavepointsdisp* m_dispsave;
+    bool Flag_Save;
 
 private:
     bool isPaused;

@@ -10,9 +10,23 @@
 #include <QTextStream>
 #include <QtMath>
 
+#include <testsavepointsdisp.h>
+
 disp3dfreshmodelthread::disp3dfreshmodelthread(QObject *parent):QThread(parent)
 {
+    Flag_Save = true;
+    m_dispsave = new testsavepointsdisp();
+    m_dispsave->start();
+}
 
+disp3dfreshmodelthread::~disp3dfreshmodelthread()
+{
+    if(m_dispsave){
+        m_dispsave->stopThread();
+        m_dispsave->wait();
+        delete m_dispsave;
+        m_dispsave = nullptr;
+    }
 }
 
 void disp3dfreshmodelthread::GetPtr(disp3dmodel *externdisplaymodel, IFE *externife)
@@ -68,46 +82,10 @@ void disp3dfreshmodelthread::run()
 
                 //m_rainbowIFE->ShapeFunction_New(p0[0],p0[1],ife->node_u,Globalbeampointdisplace); //杭研单机翼       //步骤3：调用有限元插值得到每点位移
                 m_rainbowIFE->shapefunction(p0[0], p0[1], p0[2], node_u_local, Globalbeampointdisplace);
-                // 判断是否为指定坐标点，若是则保存当前三轴位移 disp 到 txt
 
-                {
-                    const double eps = 1e-2;
-
-                    double x = p0[0];
-                    double y = p0[1];
-                    double z = p0[2];
-
-                    bool isPointNeg =
-                        (qAbs(x - 7931.09) < eps) &&
-                        (qAbs(y - 121.16) < eps) &&
-                        (qAbs(z + 13500.00) < eps);
-
-                    bool isPointPos =
-                        (qAbs(x - 7931.09) < eps) &&
-                        (qAbs(y - 121.16) < eps) &&
-                        (qAbs(z - 13500.00) < eps);
-
-                    if (isPointNeg) {
-                        QFile file("D:/disp_point_neg13500.txt");
-                        if (file.open(QIODevice::Append | QIODevice::Text)) {
-                            QTextStream out(&file);
-                            out.setRealNumberNotation(QTextStream::FixedNotation);
-                            out.setRealNumberPrecision(6);
-
-                            out << Globalbeampointdisplace[0] << " " << Globalbeampointdisplace[1] << " " << Globalbeampointdisplace[2] << "\n";
-                        }
-                    }
-
-                    if (isPointPos) {
-                        QFile file("D:/disp_point_pos13500.txt");
-                        if (file.open(QIODevice::Append | QIODevice::Text)) {
-                            QTextStream out(&file);
-                            out.setRealNumberNotation(QTextStream::FixedNotation);
-                            out.setRealNumberPrecision(6);
-
-                            out << Globalbeampointdisplace[0] << " " << Globalbeampointdisplace[1] << " " << Globalbeampointdisplace[2] << "\n";
-                        }
-                    }
+                if (m_dispsave && Flag_Save){
+                    m_dispsave->appendPointSample(p0[0], p0[1], p0[2], Globalbeampointdisplace[0], Globalbeampointdisplace[1], Globalbeampointdisplace[2]
+                    );
                 }
 
                 QVector<double> p(3),dp(3);
