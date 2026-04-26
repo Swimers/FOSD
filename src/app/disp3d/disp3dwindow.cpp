@@ -24,6 +24,20 @@ disp3dwindow::disp3dwindow(QWidget *parent) :
     ui->setupUi(this);
 
     InitWindow();
+
+    QTimer::singleShot(0, this, [this]() {
+        if (!ui || !ui->vtk_openGL || !m_disp3dmodel) {
+            return;
+        }
+        vtkRenderWindow *renderWindow = m_disp3dmodel->GetVTKRenderWindow();
+        vtkRenderer *renderer = m_disp3dmodel->GetVTKRenderer();
+        if (!renderWindow || !renderer) {
+            return;
+        }
+        renderer->ResetCameraClippingRange();
+        renderWindow->Render();
+        ui->vtk_openGL->update();
+    });
 }
 
 disp3dwindow::~disp3dwindow()

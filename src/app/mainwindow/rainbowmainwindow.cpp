@@ -27,12 +27,12 @@ RainbowMainWindow::RainbowMainWindow(QWidget *parent) :
     InitMainwindow();
 
     // 静态数据测试
-    // m_testInjector = new TestDataInjector(m_rainbowIFE, this);
-    // m_testInjector->startStaticInjection(25);
-    // 动态注入
-    QString filePath = "C:/Users/User/Desktop/蒲城/数据处理/2026-04-18data.txt";
     m_testInjector = new TestDataInjector(m_rainbowIFE, this);
-    m_testInjector->startTxtInjection(filePath, 25);
+    m_testInjector->startStaticInjection(25);
+    // 动态注入
+    // QString filePath = "C:/Users/User/Desktop/蒲城/数据处理/2026-04-18data.txt";
+    // m_testInjector = new TestDataInjector(m_rainbowIFE, this);
+    // m_testInjector->startTxtInjection(filePath, 25);
 }
 
 RainbowMainWindow::~RainbowMainWindow()
