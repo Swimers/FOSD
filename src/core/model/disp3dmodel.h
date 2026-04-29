@@ -37,7 +37,7 @@ private:
     vtkSmartPointer<vtkActor> modelActor = vtkSmartPointer<vtkActor>::New();
 
     vtkSmartPointer<vtkRenderer>renderer = vtkSmartPointer<vtkRenderer>::New();                                                                    //声明渲染器
-    vtkRenderWindowInteractor * iren;
+    vtkRenderWindowInteractor * iren = nullptr;
     vtkSmartPointer<vtkPolyData> rawPolyData = nullptr;
 
 public:

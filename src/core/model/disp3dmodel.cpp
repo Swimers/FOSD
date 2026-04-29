@@ -52,19 +52,13 @@ disp3dmodel::~disp3dmodel()
         renderer->RemoveActor(modelActor);
     }
     if (iren) {
-        auto style = dynamic_cast<disp3dinteractor*>(iren->GetInteractorStyle());
-        if (style) {
-            iren->SetInteractorStyle(nullptr);
-            delete style;
-        }
-        iren->Delete();
+        iren->SetInteractorStyle(nullptr);
         iren = nullptr;
     }
     if (renderer) {
         if (renderWindow) {
             renderWindow->RemoveRenderer(renderer);
         }
-        renderer->Delete();
         renderer = nullptr;
     }
 }

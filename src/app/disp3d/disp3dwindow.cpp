@@ -15,6 +15,9 @@
 #include <QVTKOpenGLNativeWidget.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkPoints.h>
+#include <vtkCaptionActor2D.h>
+
 #include <QTimer>
 
 disp3dwindow::disp3dwindow(QWidget *parent) :
@@ -48,8 +51,8 @@ disp3dwindow::~disp3dwindow()
     }
 
     if (m_disp3dthread) {
-        m_disp3dthread->pauseThread();
-        m_disp3dthread->wait();
+        m_disp3dthread->stopThread();
+        delete m_disp3dthread;
         m_disp3dthread = nullptr;
     }
 
@@ -156,6 +159,74 @@ void disp3dwindow::RefreshStage()
         QString maxDeformStr = QString::number(m_disp3dmodel->MaxDisplace, 'f', 4);
         ui->lab_MaxDeformation->setText(maxDeformStr);
     }
+}
+
+void disp3dwindow::ApplyDisplayFrame(const DisplayPointUpdateList &pointUpdates,
+                                     double maxDisplace,
+                                     const TrackingPointFrameUpdateList &trackingUpdates)
+{
+    if (!m_disp3dmodel || !m_disp3dmodel->dynPolyData) {
+        return;
+    }
+
+    vtkPoints *points = m_disp3dmodel->dynPolyData->GetPoints();
+    if (!points) {
+        return;
+    }
+
+    const vtkIdType pointCount = points->GetNumberOfPoints();
+    for (const DisplayPointUpdate &update : pointUpdates) {
+        if (update.id < 0 || update.id >= pointCount) {
+            continue;
+        }
+
+        QVector<double> pos(3), disp(3);
+        for (int i = 0; i < 3; ++i) {
+            pos[i] = update.position[i];
+            disp[i] = update.displacement[i];
+        }
+
+        m_disp3dmodel->modelScalars.dispX->SetValue(update.id, disp[0]);
+        m_disp3dmodel->modelScalars.dispY->SetValue(update.id, disp[1]);
+        m_disp3dmodel->modelScalars.dispZ->SetValue(update.id, disp[2]);
+        m_disp3dmodel->pointpos[update.id] = pos;
+        m_disp3dmodel->pointDisplace[update.id] = disp;
+        points->SetPoint(update.id, pos[0], pos[1], pos[2]);
+    }
+
+    m_disp3dmodel->MaxDisplace = maxDisplace;
+
+    for (const TrackingPointFrameUpdate &update : trackingUpdates) {
+        TrackingPoint *tp = m_trackingpoint ? m_trackingpoint->GetTrackingPointById(update.id) : nullptr;
+        if (!tp) {
+            continue;
+        }
+
+        for (int i = 0; i < 3; ++i) {
+            tp->currentDisp[i] = update.displacement[i];
+        }
+
+        if (tp->visible) {
+            tp->sphereActor->SetPosition(update.position[0], update.position[1], update.position[2]);
+            tp->sphereActor->Modified();
+
+            char dispText[100];
+            sprintf(dispText, "(%.3f, %.3f, %.3f)",
+                    tp->currentDisp[0],
+                    tp->currentDisp[1],
+                    tp->currentDisp[2]);
+            tp->textActor->SetCaption(dispText);
+            tp->textActor->SetAttachmentPoint( update.position[0], update.position[1], update.position[2]);
+            tp->textActor->Modified();
+        }
+    }
+
+    points->Modified();
+    m_disp3dmodel->modelScalars.dispX->Modified();
+    m_disp3dmodel->modelScalars.dispY->Modified();
+    m_disp3dmodel->modelScalars.dispZ->Modified();
+    m_disp3dmodel->dynPolyData->Modified();
+    m_disp3dmodel->FreshKeyPoint();
 }
 
 void disp3dwindow::on_checkBox_3_clicked(bool checked)
@@ -355,7 +426,7 @@ void disp3dwindow::on_actionStart_triggered()
         m_disp3dthread->GetModelPtr(m_disp3dmodel);
         m_disp3dthread->GetRainbowIFE(m_rainbowIFE);
         m_disp3dthread->GetTrackingPointPtr(m_trackingpoint);
-        m_disp3dthread->start();
+        m_disp3dthread->SetFrameReceiver(this);
     }
     m_disp3dthread->startThread();
 }

@@ -77,6 +77,9 @@ private slots:
 public slots:
     void RefreshStage();
     void RefreshInfor();
+    void ApplyDisplayFrame(const DisplayPointUpdateList &pointUpdates,
+                           double maxDisplace,
+                           const TrackingPointFrameUpdateList &trackingUpdates);
     void GetIFEPtr(IFE * exife){ife = exife;}
     void GetRainbowIFEPtr(rainbowIFE * ptr){m_rainbowIFE = ptr;}
 
