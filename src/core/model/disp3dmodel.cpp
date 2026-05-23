@@ -52,19 +52,13 @@ disp3dmodel::~disp3dmodel()
         renderer->RemoveActor(modelActor);
     }
     if (iren) {
-        auto style = dynamic_cast<disp3dinteractor*>(iren->GetInteractorStyle());
-        if (style) {
-            iren->SetInteractorStyle(nullptr);
-            delete style;
-        }
-        iren->Delete();
+        iren->SetInteractorStyle(nullptr);
         iren = nullptr;
     }
     if (renderer) {
         if (renderWindow) {
             renderWindow->RemoveRenderer(renderer);
         }
-        renderer->Delete();
         renderer = nullptr;
     }
 }
@@ -139,7 +133,7 @@ void disp3dmodel::LoadModel(const QString &filePath)
     modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
     modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
     modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.16, 0.582, 0.973);
+    modelActor->GetProperty()->SetColor(0.9529, 0.8510, 0.3490);
 
     renderer->AddActor(modelActor);
     renderer->ResetCamera();
@@ -148,6 +142,7 @@ void disp3dmodel::LoadModel(const QString &filePath)
     ReadPointQMap(dynPolyData);
     Flag_Actor = true;
 
+    AllKeyPoint();
     GetModelPointsNum();
     GetModelPolysNum();
     GetModelKeyPointsNum();
@@ -257,7 +252,6 @@ void disp3dmodel::ResetModel()
     renderWindow->Render();
 }
 
-
 void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 {
     vtkIdType nPoints = poly->GetNumberOfPoints();
@@ -293,7 +287,7 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 
 void disp3dmodel::SetupColorMapping(const std::string &scalarName)
 {
-    mapper->SetScalarRange(0,1);
+    mapper->SetScalarRange(0,50);
     dynPolyData->GetPointData()->SetActiveScalars(scalarName.c_str());
     mapper->ScalarVisibilityOn();
     renderWindow->Render();
@@ -306,7 +300,7 @@ void disp3dmodel::OFFScalars()
     modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
     modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
     modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.16, 0.582, 0.973);
+    modelActor->GetProperty()->SetColor(0.9529, 0.8510, 0.3490);
     renderWindow->Render();
 }
 
@@ -325,6 +319,14 @@ void disp3dmodel::ReadPointQMap(vtkSmartPointer<vtkPolyData> PolyData)
         //qDebug() << id << coords[0] << coords[1] << coords[2];
         rawPointMap.insert(id, pointCoords);
         pointpos.insert(id, pointCoords);
+    }
+}
+
+void disp3dmodel::AllKeyPoint()
+{
+    for (auto it = rawPointMap.constBegin(); it != rawPointMap.constEnd(); ++it){
+        vtkIdType id = it.key();
+        keyPointSet.insert(id);
     }
 }
 

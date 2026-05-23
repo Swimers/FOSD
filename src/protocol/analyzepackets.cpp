@@ -9,6 +9,20 @@
 #include "global.h"
 #include "Timer.h"
 
+namespace {
+constexpr int PacketHeaderSize = 4;
+
+quint8 packetByte(const QByteArray &bytes, int index)
+{
+    return static_cast<quint8>(bytes.at(index));
+}
+
+bool hasPacketBytes(const QByteArray &bytes, int minSize)
+{
+    return bytes.size() >= minSize;
+}
+}
+
 analyzepackets::analyzepackets(QObject *parent) : QObject(parent)
 {
     QFile *file_txt=new QFile("./初始波长.txt");//声明QFile类指针
@@ -38,6 +52,11 @@ void analyzepackets::setObj(connectwindow *obj)
 
 void analyzepackets::processChannel(int channel)
 {
+    if (channel < 0 || channel >= MAX_CHANNELS || !hasPacketBytes(array, 8)) {
+        qWarning() << "Invalid channel packet header, size:" << array.size() << "channel:" << channel;
+        return;
+    }
+
     FLOATA data_count_xy;
     FLOATA data_count_x;
     // 读取通道总点数（array[6]和array[7]）
@@ -47,8 +66,21 @@ void analyzepackets::processChannel(int channel)
     data_count_xy.u8Byte[3] = 0;
     CH_point[channel] = data_count_xy.all;
 
+    const int pointCount = CH_point[channel];
+    const int requiredXBytes = 8 + pointCount * 2;
+    const int requiredYBytes = 708 + pointCount * 2;
+    const int requiredBytes = requiredXBytes > requiredYBytes ? requiredXBytes : requiredYBytes;
+    if (pointCount < 0 || pointCount > MAX_POINTS ||
+        !hasPacketBytes(array, requiredBytes)) {
+        qWarning() << "Invalid channel packet length, size:" << array.size()
+                   << "channel:" << channel
+                   << "points:" << pointCount;
+        CH_point[channel] = 0;
+        return;
+    }
+
     // 读取X轴数据（从索引8开始，每个点2字节）
-    for (int j = 0; j < CH_point[channel]; j++) {
+    for (int j = 0; j < pointCount; j++) {
         data_count_x.u8Byte[0] = array[2 * j + 8];
         data_count_x.u8Byte[1] = array[2 * j + 9];
         data_count_x.u8Byte[2] = 0;
@@ -57,7 +89,7 @@ void analyzepackets::processChannel(int channel)
     }
 
     // 读取Y轴数据（从索引708开始，每个点2字节）
-    for (int j = 0; j < CH_point[channel]; j++) {
+    for (int j = 0; j < pointCount; j++) {
         data_count_x.u8Byte[0] = array[2 * j + 708];
         data_count_x.u8Byte[1] = array[2 * j + 709];
         data_count_x.u8Byte[2] = 0;
@@ -101,6 +133,20 @@ void analyzepackets::processMain()
     QDateTime dateTime = QDateTime::currentDateTime();
     QString strTime = dateTime.toString("yyyy-MM-dd hh:mm:ss");
     QMutexLocker locker(&mutexAnalyze);
+
+    if (!hasPacketBytes(array, DataAddress)) {
+        qWarning() << "Main packet too short:" << array.size();
+        return;
+    }
+
+    const int totalSensors = packetByte(array, MAX_CHANNELS + 4);
+    if (totalSensors > 1024 ||
+        !hasPacketBytes(array, DataAddress + totalSensors * 4)) {
+        qWarning() << "Invalid main packet length, size:" << array.size()
+                   << "sensor count:" << totalSensors;
+        return;
+    }
+
     //数组初始化
     for(int j=0;j<1024;j++){
         FBG_count[j]  = "";
@@ -110,9 +156,9 @@ void analyzepackets::processMain()
     }
     //获取传感器数量
     for (int i=0;i<MAX_CHANNELS;i++) {
-        channel_counts[i] = array.data()[i+4];//通道1传感器数目
+        channel_counts[i] = packetByte(array, i + 4);//通道1传感器数目
     }
-    CH_SUM = array.data()[MAX_CHANNELS+4];//总传感器数目
+    CH_SUM = totalSensors;//总传感器数目
     int Checked_CH_Count = 0;
     //获取每个通道的计数点数
     for(int i=0;i<7;i++){
@@ -193,11 +239,16 @@ void analyzepackets::processMain()
 void analyzepackets::analyzeData(const QByteArray datagram)
 {
 
+    if (!hasPacketBytes(datagram, PacketHeaderSize)) {
+        qWarning() << "Packet too short:" << datagram.size();
+        return;
+    }
+
     array = datagram;
-    uint8_t b0 = static_cast<uint8_t>(datagram.data()[0]);
-    uint8_t b1 = static_cast<uint8_t>(datagram.data()[1]);
-    uint8_t b2 = static_cast<uint8_t>(datagram.data()[2]);
-    uint8_t b3 = static_cast<uint8_t>(datagram.data()[3]);
+    uint8_t b0 = packetByte(datagram, 0);
+    uint8_t b1 = packetByte(datagram, 1);
+    uint8_t b2 = packetByte(datagram, 2);
+    uint8_t b3 = packetByte(datagram, 3);
 
     if (b0 == 0xFA && b2 == 0xFA && b1 == 0xFB && b3 == 0xFB){
         processMain();

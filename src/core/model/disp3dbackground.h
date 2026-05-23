@@ -5,6 +5,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkAxesActor.h>
 
+#include <disp3dmodel.h>
+
 enum PlaneType { PLANE_XZ, PLANE_XY, PLANE_YZ };
 
 class disp3dbackground
@@ -14,6 +16,8 @@ public:
     ~disp3dbackground();
 
 public:
+    void GetModel(disp3dmodel* ptr){m_disp3dmodel = ptr;}
+
     bool SetVtkRenderBackColor(double r,double g,double b);                                         //设置背景颜色
     bool SetVtkRenderBackGradient(double r1,double g1,double b1,double r2,double g2,double b2);     //设置渐变类型背景颜色
 
@@ -24,14 +28,21 @@ public:
     vtkSmartPointer<vtkActor> CreateGridActor(PlaneType type);
     void AddAxesGrid();
     void SetAxesGridSize(int size);
-
     void ShowGridXZ(bool);
     void ShowGridXY(bool);
     void ShowGridYZ(bool);
 
+    void CreateWorld();
+    vtkActor* CreateGround(double modelSize);
+    vtkActor* CreateSkyPlane(double modelSize);
+    vtkActor* CreateGroundWithTexture(double modelSize);
+    vtkActor* CreateSkyPlaneWithTexture(double modelSize);
+    vtkActor* CreateSkyDome(double modelSize);
+
 private:
     vtkSmartPointer<vtkRenderer> m_renderer = nullptr;
     vtkSmartPointer<vtkRenderWindow> m_renderWindow = nullptr;    //声明窗口指针
+    disp3dmodel* m_disp3dmodel;
 
     vtkAxesActor* axe = nullptr;
 
@@ -39,7 +50,7 @@ private:
     vtkSmartPointer<vtkActor> axesGridActor_XY;  // Z=0 平面
     vtkSmartPointer<vtkActor> axesGridActor_YZ;  // X=0 平面
 
-    double m_gridRange = 3000.0;
+    double m_gridRange = 100000.0;
     int m_gridNum = 100;
 };
 

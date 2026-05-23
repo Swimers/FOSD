@@ -203,3 +203,13 @@ void disp3dkeypointedit::on_pushButton_clicked()
 {
     ClearDisp();
 }
+
+void disp3dkeypointedit::SelectAll()
+{
+    for (auto it = m_disp3dmodel->rawPointMap.constBegin(); it != m_disp3dmodel->rawPointMap.constEnd(); ++it){
+        vtkIdType id = it.key();
+        m_disp3dmodel->keyPointSet.insert(id);
+    }
+    UpDataKeyInfor();
+    emit SelectSuccess();
+}

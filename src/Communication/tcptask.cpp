@@ -121,7 +121,9 @@ void tcptask::tcpRecData()
 {
     QByteArray datagram;
     datagram = m_TcpSocket->readAll();
-    if(static_cast<uint8_t>(datagram.data()[0])==0xFA && static_cast<uint8_t>(datagram.data()[2])==0xFA){
+    if(datagram.size() >= 4 &&
+       static_cast<uint8_t>(datagram.at(0)) == 0xFA &&
+       static_cast<uint8_t>(datagram.at(2)) == 0xFA){
         emit tcpPocketsReceived(datagram);
     }
     else {

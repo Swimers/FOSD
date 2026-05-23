@@ -18,7 +18,10 @@
 #include <trackingpointmanager.h>
 #include <trackingpoint.h>
 
+#include <dispdata.h>
+
 #include <IFE.h>
+#include <rainbowife.h>
 
 namespace Ui {
 class disp3dwindow;
@@ -69,11 +72,16 @@ private slots:
 
     void on_actionTrackingPoints_triggered();
     void on_actionTrackingPointData_triggered();
+    void on_actionBackData_triggered();
 
 public slots:
     void RefreshStage();
     void RefreshInfor();
+    void ApplyDisplayFrame(const DisplayPointUpdateList &pointUpdates,
+                           double maxDisplace,
+                           const TrackingPointFrameUpdateList &trackingUpdates);
     void GetIFEPtr(IFE * exife){ife = exife;}
+    void GetRainbowIFEPtr(rainbowIFE * ptr){m_rainbowIFE = ptr;}
 
 public:
     int FPS;
@@ -82,6 +90,8 @@ private:
     Ui::disp3dwindow *ui;
 
     IFE * ife = nullptr;
+    rainbowIFE *m_rainbowIFE =nullptr;
+
     bool Flag_ShowGrid;
 
     disp3dmodel *m_disp3dmodel = nullptr;

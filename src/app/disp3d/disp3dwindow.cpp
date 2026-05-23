@@ -15,6 +15,9 @@
 #include <QVTKOpenGLNativeWidget.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkPoints.h>
+#include <vtkCaptionActor2D.h>
+
 #include <QTimer>
 
 disp3dwindow::disp3dwindow(QWidget *parent) :
@@ -24,6 +27,20 @@ disp3dwindow::disp3dwindow(QWidget *parent) :
     ui->setupUi(this);
 
     InitWindow();
+
+    QTimer::singleShot(0, this, [this]() {
+        if (!ui || !ui->vtk_openGL || !m_disp3dmodel) {
+            return;
+        }
+        vtkRenderWindow *renderWindow = m_disp3dmodel->GetVTKRenderWindow();
+        vtkRenderer *renderer = m_disp3dmodel->GetVTKRenderer();
+        if (!renderWindow || !renderer) {
+            return;
+        }
+        renderer->ResetCameraClippingRange();
+        renderWindow->Render();
+        ui->vtk_openGL->update();
+    });
 }
 
 disp3dwindow::~disp3dwindow()
@@ -34,8 +51,8 @@ disp3dwindow::~disp3dwindow()
     }
 
     if (m_disp3dthread) {
-        m_disp3dthread->pauseThread();
-        m_disp3dthread->wait();
+        m_disp3dthread->stopThread();
+        delete m_disp3dthread;
         m_disp3dthread = nullptr;
     }
 
@@ -80,9 +97,10 @@ void disp3dwindow::InitWindow()
     //m_disp3dmodel->initdisp3dmodel();
 
     m_disp3dbackground = new disp3dbackground(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
-    m_disp3dbackground->SetVtkRenderBackGradient(0.625,0.6797,0.762,0.109, 0.1797, 0.2773);
+    m_disp3dbackground->SetVtkRenderBackGradient(0.53, 0.81, 0.98, 0.87, 0.94, 1.0);
     m_disp3dbackground->AddAxesActor();
     m_disp3dbackground->AddAxesGrid();
+    m_disp3dbackground->GetModel(m_disp3dmodel);
 
     m_trackingpoint = new trackingpoint(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
     m_trackingpoint->SetDisplayModel(m_disp3dmodel);
@@ -91,6 +109,7 @@ void disp3dwindow::InitWindow()
     ui->actionReset->setDisabled(true);
     ui->actionStart->setDisabled(false);
     ui->actionStop->setEnabled(false);
+    ui->actionPause->setDisabled(true);
 
     freshTimer = new QTimer(this);
     FPS = ui->cbox_FPS->currentText().left(ui->cbox_FPS->currentText().indexOf('H')).toInt();
@@ -98,7 +117,12 @@ void disp3dwindow::InitWindow()
     InitPointInfor();
 
     // 测试代码段，初始化加载模型
-    m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/rainbow.stl");
+    m_disp3dmodel->LoadModel("data/model/rainbow.stl");
+    m_disp3dmodel->Flag_Actor = true;
+    m_disp3dbackground->CreateWorld();
+    m_disp3dmodel->GetVTKRenderWindow()->Render();
+    m_trackingpoint->LoadTrackingPointsFromFile("data/trackingpoint/tracking_points_example_modified.csv");
+
     //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
@@ -131,8 +155,78 @@ void disp3dwindow::RefreshStage()
 {
     m_disp3dmodel->GetVTKRenderWindow()->Render();
     char str[8];
-    sprintf(str, "%0.4f", m_disp3dmodel->MaxDisplace);
-    ui->lab_MaxDeformation->setText(QString(str));
+    if(m_disp3dmodel){
+        QString maxDeformStr = QString::number(m_disp3dmodel->MaxDisplace, 'f', 4);
+        ui->lab_MaxDeformation->setText(maxDeformStr);
+    }
+}
+
+void disp3dwindow::ApplyDisplayFrame(const DisplayPointUpdateList &pointUpdates,
+                                     double maxDisplace,
+                                     const TrackingPointFrameUpdateList &trackingUpdates)
+{
+    if (!m_disp3dmodel || !m_disp3dmodel->dynPolyData) {
+        return;
+    }
+
+    vtkPoints *points = m_disp3dmodel->dynPolyData->GetPoints();
+    if (!points) {
+        return;
+    }
+
+    const vtkIdType pointCount = points->GetNumberOfPoints();
+    for (const DisplayPointUpdate &update : pointUpdates) {
+        if (update.id < 0 || update.id >= pointCount) {
+            continue;
+        }
+
+        QVector<double> pos(3), disp(3);
+        for (int i = 0; i < 3; ++i) {
+            pos[i] = update.position[i];
+            disp[i] = update.displacement[i];
+        }
+
+        m_disp3dmodel->modelScalars.dispX->SetValue(update.id, disp[0]);
+        m_disp3dmodel->modelScalars.dispY->SetValue(update.id, disp[1]);
+        m_disp3dmodel->modelScalars.dispZ->SetValue(update.id, disp[2]);
+        m_disp3dmodel->pointpos[update.id] = pos;
+        m_disp3dmodel->pointDisplace[update.id] = disp;
+        points->SetPoint(update.id, pos[0], pos[1], pos[2]);
+    }
+
+    m_disp3dmodel->MaxDisplace = maxDisplace;
+
+    for (const TrackingPointFrameUpdate &update : trackingUpdates) {
+        TrackingPoint *tp = m_trackingpoint ? m_trackingpoint->GetTrackingPointById(update.id) : nullptr;
+        if (!tp) {
+            continue;
+        }
+
+        for (int i = 0; i < 3; ++i) {
+            tp->currentDisp[i] = update.displacement[i];
+        }
+
+        if (tp->visible) {
+            tp->sphereActor->SetPosition(update.position[0], update.position[1], update.position[2]);
+            tp->sphereActor->Modified();
+
+            char dispText[100];
+            sprintf(dispText, "(%.3f, %.3f, %.3f)",
+                    tp->currentDisp[0],
+                    tp->currentDisp[1],
+                    tp->currentDisp[2]);
+            tp->textActor->SetCaption(dispText);
+            tp->textActor->SetAttachmentPoint( update.position[0], update.position[1], update.position[2]);
+            tp->textActor->Modified();
+        }
+    }
+
+    points->Modified();
+    m_disp3dmodel->modelScalars.dispX->Modified();
+    m_disp3dmodel->modelScalars.dispY->Modified();
+    m_disp3dmodel->modelScalars.dispZ->Modified();
+    m_disp3dmodel->dynPolyData->Modified();
+    m_disp3dmodel->FreshKeyPoint();
 }
 
 void disp3dwindow::on_checkBox_3_clicked(bool checked)
@@ -147,6 +241,8 @@ void disp3dwindow::on_pbtn_ModelLoad_clicked()
         QString filePath = QFileDialog::getOpenFileName(this, tr("选择文件"), "", filter);
         if (!filePath.isEmpty()) {
             m_disp3dmodel->LoadModel(filePath);
+            m_disp3dbackground->CreateWorld();
+            m_disp3dmodel->GetVTKRenderWindow()->Render();
             RefreshInfor();
         }
         else {
@@ -327,9 +423,10 @@ void disp3dwindow::on_actionStart_triggered()
     freshTimer->start(1000/FPS);
     if(m_disp3dthread == nullptr){  //这里使用线程的方式计算数据，如果采用定时器的话，会造成界面很卡
         m_disp3dthread = new disp3dfreshmodelthread(this);
-        m_disp3dthread->GetPtr(m_disp3dmodel, ife);
+        m_disp3dthread->GetModelPtr(m_disp3dmodel);
+        m_disp3dthread->GetRainbowIFE(m_rainbowIFE);
         m_disp3dthread->GetTrackingPointPtr(m_trackingpoint);
-        m_disp3dthread->start();
+        m_disp3dthread->SetFrameReceiver(this);
     }
     m_disp3dthread->startThread();
 }
@@ -369,9 +466,9 @@ void disp3dwindow::on_actionReset_triggered()
 {
     m_disp3dmodel->ResetModel();
     m_trackingpoint->ResetTrackingPoint();
+    m_disp3dmodel->ResetModel();
 
     ui->actionStart->setEnabled(true);
-
     ui->actionReset->setDisabled(true);
     ui->actionPause->setDisabled(true);
     ui->actionStop->setDisabled(true);
@@ -474,7 +571,7 @@ void disp3dwindow::on_actionTrackingPoints_triggered()
         m_trackingpointmanager->SetDisplayModel(m_disp3dmodel);
         m_trackingpointmanager->SetTrackingPoint(m_trackingpoint);
         m_trackingpointmanager->show();
-
+        m_trackingpointmanager->RefreshTable();
     }
     else {
         QMessageBox::critical(this, "错误", "模型不存在");
@@ -493,4 +590,12 @@ void disp3dwindow::on_actionTrackingPointData_triggered()
     else {
         QMessageBox::critical(this, "错误", "模型不存在");
     }
+}
+
+void disp3dwindow::on_actionBackData_triggered()
+{
+    dispdata *m_dispdata = new dispdata(this);
+    m_dispdata->GetRainbowIFE(m_rainbowIFE);
+    m_dispdata->exec();
+    delete m_dispdata;
 }

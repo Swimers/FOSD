@@ -13,6 +13,8 @@
 #include <QDateTime>
 #include <QTime>
 
+#include "global.h"
+
 /*
  * 传入文件地址，将数据导入positionOriginal中
  */
@@ -32,6 +34,10 @@ void rainbowIFE::startStorageThread() {
         // 设置存储路径
         QByteArray patharray = qgetenv("FOSD_XD_PATH");
         QString path = QString::fromLocal8Bit(patharray);
+
+        //测试存储路径
+        path = "data";
+
         if (!path.isEmpty()) {
             m_storageThread->setStoragePath(path);
         }
@@ -56,48 +62,6 @@ int rainbowIFE::getStorageQueueSize() const {
     }
     return 0;
 }
-
-//void rainbowIFE::getDemoData(const DWR_FOSD::NET_SEND_BUFF4 data) {
-
-//    // 只在数据复制时持有锁，尽快释放
-//    {
-//        QMutexLocker locker(&strainMutex);
-//        for (int i = 0; i < 12; i++){
-//            all_data.strian[i] = data.strian[i];
-//        }
-//        for (int i = 0; i < 12; i++){
-//            all_data.temper[i] = data.temper[i];
-//        }
-//        for (int i = 0; i < 16; i++){
-//            all_data.free[i] = data.free[i];
-//        }
-//    }  // 锁在此释放
-
-//    // 如果启用了存储，将数据入队到存储线程
-//    if (m_storageEnabled && m_storageThread != nullptr) {
-//        StorageData storageData;
-
-//        // 复制数据
-//        for (int i = 0; i < 12; i++) {
-//            storageData.strian[i] = data.strian[i];
-//            storageData.temper[i] = data.temper[i];
-//        }
-//        for (int i = 0; i < 16; i++) {
-//            storageData.free[i] = data.free[i];
-//        }
-
-//        // 添加时间戳
-//        storageData.timestamp = QTime::currentTime().toString("hh_mm_ss");
-
-//        // 入队（非阻塞操作）
-//        m_storageThread->enqueueData(storageData);
-//    }
-
-//    // 调试输出（可选，生产环境可注释掉以提高性能）
-//    // for (int i = 0; i < 11; i++) {
-//    //     qDebug() << all_data.free[i];
-//    // }
-//}
 
 void rainbowIFE::modifyOriginalCoordinates(const QString &filePath)
 {
@@ -133,6 +97,15 @@ void rainbowIFE::shapefunction(double x_para,double y_para,double z_para,double 
     double R_inv_right[3][3] = {0.374603810000000,	0.00780956100000000,	-0.927152100000000,
 0.914273800000000,	0.166287510000000,	0.369393890000000,
 0.157058618217253,	-0.986047232229701,	0.0551518577896113};
+
+    //****临时修改，限制-2300< z <2300 的点不运算
+    if((z_para >= -2300) && (z_para <= 2300)){
+        disp[0] = 0;
+        disp[1] = 0;
+        disp[2] = 0;
+        return;
+    }
+
 
     // double node_u_beam[14] = {0,
     //                0,
@@ -531,14 +504,146 @@ void rainbowIFE::saveConfig(const QString &filePath)
     }
 }
 
-#include "global.h"
 void rainbowIFE::calculateDisp()
 {
     //传递传感器应变值
     QMutexLocker locker(&mutexStrain);
+    //swapFreeArray(all_data);
+    limitAndZero(all_data);
     for (int i = 0; i < 16; ++i) {
-        node_u[i] = all_data.free[i];
+        int srcIndex = (i < 8) ? (i + 8) : (i - 8);
+        node_u[i] = all_data.free[srcIndex];
     }
 
+//    QMutexLocker locker(&mutexStrain);
+//    node_u[0]  = 0.0891408696770668;
+//    node_u[1]  = -0.018775571137666702;
+//    node_u[2]  = -8.148399353027344;
+//    node_u[3]  = -101.8877182006836;
+//    node_u[4]  = -318.6768798828125;
+//    node_u[5]  = 0.0598243810236454;
+//    node_u[6]  = -0.036320462822914124;
+//    node_u[7]  = -0.020937006920576096;
+//    node_u[8]  = -0.010799256153404713;
+//    node_u[9]  = -0.004124469123780727;
+//    node_u[10] = -2.8583545684814453;
+//    node_u[11] = -25.96009063720703;
+//    node_u[12] = 96.00071716308594;
+//    node_u[13] = -0.028599070385098457;
+//    node_u[14] = -0.05329131335020065;
+//    node_u[15] = -0.007998616434633732;
+}
 
+//void rainbowIFE::getDemoData(const DWR_FOSD::NET_SEND_BUFF4 data) {
+
+//    // 只在数据复制时持有锁，尽快释放
+//    {
+//        QMutexLocker locker(&strainMutex);
+//        for (int i = 0; i < 12; i++){
+//            all_data.strian[i] = data.strian[i];
+//        }
+//        for (int i = 0; i < 12; i++){
+//            all_data.temper[i] = data.temper[i];
+//        }
+//        for (int i = 0; i < 16; i++){
+//            all_data.free[i] = data.free[i];
+//        }
+//    }  // 锁在此释放
+
+//    // 如果启用了存储，将数据入队到存储线程
+//    if (m_storageEnabled && m_storageThread != nullptr) {
+//        StorageData storageData;
+
+//        // 复制数据
+//        for (int i = 0; i < 12; i++) {
+//            storageData.strian[i] = data.strian[i];
+//            storageData.temper[i] = data.temper[i];
+//        }
+//        for (int i = 0; i < 16; i++) {
+//            storageData.free[i] = data.free[i];
+//        }
+
+//        // 添加时间戳
+//        storageData.timestamp = QTime::currentTime().toString("hh_mm_ss");
+
+//        // 入队（非阻塞操作）
+//        m_storageThread->enqueueData(storageData);
+//    }
+
+//    // 调试输出（可选，生产环境可注释掉以提高性能）
+//    // for (int i = 0; i < 11; i++) {
+//    //     qDebug() << all_data.free[i];
+//    // }
+//}
+
+//测试使用接收数据
+void rainbowIFE::GetDataTest(const NET_SEND_BUFF4 data)
+{
+    QMutexLocker locker(&mutexStrain);
+    for (int i = 0; i < 12; i++){
+        all_data.strian[i] = data.strian[i];
+    }
+    for (int i = 0; i < 12; i++){
+        all_data.temper[i] = data.temper[i];
+    }
+    for (int i = 0; i < 16; i++){
+        all_data.free[i] = data.free[i];
+    }
+
+    if (m_storageEnabled && m_storageThread != nullptr) {
+        StorageData storageData;
+        storageData.flag = data.flag;
+        for (int i = 0; i < 12; i++) {
+            storageData.strian[i] = data.strian[i];
+            storageData.temper[i] = data.temper[i];
+        }
+        for (int i = 0; i < 16; i++) {
+            storageData.free[i] = data.free[i];
+        }
+        storageData.timestamp = QTime::currentTime().toString("hh_mm_ss");
+        m_storageThread->enqueueData(storageData);
+    }
+
+    // 调试输出（可选，生产环境可注释掉以提高性能）
+    // for (int i = 0; i < 11; i++) {
+    //     qDebug() << all_data.free[i];
+    // }
+}
+
+void rainbowIFE::swapFreeArray(NET_SEND_BUFF4 &data)
+{
+    for(int i = 0; i < 8; ++i)
+    {
+        qSwap(data.free[i], data.free[i + 8]);
+    }
+}
+
+void rainbowIFE::limitAndZero(NET_SEND_BUFF4 &data)
+{
+
+    bool exceed = false;
+    for (int i = 0; i < 8; ++i) {
+        if (std::fabs(data.free[i]) > threshold[i]) {
+            exceed = true;
+            break;
+        }
+    }
+    if (exceed) {
+        for (int i = 0; i < 8; ++i) {
+            data.free[i] = 0.0;
+        }
+    }
+
+    exceed = false;
+    for (int i = 0; i < 8; ++i) {
+        if (std::fabs(data.free[i + 8]) > threshold[i]) {
+            exceed = true;
+            break;
+        }
+    }
+    if (exceed) {
+        for (int i = 0; i < 8; ++i) {
+            data.free[i + 8] = 0.0;
+        }
+    }
 }

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1038</width>
+    <width>1050</width>
     <height>775</height>
    </rect>
   </property>
@@ -254,6 +254,7 @@
    <addaction name="separator"/>
    <addaction name="actionTrackingPoints"/>
    <addaction name="actionTrackingPointData"/>
+   <addaction name="actionBackData"/>
   </widget>
   <widget class="QDockWidget" name="dock_Model">
    <property name="features">
@@ -395,6 +396,9 @@
      </item>
      <item row="5" column="1">
       <widget class="QComboBox" name="cbox_FPS">
+       <property name="currentText">
+        <string>25Hz</string>
+       </property>
        <item>
         <property name="text">
          <string>1Hz</string>
@@ -403,6 +407,11 @@
        <item>
         <property name="text">
          <string>10Hz</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>25Hz</string>
         </property>
        </item>
        <item>
@@ -850,6 +859,11 @@
    </property>
    <property name="toolTip">
     <string>显示追踪点变形量数据表</string>
+   </property>
+  </action>
+  <action name="actionBackData">
+   <property name="text">
+    <string>回传数据</string>
    </property>
   </action>
  </widget>

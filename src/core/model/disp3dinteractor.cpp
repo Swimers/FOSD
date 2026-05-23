@@ -19,6 +19,8 @@ disp3dinteractor::disp3dinteractor()
 {
     m_TextActor = vtkTextActor::New();
     m_SphereActor = vtkActor::New();
+    m_TextActor->PickableOff();
+    m_SphereActor->PickableOff();
     Flag_Pick = false;
 }
 
@@ -57,8 +59,10 @@ void disp3dinteractor::OnLeftButtonDown()
     vtkInteractorStyleTrackballCamera::OnLeftButtonDown();
 
     int* pos = this->GetInteractor()->GetEventPosition();
-    vtkPointPicker * pick1 = vtkPointPicker::New();
+    vtkSmartPointer<vtkPointPicker> pick1 = vtkSmartPointer<vtkPointPicker>::New();
     pick1->SetTolerance(0.009);
+    pick1->PickFromListOn();
+    pick1->AddPickList(m_disp3dmodel->GetVTKActor());
     pick1->Pick(pos[0], pos[1], 0, m_disp3dmodel->GetVTKRenderer());
     vtkIdType ID = pick1->GetPointId();
 

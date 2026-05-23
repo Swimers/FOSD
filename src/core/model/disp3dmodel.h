@@ -37,7 +37,7 @@ private:
     vtkSmartPointer<vtkActor> modelActor = vtkSmartPointer<vtkActor>::New();
 
     vtkSmartPointer<vtkRenderer>renderer = vtkSmartPointer<vtkRenderer>::New();                                                                    //声明渲染器
-    vtkRenderWindowInteractor * iren;
+    vtkRenderWindowInteractor * iren = nullptr;
     vtkSmartPointer<vtkPolyData> rawPolyData = nullptr;
 
 public:
@@ -62,6 +62,7 @@ public:
     void ResetModel();
     void ReadPointQMap(vtkSmartPointer<vtkPolyData> PolyData);
 
+    void AllKeyPoint();
     void FreshKeyPoint();
     void ClearKeyPoint();
 
@@ -105,7 +106,6 @@ public:
     ModelScalars modelScalars;      //颜色映射表
 
     int displacefactor = 2;
-
 };
 
 #endif // DISP3DMODEL_H

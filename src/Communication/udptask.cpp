@@ -44,7 +44,9 @@ void udptask::udpRecData()
          datagram.resize(static_cast<int>(m_ReceSocket->pendingDatagramSize()));
          m_ReceSocket->readDatagram(datagram.data(),datagram.size());
 
-         if(static_cast<uint8_t>(datagram.data()[0])==0xFA && static_cast<uint8_t>(datagram.data()[2])==0xFA){
+         if(datagram.size() >= 4 &&
+            static_cast<uint8_t>(datagram.at(0)) == 0xFA &&
+            static_cast<uint8_t>(datagram.at(2)) == 0xFA){
              emit udpPocketsReceived(datagram);
          }
          else {

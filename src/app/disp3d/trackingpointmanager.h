@@ -32,13 +32,9 @@ public:
 
 private slots:
     void on_pbtn_LoadFile_clicked();
-
     void on_pbtn_ClearAll_clicked();
-
     void on_pbtn_SelectAll_clicked();
-
     void on_pbtn_SelectNone_clicked();
-
     void on_pbtn_Refresh_clicked();
 
 private:
