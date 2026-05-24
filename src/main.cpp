@@ -35,10 +35,10 @@ int main(int argc, char *argv[])
     qssFile.close();
 
     //直接启动主窗口
-    RainbowMainWindow * w = new RainbowMainWindow();
-    w->show();
-    //loginwindow * m_loginwindow = loginwindow::getInstance();
-    //m_loginwindow->show();
+    //RainbowMainWindow * w = new RainbowMainWindow();
+    //w->show();
+    loginwindow * m_loginwindow = loginwindow::getInstance();
+    m_loginwindow->show();
 
     return a.exec();
 }
