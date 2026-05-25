@@ -92,9 +92,9 @@ set(FOSD_SOURCES
     src/app/disp3d/trackingpointmanager.cpp
     src/app/disp3d/trackingpointmanager.h
     src/app/disp3d/trackingpointmanager.ui
-    src/app/mainwindow/mainwindow.cpp
-    src/app/mainwindow/mainwindow.h
-    src/app/mainwindow/mainwindow.ui
+    src/app/mainwindow/oldmainwindow.cpp
+    src/app/mainwindow/oldmainwindow.h
+    src/app/mainwindow/oldmainwindow.ui
     src/app/mainwindow/rainbowmainwindow.cpp
     src/app/mainwindow/rainbowmainwindow.h
     src/app/mainwindow/rainbowmainwindow.ui

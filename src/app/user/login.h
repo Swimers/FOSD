@@ -5,7 +5,7 @@
 
 #include "userregister.h"
 #include "userforget.h"
-#include "mainwindow.h"
+#include "oldmainwindow.h"
 
 #include "QMouseEvent"
 #include "QDebug"
@@ -64,7 +64,7 @@ private:
 
     UserForget * m_UserForget;
     UserRegister * m_UserRegister;
-    MainWindow * m_MainWindow;
+    OldMainWindow * m_MainWindow;
 
 private:
     void ReadInit(const QString &key, QStringList &value) ;

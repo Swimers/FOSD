@@ -1,15 +1,15 @@
 #include "QButtonGroup"
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "oldmainwindow.h"
+#include "ui_oldmainwindow.h"
 #include "login.h"
 
 #include "switchcontrol.h"
 
 static QButtonGroup btnGroup;
 
-MainWindow::MainWindow(const QString& privilege,QWidget *parent) :
+OldMainWindow::OldMainWindow(const QString& privilege,QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::OldMainWindow)
 {
     ui->setupUi(this);
     this->privilege = privilege;
@@ -18,15 +18,15 @@ MainWindow::MainWindow(const QString& privilege,QWidget *parent) :
     setWindowIcon(QIcon(":/icon/Resource/icon/favicon.ico"));
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
-    InitMainwindow();
+    InitOldMainWindow();
 }
 
-MainWindow::~MainWindow()
+OldMainWindow::~OldMainWindow()
 {
     delete ui;
 }
 
-void MainWindow::InitMainwindow()
+void OldMainWindow::InitOldMainWindow()
 {
     if(this->privilege == "1")
         this->setWindowTitle(" 实时监控系统|管理员| ");
@@ -66,7 +66,7 @@ void MainWindow::InitMainwindow()
     connect(&btnGroup,
             static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
             this,
-            &MainWindow::onButtonGroupClicked);
+            &OldMainWindow::onButtonGroupClicked);
     btnGroup.button(0)->setChecked(true);
     ui->stackedWidget->setCurrentIndex(0);
     onButtonGroupClicked(0);
@@ -76,7 +76,7 @@ void MainWindow::InitMainwindow()
     connect(this, SIGNAL(setUiWhited()), m_connectwindow, SLOT(SwitchToW()));
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *e)
+void OldMainWindow::mouseMoveEvent(QMouseEvent *e)
 {
     if(!Flag_WindowFull){
         if(e->buttons() & Qt::LeftButton){
@@ -85,7 +85,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *e)
+void OldMainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(!Flag_WindowFull){
         if(e->button() == Qt::LeftButton){
@@ -94,7 +94,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     }
 }
 
-void MainWindow::onButtonGroupClicked(int id)
+void OldMainWindow::onButtonGroupClicked(int id)
 {
     for(int i = 0; i < 3; i++) {
         QPushButton* button = qobject_cast<QPushButton*>(btnGroup.button(i));
@@ -108,7 +108,7 @@ void MainWindow::onButtonGroupClicked(int id)
     }
 }
 
-void MainWindow::switchUiStyle(bool flag)
+void OldMainWindow::switchUiStyle(bool flag)
 {
     Flag_Style = flag;
     if(!Flag_Style){
@@ -131,12 +131,12 @@ void MainWindow::switchUiStyle(bool flag)
     }
 }
 
-void MainWindow::on_pbtn_Maximize_clicked()
+void OldMainWindow::on_pbtn_Maximize_clicked()
 {
     close();
 }
 
-void MainWindow::on_pbtn_TurnOff_clicked()
+void OldMainWindow::on_pbtn_TurnOff_clicked()
 {
     loginwindow * m = loginwindow::getInstance();
     m ->show();
@@ -145,7 +145,7 @@ void MainWindow::on_pbtn_TurnOff_clicked()
     this->deleteLater();
 }
 
-void MainWindow::on_pbtn_UserManage_clicked()
+void OldMainWindow::on_pbtn_UserManage_clicked()
 {
     if(privilege=="1"){
         UserManage * m = UserManage::getInstance();
@@ -157,12 +157,12 @@ void MainWindow::on_pbtn_UserManage_clicked()
     }
 }
 
-void MainWindow::on_pbtn_Minimize_clicked()
+void OldMainWindow::on_pbtn_Minimize_clicked()
 {
     showMinimized();
 }
 
-void MainWindow::on_pbtn_Full_clicked()
+void OldMainWindow::on_pbtn_Full_clicked()
 {
     Flag_WindowFull = !Flag_WindowFull;
     if(Flag_WindowFull){

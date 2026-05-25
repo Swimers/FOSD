@@ -68,7 +68,7 @@ FORMS += \
     src/app/disp3d/disp3dkeypointedit.ui \
     src/app/disp3d/disp3dkeypointselect.ui \
     src/app/disp3d/disp3dwindow.ui \
-    src/app/mainwindow/mainwindow.ui \
+    src/app/mainwindow/oldmainwindow.ui \
     src/app/user/login.ui \
     src/app/user/userforget.ui \
     src/app/user/usermanage.ui \
@@ -85,7 +85,7 @@ HEADERS += \
     src/app/disp3d/disp3dkeypointedit.h \
     src/app/disp3d/disp3dkeypointselect.h \
     src/app/disp3d/disp3dwindow.h \
-    src/app/mainwindow/mainwindow.h \
+    src/app/mainwindow/oldmainwindow.h \
     src/app/user/login.h \
     src/app/user/userforget.h \
     src/app/user/usermanage.h \
@@ -123,7 +123,7 @@ SOURCES += \
     src/app/disp3d/disp3dkeypointedit.cpp \
     src/app/disp3d/disp3dkeypointselect.cpp \
     src/app/disp3d/disp3dwindow.cpp \
-    src/app/mainwindow/mainwindow.cpp \
+    src/app/mainwindow/oldmainwindow.cpp \
     src/app/user/login.cpp \
     src/app/user/userforget.cpp \
     src/app/user/usermanage.cpp \

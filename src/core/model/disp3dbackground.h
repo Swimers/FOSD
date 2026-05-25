@@ -41,8 +41,6 @@ public:
     vtkActor* CreateGroundWithTexture(double modelSize);
     vtkActor* CreateSkyPlaneWithTexture(double modelSize);
     vtkActor* CreateSkyDome(double modelSize);
-
-private:
     QString resolveTexturePath(const QString& relativePath) const;
     vtkTexture* loadTexture(const QString& relativePath, bool repeat) const;
     vtkActor* createTexturedPlaneActor(double modelSize,
@@ -51,6 +49,7 @@ private:
                                        const QString& texturePath,
                                        bool repeat);
 
+private:
     vtkSmartPointer<vtkRenderer> m_renderer = nullptr;
     vtkSmartPointer<vtkRenderWindow> m_renderWindow = nullptr;    //声明窗口指针
     disp3dmodel* m_disp3dmodel;

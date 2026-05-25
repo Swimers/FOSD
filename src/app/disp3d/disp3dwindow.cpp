@@ -286,11 +286,11 @@ void disp3dwindow::on_pbtn_ModelClear_clicked()
             );
             if (result == QMessageBox::Ok) {
                 m_disp3dmodel->UnLoadModel();
+                m_trackingpoint->ClearTrackingPoint();
                 ui->lab_NumPoints->clear();
                 ui->lab_NumPolys->clear();
                 ui->lab_NumKeyPoints->clear();
                 ui->lab_MaxDeformation->clear();
-
             }
     }
     else {

@@ -1,6 +1,6 @@
 #include "login.h"
 #include "ui_login.h"
-#include "mainwindow.h"
+#include "oldmainwindow.h"
 
 loginwindow* loginwindow::m_loginwindow = nullptr;
 
@@ -216,7 +216,7 @@ void loginwindow::on_btn_Login_clicked()
                     WriteInit("privilege", m_privilegeList);
                     WriteInit("isrembered", m_isremberList);
 
-                    MainWindow * m = new MainWindow(privilege);
+                    OldMainWindow * m = new OldMainWindow(privilege);
                     m->show();
                     this->close();  //关闭当前主窗口
                     write_json();

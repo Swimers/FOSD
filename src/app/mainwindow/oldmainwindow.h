@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef OLDMAINWINDOW_H
+#define OLDMAINWINDOW_H
 
 #include <QMainWindow>
 #include <QButtonGroup>
@@ -12,16 +12,16 @@
 #include <rainbowife.h>
 
 namespace Ui {
-class MainWindow;
+class OldMainWindow;
 }
 
-class MainWindow : public QMainWindow
+class OldMainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(const QString& privilege,QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit OldMainWindow(const QString& privilege,QWidget *parent = nullptr);
+    ~OldMainWindow();
 
 public:
     bool Flag_Style;
@@ -37,7 +37,7 @@ private slots:
     void on_pbtn_Full_clicked();
 
 private:
-    void InitMainwindow();
+    void InitOldMainWindow();
 
 protected:
     void mouseMoveEvent(QMouseEvent *e);
@@ -48,7 +48,7 @@ signals:
     void setUiWhited();
 
 private:
-    Ui::MainWindow  * ui;
+    Ui::OldMainWindow  * ui;
     UserManage      * m_Manage;
     connectwindow   * m_connectwindow;
     disp2dwindow    * m_disp2dwindow;
@@ -59,4 +59,4 @@ private:
     QString privilege;
 };
 
-#endif // MAINWINDOW_H
+#endif // OLDMAINWINDOW_H
