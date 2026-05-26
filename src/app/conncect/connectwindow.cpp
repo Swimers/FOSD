@@ -14,6 +14,7 @@
 #include <QTableWidget>
 #include <qcustomplot.h>
 #include <QNetworkInterface>
+#include <QSettings>
 #include <QtNetwork>
 #include <QThread>
 
@@ -22,6 +23,7 @@
 #include "tcptask.h"
 #include "analyzepackets.h"
 #include "global.h"
+#include "ConfigManager.h"
 
 connectwindow::connectwindow(QWidget *parent) :
     QWidget(parent),
@@ -67,31 +69,29 @@ connectwindow::~connectwindow()
     delete ui;
 }
 
-void connectwindow::ReadParaConfig(const QString &fileName)
+void connectwindow::ReadParaConfig()
 {
-    QSettings settings(fileName, QSettings::IniFormat);
-    // 读取并设置 QLineEdit 的值
-    ui->textEdit_APara->setText(settings.value("A", "").toString());
-    ui->textEdit_BPara->setText(settings.value("B", "").toString());
-    ui->textEdit_StrainLowPara->setText(settings.value("Strain_low", "").toString());
-    ui->textEdit_StrainTopPara->setText(settings.value("Strain_top", "").toString());
-    // 读取并设置 QComboBox 的值
-    ui->cbox_CampingFre->setCurrentText(settings.value("getHz", "").toString());
-    ui->cbox_SaveCycle->setCurrentText(settings.value("saveTime", "").toString());
+    ConfigManager::instance().load();
+    auto &appConfig = ConfigManager::instance().config();
+    ui->textEdit_APara->setText(appConfig.strain.aPara);
+    ui->textEdit_BPara->setText(appConfig.strain.bPara);
+    ui->textEdit_StrainLowPara->setText(appConfig.strain.strainLowPara);
+    ui->textEdit_StrainTopPara->setText(appConfig.strain.strainTopPara);
+    ui->cbox_CampingFre->setCurrentText(appConfig.camp.getHz);
+    ui->cbox_SaveCycle->setCurrentText(appConfig.camp.saveTime);
     on_pbtn_ParaSet_clicked();
 }
 
-void connectwindow::WriteParaConfig(const QString &fileName)
+void connectwindow::WriteParaConfig()
 {
-    QSettings settings(fileName, QSettings::IniFormat);
-    // 从 QLineEdit 获取值并写入配置
-    settings.setValue("A", ui->textEdit_APara->toPlainText());
-    settings.setValue("B", ui->textEdit_BPara->toPlainText());
-    settings.setValue("Strain_low", ui->textEdit_StrainLowPara->toPlainText());
-    settings.setValue("Strain_top", ui->textEdit_StrainTopPara->toPlainText());
-    // 从 QComboBox 获取值并写入配置
-    settings.setValue("getHz", ui->cbox_CampingFre->currentText());
-    settings.setValue("saveTime", ui->cbox_SaveCycle->currentText());
+    auto &appConfig = ConfigManager::instance().config();
+    appConfig.strain.aPara = ui->textEdit_APara->toPlainText();
+    appConfig.strain.bPara = ui->textEdit_BPara->toPlainText();
+    appConfig.strain.strainLowPara = ui->textEdit_StrainLowPara->toPlainText();
+    appConfig.strain.strainTopPara = ui->textEdit_StrainTopPara->toPlainText();
+    appConfig.camp.getHz = ui->cbox_CampingFre->currentText();
+    appConfig.camp.saveTime = ui->cbox_SaveCycle->currentText();
+    ConfigManager::instance().save();
 }
 
 void connectwindow::InitCustomPlot(QCustomPlot *customPlot)
@@ -290,7 +290,7 @@ void connectwindow::udpStatusChange(bool State)
         if (timer0->isActive()){
             timer0->stop();
         }
-        timer0->start(1000/ui->cbox_CampingFre->currentText().toInt());
+        timer0->start(CampingFre);
         connect(timer0,SIGNAL(timeout()),this, SLOT(UpDataTable()));
         setLED(2,25);
         DispDiagnosis("UDP连接成功!");
@@ -333,7 +333,7 @@ void connectwindow::tcpStatusChange(tcptask::ConnectionStatus status)
         if (timer0->isActive()){
             timer0->stop();
         }
-        timer0->start(1000/ui->cbox_CampingFre->currentText().toInt());
+        timer0->start(CampingFre);
         connect(timer0,SIGNAL(timeout()),this, SLOT(UpDataTable()));
         ui->cbox_CommuteChoose->setEnabled(false);
         Flag_ConnectTCP = 1;
@@ -439,7 +439,7 @@ void connectwindow::InitAnalyze()
 
 void connectwindow::InitWindow()
 {
-    ReadParaConfig("paraConfig.ini");
+    ReadParaConfig();
     InitCustomPlot(ui->cplot_Spectrum);
     on_pbtn_ParaSet_clicked();
 
@@ -668,10 +668,10 @@ void connectwindow::Show_Plot(QCustomPlot *customPlot)
 void connectwindow::on_pbtn_ParaSet_clicked()
 {
     QString fre_tmp = ui->cbox_CampingFre->currentText();
-    int fre = fre_tmp.toInt();
+    CampingFre = fre_tmp.toInt();
     if (timer0->isActive()){
        timer0->stop();
-       timer0->start(1000/fre);
+       timer0->start(1000/CampingFre);
     }
      QString auto_save_time_txt = ui->cbox_SaveCycle->currentText();
      AutoSaveCycle = auto_save_time_txt.toInt();
@@ -683,10 +683,8 @@ void connectwindow::on_pbtn_ParaSet_clicked()
          set_strain_AB(A,B);
          StrainLow = ui->textEdit_StrainLowPara->toPlainText().toFloat();
          StrainTop = ui->textEdit_StrainTopPara->toPlainText().toFloat();
-         // qDebug() << StrainTop;
-         // qDebug() << StrainLow;
     }
-    WriteParaConfig("paraConfig.ini");
+    WriteParaConfig();
 }
 
 void connectwindow::on_pbtn_SelectAllCH_clicked()
@@ -741,7 +739,7 @@ void connectwindow::on_pbtn_SelectCH_clicked()
 
 void connectwindow::on_pbtn_ParaRest_clicked()
 {
-    ReadParaConfig("paraConfig.ini");
+    ReadParaConfig();
 }
 
 void connectwindow::on_tabWidget_currentChanged(int index)

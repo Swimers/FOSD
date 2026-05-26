@@ -89,13 +89,63 @@ struct LoginConfig
     }
 };
 
-struct
+struct StrainConfig
+{
+    QString aPara;
+    QString bPara;
+    QString strainLowPara;
+    QString strainTopPara;
+
+    static StrainConfig fromJson(const QJsonObject &object)
+    {
+        StrainConfig config;
+        config.aPara = object.value("aPara").toString(config.aPara);
+        config.bPara = object.value("bPara").toString(config.bPara);
+        config.strainLowPara = object.value("strainLowPara").toString(config.strainLowPara);
+        config.strainTopPara = object.value("strainTopPara").toString(config.strainTopPara);
+        return config;
+    }
+
+    QJsonObject toJson() const
+    {
+        QJsonObject object;
+        object.insert("aPara", aPara);
+        object.insert("bPara", bPara);
+        object.insert("strainLowPara", strainLowPara);
+        object.insert("strainTopPara", strainTopPara);
+        return object;
+    }
+};
+
+struct CampConfig
+{
+    QString getHz;
+    QString saveTime;
+
+    static CampConfig fromJson(const QJsonObject &object)
+    {
+        CampConfig config;
+        config.getHz = object.value("getHz").toString(config.getHz);
+        config.saveTime = object.value("saveTime").toString(config.saveTime);
+        return config;
+    }
+
+    QJsonObject toJson() const
+    {
+        QJsonObject object;
+        object.insert("getHz", getHz);
+        object.insert("saveTime", saveTime);
+        return object;
+    }
+};
 
 struct AppConfig
 {
     int version = 1;
     ExampleConfig example;
     LoginConfig login;
+    StrainConfig strain;
+    CampConfig camp;
 
     static AppConfig defaultConfig()
     {
@@ -108,6 +158,8 @@ struct AppConfig
         config.version = object.value("version").toInt(config.version);
         config.example = ExampleConfig::fromJson(object.value("example").toObject());
         config.login = LoginConfig::fromJson(object.value("login").toObject());
+        config.strain = StrainConfig::fromJson(object.value("strain").toObject());
+        config.camp = CampConfig::fromJson(object.value("camp").toObject());
         return config;
     }
 
@@ -117,6 +169,8 @@ struct AppConfig
         object.insert("version", version);
         object.insert("example", example.toJson());
         object.insert("login", login.toJson());
+        object.insert("strain", strain.toJson());
+        object.insert("camp", camp.toJson());
         return object;
     }
 };
