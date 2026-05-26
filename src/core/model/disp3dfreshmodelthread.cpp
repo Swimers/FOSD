@@ -21,7 +21,7 @@ disp3dfreshmodelthread::disp3dfreshmodelthread(QObject *parent):QThread(parent)
     qRegisterMetaType<DisplayPointUpdateList>("DisplayPointUpdateList");
     qRegisterMetaType<TrackingPointFrameUpdateList>("TrackingPointFrameUpdateList");
 
-    Flag_Save = true;
+    Flag_Save = false;
     m_dispsave = new testsavepointsdisp();
     m_dispsave->start();
 }
@@ -180,12 +180,7 @@ void disp3dfreshmodelthread::run()
                                         disp);
 
             if (m_dispsave && Flag_Save) {
-                m_dispsave->appendPointSample(sample.position[0],
-                                              sample.position[1],
-                                              sample.position[2],
-                                              disp[0],
-                                              disp[1],
-                                              disp[2]);
+                m_dispsave->appendPointSample(sample.position[0], sample.position[1], sample.position[2], disp[0], disp[1], disp[2]);
             }
 
             DisplayPointUpdate update;

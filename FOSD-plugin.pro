@@ -58,6 +58,7 @@ INCLUDEPATH +=  src/main \
                 src/utils/QCustomPlot \
                 src/utils/Timers \
                 src/utils/Storage \
+                src/utils/config \
                 lib/CustomUi \
 
 
@@ -104,6 +105,8 @@ HEADERS += \
     src/utils/QCustomPlot/qcpdocumentobject.h \
     src/utils/QCustomPlot/qcustomplot.h \
     src/utils/Timers/Timer.h \
+    src/utils/config/AppConfig.h \
+    src/utils/config/ConfigManager.h \
     lib/CustomUi/switchcontrol.h \
     src/core/model/disp3dbackground.h \
     src/core/model/disp3dfreshmodelthread.h \
@@ -141,6 +144,7 @@ SOURCES += \
     src/utils/global/global.cpp \
     src/utils/QCustomPlot/qcpdocumentobject.cpp \
     src/utils/QCustomPlot/qcustomplot.cpp \
+    src/utils/config/ConfigManager.cpp \
     lib/CustomUi/switchcontrol.cpp \
     src/core/model/disp3dbackground.cpp \
     src/core/model/disp3dfreshmodelthread.cpp \

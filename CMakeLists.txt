@@ -154,6 +154,9 @@ set(FOSD_SOURCES
     src/utils/Storage/DataStorageThread.cpp
     src/utils/Storage/DataStorageThread.h
     src/utils/Timers/Timer.h
+    src/utils/config/AppConfig.h
+    src/utils/config/ConfigManager.cpp
+    src/utils/config/ConfigManager.h
     src/utils/database/database.cpp
     src/utils/database/database.h
     src/utils/global/global.cpp
@@ -209,6 +212,7 @@ target_include_directories(FOSD-Pro PRIVATE
     src/utils/QCustomPlot
     src/utils/Storage
     src/utils/Timers
+    src/utils/config
     src/utils/database
     src/utils/global
     "${FOSD_VTK_RELEASE_ROOT}/include/vtk-8.2"
