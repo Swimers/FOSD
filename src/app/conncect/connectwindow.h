@@ -67,6 +67,7 @@ public:
     void ReadParaConfig(const QString& fileName);
     void WriteParaConfig(const QString& fileName);
     void InitCustomPlot(QCustomPlot *customPlot);
+    void ApplyCustomPlotTheme(QCustomPlot *customPlot, bool dark);
     void Show_Plot(QCustomPlot *customPlot);
     float* SendStrainPtr();
     void GetIPAddress();

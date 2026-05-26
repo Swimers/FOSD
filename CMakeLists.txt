@@ -80,6 +80,18 @@ set(FOSD_SOURCES
     src/app/disp3d/disp3dkeypointselect.cpp
     src/app/disp3d/disp3dkeypointselect.h
     src/app/disp3d/disp3dkeypointselect.ui
+    src/app/disp3d/docks/disp3ddockmanager.cpp
+    src/app/disp3d/docks/disp3ddockmanager.h
+    src/app/disp3d/docks/disp3ddockpanel.h
+    src/app/disp3d/docks/disp3dinfodockpanel.cpp
+    src/app/disp3d/docks/disp3dinfodockpanel.h
+    src/app/disp3d/docks/disp3dinfodockpanel.ui
+    src/app/disp3d/docks/disp3dmodeldockpanel.cpp
+    src/app/disp3d/docks/disp3dmodeldockpanel.h
+    src/app/disp3d/docks/disp3dmodeldockpanel.ui
+    src/app/disp3d/docks/disp3dviewdockpanel.cpp
+    src/app/disp3d/docks/disp3dviewdockpanel.h
+    src/app/disp3d/docks/disp3dviewdockpanel.ui
     src/app/disp3d/disp3dwindow.cpp
     src/app/disp3d/disp3dwindow.h
     src/app/disp3d/disp3dwindow.ui
@@ -101,15 +113,6 @@ set(FOSD_SOURCES
     src/app/user/login.cpp
     src/app/user/login.h
     src/app/user/login.ui
-    src/app/user/userforget.cpp
-    src/app/user/userforget.h
-    src/app/user/userforget.ui
-    src/app/user/usermanage.cpp
-    src/app/user/usermanage.h
-    src/app/user/usermanage.ui
-    src/app/user/userregister.cpp
-    src/app/user/userregister.h
-    src/app/user/userregister.ui
     src/Communication/serialtask.cpp
     src/Communication/serialtask.h
     src/Communication/tcptask.cpp
@@ -193,6 +196,7 @@ target_include_directories(FOSD-Pro PRIVATE
     src/app/conncect
     src/app/disp2d
     src/app/disp3d
+    src/app/disp3d/docks
     src/app/mainwindow
     src/app/user
     src/Communication

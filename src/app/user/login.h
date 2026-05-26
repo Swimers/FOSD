@@ -1,19 +1,16 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
+#include <QCheckBox>
+#include <QComboBox>
+#include <QLabel>
+#include <QLineEdit>
 #include <QMainWindow>
+#include <QMouseEvent>
+#include <QPushButton>
+#include <QStringList>
 
-#include "userregister.h"
-#include "userforget.h"
 #include "oldmainwindow.h"
-
-#include "QMouseEvent"
-#include "QDebug"
-#include "QMessageBox"
-#include "QJsonObject"
-#include "QJsonDocument"
-#include "QFile"
-#include "QByteArray"
 
 namespace Ui {
 class loginwindow;
@@ -26,22 +23,23 @@ class loginwindow : public QMainWindow
 public:
     ~loginwindow();
 
-    loginwindow(const loginwindow&) = delete;               //删除拷贝函数
-    loginwindow& operator=(const loginwindow&) = delete;    //删除拷贝运算符
-    static loginwindow* getInstance();                      //声明获取单例方法
+    loginwindow(const loginwindow&) = delete;
+    loginwindow& operator=(const loginwindow&) = delete;
+    static loginwindow* getInstance();
 
 public:
-    void read_json();                                       //读json
-    void write_json();                                      //写json
-    void message_init(QString flag1,QString flag2);         //根据json内容决定是否填充输入框
+    void read_json();
+    void write_json();
+    void message_init(QString flag1, QString flag2);
 
 signals:
     void login();
     void close_window();
 
 protected:
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
 
 private slots:
     void on_btn_Min_clicked();
@@ -56,23 +54,37 @@ private slots:
     void LoginInit();
 
 private:
-    explicit loginwindow(QWidget *parent = nullptr);        //私有化构建函数
-    Ui::loginwindow *ui;
-    static loginwindow* m_loginwindow;                      //声明静态指针
+    enum class AuthMode {
+        Login,
+        Register,
+        ResetPassword
+    };
 
-    QPoint p;
+    explicit loginwindow(QWidget *parent = nullptr);
 
-    UserForget * m_UserForget;
-    UserRegister * m_UserRegister;
-    OldMainWindow * m_MainWindow;
-
-private:
-    void ReadInit(const QString &key, QStringList &value) ;
+    void bindUiControls();
+    void switchMode(AuthMode mode);
+    void refreshUserSelector();
+    bool loadUsers();
+    void saveUsers();
+    int userIndex(const QString &name) const;
+    bool isValidUsername(const QString &name) const;
+    bool isValidPassword(const QString &pass) const;
+    QString selectedPrivilege() const;
+    void showMessage(const QString &text, bool error = false);
+    bool isDragArea(const QPoint &pos) const;
+    void ReadInit(const QString &key, QStringList &value);
     void WriteInit(const QString &key, const QStringList &value);
 
+private:
+    Ui::loginwindow *ui = nullptr;
+    static loginwindow* m_loginwindow;
+
+    QPoint p;
+    bool m_dragging = false;
+    OldMainWindow *m_MainWindow = nullptr;
+
     QString privilege;
-    QString admin_username;
-    QString admin_password;
     QString username;
     QString password;
 
@@ -84,6 +96,21 @@ private:
 
     QString m_username;
     QString m_password;
+
+    AuthMode m_mode = AuthMode::Login;
+    QComboBox *m_userSelector = nullptr;
+    QLineEdit *m_usernameEdit = nullptr;
+    QLineEdit *m_passwordEdit = nullptr;
+    QLineEdit *m_confirmPasswordEdit = nullptr;
+    QComboBox *m_privilegeBox = nullptr;
+    QCheckBox *m_rememberNameCheck = nullptr;
+    QCheckBox *m_rememberPasswordCheck = nullptr;
+    QPushButton *m_loginButton = nullptr;
+    QPushButton *m_registerButton = nullptr;
+    QPushButton *m_resetButton = nullptr;
+    QPushButton *m_clearButton = nullptr;
+    QLabel *m_titleLabel = nullptr;
+    QLabel *m_hintLabel = nullptr;
 };
 
 #endif // LOGIN_H

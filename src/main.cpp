@@ -34,9 +34,11 @@ int main(int argc, char *argv[])
     }
     qssFile.close();
 
-    //直接启动主窗口
+    //注册蒲城项目界面
     //RainbowMainWindow * w = new RainbowMainWindow();
     //w->show();
+
+    //注册登录界面
     loginwindow * m_loginwindow = loginwindow::getInstance();
     m_loginwindow->show();
 

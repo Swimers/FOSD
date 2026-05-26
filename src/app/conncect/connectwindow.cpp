@@ -96,6 +96,8 @@ void connectwindow::WriteParaConfig(const QString &fileName)
 
 void connectwindow::InitCustomPlot(QCustomPlot *customPlot)
 {
+    ApplyCustomPlotTheme(customPlot, true);
+
     customPlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom| QCP::iSelectAxes |
                                       QCP::iSelectLegend | QCP::iSelectPlottables);
     customPlot->yAxis->setRange(-10000, 40000);
@@ -134,6 +136,47 @@ void connectwindow::InitCustomPlot(QCustomPlot *customPlot)
     pen7.setWidth(2);    // 设置笔宽度
     customPlot->addGraph();
     customPlot->graph(6)->setPen(pen7);
+    customPlot->replot();
+}
+
+void connectwindow::ApplyCustomPlotTheme(QCustomPlot *customPlot, bool dark)
+{
+    if (!customPlot) {
+        return;
+    }
+
+    const QColor widgetBg = dark ? QColor("#302f3a") : QColor("#f4f4f4");
+    const QColor plotBg = dark ? QColor("#24232b") : QColor("#ffffff");
+    const QColor textColor = dark ? QColor("#f5f5f5") : QColor("#202020");
+    const QColor axisColor = dark ? QColor("#cfd3dc") : QColor("#202020");
+    const QColor gridColor = dark ? QColor("#4b4a55") : QColor("#d0d0d0");
+    const QColor subGridColor = dark ? QColor("#3a3942") : QColor("#e8e8e8");
+
+    customPlot->setBackground(QBrush(widgetBg));
+    customPlot->axisRect()->setBackground(QBrush(plotBg));
+    customPlot->legend->setBrush(QBrush(plotBg));
+    customPlot->legend->setBorderPen(QPen(gridColor));
+    customPlot->legend->setTextColor(textColor);
+
+    const QList<QCPAxis*> axes = {
+        customPlot->xAxis,
+        customPlot->yAxis,
+        customPlot->xAxis2,
+        customPlot->yAxis2
+    };
+
+    for (QCPAxis *axis : axes) {
+        axis->setBasePen(QPen(axisColor));
+        axis->setTickPen(QPen(axisColor));
+        axis->setSubTickPen(QPen(axisColor));
+        axis->setLabelColor(textColor);
+        axis->setTickLabelColor(textColor);
+        axis->grid()->setPen(QPen(gridColor, 1, Qt::DotLine));
+        axis->grid()->setSubGridPen(QPen(subGridColor, 1, Qt::DotLine));
+        axis->grid()->setZeroLinePen(QPen(gridColor));
+    }
+
+    customPlot->replot();
 }
 
 void connectwindow::handleWheel(QWheelEvent *event)
@@ -809,21 +852,10 @@ void connectwindow::on_pbtn_WaveLengthReset_clicked()
 
 void connectwindow::SwitchToB()
 {
-    QColor backgroundColor("#302f3a");
-    ui->cplot_Spectrum->setBackground(backgroundColor);
-    ui->cplot_Spectrum->legend->setTextColor(Qt::white);
-    ui->cplot_Spectrum->xAxis->setLabelColor(Qt::white);
-    ui->cplot_Spectrum->yAxis->setLabelColor(Qt::white);//    ui->cplot_Spectrum->yAxis->set(Qt::white);
-
-    ui->cplot_Spectrum->yAxis->setLabelColor(Qt::white);
-    ui->cplot_Spectrum->xAxis->setTickLabelColor(Qt::white);
-    ui->cplot_Spectrum->yAxis->setTickLabelColor(Qt::white);
+    ApplyCustomPlotTheme(ui->cplot_Spectrum, true);
 }
 
 void connectwindow::SwitchToW()
 {
-    QColor backgroundColor("#f4f4f4");
-    ui->cplot_Spectrum->setBackground(backgroundColor);
-    ui->cplot_Spectrum->xAxis->setLabelColor(Qt::black);
-    ui->cplot_Spectrum->yAxis->setLabelColor(Qt::black);
+    ApplyCustomPlotTheme(ui->cplot_Spectrum, false);
 }

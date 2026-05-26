@@ -1,21 +1,25 @@
-#include "QButtonGroup"
 #include "oldmainwindow.h"
 #include "ui_oldmainwindow.h"
 #include "login.h"
 
-#include "switchcontrol.h"
+#include <QApplication>
+#include <QFile>
+#include <QGuiApplication>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QScreen>
+#include <QStackedWidget>
 
 static QButtonGroup btnGroup;
 
-OldMainWindow::OldMainWindow(const QString& privilege,QWidget *parent) :
+OldMainWindow::OldMainWindow(const QString& privilege, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::OldMainWindow)
 {
     ui->setupUi(this);
     this->privilege = privilege;
 
-    // 使用绝对路径设置窗口图标
-    setWindowIcon(QIcon(":/icon/Resource/icon/favicon.ico"));
+    setWindowIcon(QIcon(":/icon/icon/favicon.ico"));
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
     InitOldMainWindow();
@@ -28,37 +32,41 @@ OldMainWindow::~OldMainWindow()
 
 void OldMainWindow::InitOldMainWindow()
 {
-    if(this->privilege == "1")
-        this->setWindowTitle(" 实时监控系统|管理员| ");
-    else if(this->privilege == "2")
-        this->setWindowTitle(" 实时监控系统 ");
-    else if(this->privilege == "3")
-        this->setWindowTitle(" 实时监控系统|游客| ");
-    else
-        QMessageBox::warning(this, "警告", " 未知的权限等级 ");
-    btnGroup.addButton(ui->pbtn_JieTiaoYi,0);
-    btnGroup.addButton(ui->pbtn_2DPlot,1);
-    btnGroup.addButton(ui->pbtn_3DPlot,2);
+    if (privilege == "1") {
+        setWindowTitle("FOSD Monitor | Administrator");
+    } else if (privilege == "2") {
+        setWindowTitle("FOSD Monitor | Operator");
+    } else if (privilege == "3") {
+        setWindowTitle("FOSD Monitor | Guest");
+    } else {
+        QMessageBox::warning(this, "Warning", "Unknown privilege level.");
+    }
+
+    btnGroup.addButton(ui->pbtn_JieTiaoYi, 0);
+    btnGroup.addButton(ui->pbtn_2DPlot, 1);
+    btnGroup.addButton(ui->pbtn_3DPlot, 2);
     btnGroup.setExclusive(true);
-    int x,y;
-    x = ui->stackedWidget->size().width();
-    y = ui->stackedWidget->size().height();
+
+    const int x = ui->stackedWidget->size().width();
+    const int y = ui->stackedWidget->size().height();
     originalStyleSheets[0] = ui->pbtn_JieTiaoYi->styleSheet();
     originalStyleSheets[1] = ui->pbtn_2DPlot->styleSheet();
     originalStyleSheets[2] = ui->pbtn_3DPlot->styleSheet();
+
     m_connectwindow = new connectwindow();
-    m_disp2dwindow  = new disp2dwindow();
-    m_disp3dwindow  = new disp3dwindow();
+    m_disp2dwindow = new disp2dwindow();
+    m_disp3dwindow = new disp3dwindow();
 
     m_disp3dwindow->GetIFEPtr(m_disp2dwindow->SendIFEPtr());
-    m_disp2dwindow->GetStrainPtr(m_connectwindow->SendStrainPtr());//将thread的strain指针传入ife中
+    m_disp2dwindow->GetStrainPtr(m_connectwindow->SendStrainPtr());
 
-    m_connectwindow->resize(x,y);
-    m_disp2dwindow->resize(x,y);
-    m_disp3dwindow->resize(x,y);
+    m_connectwindow->resize(x, y);
+    m_disp2dwindow->resize(x, y);
+    m_disp3dwindow->resize(x, y);
     ui->stackedWidget->addWidget(m_connectwindow);
     ui->stackedWidget->addWidget(m_disp2dwindow);
     ui->stackedWidget->addWidget(m_disp3dwindow);
+
     connect(&btnGroup,
             static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
             ui->stackedWidget,
@@ -67,6 +75,7 @@ void OldMainWindow::InitOldMainWindow()
             static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
             this,
             &OldMainWindow::onButtonGroupClicked);
+
     btnGroup.button(0)->setChecked(true);
     ui->stackedWidget->setCurrentIndex(0);
     onButtonGroupClicked(0);
@@ -78,32 +87,30 @@ void OldMainWindow::InitOldMainWindow()
 
 void OldMainWindow::mouseMoveEvent(QMouseEvent *e)
 {
-    if(!Flag_WindowFull){
-        if(e->buttons() & Qt::LeftButton){
-            move(e->globalPos() - p);       //移到左上角
-        }
+    if (!Flag_WindowFull && (e->buttons() & Qt::LeftButton)) {
+        move(e->globalPos() - p);
     }
 }
 
 void OldMainWindow::mousePressEvent(QMouseEvent *e)
 {
-    if(!Flag_WindowFull){
-        if(e->button() == Qt::LeftButton){
-            p = e->globalPos() - this->frameGeometry().topLeft();   //求坐标差值:当前点击坐标-窗口左上角坐标
-        }
+    if (!Flag_WindowFull && e->button() == Qt::LeftButton) {
+        p = e->globalPos() - frameGeometry().topLeft();
     }
 }
 
 void OldMainWindow::onButtonGroupClicked(int id)
 {
-    for(int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         QPushButton* button = qobject_cast<QPushButton*>(btnGroup.button(i));
-        if(button) {
-            if(i == id) {
-                button->setStyleSheet("background-color: #0078D7;border-color: #005A9E; color: white;");
-            } else {
-                button->setStyleSheet(originalStyleSheets[i]);
-            }
+        if (!button) {
+            continue;
+        }
+
+        if (i == id) {
+            button->setStyleSheet("background-color: #0078D7; border-color: #005A9E; color: white;");
+        } else {
+            button->setStyleSheet(originalStyleSheets[i]);
         }
     }
 }
@@ -111,23 +118,11 @@ void OldMainWindow::onButtonGroupClicked(int id)
 void OldMainWindow::switchUiStyle(bool flag)
 {
     Flag_Style = flag;
-    if(!Flag_Style){
-        //加载qss文件
-        emit setUiWhited();
-        QFile qssFile("./QSS/MacOS.qss");//1.
-        if(qssFile.open(QFile::ReadOnly)){//2.
-            qApp->setStyleSheet(qssFile.readAll());//3.
-        }
-        qssFile.close();//4.
-    }
-    if(Flag_Style){
-        //加载qss文件
-        emit setUiBlacked();
-        QFile qssFile("./QSS/MaterialDark.qss");//1.
-        if(qssFile.open(QFile::ReadOnly)){//2.
-            qApp->setStyleSheet(qssFile.readAll());//3.
-        }
-        qssFile.close();//4.
+    emit Flag_Style ? setUiBlacked() : setUiWhited();
+
+    QFile qssFile(Flag_Style ? "./QSS/MaterialDark.qss" : "./QSS/MacOS.qss");
+    if (qssFile.open(QFile::ReadOnly)) {
+        qApp->setStyleSheet(qssFile.readAll());
     }
 }
 
@@ -138,23 +133,11 @@ void OldMainWindow::on_pbtn_Maximize_clicked()
 
 void OldMainWindow::on_pbtn_TurnOff_clicked()
 {
-    loginwindow * m = loginwindow::getInstance();
-    m ->show();
+    loginwindow *m = loginwindow::getInstance();
+    m->show();
 
-    this->close();
-    this->deleteLater();
-}
-
-void OldMainWindow::on_pbtn_UserManage_clicked()
-{
-    if(privilege=="1"){
-        UserManage * m = UserManage::getInstance();
-        m ->show();
-    }
-    else {
-        QMessageBox::warning(this, "警告", "你没有权限进行此操作|");
-        return;
-    }
+    close();
+    deleteLater();
 }
 
 void OldMainWindow::on_pbtn_Minimize_clicked()
@@ -165,16 +148,19 @@ void OldMainWindow::on_pbtn_Minimize_clicked()
 void OldMainWindow::on_pbtn_Full_clicked()
 {
     Flag_WindowFull = !Flag_WindowFull;
-    if(Flag_WindowFull){
+    if (Flag_WindowFull) {
         showFullScreen();
+        return;
     }
-    if(!Flag_WindowFull){
-        showNormal();
-        QScreen *screen = QGuiApplication::primaryScreen();
-        if (!screen) return;
-        QRect screenGeometry = screen->availableGeometry();
-        int x = screenGeometry.center().x() - this->width() / 2;
-        int y = screenGeometry.center().y() - this->height() / 2;
-        this->move(x, y);
+
+    showNormal();
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (!screen) {
+        return;
     }
+
+    const QRect screenGeometry = screen->availableGeometry();
+    const int x = screenGeometry.center().x() - width() / 2;
+    const int y = screenGeometry.center().y() - height() / 2;
+    move(x, y);
 }

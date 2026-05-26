@@ -51,6 +51,7 @@ INCLUDEPATH +=  src/main \
                 src/app/conncect \
                 src/app/disp2d \
                 src/app/disp3d \
+                src/app/disp3d/docks \
                 src/app/mainwindow \
                 src/app/user \
                 src/communication \
@@ -73,12 +74,12 @@ FORMS += \
     src/app/disp2d/disp2dwindow.ui \
     src/app/disp3d/disp3dkeypointedit.ui \
     src/app/disp3d/disp3dkeypointselect.ui \
+    src/app/disp3d/docks/disp3dinfodockpanel.ui \
+    src/app/disp3d/docks/disp3dmodeldockpanel.ui \
+    src/app/disp3d/docks/disp3dviewdockpanel.ui \
     src/app/disp3d/disp3dwindow.ui \
     src/app/mainwindow/oldmainwindow.ui \
     src/app/user/login.ui \
-    src/app/user/userforget.ui \
-    src/app/user/usermanage.ui \
-    src/app/user/userregister.ui \
     src/app/disp3d/trackingpointmanager.ui \
     src/app/disp3d/trackingpointdatatable.ui \
     src/app/mainwindow/rainbowmainwindow.ui \
@@ -91,12 +92,14 @@ HEADERS += \
     src/app/disp2d/disp2dwindow.h \
     src/app/disp3d/disp3dkeypointedit.h \
     src/app/disp3d/disp3dkeypointselect.h \
+    src/app/disp3d/docks/disp3ddockmanager.h \
+    src/app/disp3d/docks/disp3ddockpanel.h \
+    src/app/disp3d/docks/disp3dinfodockpanel.h \
+    src/app/disp3d/docks/disp3dmodeldockpanel.h \
+    src/app/disp3d/docks/disp3dviewdockpanel.h \
     src/app/disp3d/disp3dwindow.h \
     src/app/mainwindow/oldmainwindow.h \
     src/app/user/login.h \
-    src/app/user/userforget.h \
-    src/app/user/usermanage.h \
-    src/app/user/userregister.h \
     src/communication/serialtask.h \
     src/communication/tcptask.h \
     src/communication/udptask.h \
@@ -133,12 +136,13 @@ SOURCES += \
     src/app/disp2d/disp2dwindow.cpp \
     src/app/disp3d/disp3dkeypointedit.cpp \
     src/app/disp3d/disp3dkeypointselect.cpp \
+    src/app/disp3d/docks/disp3ddockmanager.cpp \
+    src/app/disp3d/docks/disp3dinfodockpanel.cpp \
+    src/app/disp3d/docks/disp3dmodeldockpanel.cpp \
+    src/app/disp3d/docks/disp3dviewdockpanel.cpp \
     src/app/disp3d/disp3dwindow.cpp \
     src/app/mainwindow/oldmainwindow.cpp \
     src/app/user/login.cpp \
-    src/app/user/userforget.cpp \
-    src/app/user/usermanage.cpp \
-    src/app/user/userregister.cpp \
     src/communication/serialtask.cpp \
     src/communication/tcptask.cpp \
     src/communication/udptask.cpp \
@@ -170,6 +174,7 @@ SOURCES += \
 
 RESOURCES += \
     $$PWD/res/resource.qrc \
+    src/res/resource.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
