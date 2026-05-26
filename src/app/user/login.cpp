@@ -9,6 +9,8 @@
 #include <QSettings>
 #include <QWidget>
 
+#include <ConfigManager.h>
+
 loginwindow* loginwindow::m_loginwindow = nullptr;
 
 loginwindow::loginwindow(QWidget *parent) :
@@ -68,16 +70,32 @@ void loginwindow::bindUiControls()
 
 void loginwindow::ReadInit(const QString &key, QStringList &value)
 {
-    QSettings config("login.ini", QSettings::IniFormat);
-    value = config.value(QString("config/") + key).toStringList();
+    const auto &loginConfig = ConfigManager::instance().config().login;
+    if (key == "username") {
+        value = loginConfig.usernames;
+    } else if (key == "password") {
+        value = loginConfig.passwords;
+    } else if (key == "privilege") {
+        value = loginConfig.privileges;
+    } else if (key == "isrembered") {
+        value = loginConfig.remembered;
+    } else {
+        value.clear();
+    }
 }
 
 void loginwindow::WriteInit(const QString &key, const QStringList &value)
 {
-    QSettings config("login.ini", QSettings::IniFormat);
-    config.beginGroup("config");
-    config.setValue(key, value);
-    config.endGroup();
+    auto &loginConfig = ConfigManager::instance().config().login;
+    if (key == "username") {
+        loginConfig.usernames = value;
+    } else if (key == "password") {
+        loginConfig.passwords = value;
+    } else if (key == "privilege") {
+        loginConfig.privileges = value;
+    } else if (key == "isrembered") {
+        loginConfig.remembered = value;
+    }
 }
 
 bool loginwindow::loadUsers()
@@ -86,6 +104,17 @@ bool loginwindow::loadUsers()
     ReadInit("password", m_passwdList);
     ReadInit("privilege", m_privilegeList);
     ReadInit("isrembered", m_isremberList);
+
+    if (m_userNameList.isEmpty()) {
+        QSettings legacyConfig("login.ini", QSettings::IniFormat);
+        m_userNameList = legacyConfig.value("config/username").toStringList();
+        m_passwdList = legacyConfig.value("config/password").toStringList();
+        m_privilegeList = legacyConfig.value("config/privilege").toStringList();
+        m_isremberList = legacyConfig.value("config/isrembered").toStringList();
+        if (!m_userNameList.isEmpty()) {
+            saveUsers();
+        }
+    }
 
     const int count = m_userNameList.size();
     while (m_passwdList.size() < count) m_passwdList.append("");
@@ -113,6 +142,7 @@ void loginwindow::saveUsers()
     WriteInit("password", m_passwdList);
     WriteInit("privilege", m_privilegeList);
     WriteInit("isrembered", m_isremberList);
+    ConfigManager::instance().save();
 }
 
 void loginwindow::refreshUserSelector()
@@ -125,6 +155,7 @@ void loginwindow::refreshUserSelector()
 
 void loginwindow::LoginInit()
 {
+    ConfigManager::instance().load();
     loadUsers();
     refreshUserSelector();
     read_json();
@@ -159,7 +190,7 @@ void loginwindow::switchMode(AuthMode mode)
         m_resetButton->setText("Reset password");
     } else if (registerMode) {
         m_titleLabel->setText("Create Account");
-        m_hintLabel->setText("Create a local user. The account is saved to the existing login.ini file.");
+        m_hintLabel->setText("Create a local user. The account is saved to the unified config file.");
         m_loginButton->setText("Register");
         m_registerButton->setText("Back to login");
         m_resetButton->setText("Reset password");
@@ -182,13 +213,20 @@ void loginwindow::switchMode(AuthMode mode)
 
 void loginwindow::read_json()
 {
-    QFile file(QApplication::applicationDirPath() + "/config.json");
-    if (!file.open(QIODevice::ReadOnly)) {
-        return;
+    auto &loginConfig = ConfigManager::instance().config().login;
+    if (!loginConfig.legacyRememberFlagsMigrated) {
+        QFile legacyFile(QApplication::applicationDirPath() + "/config.json");
+        if (legacyFile.open(QIODevice::ReadOnly)) {
+            const QJsonObject obj = QJsonDocument::fromJson(legacyFile.readAll()).object();
+            loginConfig.saveName = obj.value("SAVE_NAME").toString() == "1";
+            loginConfig.savePassword = obj.value("SAVE_PASSWORD").toString() == "1";
+        }
+        loginConfig.legacyRememberFlagsMigrated = true;
+        ConfigManager::instance().save();
     }
 
-    const QJsonObject obj = QJsonDocument::fromJson(file.readAll()).object();
-    message_init(obj.value("SAVE_NAME").toString(), obj.value("SAVE_PASSWORD").toString());
+    message_init(loginConfig.saveName ? "1" : "0",
+                 loginConfig.savePassword ? "1" : "0");
 }
 
 void loginwindow::message_init(QString flag1, QString flag2)
@@ -203,17 +241,10 @@ void loginwindow::message_init(QString flag1, QString flag2)
 
 void loginwindow::write_json()
 {
-    QFile file(QApplication::applicationDirPath() + "/config.json");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        return;
-    }
-
-    QJsonObject obj;
-    obj["SAVE_NAME"] = m_rememberNameCheck && m_rememberNameCheck->isChecked() ? "1" : "0";
-    obj["SAVE_PASSWORD"] = m_rememberPasswordCheck && m_rememberPasswordCheck->isChecked() ? "1" : "0";
-
-    file.write(QJsonDocument(obj).toJson());
-    file.flush();
+    auto &loginConfig = ConfigManager::instance().config().login;
+    loginConfig.saveName = m_rememberNameCheck && m_rememberNameCheck->isChecked();
+    loginConfig.savePassword = m_rememberPasswordCheck && m_rememberPasswordCheck->isChecked();
+    ConfigManager::instance().save();
 }
 
 int loginwindow::userIndex(const QString &name) const

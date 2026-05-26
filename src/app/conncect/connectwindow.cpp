@@ -683,8 +683,8 @@ void connectwindow::on_pbtn_ParaSet_clicked()
          set_strain_AB(A,B);
          StrainLow = ui->textEdit_StrainLowPara->toPlainText().toFloat();
          StrainTop = ui->textEdit_StrainTopPara->toPlainText().toFloat();
-         qDebug() << StrainTop;
-         qDebug() << StrainLow;
+         // qDebug() << StrainTop;
+         // qDebug() << StrainLow;
     }
     WriteParaConfig("paraConfig.ini");
 }
