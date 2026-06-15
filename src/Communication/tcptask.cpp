@@ -23,9 +23,9 @@ tcptask::tcptask(QObject *parent) : QObject(parent)
 
 tcptask::~tcptask()
 {
-    tcpClose();
+    tcpClose();       // 已在内部 delete m_TcpSocket 并置 nullptr
     delete m_TcpServer;
-    delete m_TcpSocket;
+    // m_TcpSocket 已由 tcpClose → disconnectCurrentClient 释放
 }
 
 void tcptask::getMainThread(connectwindow *obj)
@@ -75,6 +75,7 @@ void tcptask::handleNewConnection()
     // 更新状态
     m_hasConnection = true;
     emit connectionStatusChanged(StatusClientConnected);
+    emit connectionStatusChangedWithInfo(StatusClientConnected, m_clientAddress, m_clientPort);
     qDebug() << "客户端连接成功:" << m_clientAddress.toString() << ":" << m_clientPort;
 
     connect(m_TcpSocket, &QTcpSocket::readyRead, this, &tcptask::tcpRecData);
@@ -88,7 +89,7 @@ void tcptask::handleClientDisconnected()
         m_clientAddress.toString()).arg(m_clientPort);
     qDebug() << "客户端断开连接:" << clientInfo;
     emit connectionStatusChanged(StatusClientDisconnected);
-    m_TcpSocket->deleteLater();
+    delete m_TcpSocket;
     m_TcpSocket = nullptr;
     m_hasConnection = false;
 }
@@ -101,7 +102,8 @@ void tcptask::disconnectCurrentClient()
         if (m_TcpSocket->state() != QAbstractSocket::UnconnectedState) {
             m_TcpSocket->waitForDisconnected(1000);
         }
-        m_TcpSocket->deleteLater();
+        // 使用 delete 而非 deleteLater，确保在析构路径中也能立即释放
+        delete m_TcpSocket;
         m_TcpSocket = nullptr;
         m_hasConnection = false;
     }

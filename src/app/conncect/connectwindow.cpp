@@ -54,12 +54,17 @@ connectwindow::~connectwindow()
     m_DataThread->quit();
     m_DataThread->wait();
 
+    // 将对象移回调用线程，避免跨线程 delete 警告
+    m_serialtask->moveToThread(nullptr);
     delete m_serialtask;
     delete m_serialThread;
+    m_UdpTask->moveToThread(nullptr);
     delete m_UdpTask;
     delete m_UdpThread;
+    m_TcpTask->moveToThread(nullptr);
     delete m_TcpTask;
     delete m_TcpThread;
+    m_DataTask->moveToThread(nullptr);
     delete m_DataTask;
     delete m_DataThread;
 
@@ -337,8 +342,6 @@ void connectwindow::tcpStatusChange(tcptask::ConnectionStatus status)
         connect(timer0,SIGNAL(timeout()),this, SLOT(UpDataTable()));
         ui->cbox_CommuteChoose->setEnabled(false);
         Flag_ConnectTCP = 1;
-        DispDiagnosis("TCP客户端连接成功:客户端地址" + m_TcpTask->m_clientAddress.toString() + ":"
-                      + QString::number(m_TcpTask->m_clientPort));
         break;
 
     case tcptask::StatusClientDisconnected:
@@ -412,9 +415,18 @@ void connectwindow::InitTcp()
     connect(this, &connectwindow::tcpOpen, m_TcpTask, &tcptask::tcpOpen);
     connect(this, &connectwindow::tcpClose, m_TcpTask, &tcptask::tcpClose);
     connect(this, &connectwindow::tcpDataSend, m_TcpTask, &tcptask::tcpSendData);
-    // UDP状态信号
+    // TCP状态信号
     connect(m_TcpTask, &tcptask::tcpDataReceived, this, &connectwindow::tcpDataRec);
     connect(m_TcpTask, &tcptask::connectionStatusChanged, this, &connectwindow::tcpStatusChange);
+    // 使用带客户端信息的信号，避免跨线程裸读成员变量
+    connect(m_TcpTask, &tcptask::connectionStatusChangedWithInfo,
+            this, [this](tcptask::ConnectionStatus status,
+                         const QHostAddress &addr, quint16 port) {
+                if (status == tcptask::StatusClientConnected) {
+                    DispDiagnosis("TCP客户端连接成功:客户端地址" + addr.toString() + ":"
+                                  + QString::number(port));
+                }
+            });
 
     m_TcpThread->start();
 }
@@ -585,7 +597,6 @@ void connectwindow::on_pbtn_OpenNet_clicked()
         }
         else {
             connect(m_TcpTask, &tcptask::tcpPocketsReceived, m_DataTask, &analyzepackets::analyzeData);
-            m_serialThread->start();
             emit tcpOpen(LocalIpAddress,LocalPortNum);
             Flag_ConnectTCP = 1;
             ui->pbtn_OpenNet->setText("断开连接");
@@ -598,44 +609,46 @@ void connectwindow::on_pbtn_OpenNet_clicked()
 void connectwindow::UpDataTable()
 {
     int CheckedCH_SUM = 0;
-    //数据表格显示
-    for (int i=0;i<MAX_CHANNELS;i++) {
+    // 一次锁保护整个表格读取过程，保证帧内数据一致性
+    {
         QMutexLocker locker(&mutexAnalyze);
-        CheckedCH_SUM += m_DataTask->channel_counts[i] * Flag_CH[i];
-    }
+        for (int i=0;i<MAX_CHANNELS;i++) {
+            CheckedCH_SUM += m_DataTask->channel_counts[i] * Flag_CH[i];
+        }
 
-    this->model->removeRows(0,model->rowCount());//删除所有行，重新显示
-    model->setItem(9,2,new QStandardItem(""));
-    if (Flag_ConnectUDP == 1){ //该语句为了防止循环错乱
-        for(int i=0;i<CheckedCH_SUM;i++){
-            QMutexLocker locker(&mutexAnalyze);
-            this->model->setItem(i,0,new QStandardItem (m_DataTask->FBG_count[i])) ;
-            this->model->setItem(i,1,new QStandardItem (m_DataTask->wavelength[i]));
-            if (Flag_Strain == 1){
-                     bool isValidStrain = true; // 默认认为数据有效
-                     if ( m_DataTask->strain_float[i] < StrainLow) {
-                         isValidStrain = false;
-                     }
-                     if ( m_DataTask->strain_float[i] > StrainTop) {
-                         isValidStrain = false;
-                     }
-                     if (isValidStrain) {
-                         model->setItem(i, 2, new QStandardItem(m_DataTask->strain[i]));
-                     }
-                     else {
-                         model->setItem(i, 2, new QStandardItem("outRange"));
-                     }
+        this->model->removeRows(0,model->rowCount());
+        model->setItem(9,2,new QStandardItem(""));
+        if (Flag_ConnectUDP == 1){
+            for(int i=0;i<CheckedCH_SUM;i++){
+                this->model->setItem(i,0,new QStandardItem (m_DataTask->FBG_count[i])) ;
+                this->model->setItem(i,1,new QStandardItem (m_DataTask->wavelength[i]));
+                if (Flag_Strain == 1){
+                         bool isValidStrain = true;
+                         if ( m_DataTask->strain_float[i] < StrainLow) {
+                             isValidStrain = false;
+                         }
+                         if ( m_DataTask->strain_float[i] > StrainTop) {
+                             isValidStrain = false;
+                         }
+                         if (isValidStrain) {
+                             model->setItem(i, 2, new QStandardItem(m_DataTask->strain[i]));
+                         }
+                         else {
+                             model->setItem(i, 2, new QStandardItem("outRange"));
+                         }
+                 }
              }
-         }
-           ui->tablev_Wavelength->setModel(model);
-           ui->tablev_Wavelength->show();
-    }
+               ui->tablev_Wavelength->setModel(model);
+               ui->tablev_Wavelength->show();
+        }
+    } // 锁在此释放
+    // Show_Plot 内部独立加锁
     Show_Plot(ui->cplot_Spectrum);
 }
 
 void connectwindow::Show_Plot(QCustomPlot *customPlot)
 {
-    QVector<QVector<double>>key;//存放绘图的xy点数组
+    QVector<QVector<double>>key;
     QVector<QVector<double>>value;
     int num=0;
     QVector<double> tmp_x(4000);
@@ -647,11 +660,14 @@ void connectwindow::Show_Plot(QCustomPlot *customPlot)
         key.push_back(tmp_x);
         value.push_back(tmp_y);
     }
-    for(int k=0;k<7;k++){
+    // 一次锁保护所有通道的读取
+    {
         QMutexLocker locker(&mutexAnalyze);
-        for(int i=0;i<m_DataTask->CH_point[k];i++){
-           value[k][m_DataTask->data_x_trans[k][i]]=m_DataTask->data_y_trans[k][i];
-       }
+        for(int k=0;k<7;k++){
+            for(int i=0;i<m_DataTask->CH_point[k];i++){
+               value[k][m_DataTask->data_x_trans[k][i]]=m_DataTask->data_y_trans[k][i];
+           }
+        }
     }
     const int CHANNEL_COUNT = 7;
     for(int ch = 0; ch < CHANNEL_COUNT; ch++) {
