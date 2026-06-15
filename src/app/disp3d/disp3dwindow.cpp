@@ -18,6 +18,8 @@
 #include <vtkPoints.h>
 #include <vtkCaptionActor2D.h>
 
+#include <ConfigManager.h>
+
 #include <QTimer>
 
 disp3dwindow::disp3dwindow(QWidget *parent) :
@@ -117,11 +119,17 @@ void disp3dwindow::InitWindow()
     InitPointInfor();
 
     // 测试代码段，初始化加载模型
-    m_disp3dmodel->LoadModel("data/model/rainbow.stl");
+
+
+    auto &appConfig = ConfigManager::instance().config();
+    QString filePath = appConfig.modlepath.ModlePath;
+    ConfigManager::instance().save();
+    m_disp3dmodel->LoadModel(filePath);
+
     m_disp3dmodel->Flag_Actor = true;
     m_disp3dbackground->CreateWorld();
     m_disp3dmodel->GetVTKRenderWindow()->Render();
-    m_trackingpoint->LoadTrackingPointsFromFile("data/trackingpoint/tracking_points_example_modified.csv");
+    //m_trackingpoint->LoadTrackingPointsFromFile("data/trackingpoint/tracking_points_example_modified.csv");
 
     //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
@@ -283,6 +291,10 @@ void disp3dwindow::LoadModel()
             m_disp3dbackground->CreateWorld();
             m_disp3dmodel->GetVTKRenderWindow()->Render();
             RefreshInfor();
+
+            auto &appConfig = ConfigManager::instance().config();
+            appConfig.modlepath.ModlePath = filePath;
+            ConfigManager::instance().save();
         }
         else {
             QMessageBox::information(this, tr("提示"), tr("未选择任何文件！"));

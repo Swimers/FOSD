@@ -139,6 +139,25 @@ struct CampConfig
     }
 };
 
+struct ModlePathConfig
+{
+    QString ModlePath;
+
+    static ModlePathConfig fromJson(const QJsonObject &object)
+    {
+        ModlePathConfig config;
+        config.ModlePath = object.value("ModlePath").toString(config.ModlePath);
+        return config;
+    }
+
+    QJsonObject toJson() const
+    {
+        QJsonObject object;
+        object.insert("ModlePath", ModlePath);
+        return object;
+    }
+};
+
 struct AppConfig
 {
     int version = 1;
@@ -146,6 +165,7 @@ struct AppConfig
     LoginConfig login;
     StrainConfig strain;
     CampConfig camp;
+    ModlePathConfig modlepath;
 
     static AppConfig defaultConfig()
     {
@@ -160,6 +180,7 @@ struct AppConfig
         config.login = LoginConfig::fromJson(object.value("login").toObject());
         config.strain = StrainConfig::fromJson(object.value("strain").toObject());
         config.camp = CampConfig::fromJson(object.value("camp").toObject());
+        config.modlepath = ModlePathConfig::fromJson(object.value("modlepath").toObject());
         return config;
     }
 
@@ -171,6 +192,7 @@ struct AppConfig
         object.insert("login", login.toJson());
         object.insert("strain", strain.toJson());
         object.insert("camp", camp.toJson());
+        object.insert("modlepath", modlepath.toJson());
         return object;
     }
 };

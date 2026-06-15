@@ -93,8 +93,12 @@ void disp3dmodel::PickerClear()
     style1->ClearPicker();
 }
 
-void disp3dmodel::LoadModel(const QString &filePath)
+bool disp3dmodel::LoadModel(const QString &filePath)
 {
+    if(! &filePath){
+        return false;
+    }
+
     modelScalars.Init();
 
     QTextCodec *codec = QTextCodec::codecForName("GBK");
@@ -140,13 +144,15 @@ void disp3dmodel::LoadModel(const QString &filePath)
     renderWindow->Render();
 
     ReadPointQMap(dynPolyData);
-    Flag_Actor = true;
 
     AllKeyPoint();
     GetModelPointsNum();
     GetModelPolysNum();
     GetModelKeyPointsNum();
     GetModelSize();
+
+    Flag_Actor = true;
+    return true;
 }
 
 void disp3dmodel::ExportModel(const QString &filePath)

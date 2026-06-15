@@ -55,7 +55,7 @@ public:
     void PickerGetLabPtr(std::tuple<QLabel *,QLabel *,QLabel *,QLabel *>);
     void PickerClear();
 
-    void LoadModel(const QString &filePath);
+    bool LoadModel(const QString &filePath);
     void ExportModel(const QString &filePath);
     void UnLoadModel();
     void MergeModel(const QString &filePath);
