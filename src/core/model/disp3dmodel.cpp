@@ -1,6 +1,7 @@
 #include "disp3dmodel.h"
 
 #include <QFile>
+#include <QFileInfo>
 #include <QDebug>
 
 #include <vtkActor.h>
@@ -95,7 +96,37 @@ void disp3dmodel::PickerClear()
 
 bool disp3dmodel::LoadModel(const QString &filePath)
 {
-    if(! &filePath){
+    // ---- 路径有效性校验 ----
+    if (filePath.isEmpty()) {
+        qWarning() << "[LoadModel] 文件路径为空";
+        Flag_Actor = false;
+        return false;
+    }
+
+    QFileInfo fileInfo(filePath);
+    if (!fileInfo.exists()) {
+        qWarning() << "[LoadModel] 文件不存在:" << filePath;
+        Flag_Actor = false;
+        return false;
+    }
+    if (!fileInfo.isFile()) {
+        qWarning() << "[LoadModel] 路径不是文件:" << filePath;
+        Flag_Actor = false;
+        return false;
+    }
+    if (!fileInfo.isReadable()) {
+        qWarning() << "[LoadModel] 文件不可读:" << filePath;
+        Flag_Actor = false;
+        return false;
+    }
+    if (fileInfo.suffix().compare("stl", Qt::CaseInsensitive) != 0) {
+        qWarning() << "[LoadModel] 文件格式不是STL:" << filePath;
+        Flag_Actor = false;
+        return false;
+    }
+    if (fileInfo.size() == 0) {
+        qWarning() << "[LoadModel] 文件大小为0:" << filePath;
+        Flag_Actor = false;
         return false;
     }
 
@@ -109,6 +140,13 @@ bool disp3dmodel::LoadModel(const QString &filePath)
     reader->SetFileName(localPath.c_str());
     reader->Update();
     rawPolyData = reader->GetOutput();
+
+    // ---- VTK读取结果校验 ----
+    if (!rawPolyData || rawPolyData->GetNumberOfPoints() == 0) {
+        qWarning() << "[LoadModel] VTK读取失败或模型无有效点数据:" << filePath;
+        Flag_Actor = false;
+        return false;
+    }
 
 //    // ========== 新增：模型平移核心逻辑 ==========
 //    // 1. 创建平移变换对象，设置x/y/z方向的平移量

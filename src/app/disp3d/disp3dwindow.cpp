@@ -119,18 +119,15 @@ void disp3dwindow::InitWindow()
     InitPointInfor();
 
     // 测试代码段，初始化加载模型
-
-
     auto &appConfig = ConfigManager::instance().config();
     QString filePath = appConfig.modlepath.ModlePath;
     ConfigManager::instance().save();
-    m_disp3dmodel->LoadModel(filePath);
-
-    m_disp3dmodel->Flag_Actor = true;
-    m_disp3dbackground->CreateWorld();
-    m_disp3dmodel->GetVTKRenderWindow()->Render();
+    bool loadOk = m_disp3dmodel->LoadModel(filePath);
+    if (loadOk) {
+        m_disp3dbackground->CreateWorld();
+        m_disp3dmodel->GetVTKRenderWindow()->Render();
+    }
     //m_trackingpoint->LoadTrackingPointsFromFile("data/trackingpoint/tracking_points_example_modified.csv");
-
     //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
