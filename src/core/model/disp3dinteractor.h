@@ -2,16 +2,12 @@
 #define DISP3DINTERACTOR_H
 
 #include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkTextMapper.h>
 #include <vtkTextActor.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkDataSetMapper.h>
 #include <vtkActor.h>
-#include <vtkInteractorObserver.h>
 #include <math.h>
 
 #include "disp3dmodel.h"
-#include "vtkVectorText.h"
+
 
 class disp3dinteractor: public vtkInteractorStyleTrackballCamera
 {

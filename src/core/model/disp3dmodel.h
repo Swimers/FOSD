@@ -7,23 +7,20 @@
 #include <QVector>
 #include <QSet>
 
-#include <vtkPolyDataMapper.h>
 #include <vtkAutoInit.h>
-#include <vtkRenderWindow.h>
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
-#include <vtkCellArray.h>
-#include <vtkUnstructuredGrid.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
 #include <vtkActor.h>
-#include <vtkDataSetMapper.h>
-#include <vtkAxesActor.h>
 #include <vtkCamera.h>
 #include <vtkTextActor.h>
 #include <vtkSTLReader.h>
-
-#include <QVTKOpenGLNativeWidget.h>
-#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 #include <disp3dglobal.h>
 

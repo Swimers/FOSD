@@ -23,7 +23,6 @@
 #include <vtkCamera.h>
 #include <vtkSphereSource.h>
 #include <vtkTextureMapToSphere.h>
-#include <vtkImageData.h>
 
 disp3dbackground::disp3dbackground(vtkSmartPointer<vtkRenderer> renderer, vtkSmartPointer<vtkRenderWindow> renderWindow)
 {

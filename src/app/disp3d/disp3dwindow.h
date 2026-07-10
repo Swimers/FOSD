@@ -6,6 +6,8 @@
 #include <QWidget>
 #include <QVTKOpenGLNativeWidget.h>
 #include <vtkRenderWidget.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
 
 #include <disp3dmodel.h>
 #include <disp3dbackground.h>

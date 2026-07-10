@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <disp3dmodel.h>
+#include <vtkSmartPointer.h>
+#include <vtkActor.h>
 
 namespace Ui {
 class disp3dkeypointedit;

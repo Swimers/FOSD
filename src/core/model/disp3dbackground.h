@@ -7,6 +7,9 @@
 #include <vtkSmartPointer.h>
 #include <vtkAxesActor.h>
 #include <vtkTexture.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkImageData.h>
 
 #include <disp3dmodel.h>
 

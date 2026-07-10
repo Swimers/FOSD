@@ -19,10 +19,6 @@
 #include <vtkProperty.h>
 #include <vtkPointData.h>
 #include <vtkLookupTable.h>
-#include <vtkRenderer.h>
-#include <vtkVersion.h>
-#include <vtkTransform.h>
-#include <vtkTransformPolyDataFilter.h>
 
 #include <QTextCodec>
 #include <stdio.h>

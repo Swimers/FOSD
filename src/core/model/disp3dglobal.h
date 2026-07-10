@@ -2,10 +2,10 @@
 #define DISP3DGLOBAL_H
 
 #include <QVector>
-#include <vtkTextActor.h>
-#include <vtkActor.h>
 #include <vtkSmartPointer.h>
 #include <vtkDoubleArray.h>
+#include <vtkTextActor.h>
+#include <vtkActor.h>
 
 typedef struct SelectedPointEntity{
     vtkTextActor* keyPointText;

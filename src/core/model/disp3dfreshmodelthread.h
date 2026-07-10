@@ -8,6 +8,8 @@
 
 #include <atomic>
 
+#include <vtkSmartPointer.h>
+#include <vtkDoubleArray.h>
 #include <disp3dmodel.h>
 #include <trackingpoint.h>
 #include <IFE.h>
