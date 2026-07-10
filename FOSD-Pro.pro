@@ -179,6 +179,9 @@ SOURCES += \
 RESOURCES += \
     $$PWD/res/resource.qrc \
 
+RC_FILE+= \
+    res/icon/logo.rc \
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

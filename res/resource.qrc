@@ -30,5 +30,6 @@
         <file>icon/UserIcon.png</file>
         <file>icon/UserIcon2.png</file>
         <file>icon/UserManage.png</file>
+        <file>icon/xidian_logo.jpg</file>
     </qresource>
 </RCC>

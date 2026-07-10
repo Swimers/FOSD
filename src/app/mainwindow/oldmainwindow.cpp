@@ -19,7 +19,7 @@ OldMainWindow::OldMainWindow(const QString& privilege, QWidget *parent) :
     ui->setupUi(this);
     this->privilege = privilege;
 
-    setWindowIcon(QIcon(":/icon/icon/favicon.ico"));
+    setWindowIcon(QIcon(":/icon/icon/xidian_logo.jpg"));
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
     InitOldMainWindow();
