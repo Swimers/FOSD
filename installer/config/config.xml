@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <!-- 安装程序基本信息 -->
+    <Name>FOSD-Pro</Name>
+    <Version>1.0.0</Version>
+    <Title>FOSD-Pro 安装程序</Title>
+    <Publisher>FOSD Team</Publisher>
+    <StartMenuDir>FOSD-Pro</StartMenuDir>
+    <TargetDir>@HomeDir@/FOSD-Pro</TargetDir>
+
+    <!-- 安装程序外观 -->
+    <WizardStyle>Modern</WizardStyle>
+    <InstallerWindowIcon>installer_icon</InstallerWindowIcon>
+    <InstallerApplicationIcon>installer_icon</InstallerApplicationIcon>
+
+    <!-- 路径设置 -->
+    <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
+    <AllowSpaceInPath>true</AllowSpaceInPath>
+
+    <!-- 维护工具（卸载/修复） -->
+    <MaintenanceToolName>FOSD-Pro Maintenance Tool</MaintenanceToolName>
+</Installer>
