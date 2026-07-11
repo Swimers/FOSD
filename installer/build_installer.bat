@@ -7,15 +7,19 @@ setlocal enabledelayedexpansion
 :: Uses Qt Installer Framework
 :: ============================================================
 
-:: ---- Configuration (modify to match your environment) ----
+:: ---- Configuration ----
 
 set QT_DIR=D:\AppData\Qt\5.12.2\msvc2017_64
 set IFW_DIR=D:\AppData\Qt\QtIFW-3.0.6\bin
 set PROJECT_DIR=%~dp0..
 set RELEASE_DIR=%PROJECT_DIR%\build\QMake\windows\bin\release
-set VTK_DLL_DIR=%PROJECT_DIR%\lib\VTK\VTK-release\bin
 set INSTALLER_DIR=%~dp0
 set OUTPUT_DIR=%INSTALLER_DIR%
+
+:: VTK DLL search paths (checked in order, first match wins)
+set VTK_DLL_SEARCH1=D:\VTK\VTK-release\bin
+set VTK_DLL_SEARCH2=%PROJECT_DIR%\lib\VTK\VTK-release\bin
+set VTK_DLL_SEARCH3=%PROJECT_DIR%\lib\VTK\VTK-release\lib
 
 :: ---- Pre-flight checks ----
 echo ========================================
@@ -25,14 +29,14 @@ echo.
 
 if not exist "%QT_DIR%\bin\windeployqt.exe" (
     echo [ERROR] windeployqt.exe not found
-    echo Check QT_DIR in this script: %QT_DIR%
+    echo Check QT_DIR: %QT_DIR%
     pause
     exit /b 1
 )
 
 if not exist "%IFW_DIR%\binarycreator.exe" (
     echo [ERROR] binarycreator.exe not found
-    echo Check IFW_DIR in this script: %IFW_DIR%
+    echo Check IFW_DIR: %IFW_DIR%
     pause
     exit /b 1
 )
@@ -44,20 +48,30 @@ if not exist "%RELEASE_DIR%\FOSD-Pro.exe" (
     exit /b 1
 )
 
-echo [OK] Qt:     %QT_DIR%
-echo [OK] IFW:    %IFW_DIR%
+echo [OK] Qt:      %QT_DIR%
+echo [OK] IFW:     %IFW_DIR%
 echo [OK] Release: %RELEASE_DIR%
 echo.
 
-:: ---- Step 1: Collect Qt dependencies ----
-echo [1/4] Collecting Qt runtime...
-cd /d "%RELEASE_DIR%"
-
+:: ---- Prepare package directory ----
 set PACK_DIR=%INSTALLER_DIR%\packages\com.fosd.pro\data
-if exist "%PACK_DIR%" rmdir /s /q "%PACK_DIR%"
-mkdir "%PACK_DIR%"
+set BIN_DIR=%PACK_DIR%\bin
+set APP_DATA_DIR=%PACK_DIR%\data
 
-"%QT_DIR%\bin\windeployqt.exe" --release --no-translations --no-system-d3d-compiler --no-opengl-sw "%RELEASE_DIR%\FOSD-Pro.exe"
+if exist "%PACK_DIR%" rmdir /s /q "%PACK_DIR%"
+mkdir "%BIN_DIR%"
+mkdir "%APP_DATA_DIR%"
+
+:: ---- Step 1: Collect Qt DLLs into bin/ ----
+echo [1/4] Collecting Qt runtime into bin\...
+
+"%QT_DIR%\bin\windeployqt.exe" ^
+    --release ^
+    --no-translations ^
+    --no-system-d3d-compiler ^
+    --no-opengl-sw ^
+    --dir "%BIN_DIR%" ^
+    "%RELEASE_DIR%\FOSD-Pro.exe"
 
 if errorlevel 1 (
     echo [ERROR] windeployqt failed
@@ -66,40 +80,70 @@ if errorlevel 1 (
 )
 echo    Done
 
-:: ---- Step 2: Copy files to package ----
-echo [2/4] Copying files...
+:: ---- Step 2: Copy VTK DLLs ----
+echo [2/4] Searching for VTK DLLs...
 
-xcopy /E /I /Y "%RELEASE_DIR%\*" "%PACK_DIR%\" >nul
+set VTK_FOUND=0
 
-if exist "%VTK_DLL_DIR%" (
-    echo    Copying VTK DLLs...
-    xcopy /E /I /Y "%VTK_DLL_DIR%\*.dll" "%PACK_DIR%\" >nul
-) else (
-    echo    [WARN] VTK DLL dir not found: %VTK_DLL_DIR%
-    echo    If VTK is statically linked, ignore this warning.
-    echo.
+:: Search in order
+for %%D in ("%VTK_DLL_SEARCH1%" "%VTK_DLL_SEARCH2%" "%VTK_DLL_SEARCH3%") do (
+    if exist "%%~D\*.dll" (
+        if !VTK_FOUND!==0 (
+            echo    Found VTK DLLs in: %%~D
+            xcopy /Y "%%~D\*.dll" "%BIN_DIR%\" >nul
+            set VTK_FOUND=1
+        )
+    )
 )
 
+if !VTK_FOUND!==0 (
+    echo    [INFO] No VTK DLLs found - VTK is likely statically linked
+    echo    Searched:
+    echo      - %VTK_DLL_SEARCH1%
+    echo      - %VTK_DLL_SEARCH2%
+    echo      - %VTK_DLL_SEARCH3%
+)
+
+:: ---- Step 3: Copy exe, data, and VC++ runtime ----
+echo [3/4] Copying application files...
+
+:: Copy exe to bin/
+copy /Y "%RELEASE_DIR%\FOSD-Pro.exe" "%BIN_DIR%\" >nul
+echo    FOSD-Pro.exe
+
+:: Copy app data (models, config, QSS, calibration, etc.)
+if exist "%RELEASE_DIR%\data" (
+    xcopy /E /I /Y "%RELEASE_DIR%\data\*" "%APP_DATA_DIR%\" >nul
+    echo    data\
+)
+
+:: Copy VC++ runtime
 if exist "%SystemRoot%\System32\vcruntime140.dll" (
-    echo    Copying VC++ runtime...
-    copy /Y "%SystemRoot%\System32\vcruntime140.dll" "%PACK_DIR%\" >nul 2>&1
-    copy /Y "%SystemRoot%\System32\vcruntime140_1.dll" "%PACK_DIR%\" >nul 2>&1
-    copy /Y "%SystemRoot%\System32\msvcp140.dll" "%PACK_DIR%\" >nul 2>&1
+    copy /Y "%SystemRoot%\System32\vcruntime140.dll" "%BIN_DIR%\" >nul 2>&1
+    copy /Y "%SystemRoot%\System32\vcruntime140_1.dll" "%BIN_DIR%\" >nul 2>&1
+    copy /Y "%SystemRoot%\System32\msvcp140.dll" "%BIN_DIR%\" >nul 2>&1
+    echo    VC++ runtime
 )
 
-if exist "%PACK_DIR%\FOSD-Pro.lib" del /q "%PACK_DIR%\FOSD-Pro.lib"
-if exist "%PACK_DIR%\FOSD-Pro.exp" del /q "%PACK_DIR%\FOSD-Pro.exp"
+:: Clean up unnecessary files
+del /q "%BIN_DIR%\FOSD-Pro.lib" 2>nul
+del /q "%BIN_DIR%\FOSD-Pro.exp" 2>nul
 
 echo    Done
 
-:: ---- Step 3: Count files ----
-echo [3/4] Counting files...
-set FILE_COUNT=0
-for /r "%PACK_DIR%" %%f in (*) do set /a FILE_COUNT+=1
-echo    Total: %FILE_COUNT% files
-
 :: ---- Step 4: Build installer ----
 echo [4/4] Building installer...
+
+:: Count files
+set FILE_COUNT=0
+for /r "%PACK_DIR%" %%f in (*) do set /a FILE_COUNT+=1
+echo    Package: %FILE_COUNT% files
+
+:: Count DLLs
+set DLL_COUNT=0
+for %%f in ("%BIN_DIR%\*.dll") do set /a DLL_COUNT+=1
+echo    DLLs:    %DLL_COUNT%
+
 if not exist "%OUTPUT_DIR%" mkdir "%OUTPUT_DIR%"
 
 "%IFW_DIR%\binarycreator.exe" ^
@@ -128,5 +172,10 @@ for %%A in ("%OUTPUT_DIR%\FOSD-Pro-Setup.exe") do (
     echo   Size: !SIZE_MB! MB
 )
 
+echo.
+echo   Installed layout:
+echo     FOSD-Pro\
+echo       bin\          (exe + all DLLs + plugins)
+echo       data\         (models, config, QSS, etc.)
 echo.
 pause
