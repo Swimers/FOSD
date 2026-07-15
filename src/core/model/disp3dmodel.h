@@ -69,6 +69,8 @@ public:
     void GetModelKeyPointsNum();
     void GetModelSize();
 
+    void setModelColor();
+
     //相机相关
     void ResetCamera(int Index);
     void CameraLock(bool index);
@@ -97,6 +99,7 @@ public:
     uint ModelPolysNum;
     uint ModelKeyPointsNum;
     double ModelSize;
+    QVector<float> ModelColor{1.0000f, 1.0000f, 0.2000f};
 
     QMap<vtkIdType, struct SelectedPointEntity> SelectedPointMap;
 

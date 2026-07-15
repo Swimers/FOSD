@@ -75,6 +75,7 @@ FORMS += \
     src/app/disp2d/disp2dwindow.ui \
     src/app/disp3d/disp3dkeypointedit.ui \
     src/app/disp3d/disp3dkeypointselect.ui \
+    src/app/disp3d/disp3dcolorpicker.ui \
     src/app/disp3d/docks/disp3dinfodockpanel.ui \
     src/app/disp3d/docks/disp3dmodeldockpanel.ui \
     src/app/disp3d/docks/disp3dviewdockpanel.ui \
@@ -93,6 +94,7 @@ HEADERS += \
     src/app/disp2d/disp2dwindow.h \
     src/app/disp3d/disp3dkeypointedit.h \
     src/app/disp3d/disp3dkeypointselect.h \
+    src/app/disp3d/disp3dcolorpicker.h \
     src/app/disp3d/docks/disp3ddockmanager.h \
     src/app/disp3d/docks/disp3ddockpanel.h \
     src/app/disp3d/docks/disp3dinfodockpanel.h \
@@ -139,6 +141,7 @@ SOURCES += \
     src/app/disp2d/disp2dwindow.cpp \
     src/app/disp3d/disp3dkeypointedit.cpp \
     src/app/disp3d/disp3dkeypointselect.cpp \
+    src/app/disp3d/disp3dcolorpicker.cpp \
     src/app/disp3d/docks/disp3ddockmanager.cpp \
     src/app/disp3d/docks/disp3dinfodockpanel.cpp \
     src/app/disp3d/docks/disp3dmodeldockpanel.cpp \

@@ -67,6 +67,7 @@ private slots:
     void SetCameraLock(bool checked);
     void SetCameraFollow(bool checked);
     void SetFPS(int fps);
+    void SetModelColor();
     void on_actionStart_triggered();
     void on_actionStop_triggered();
     void on_actionPause_triggered();

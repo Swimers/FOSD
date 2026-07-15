@@ -21,6 +21,7 @@ Disp3DModelDockPanel::Disp3DModelDockPanel(QWidget *parent)
     connect(ui->pbtn_KeyPointEdit, &QPushButton::clicked, this, &Disp3DModelDockPanel::keyPointEditRequested);
     connect(ui->pbtn_KeyPointSelect, &QPushButton::clicked, this, &Disp3DModelDockPanel::keyPointSelectRequested);
     connect(ui->pbtn_ScalarClear, &QPushButton::clicked, this, &Disp3DModelDockPanel::scalarClearRequested);
+    connect(ui->pbtn_SelectColor, &QPushButton::clicked, this, &Disp3DModelDockPanel::colorSelected);
     connect(ui->pbtn_ScalarSet, &QPushButton::clicked, this, [this]() {
         emit scalarSetRequested(ui->cbox_ScalarSelect->currentIndex());
     });

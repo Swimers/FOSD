@@ -171,7 +171,7 @@ bool disp3dmodel::LoadModel(const QString &filePath)
     modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
     modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
     modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.9529, 0.8510, 0.3490);
+    modelActor->GetProperty()->SetColor(static_cast<double>(ModelColor[0]), static_cast<double>(ModelColor[1]), static_cast<double>(ModelColor[2]));
 
     renderer->AddActor(modelActor);
     renderer->ResetCamera();
@@ -449,6 +449,18 @@ void disp3dmodel::GetModelSize()
     double dz = bounds[5] - bounds[4];
     double diag = std::sqrt(dx*dx + dy*dy + dz*dz);
     ModelSize = std::max(1e-6, diag * 0.008);
+}
+
+void disp3dmodel::setModelColor()
+{
+    if(Flag_Actor){
+        modelActor->GetProperty()->SetColor(static_cast<double>(ModelColor[0]), static_cast<double>(ModelColor[1]), static_cast<double>(ModelColor[2]));
+        qDebug() << "Current Color:" <<ModelColor;
+        renderWindow->Render();
+    }
+    else{
+        qWarning() << "模型未加载";
+    }
 }
 
 void disp3dmodel::ResetCamera(int Index)

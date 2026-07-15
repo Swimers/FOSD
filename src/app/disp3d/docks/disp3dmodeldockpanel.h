@@ -2,6 +2,7 @@
 #define DISP3DMODELDOCKPANEL_H
 
 #include <QWidget>
+#include <QVector>
 
 #include "disp3ddockpanel.h"
 
@@ -34,6 +35,7 @@ signals:
     void scalarSetRequested(int index);
     void scalarClearRequested();
     void fpsChanged(int fps);
+    void colorSelected();
 
 private:
     Ui::Disp3DModelDockPanel *ui = nullptr;

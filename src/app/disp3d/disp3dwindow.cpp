@@ -3,6 +3,7 @@
 
 #include <disp3dbackground.h>
 #include <trackingpoint.h>
+#include "disp3dcolorpicker.h"
 
 #include <stdio.h>
 #include <QDebug>
@@ -155,6 +156,7 @@ void disp3dwindow::InitDockPanels()
     connect(m_modelDockPanel, &Disp3DModelDockPanel::scalarSetRequested, this, &disp3dwindow::SetScalarMapping);
     connect(m_modelDockPanel, &Disp3DModelDockPanel::scalarClearRequested, this, &disp3dwindow::ClearScalarMapping);
     connect(m_modelDockPanel, &Disp3DModelDockPanel::fpsChanged, this, &disp3dwindow::SetFPS);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::colorSelected, this, &disp3dwindow::SetModelColor);
 
     connect(m_viewDockPanel, &Disp3DViewDockPanel::axesVisibleChanged, this, &disp3dwindow::SetAxesVisible);
     connect(m_viewDockPanel, &Disp3DViewDockPanel::axesSizeChanged, this, &disp3dwindow::SetAxisSize);
@@ -512,6 +514,21 @@ void disp3dwindow::SetFPS(int fps)
     if(freshTimer->isActive()){
         freshTimer->stop();
         freshTimer->start(1000/FPS);
+    }
+}
+
+void disp3dwindow::SetModelColor()
+{
+    if(!m_disp3dmodel->Flag_Actor){
+        QMessageBox::critical(this, "错误", "模型不存在");
+        return ;
+    }
+
+    Disp3DColorPicker *picker = Disp3DColorPicker::instance(this);
+    if (picker->exec() == QDialog::Accepted) {
+        QVector<float> rgb = picker->selectedColor();
+        m_disp3dmodel->ModelColor = rgb;
+        m_disp3dmodel->setModelColor();
     }
 }
 
