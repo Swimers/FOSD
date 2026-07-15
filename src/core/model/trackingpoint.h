@@ -4,6 +4,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkRenderer.h>
 #include <vtkActor.h>
+#include <vtkCaptionActor2D.h>
+#include <vtkRenderWindow.h>
 
 #include <disp3dmodel.h>
 

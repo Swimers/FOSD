@@ -3,6 +3,7 @@
 
 #include <disp3dbackground.h>
 #include <trackingpoint.h>
+#include "disp3dcolorpicker.h"
 
 #include <stdio.h>
 #include <QDebug>
@@ -17,6 +18,8 @@
 #include <vtkRenderer.h>
 #include <vtkPoints.h>
 #include <vtkCaptionActor2D.h>
+
+#include <ConfigManager.h>
 
 #include <QTimer>
 
@@ -78,6 +81,7 @@ disp3dwindow::~disp3dwindow()
 void disp3dwindow::InitWindow()
 {
     m_vtkrenderwindow = ui->vtk_openGL->GetRenderWindow();
+    InitDockPanels();
 
     m_disp3dmodel = new disp3dmodel();
     m_disp3dmodel->SetRenderWindow(m_vtkrenderwindow);
@@ -105,29 +109,65 @@ void disp3dwindow::InitWindow()
     m_trackingpoint = new trackingpoint(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
     m_trackingpoint->SetDisplayModel(m_disp3dmodel);
 
-    ui->dock_Infor->setVisible(false);
     ui->actionReset->setDisabled(true);
     ui->actionStart->setDisabled(false);
     ui->actionStop->setEnabled(false);
     ui->actionPause->setDisabled(true);
 
     freshTimer = new QTimer(this);
-    FPS = ui->cbox_FPS->currentText().left(ui->cbox_FPS->currentText().indexOf('H')).toInt();
+    FPS = m_modelDockPanel ? m_modelDockPanel->fps() : 1;
 
     InitPointInfor();
 
     // 测试代码段，初始化加载模型
-    m_disp3dmodel->LoadModel("data/model/rainbow.stl");
-    m_disp3dmodel->Flag_Actor = true;
-    m_disp3dbackground->CreateWorld();
-    m_disp3dmodel->GetVTKRenderWindow()->Render();
-    m_trackingpoint->LoadTrackingPointsFromFile("data/trackingpoint/tracking_points_example_modified.csv");
-
+    auto &appConfig = ConfigManager::instance().config();
+    QString filePath = appConfig.modlepath.ModlePath;
+    ConfigManager::instance().save();
+    bool loadOk = m_disp3dmodel->LoadModel(filePath);
+    if (loadOk) {
+        m_disp3dbackground->CreateWorld();
+        m_disp3dmodel->GetVTKRenderWindow()->Render();
+    }
+    //m_trackingpoint->LoadTrackingPointsFromFile("data/trackingpoint/tracking_points_example_modified.csv");
     //m_disp3dmodel->LoadModel("C:/Users/Swimers/Desktop/Test_Model/LeftWing2_new.stl");
     if(m_disp3dmodel->Flag_Actor)
     RefreshInfor();
 
     connect(freshTimer,SIGNAL(timeout()),this,SLOT(RefreshStage()));
+}
+
+void disp3dwindow::InitDockPanels()
+{
+    m_dockManager = new Disp3DDockManager(this, this);
+    m_modelDockPanel = new Disp3DModelDockPanel(this);
+    m_viewDockPanel = new Disp3DViewDockPanel(this);
+    m_infoDockPanel = new Disp3DInfoDockPanel(this);
+
+    m_dockManager->registerPanel(m_modelDockPanel, ui->actionModelDock);
+    m_dockManager->registerPanel(m_viewDockPanel, ui->actionViewDock);
+    m_dockManager->registerPanel(m_infoDockPanel, ui->actionInforDock);
+
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::modelLoadRequested, this, &disp3dwindow::LoadModel);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::modelClearRequested, this, &disp3dwindow::ClearModel);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::modelMergeRequested, this, &disp3dwindow::MergeModel);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::modelExportRequested, this, &disp3dwindow::ExportModel);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::keyPointEditRequested, this, &disp3dwindow::EditKeyPoint);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::keyPointSelectRequested, this, &disp3dwindow::SelectKeyPoint);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::scalarSetRequested, this, &disp3dwindow::SetScalarMapping);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::scalarClearRequested, this, &disp3dwindow::ClearScalarMapping);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::fpsChanged, this, &disp3dwindow::SetFPS);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::colorSelected, this, &disp3dwindow::SetModelColor);
+
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::axesVisibleChanged, this, &disp3dwindow::SetAxesVisible);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::axesSizeChanged, this, &disp3dwindow::SetAxisSize);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::gridVisibleChanged, this, &disp3dwindow::SetGridVisible);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::gridSizeChangeFinished, this, &disp3dwindow::SetGridSize);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::xoyGridVisibleChanged, this, &disp3dwindow::SetXOYGridVisible);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::xozGridVisibleChanged, this, &disp3dwindow::SetXOZGridVisible);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::zoyGridVisibleChanged, this, &disp3dwindow::SetZOYGridVisible);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::cameraLockChanged, this, &disp3dwindow::SetCameraLock);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::cameraFollowChanged, this, &disp3dwindow::SetCameraFollow);
+    connect(m_viewDockPanel, &Disp3DViewDockPanel::switchViewRequested, this, &disp3dwindow::SwitchView);
 }
 
 void disp3dwindow::InitPointInfor()
@@ -145,10 +185,14 @@ void disp3dwindow::InitPointInfor()
 
 void disp3dwindow::RefreshInfor()
 {
-    ui->lab_NumPoints->setText(QString::number(m_disp3dmodel->ModelPointsNum));
-    ui->lab_NumPolys->setText(QString::number(m_disp3dmodel->ModelPolysNum));
-    ui->lab_NumKeyPoints->setText(QString::number(m_disp3dmodel->ModelKeyPointsNum));
-    ui->lab_MaxDeformation->setText("00.00");
+    if (!m_infoDockPanel || !m_disp3dmodel) {
+        return;
+    }
+
+    m_infoDockPanel->setModelInfo(m_disp3dmodel->ModelPointsNum,
+                                  m_disp3dmodel->ModelPolysNum,
+                                  m_disp3dmodel->ModelKeyPointsNum);
+    m_infoDockPanel->setMaxDeformation("00.00");
 }
 
 void disp3dwindow::RefreshStage()
@@ -157,7 +201,9 @@ void disp3dwindow::RefreshStage()
     char str[8];
     if(m_disp3dmodel){
         QString maxDeformStr = QString::number(m_disp3dmodel->MaxDisplace, 'f', 4);
-        ui->lab_MaxDeformation->setText(maxDeformStr);
+        if (m_infoDockPanel) {
+            m_infoDockPanel->setMaxDeformation(maxDeformStr);
+        }
     }
 }
 
@@ -234,7 +280,7 @@ void disp3dwindow::on_checkBox_3_clicked(bool checked)
     m_disp3dbackground->ShowAxes(checked);
 }
 
-void disp3dwindow::on_pbtn_ModelLoad_clicked()
+void disp3dwindow::LoadModel()
 {
     if(!m_disp3dmodel->Flag_Actor){
         QString filter = tr("STL模型 (*.stl)");
@@ -244,6 +290,10 @@ void disp3dwindow::on_pbtn_ModelLoad_clicked()
             m_disp3dbackground->CreateWorld();
             m_disp3dmodel->GetVTKRenderWindow()->Render();
             RefreshInfor();
+
+            auto &appConfig = ConfigManager::instance().config();
+            appConfig.modlepath.ModlePath = filePath;
+            ConfigManager::instance().save();
         }
         else {
             QMessageBox::information(this, tr("提示"), tr("未选择任何文件！"));
@@ -254,18 +304,18 @@ void disp3dwindow::on_pbtn_ModelLoad_clicked()
     }
 }
 
-void disp3dwindow::on_cbox_AxisAble_clicked(bool checked)
+void disp3dwindow::SetAxesVisible(bool checked)
 {
     m_disp3dbackground->ShowAxes(checked);
 }
 
-void disp3dwindow::on_cbox_GridAble_clicked(bool checked)
+void disp3dwindow::SetGridVisible(bool checked)
 {
     Flag_ShowGrid = checked;
     if(checked){
-        m_disp3dbackground->ShowGridXY(ui->cbox_XOYGrid->isChecked());
-        m_disp3dbackground->ShowGridXZ(ui->cbox_XOZGrid->isChecked());
-        m_disp3dbackground->ShowGridYZ(ui->cbox_ZOYGrid->isChecked());
+        m_disp3dbackground->ShowGridXY(m_viewDockPanel && m_viewDockPanel->xoyGridChecked());
+        m_disp3dbackground->ShowGridXZ(m_viewDockPanel && m_viewDockPanel->xozGridChecked());
+        m_disp3dbackground->ShowGridYZ(m_viewDockPanel && m_viewDockPanel->zoyGridChecked());
     }
     else {
         m_disp3dbackground->ShowGridXY(false);
@@ -274,7 +324,7 @@ void disp3dwindow::on_cbox_GridAble_clicked(bool checked)
     }
 }
 
-void disp3dwindow::on_pbtn_ModelClear_clicked()
+void disp3dwindow::ClearModel()
 {
     if(m_disp3dmodel->Flag_Actor){
         QMessageBox::StandardButton result = QMessageBox::question(
@@ -286,11 +336,10 @@ void disp3dwindow::on_pbtn_ModelClear_clicked()
             );
             if (result == QMessageBox::Ok) {
                 m_disp3dmodel->UnLoadModel();
-                ui->lab_NumPoints->clear();
-                ui->lab_NumPolys->clear();
-                ui->lab_NumKeyPoints->clear();
-                ui->lab_MaxDeformation->clear();
-
+                m_trackingpoint->ClearTrackingPoint();
+                if (m_infoDockPanel) {
+                    m_infoDockPanel->clearModelInfo();
+                }
             }
     }
     else {
@@ -298,11 +347,10 @@ void disp3dwindow::on_pbtn_ModelClear_clicked()
     }
 }
 
-void disp3dwindow::on_pbtn_SwitchView_clicked()
+void disp3dwindow::SwitchView(int viewIndex)
 {
     if(m_disp3dmodel->Flag_Actor){
-        int ViewFlag = ui->cbox_SelectView->currentIndex();
-        m_disp3dmodel->ResetCamera(ViewFlag);
+        m_disp3dmodel->ResetCamera(viewIndex);
         m_disp3dmodel->GetVTKRenderWindow()->Render();   //刷新
     }
     else {
@@ -310,7 +358,7 @@ void disp3dwindow::on_pbtn_SwitchView_clicked()
     }
 }
 
-void disp3dwindow::on_pbtn_ModelMerge_clicked()
+void disp3dwindow::MergeModel()
 {
     if(m_disp3dmodel->Flag_Actor){
         QString filter = tr("STL模型 (*.stl)");
@@ -329,7 +377,7 @@ void disp3dwindow::on_pbtn_ModelMerge_clicked()
 
 }
 
-void disp3dwindow::on_pbtn_ModelExport_clicked()
+void disp3dwindow::ExportModel()
 {
     if(m_disp3dmodel->Flag_Actor){
         QString filePath = QFileDialog::getSaveFileName(
@@ -349,7 +397,7 @@ void disp3dwindow::on_pbtn_ModelExport_clicked()
     }
 }
 
-void disp3dwindow::on_pbtn_KeyPointEdit_clicked()
+void disp3dwindow::EditKeyPoint()
 {
     if(m_disp3dmodel->Flag_Actor){
         disp3dkeypointedit* m_disp3dkeypointedit = disp3dkeypointedit::instance();
@@ -364,22 +412,21 @@ void disp3dwindow::on_pbtn_KeyPointEdit_clicked()
     }
 }
 
-void disp3dwindow::on_hsd_AxisSize_valueChanged(int value)
+void disp3dwindow::SetAxisSize(int value)
 {
     m_disp3dbackground->SetAxesLength(value);
 }
 
-void disp3dwindow::on_hsd_GridSize_sliderReleased()
+void disp3dwindow::SetGridSize(int value)
 {
-    m_disp3dbackground->SetAxesGridSize(ui->hsd_GridSize->value());
+    m_disp3dbackground->SetAxesGridSize(value);
 
-    ui->cbox_XOYGrid->setChecked(false);
-    ui->cbox_XOZGrid->setChecked(false);
-    ui->cbox_ZOYGrid->setChecked(false);
-    ui->cbox_GridAble->setChecked(false);
+    if (m_viewDockPanel) {
+        m_viewDockPanel->resetGridChecks();
+    }
 }
 
-void disp3dwindow::on_pbtn_KeyPointSelect_clicked()
+void disp3dwindow::SelectKeyPoint()
 {
     if(m_disp3dmodel->Flag_Actor){
         disp3dkeypointselect* m_disp3dkeypointselect = disp3dkeypointselect::instance();
@@ -391,21 +438,6 @@ void disp3dwindow::on_pbtn_KeyPointSelect_clicked()
     else {
         QMessageBox::critical(this, "错误", "模型不存在");
     }
-}
-
-void disp3dwindow::on_actionModelDock_triggered()
-{
-    ui->dock_Model->setVisible(true);
-}
-
-void disp3dwindow::on_actionInforDock_triggered()
-{
-    ui->dock_Infor->setVisible(true);
-}
-
-void disp3dwindow::on_actionViewDock_triggered()
-{
-    ui->dock_View->setVisible(true);
 }
 
 void disp3dwindow::on_actionStart_triggered()
@@ -476,16 +508,31 @@ void disp3dwindow::on_actionReset_triggered()
     RefreshStage();
 }
 
-void disp3dwindow::on_cbox_FPS_currentTextChanged(const QString &arg1)
+void disp3dwindow::SetFPS(int fps)
 {
-    FPS = arg1.left(ui->cbox_FPS->currentText().indexOf('H')).toInt();
+    FPS = fps;
     if(freshTimer->isActive()){
         freshTimer->stop();
         freshTimer->start(1000/FPS);
     }
 }
 
-void disp3dwindow::on_pbtn_ScalarSet_clicked()
+void disp3dwindow::SetModelColor()
+{
+    if(!m_disp3dmodel->Flag_Actor){
+        QMessageBox::critical(this, "错误", "模型不存在");
+        return ;
+    }
+
+    Disp3DColorPicker *picker = Disp3DColorPicker::instance(this);
+    if (picker->exec() == QDialog::Accepted) {
+        QVector<float> rgb = picker->selectedColor();
+        m_disp3dmodel->ModelColor = rgb;
+        m_disp3dmodel->setModelColor();
+    }
+}
+
+void disp3dwindow::SetScalarMapping(int index)
 {
     if(!m_disp3dmodel->Flag_Actor){
         QMessageBox::critical(this, "错误", "模型不存在");
@@ -493,7 +540,6 @@ void disp3dwindow::on_pbtn_ScalarSet_clicked()
     }
 
 
-    int index = ui->cbox_ScalarSelect->currentIndex();
     qDebug() << index;
     switch(index){
         case 0:
@@ -517,7 +563,7 @@ void disp3dwindow::on_pbtn_ScalarSet_clicked()
     }
 }
 
-void disp3dwindow::on_pbtn_ScalarClear_clicked()
+void disp3dwindow::ClearScalarMapping()
 {
     if(!m_disp3dmodel->Flag_Actor){
         QMessageBox::critical(this, "错误", "模型不存在");
@@ -526,7 +572,7 @@ void disp3dwindow::on_pbtn_ScalarClear_clicked()
     m_disp3dmodel->OFFScalars();
 }
 
-void disp3dwindow::on_cbox_XOZGrid_clicked(bool checked)
+void disp3dwindow::SetXOZGridVisible(bool checked)
 {
     if(Flag_ShowGrid)
         m_disp3dbackground->ShowGridXZ(checked);
@@ -534,7 +580,7 @@ void disp3dwindow::on_cbox_XOZGrid_clicked(bool checked)
         return;
 }
 
-void disp3dwindow::on_cbox_XOYGrid_clicked(bool checked)
+void disp3dwindow::SetXOYGridVisible(bool checked)
 {
     if(Flag_ShowGrid)
         m_disp3dbackground->ShowGridXY(checked);
@@ -542,7 +588,7 @@ void disp3dwindow::on_cbox_XOYGrid_clicked(bool checked)
         return;
 }
 
-void disp3dwindow::on_cbox_ZOYGrid_clicked(bool checked)
+void disp3dwindow::SetZOYGridVisible(bool checked)
 {
     if(Flag_ShowGrid)
         m_disp3dbackground->ShowGridYZ(checked);
@@ -550,12 +596,12 @@ void disp3dwindow::on_cbox_ZOYGrid_clicked(bool checked)
         return;
 }
 
-void disp3dwindow::on_cbox_CareamLockAble_clicked(bool checked)
+void disp3dwindow::SetCameraLock(bool checked)
 {
     m_disp3dmodel->CameraLock(checked);
 }
 
-void disp3dwindow::on_cbox_FellowAble_clicked(bool checked)
+void disp3dwindow::SetCameraFollow(bool checked)
 {
     m_disp3dmodel->CameraFellow(checked);
     if(checked == false){

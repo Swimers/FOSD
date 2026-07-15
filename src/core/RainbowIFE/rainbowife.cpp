@@ -149,8 +149,8 @@ void rainbowIFE::shapefunction(double x_para,double y_para,double z_para,double 
         ShapeFunction_Beam(local_corrds[0], local_corrds[1], local_corrds[2], 5970.0, node_u_beam, disp);
 
         disp[0] = disp[1]/1000;
-     disp[1] = disp[2]/1000;
-     disp[2] = disp[0]/1000;
+        disp[1] = disp[2]/1000;
+        disp[2] = disp[0]/1000;
 //        qDebug() << disp[0] << disp[1] << disp[2];
     } else {
 

@@ -1,9 +1,15 @@
 #ifndef DISP3DBACKGROUND_H
 #define DISP3DBACKGROUND_H
 
+#include <QString>
+#include <QStringList>
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkAxesActor.h>
+#include <vtkTexture.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkImageData.h>
 
 #include <disp3dmodel.h>
 
@@ -38,6 +44,13 @@ public:
     vtkActor* CreateGroundWithTexture(double modelSize);
     vtkActor* CreateSkyPlaneWithTexture(double modelSize);
     vtkActor* CreateSkyDome(double modelSize);
+    QString resolveTexturePath(const QString& relativePath) const;
+    vtkTexture* loadTexture(const QString& relativePath, bool repeat) const;
+    vtkActor* createTexturedPlaneActor(double modelSize,
+                                       double planeY,
+                                       double planeScale,
+                                       const QString& texturePath,
+                                       bool repeat);
 
 private:
     vtkSmartPointer<vtkRenderer> m_renderer = nullptr;
@@ -45,6 +58,8 @@ private:
     disp3dmodel* m_disp3dmodel;
 
     vtkAxesActor* axe = nullptr;
+    vtkActor* m_groundActor = nullptr;
+    vtkActor* m_skyActor = nullptr;
 
     vtkSmartPointer<vtkActor> axesGridActor_XZ;  // 原 Y=0 平面
     vtkSmartPointer<vtkActor> axesGridActor_XY;  // Z=0 平面

@@ -1,6 +1,9 @@
 #include "disp3dbackground.h"
 
 #include <QDebug>
+#include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
 #include <QObject>
 
 #include <vtkRenderWindow.h>
@@ -30,6 +33,16 @@ disp3dbackground::disp3dbackground(vtkSmartPointer<vtkRenderer> renderer, vtkSma
 disp3dbackground::~disp3dbackground()
 {
     if (m_renderer) {
+        if (m_groundActor) {
+            m_renderer->RemoveActor(m_groundActor);
+            m_groundActor->Delete();
+            m_groundActor = nullptr;
+        }
+        if (m_skyActor) {
+            m_renderer->RemoveActor(m_skyActor);
+            m_skyActor->Delete();
+            m_skyActor = nullptr;
+        }
         if (axe) {
             m_renderer->RemoveActor(axe);
             axe->Delete();
@@ -52,6 +65,135 @@ disp3dbackground::~disp3dbackground()
 
     m_renderer = nullptr;
     m_renderWindow = nullptr;
+}
+
+QString disp3dbackground::resolveTexturePath(const QString& relativePath) const
+{
+    QFileInfo directInfo(relativePath);
+    if (directInfo.isAbsolute()) {
+        return directInfo.exists() && directInfo.isFile() ? directInfo.absoluteFilePath() : QString();
+    }
+
+    QStringList baseRoots;
+    baseRoots << QDir::currentPath();
+    if (QCoreApplication::instance()) {
+        baseRoots << QCoreApplication::applicationDirPath();
+    }
+
+    QStringList searchRoots;
+    for (const QString& baseRoot : baseRoots) {
+        QDir dir(baseRoot);
+        for (int i = 0; i < 4; ++i) {
+            const QString path = dir.absolutePath();
+            if (!searchRoots.contains(path)) {
+                searchRoots << path;
+            }
+            if (!dir.cdUp()) {
+                break;
+            }
+        }
+    }
+
+    for (const QString& root : searchRoots) {
+        QFileInfo candidate(QDir(root).absoluteFilePath(relativePath));
+        if (candidate.exists() && candidate.isFile() && candidate.isReadable()) {
+            return candidate.absoluteFilePath();
+        }
+    }
+
+    qWarning() << "Texture file is missing or invalid:" << relativePath;
+    return QString();
+}
+
+vtkTexture* disp3dbackground::loadTexture(const QString& relativePath, bool repeat) const
+{
+    const QString filePath = resolveTexturePath(relativePath);
+    if (filePath.isEmpty()) {
+        return nullptr;
+    }
+
+    const QString suffix = QFileInfo(filePath).suffix().toLower();
+    const QByteArray pathBytes = QDir::toNativeSeparators(filePath).toLocal8Bit();
+    vtkImageData* image = nullptr;
+
+    if (suffix == "jpg" || suffix == "jpeg") {
+        vtkJPEGReader* reader = vtkJPEGReader::New();
+        reader->SetFileName(pathBytes.constData());
+        reader->Update();
+        image = reader->GetOutput();
+        if (image) {
+            image->Register(nullptr);
+        }
+        reader->Delete();
+    } else if (suffix == "png") {
+        vtkPNGReader* reader = vtkPNGReader::New();
+        reader->SetFileName(pathBytes.constData());
+        reader->Update();
+        image = reader->GetOutput();
+        if (image) {
+            image->Register(nullptr);
+        }
+        reader->Delete();
+    } else {
+        qWarning() << "Unsupported texture format:" << filePath;
+        return nullptr;
+    }
+
+    int dims[3] = {0, 0, 0};
+    if (image) {
+        image->GetDimensions(dims);
+    }
+    if (!image || dims[0] <= 0 || dims[1] <= 0) {
+        qWarning() << "Texture file could not be decoded:" << filePath;
+        if (image) {
+            image->Delete();
+        }
+        return nullptr;
+    }
+
+    vtkTexture* texture = vtkTexture::New();
+    texture->SetInputData(image);
+    image->Delete();
+    texture->InterpolateOn();
+    if (repeat) {
+        texture->RepeatOn();
+    } else {
+        texture->RepeatOff();
+    }
+    return texture;
+}
+
+vtkActor* disp3dbackground::createTexturedPlaneActor(double modelSize,
+                                                     double planeY,
+                                                     double planeScale,
+                                                     const QString& texturePath,
+                                                     bool repeat)
+{
+    vtkTexture* texture = loadTexture(texturePath, repeat);
+    if (!texture) {
+        return nullptr;
+    }
+
+    const double scale = modelSize * planeScale;
+    vtkPlaneSource* plane = vtkPlaneSource::New();
+    plane->SetOrigin(-scale, planeY, -scale);
+    plane->SetPoint1( scale, planeY, -scale);
+    plane->SetPoint2(-scale, planeY,  scale);
+    plane->Update();
+
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    mapper->SetInputConnection(plane->GetOutputPort());
+
+    vtkActor* actor = vtkActor::New();
+    actor->SetMapper(mapper);
+    actor->SetTexture(texture);
+    actor->GetProperty()->LightingOff();
+
+    texture->Delete();
+    mapper->Delete();
+    plane->Delete();
+
+    return actor;
 }
 
 
@@ -250,10 +392,30 @@ void disp3dbackground::ShowGridYZ(bool flag)
 
 void disp3dbackground::CreateWorld()
 {
-    vtkActor* ground = CreateGroundWithTexture(200);
-    m_renderer->AddActor(ground);
-    vtkActor* sky = CreateSkyDome(700);
-    m_renderer->AddActor(sky);
+    if (!m_renderer || !m_renderWindow) {
+        return;
+    }
+
+    if (m_groundActor) {
+        m_renderer->RemoveActor(m_groundActor);
+        m_groundActor->Delete();
+        m_groundActor = nullptr;
+    }
+    if (m_skyActor) {
+        m_renderer->RemoveActor(m_skyActor);
+        m_skyActor->Delete();
+        m_skyActor = nullptr;
+    }
+
+    m_groundActor = CreateGroundWithTexture(200);
+    if (m_groundActor) {
+        m_renderer->AddActor(m_groundActor);
+    }
+
+    m_skyActor = CreateSkyDome(700);
+    if (m_skyActor) {
+        m_renderer->AddActor(m_skyActor);
+    }
 
     vtkCamera* camera = m_renderer->GetActiveCamera();
     double focalPoint[3] = {0.0, 0.0, 0.0};
@@ -322,65 +484,51 @@ vtkActor *disp3dbackground::CreateSkyPlane(double modelSize)
 
 vtkActor *disp3dbackground::CreateGroundWithTexture(double modelSize)
 {
+    vtkTexture* texture = loadTexture("res/pic/ground.jpg", true);
+    if (!texture) {
+        qWarning() << "Ground texture is unavailable, skip creating ground background.";
+        return nullptr;
+    }
+
     vtkPlaneSource* plane = vtkPlaneSource::New();
+    const double scale = modelSize * 5000.0;
+    const double groundY = -modelSize * 500.0;
 
-    double scale = modelSize * 5000.0;
-    double groundY = -modelSize * 500; // 地面位于 Y 负方向远处
-
-    // ===== 关键修改：固定Y，变化X和Z（XOZ平面）=====
-    plane->SetOrigin(-scale, groundY, -scale);   // 左下
-    plane->SetPoint1(scale,  groundY, -scale);   // 右下（X方向）
-    plane->SetPoint2(-scale, groundY,  scale);   // 左上（Z方向）
+    plane->SetOrigin(-scale, groundY, -scale);
+    plane->SetPoint1(scale, groundY, -scale);
+    plane->SetPoint2(-scale, groundY, scale);
     plane->Update();
 
-    // ===== 读取贴图 =====
-    vtkJPEGReader* reader = vtkJPEGReader::New();
-    reader->SetFileName("./data/background/ground.jpg");  // 草地/跑道图片
-    reader->Update();
-
-    vtkTexture* texture = vtkTexture::New();
-    texture->SetInputConnection(reader->GetOutputPort());
-
-    texture->InterpolateOn();     // 平滑
-    texture->RepeatOn();          // 允许重复贴图（关键）
-
-    // ===== 映射器 =====
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
     mapper->SetInputConnection(plane->GetOutputPort());
 
     vtkActor* groundActor = vtkActor::New();
     groundActor->SetMapper(mapper);
     groundActor->SetTexture(texture);
-
-    // 关闭光照，避免地面发黑
     groundActor->GetProperty()->LightingOff();
-
-    // 放到 Y 负方向远处
     groundActor->SetPosition(0, -modelSize * 40.0, -modelSize * 2.0);
 
+    texture->Delete();
+    mapper->Delete();
+    plane->Delete();
     return groundActor;
 }
-
 vtkActor *disp3dbackground::CreateSkyPlaneWithTexture(double modelSize)
 {
+    vtkTexture* texture = loadTexture("res/pic/sky.jpg", false);
+    if (!texture) {
+        qWarning() << "Sky texture is unavailable, skip creating sky background.";
+        return nullptr;
+    }
+
     vtkPlaneSource* plane = vtkPlaneSource::New();
+    const double scale = modelSize * 5000.0;
+    const double groundY = modelSize * 500.0;
 
-    double scale = modelSize * 5000.0;
-    double groundY = modelSize * 500; // 地面位于 Y 负方向远处
-
-    // ===== 关键修改：固定Y，变化X和Z（XOZ平面）=====
-    plane->SetOrigin(-scale, groundY, -scale);   // 左下
-    plane->SetPoint1(scale,  groundY, -scale);   // 右下（X方向）
-    plane->SetPoint2(-scale, groundY,  scale);   // 左上（Z方向）
+    plane->SetOrigin(-scale, groundY, -scale);
+    plane->SetPoint1(scale, groundY, -scale);
+    plane->SetPoint2(-scale, groundY, scale);
     plane->Update();
-
-    vtkJPEGReader* reader = vtkJPEGReader::New();
-    reader->SetFileName("./data/background/sky.jpg");
-    reader->Update();
-
-    vtkTexture* texture = vtkTexture::New();
-    texture->SetInputConnection(reader->GetOutputPort());
-    texture->InterpolateOn();
 
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
     mapper->SetInputConnection(plane->GetOutputPort());
@@ -389,15 +537,21 @@ vtkActor *disp3dbackground::CreateSkyPlaneWithTexture(double modelSize)
     actor->SetMapper(mapper);
     actor->SetTexture(texture);
     actor->GetProperty()->LightingOff();
-
     actor->SetPosition(0, modelSize * 60.0, 0);
 
+    texture->Delete();
+    mapper->Delete();
+    plane->Delete();
     return actor;
 }
-
 vtkActor *disp3dbackground::CreateSkyDome(double modelSize)
 {
-    // 1. 创建球体（天空穹顶）
+    vtkTexture* texture = loadTexture("res/pic/sky.jpg", false);
+    if (!texture) {
+        qWarning() << "Sky texture is unavailable, skip creating sky dome.";
+        return nullptr;
+    }
+
     vtkSphereSource* sphere = vtkSphereSource::New();
     sphere->SetRadius(modelSize * 2000.0);
     sphere->SetThetaResolution(32);
@@ -405,38 +559,24 @@ vtkActor *disp3dbackground::CreateSkyDome(double modelSize)
     sphere->SetCenter(0.0, -600000, 0.0);
     sphere->Update();
 
-    // 2. 生成球面纹理坐标（关键步骤！！！）
     vtkTextureMapToSphere* textureMap = vtkTextureMapToSphere::New();
     textureMap->SetInputConnection(sphere->GetOutputPort());
-    textureMap->PreventSeamOn();  // 防止贴图接缝
+    textureMap->PreventSeamOn();
     textureMap->Update();
 
-    // 3. 读取天空贴图
-    vtkJPEGReader* reader = vtkJPEGReader::New();
-    reader->SetFileName("./data/background/sky.jpg");
-    reader->Update();
-
-    // 4. 创建纹理对象
-    vtkTexture* texture = vtkTexture::New();
-    texture->SetInputConnection(reader->GetOutputPort());
-    texture->InterpolateOn();          // 平滑贴图
-    texture->RepeatOff();              // 不重复贴图
-
-    // 5. 映射器（注意输入改为textureMap）
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
     mapper->SetInputConnection(textureMap->GetOutputPort());
 
-    // 6. 创建天空Actor
     vtkActor* skyActor = vtkActor::New();
     skyActor->SetMapper(mapper);
     skyActor->SetTexture(texture);
-
-    // 7. 关键：天空球内部可见（你这点是对的）
     skyActor->GetProperty()->BackfaceCullingOff();
     skyActor->GetProperty()->FrontfaceCullingOn();
-    skyActor->GetProperty()->LightingOff();  // 天空不受光照影响
+    skyActor->GetProperty()->LightingOff();
 
+    texture->Delete();
+    mapper->Delete();
+    textureMap->Delete();
+    sphere->Delete();
     return skyActor;
 }
-
-

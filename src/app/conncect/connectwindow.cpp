@@ -14,6 +14,7 @@
 #include <QTableWidget>
 #include <qcustomplot.h>
 #include <QNetworkInterface>
+#include <QSettings>
 #include <QtNetwork>
 #include <QThread>
 
@@ -22,6 +23,7 @@
 #include "tcptask.h"
 #include "analyzepackets.h"
 #include "global.h"
+#include "ConfigManager.h"
 
 connectwindow::connectwindow(QWidget *parent) :
     QWidget(parent),
@@ -52,12 +54,17 @@ connectwindow::~connectwindow()
     m_DataThread->quit();
     m_DataThread->wait();
 
+    // 将对象移回调用线程，避免跨线程 delete 警告
+    m_serialtask->moveToThread(nullptr);
     delete m_serialtask;
     delete m_serialThread;
+    m_UdpTask->moveToThread(nullptr);
     delete m_UdpTask;
     delete m_UdpThread;
+    m_TcpTask->moveToThread(nullptr);
     delete m_TcpTask;
     delete m_TcpThread;
+    m_DataTask->moveToThread(nullptr);
     delete m_DataTask;
     delete m_DataThread;
 
@@ -67,35 +74,35 @@ connectwindow::~connectwindow()
     delete ui;
 }
 
-void connectwindow::ReadParaConfig(const QString &fileName)
+void connectwindow::ReadParaConfig()
 {
-    QSettings settings(fileName, QSettings::IniFormat);
-    // 读取并设置 QLineEdit 的值
-    ui->textEdit_APara->setText(settings.value("A", "").toString());
-    ui->textEdit_BPara->setText(settings.value("B", "").toString());
-    ui->textEdit_StrainLowPara->setText(settings.value("Strain_low", "").toString());
-    ui->textEdit_StrainTopPara->setText(settings.value("Strain_top", "").toString());
-    // 读取并设置 QComboBox 的值
-    ui->cbox_CampingFre->setCurrentText(settings.value("getHz", "").toString());
-    ui->cbox_SaveCycle->setCurrentText(settings.value("saveTime", "").toString());
+    ConfigManager::instance().load();
+    auto &appConfig = ConfigManager::instance().config();
+    ui->textEdit_APara->setText(appConfig.strain.aPara);
+    ui->textEdit_BPara->setText(appConfig.strain.bPara);
+    ui->textEdit_StrainLowPara->setText(appConfig.strain.strainLowPara);
+    ui->textEdit_StrainTopPara->setText(appConfig.strain.strainTopPara);
+    ui->cbox_CampingFre->setCurrentText(appConfig.camp.getHz);
+    ui->cbox_SaveCycle->setCurrentText(appConfig.camp.saveTime);
     on_pbtn_ParaSet_clicked();
 }
 
-void connectwindow::WriteParaConfig(const QString &fileName)
+void connectwindow::WriteParaConfig()
 {
-    QSettings settings(fileName, QSettings::IniFormat);
-    // 从 QLineEdit 获取值并写入配置
-    settings.setValue("A", ui->textEdit_APara->toPlainText());
-    settings.setValue("B", ui->textEdit_BPara->toPlainText());
-    settings.setValue("Strain_low", ui->textEdit_StrainLowPara->toPlainText());
-    settings.setValue("Strain_top", ui->textEdit_StrainTopPara->toPlainText());
-    // 从 QComboBox 获取值并写入配置
-    settings.setValue("getHz", ui->cbox_CampingFre->currentText());
-    settings.setValue("saveTime", ui->cbox_SaveCycle->currentText());
+    auto &appConfig = ConfigManager::instance().config();
+    appConfig.strain.aPara = ui->textEdit_APara->toPlainText();
+    appConfig.strain.bPara = ui->textEdit_BPara->toPlainText();
+    appConfig.strain.strainLowPara = ui->textEdit_StrainLowPara->toPlainText();
+    appConfig.strain.strainTopPara = ui->textEdit_StrainTopPara->toPlainText();
+    appConfig.camp.getHz = ui->cbox_CampingFre->currentText();
+    appConfig.camp.saveTime = ui->cbox_SaveCycle->currentText();
+    ConfigManager::instance().save();
 }
 
 void connectwindow::InitCustomPlot(QCustomPlot *customPlot)
 {
+    ApplyCustomPlotTheme(customPlot, true);
+
     customPlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom| QCP::iSelectAxes |
                                       QCP::iSelectLegend | QCP::iSelectPlottables);
     customPlot->yAxis->setRange(-10000, 40000);
@@ -134,6 +141,47 @@ void connectwindow::InitCustomPlot(QCustomPlot *customPlot)
     pen7.setWidth(2);    // 设置笔宽度
     customPlot->addGraph();
     customPlot->graph(6)->setPen(pen7);
+    customPlot->replot();
+}
+
+void connectwindow::ApplyCustomPlotTheme(QCustomPlot *customPlot, bool dark)
+{
+    if (!customPlot) {
+        return;
+    }
+
+    const QColor widgetBg = dark ? QColor("#302f3a") : QColor("#f4f4f4");
+    const QColor plotBg = dark ? QColor("#24232b") : QColor("#ffffff");
+    const QColor textColor = dark ? QColor("#f5f5f5") : QColor("#202020");
+    const QColor axisColor = dark ? QColor("#cfd3dc") : QColor("#202020");
+    const QColor gridColor = dark ? QColor("#4b4a55") : QColor("#d0d0d0");
+    const QColor subGridColor = dark ? QColor("#3a3942") : QColor("#e8e8e8");
+
+    customPlot->setBackground(QBrush(widgetBg));
+    customPlot->axisRect()->setBackground(QBrush(plotBg));
+    customPlot->legend->setBrush(QBrush(plotBg));
+    customPlot->legend->setBorderPen(QPen(gridColor));
+    customPlot->legend->setTextColor(textColor);
+
+    const QList<QCPAxis*> axes = {
+        customPlot->xAxis,
+        customPlot->yAxis,
+        customPlot->xAxis2,
+        customPlot->yAxis2
+    };
+
+    for (QCPAxis *axis : axes) {
+        axis->setBasePen(QPen(axisColor));
+        axis->setTickPen(QPen(axisColor));
+        axis->setSubTickPen(QPen(axisColor));
+        axis->setLabelColor(textColor);
+        axis->setTickLabelColor(textColor);
+        axis->grid()->setPen(QPen(gridColor, 1, Qt::DotLine));
+        axis->grid()->setSubGridPen(QPen(subGridColor, 1, Qt::DotLine));
+        axis->grid()->setZeroLinePen(QPen(gridColor));
+    }
+
+    customPlot->replot();
 }
 
 void connectwindow::handleWheel(QWheelEvent *event)
@@ -247,7 +295,7 @@ void connectwindow::udpStatusChange(bool State)
         if (timer0->isActive()){
             timer0->stop();
         }
-        timer0->start(1000/ui->cbox_CampingFre->currentText().toInt());
+        timer0->start(CampingFre);
         connect(timer0,SIGNAL(timeout()),this, SLOT(UpDataTable()));
         setLED(2,25);
         DispDiagnosis("UDP连接成功!");
@@ -290,12 +338,10 @@ void connectwindow::tcpStatusChange(tcptask::ConnectionStatus status)
         if (timer0->isActive()){
             timer0->stop();
         }
-        timer0->start(1000/ui->cbox_CampingFre->currentText().toInt());
+        timer0->start(CampingFre);
         connect(timer0,SIGNAL(timeout()),this, SLOT(UpDataTable()));
         ui->cbox_CommuteChoose->setEnabled(false);
         Flag_ConnectTCP = 1;
-        DispDiagnosis("TCP客户端连接成功:客户端地址" + m_TcpTask->m_clientAddress.toString() + ":"
-                      + QString::number(m_TcpTask->m_clientPort));
         break;
 
     case tcptask::StatusClientDisconnected:
@@ -369,9 +415,18 @@ void connectwindow::InitTcp()
     connect(this, &connectwindow::tcpOpen, m_TcpTask, &tcptask::tcpOpen);
     connect(this, &connectwindow::tcpClose, m_TcpTask, &tcptask::tcpClose);
     connect(this, &connectwindow::tcpDataSend, m_TcpTask, &tcptask::tcpSendData);
-    // UDP状态信号
+    // TCP状态信号
     connect(m_TcpTask, &tcptask::tcpDataReceived, this, &connectwindow::tcpDataRec);
     connect(m_TcpTask, &tcptask::connectionStatusChanged, this, &connectwindow::tcpStatusChange);
+    // 使用带客户端信息的信号，避免跨线程裸读成员变量
+    connect(m_TcpTask, &tcptask::connectionStatusChangedWithInfo,
+            this, [this](tcptask::ConnectionStatus status,
+                         const QHostAddress &addr, quint16 port) {
+                if (status == tcptask::StatusClientConnected) {
+                    DispDiagnosis("TCP客户端连接成功:客户端地址" + addr.toString() + ":"
+                                  + QString::number(port));
+                }
+            });
 
     m_TcpThread->start();
 }
@@ -396,7 +451,7 @@ void connectwindow::InitAnalyze()
 
 void connectwindow::InitWindow()
 {
-    ReadParaConfig("paraConfig.ini");
+    ReadParaConfig();
     InitCustomPlot(ui->cplot_Spectrum);
     on_pbtn_ParaSet_clicked();
 
@@ -542,7 +597,6 @@ void connectwindow::on_pbtn_OpenNet_clicked()
         }
         else {
             connect(m_TcpTask, &tcptask::tcpPocketsReceived, m_DataTask, &analyzepackets::analyzeData);
-            m_serialThread->start();
             emit tcpOpen(LocalIpAddress,LocalPortNum);
             Flag_ConnectTCP = 1;
             ui->pbtn_OpenNet->setText("断开连接");
@@ -555,44 +609,46 @@ void connectwindow::on_pbtn_OpenNet_clicked()
 void connectwindow::UpDataTable()
 {
     int CheckedCH_SUM = 0;
-    //数据表格显示
-    for (int i=0;i<MAX_CHANNELS;i++) {
+    // 一次锁保护整个表格读取过程，保证帧内数据一致性
+    {
         QMutexLocker locker(&mutexAnalyze);
-        CheckedCH_SUM += m_DataTask->channel_counts[i] * Flag_CH[i];
-    }
+        for (int i=0;i<MAX_CHANNELS;i++) {
+            CheckedCH_SUM += m_DataTask->channel_counts[i] * Flag_CH[i];
+        }
 
-    this->model->removeRows(0,model->rowCount());//删除所有行，重新显示
-    model->setItem(9,2,new QStandardItem(""));
-    if (Flag_ConnectUDP == 1){ //该语句为了防止循环错乱
-        for(int i=0;i<CheckedCH_SUM;i++){
-            QMutexLocker locker(&mutexAnalyze);
-            this->model->setItem(i,0,new QStandardItem (m_DataTask->FBG_count[i])) ;
-            this->model->setItem(i,1,new QStandardItem (m_DataTask->wavelength[i]));
-            if (Flag_Strain == 1){
-                     bool isValidStrain = true; // 默认认为数据有效
-                     if ( m_DataTask->strain_float[i] < StrainLow) {
-                         isValidStrain = false;
-                     }
-                     if ( m_DataTask->strain_float[i] > StrainTop) {
-                         isValidStrain = false;
-                     }
-                     if (isValidStrain) {
-                         model->setItem(i, 2, new QStandardItem(m_DataTask->strain[i]));
-                     }
-                     else {
-                         model->setItem(i, 2, new QStandardItem("outRange"));
-                     }
+        this->model->removeRows(0,model->rowCount());
+        model->setItem(9,2,new QStandardItem(""));
+        if (Flag_ConnectUDP == 1){
+            for(int i=0;i<CheckedCH_SUM;i++){
+                this->model->setItem(i,0,new QStandardItem (m_DataTask->FBG_count[i])) ;
+                this->model->setItem(i,1,new QStandardItem (m_DataTask->wavelength[i]));
+                if (Flag_Strain == 1){
+                         bool isValidStrain = true;
+                         if ( m_DataTask->strain_float[i] < StrainLow) {
+                             isValidStrain = false;
+                         }
+                         if ( m_DataTask->strain_float[i] > StrainTop) {
+                             isValidStrain = false;
+                         }
+                         if (isValidStrain) {
+                             model->setItem(i, 2, new QStandardItem(m_DataTask->strain[i]));
+                         }
+                         else {
+                             model->setItem(i, 2, new QStandardItem("outRange"));
+                         }
+                 }
              }
-         }
-           ui->tablev_Wavelength->setModel(model);
-           ui->tablev_Wavelength->show();
-    }
+               ui->tablev_Wavelength->setModel(model);
+               ui->tablev_Wavelength->show();
+        }
+    } // 锁在此释放
+    // Show_Plot 内部独立加锁
     Show_Plot(ui->cplot_Spectrum);
 }
 
 void connectwindow::Show_Plot(QCustomPlot *customPlot)
 {
-    QVector<QVector<double>>key;//存放绘图的xy点数组
+    QVector<QVector<double>>key;
     QVector<QVector<double>>value;
     int num=0;
     QVector<double> tmp_x(4000);
@@ -604,11 +660,14 @@ void connectwindow::Show_Plot(QCustomPlot *customPlot)
         key.push_back(tmp_x);
         value.push_back(tmp_y);
     }
-    for(int k=0;k<7;k++){
+    // 一次锁保护所有通道的读取
+    {
         QMutexLocker locker(&mutexAnalyze);
-        for(int i=0;i<m_DataTask->CH_point[k];i++){
-           value[k][m_DataTask->data_x_trans[k][i]]=m_DataTask->data_y_trans[k][i];
-       }
+        for(int k=0;k<7;k++){
+            for(int i=0;i<m_DataTask->CH_point[k];i++){
+               value[k][m_DataTask->data_x_trans[k][i]]=m_DataTask->data_y_trans[k][i];
+           }
+        }
     }
     const int CHANNEL_COUNT = 7;
     for(int ch = 0; ch < CHANNEL_COUNT; ch++) {
@@ -625,10 +684,10 @@ void connectwindow::Show_Plot(QCustomPlot *customPlot)
 void connectwindow::on_pbtn_ParaSet_clicked()
 {
     QString fre_tmp = ui->cbox_CampingFre->currentText();
-    int fre = fre_tmp.toInt();
+    CampingFre = fre_tmp.toInt();
     if (timer0->isActive()){
        timer0->stop();
-       timer0->start(1000/fre);
+       timer0->start(1000/CampingFre);
     }
      QString auto_save_time_txt = ui->cbox_SaveCycle->currentText();
      AutoSaveCycle = auto_save_time_txt.toInt();
@@ -640,10 +699,8 @@ void connectwindow::on_pbtn_ParaSet_clicked()
          set_strain_AB(A,B);
          StrainLow = ui->textEdit_StrainLowPara->toPlainText().toFloat();
          StrainTop = ui->textEdit_StrainTopPara->toPlainText().toFloat();
-         qDebug() << StrainTop;
-         qDebug() << StrainLow;
     }
-    WriteParaConfig("paraConfig.ini");
+    WriteParaConfig();
 }
 
 void connectwindow::on_pbtn_SelectAllCH_clicked()
@@ -698,7 +755,7 @@ void connectwindow::on_pbtn_SelectCH_clicked()
 
 void connectwindow::on_pbtn_ParaRest_clicked()
 {
-    ReadParaConfig("paraConfig.ini");
+    ReadParaConfig();
 }
 
 void connectwindow::on_tabWidget_currentChanged(int index)
@@ -809,21 +866,10 @@ void connectwindow::on_pbtn_WaveLengthReset_clicked()
 
 void connectwindow::SwitchToB()
 {
-    QColor backgroundColor("#302f3a");
-    ui->cplot_Spectrum->setBackground(backgroundColor);
-    ui->cplot_Spectrum->legend->setTextColor(Qt::white);
-    ui->cplot_Spectrum->xAxis->setLabelColor(Qt::white);
-    ui->cplot_Spectrum->yAxis->setLabelColor(Qt::white);//    ui->cplot_Spectrum->yAxis->set(Qt::white);
-
-    ui->cplot_Spectrum->yAxis->setLabelColor(Qt::white);
-    ui->cplot_Spectrum->xAxis->setTickLabelColor(Qt::white);
-    ui->cplot_Spectrum->yAxis->setTickLabelColor(Qt::white);
+    ApplyCustomPlotTheme(ui->cplot_Spectrum, true);
 }
 
 void connectwindow::SwitchToW()
 {
-    QColor backgroundColor("#f4f4f4");
-    ui->cplot_Spectrum->setBackground(backgroundColor);
-    ui->cplot_Spectrum->xAxis->setLabelColor(Qt::black);
-    ui->cplot_Spectrum->yAxis->setLabelColor(Qt::black);
+    ApplyCustomPlotTheme(ui->cplot_Spectrum, false);
 }

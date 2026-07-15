@@ -24,9 +24,9 @@ CODECFORTR = UTF-8
 msvc:QMAKE_CXXFLAGS += /utf-8
 win32:QMAKE_CXXFLAGS += /utf-8
 
-TARGET   = FOSD_ProPlugin        # 建议不要带 '-'，否则生成的库名和加载时容易踩坑
+TARGET   = FOSD_ProPlugin        # 建议不要�?'-'，否则生成的库名和加载时容易踩坑
 TEMPLATE = lib
-CONFIG  += plugin                # 或 shared（二选一；plugin 更贴合插件语义）
+CONFIG  += plugin                # �?shared（二选一；plugin 更贴合插件语义）
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -45,6 +45,7 @@ INCLUDEPATH +=  src/main \
                 src/app/conncect \
                 src/app/disp2d \
                 src/app/disp3d \
+                src/app/disp3d/docks \
                 src/app/mainwindow \
                 src/app/user \
                 src/communication \
@@ -57,6 +58,7 @@ INCLUDEPATH +=  src/main \
                 src/utils/QCustomPlot \
                 src/utils/Timers \
                 src/utils/Storage \
+                src/utils/config \
                 lib/CustomUi \
 
 
@@ -67,12 +69,12 @@ FORMS += \
     src/app/disp2d/disp2dwindow.ui \
     src/app/disp3d/disp3dkeypointedit.ui \
     src/app/disp3d/disp3dkeypointselect.ui \
+    src/app/disp3d/docks/disp3dinfodockpanel.ui \
+    src/app/disp3d/docks/disp3dmodeldockpanel.ui \
+    src/app/disp3d/docks/disp3dviewdockpanel.ui \
     src/app/disp3d/disp3dwindow.ui \
-    src/app/mainwindow/mainwindow.ui \
+    src/app/mainwindow/oldmainwindow.ui \
     src/app/user/login.ui \
-    src/app/user/userforget.ui \
-    src/app/user/usermanage.ui \
-    src/app/user/userregister.ui \
     src/app/disp3d/trackingpointmanager.ui \
     src/app/disp3d/trackingpointdatatable.ui \
     src/app/mainwindow/rainbowmainwindow.ui
@@ -84,12 +86,14 @@ HEADERS += \
     src/app/disp2d/disp2dwindow.h \
     src/app/disp3d/disp3dkeypointedit.h \
     src/app/disp3d/disp3dkeypointselect.h \
+    src/app/disp3d/docks/disp3ddockmanager.h \
+    src/app/disp3d/docks/disp3ddockpanel.h \
+    src/app/disp3d/docks/disp3dinfodockpanel.h \
+    src/app/disp3d/docks/disp3dmodeldockpanel.h \
+    src/app/disp3d/docks/disp3dviewdockpanel.h \
     src/app/disp3d/disp3dwindow.h \
-    src/app/mainwindow/mainwindow.h \
+    src/app/mainwindow/oldmainwindow.h \
     src/app/user/login.h \
-    src/app/user/userforget.h \
-    src/app/user/usermanage.h \
-    src/app/user/userregister.h \
     src/communication/serialtask.h \
     src/communication/tcptask.h \
     src/communication/udptask.h \
@@ -101,6 +105,8 @@ HEADERS += \
     src/utils/QCustomPlot/qcpdocumentobject.h \
     src/utils/QCustomPlot/qcustomplot.h \
     src/utils/Timers/Timer.h \
+    src/utils/config/AppConfig.h \
+    src/utils/config/ConfigManager.h \
     lib/CustomUi/switchcontrol.h \
     src/core/model/disp3dbackground.h \
     src/core/model/disp3dfreshmodelthread.h \
@@ -122,12 +128,13 @@ SOURCES += \
     src/app/disp2d/disp2dwindow.cpp \
     src/app/disp3d/disp3dkeypointedit.cpp \
     src/app/disp3d/disp3dkeypointselect.cpp \
+    src/app/disp3d/docks/disp3ddockmanager.cpp \
+    src/app/disp3d/docks/disp3dinfodockpanel.cpp \
+    src/app/disp3d/docks/disp3dmodeldockpanel.cpp \
+    src/app/disp3d/docks/disp3dviewdockpanel.cpp \
     src/app/disp3d/disp3dwindow.cpp \
-    src/app/mainwindow/mainwindow.cpp \
+    src/app/mainwindow/oldmainwindow.cpp \
     src/app/user/login.cpp \
-    src/app/user/userforget.cpp \
-    src/app/user/usermanage.cpp \
-    src/app/user/userregister.cpp \
     src/communication/serialtask.cpp \
     src/communication/tcptask.cpp \
     src/communication/udptask.cpp \
@@ -137,6 +144,7 @@ SOURCES += \
     src/utils/global/global.cpp \
     src/utils/QCustomPlot/qcpdocumentobject.cpp \
     src/utils/QCustomPlot/qcustomplot.cpp \
+    src/utils/config/ConfigManager.cpp \
     lib/CustomUi/switchcontrol.cpp \
     src/core/model/disp3dbackground.cpp \
     src/core/model/disp3dfreshmodelthread.cpp \

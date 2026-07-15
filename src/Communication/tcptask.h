@@ -56,6 +56,9 @@ private:
 
 signals:
     void connectionStatusChanged(tcptask::ConnectionStatus status);
+    void connectionStatusChangedWithInfo(tcptask::ConnectionStatus status,
+                                         const QHostAddress &clientAddress,
+                                         quint16 clientPort);
     void tcpDataReceived(const QString &data);
     void tcpPocketsReceived(const QByteArray datagram);
 

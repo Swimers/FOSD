@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>OldMainWindow</class>
+ <widget class="QMainWindow" name="OldMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>OldMainWindow</string>
   </property>
   <property name="windowIcon">
    <iconset theme="D:\CommonFiles\Projects_And_Works\SummerProject\Qt_Software\TestVersion\Test3\Resource\icon\UserIcon2.png">
@@ -252,38 +252,6 @@
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pbtn_UserManage">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>黑体</family>
-          <pointsize>13</pointsize>
-          <weight>75</weight>
-          <italic>false</italic>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>用户管理</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../../../res/resource.qrc">
-          <normaloff>:/icon/icon/UserManage.png</normaloff>:/icon/icon/UserManage.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pbtn_TurnOff">

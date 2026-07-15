@@ -50,6 +50,7 @@ public:
     float StrainLow;
     float StrainTop;
     int AutoSaveCycle;
+    int CampingFre;
 
 public:
     QUdpSocket * UdpSocket = nullptr;
@@ -64,9 +65,10 @@ public:
     QStandardItemModel * model = new QStandardItemModel();   //水平表头
 
 public:
-    void ReadParaConfig(const QString& fileName);
-    void WriteParaConfig(const QString& fileName);
+    void ReadParaConfig();
+    void WriteParaConfig();
     void InitCustomPlot(QCustomPlot *customPlot);
+    void ApplyCustomPlotTheme(QCustomPlot *customPlot, bool dark);
     void Show_Plot(QCustomPlot *customPlot);
     float* SendStrainPtr();
     void GetIPAddress();

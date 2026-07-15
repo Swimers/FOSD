@@ -93,8 +93,11 @@ public:
 
 private:
     connectwindow * m_connectwindow = nullptr;
-    QTimer *timer2 = new QTimer(this);//第二个定时器
-    QTimer *timer3 = new QTimer(this);//第三个定时器用于串口通信
+    QTimer *timer2 = nullptr;  //第二个定时器（在构造函数中创建）
+    QTimer *timer3 = nullptr;  //第三个定时器用于串口通信
+
+    QFile *m_saveDynamicFile = nullptr;              //自动保存文件句柄
+    QMetaObject::Connection m_saveConnection;        //定时器信号连接
 
 };
 

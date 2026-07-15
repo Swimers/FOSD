@@ -1,4 +1,6 @@
 #include "login.h"
+#include "oldmainwindow.h"
+
 #include <QApplication>
 #include <QSurfaceFormat>
 
@@ -34,11 +36,17 @@ int main(int argc, char *argv[])
     }
     qssFile.close();
 
-    //直接启动主窗口
-    RainbowMainWindow * w = new RainbowMainWindow();
-    w->show();
+    //注册蒲城项目界面
+    //RainbowMainWindow * w = new RainbowMainWindow();
+    //w->show();
+
+    //注册登录界面
     //loginwindow * m_loginwindow = loginwindow::getInstance();
     //m_loginwindow->show();
+
+    //直接注册老主界面
+    OldMainWindow *  m_MainWindow = new OldMainWindow("1");
+    m_MainWindow->show();
 
     return a.exec();
 }

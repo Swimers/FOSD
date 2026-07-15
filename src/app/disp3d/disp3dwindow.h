@@ -6,6 +6,8 @@
 #include <QWidget>
 #include <QVTKOpenGLNativeWidget.h>
 #include <vtkRenderWidget.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
 
 #include <disp3dmodel.h>
 #include <disp3dbackground.h>
@@ -19,6 +21,10 @@
 #include <trackingpoint.h>
 
 #include <dispdata.h>
+#include <docks/disp3ddockmanager.h>
+#include <docks/disp3dinfodockpanel.h>
+#include <docks/disp3dmodeldockpanel.h>
+#include <docks/disp3dviewdockpanel.h>
 
 #include <IFE.h>
 #include <rainbowife.h>
@@ -38,37 +44,34 @@ public:
 public:
     void InitPointInfor();
     void InitWindow();
+    void InitDockPanels();
 
 private slots:
     void on_checkBox_3_clicked(bool checked);
-    void on_pbtn_ModelLoad_clicked();
-    void on_cbox_AxisAble_clicked(bool checked);
-    void on_cbox_GridAble_clicked(bool checked);
-    void on_pbtn_ModelClear_clicked();
-    void on_pbtn_SwitchView_clicked();
-    void on_pbtn_ModelMerge_clicked();
-    void on_pbtn_ModelExport_clicked();
-    void on_pbtn_KeyPointEdit_clicked();
-    void on_hsd_AxisSize_valueChanged(int value);
-    void on_hsd_GridSize_sliderReleased();
-    void on_pbtn_KeyPointSelect_clicked();
-    void on_actionModelDock_triggered();
-    void on_actionInforDock_triggered();
-    void on_actionViewDock_triggered();
+    void LoadModel();
+    void ClearModel();
+    void MergeModel();
+    void ExportModel();
+    void EditKeyPoint();
+    void SelectKeyPoint();
+    void SetScalarMapping(int index);
+    void ClearScalarMapping();
+    void SetAxesVisible(bool checked);
+    void SetGridVisible(bool checked);
+    void SwitchView(int viewIndex);
+    void SetAxisSize(int value);
+    void SetGridSize(int value);
+    void SetXOZGridVisible(bool checked);
+    void SetXOYGridVisible(bool checked);
+    void SetZOYGridVisible(bool checked);
+    void SetCameraLock(bool checked);
+    void SetCameraFollow(bool checked);
+    void SetFPS(int fps);
+    void SetModelColor();
     void on_actionStart_triggered();
     void on_actionStop_triggered();
     void on_actionPause_triggered();
     void on_actionReset_triggered();
-    void on_cbox_FPS_currentTextChanged(const QString &arg1);
-    void on_pbtn_ScalarSet_clicked();
-    void on_pbtn_ScalarClear_clicked();
-
-    void on_cbox_XOZGrid_clicked(bool checked);
-    void on_cbox_XOYGrid_clicked(bool checked);
-    void on_cbox_ZOYGrid_clicked(bool checked);
-
-    void on_cbox_CareamLockAble_clicked(bool checked);
-    void on_cbox_FellowAble_clicked(bool checked);
 
     void on_actionTrackingPoints_triggered();
     void on_actionTrackingPointData_triggered();
@@ -98,6 +101,10 @@ private:
     disp3dbackground *m_disp3dbackground = nullptr;
     disp3dinteractor *m_disp3dinteractor = nullptr;
     disp3dfreshmodelthread *m_disp3dthread = nullptr;
+    Disp3DDockManager *m_dockManager = nullptr;
+    Disp3DModelDockPanel *m_modelDockPanel = nullptr;
+    Disp3DViewDockPanel *m_viewDockPanel = nullptr;
+    Disp3DInfoDockPanel *m_infoDockPanel = nullptr;
 
     trackingpoint *m_trackingpoint = nullptr;
 

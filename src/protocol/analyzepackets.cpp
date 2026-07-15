@@ -25,24 +25,51 @@ bool hasPacketBytes(const QByteArray &bytes, int minSize)
 
 analyzepackets::analyzepackets(QObject *parent) : QObject(parent)
 {
-    QFile *file_txt=new QFile("./初始波长.txt");//声明QFile类指针
-    file_txt->open(QIODevice::ReadOnly|QIODevice::Text);
-    //读取文件
-    QTextStream TextRead(file_txt);
-    QString data_line;
-    int wave_count=0;
-    while(!TextRead.atEnd()){
-        data_line=TextRead.readLine();
-        original_wavelength[wave_count]= data_line.toFloat();
-        wave_count++;
+    QFile file_txt("./初始波长.txt");
+    if(file_txt.open(QIODevice::ReadOnly|QIODevice::Text)){
+        //读取文件
+        QTextStream TextRead(&file_txt);
+        QString data_line;
+        int wave_count=0;
+        while(!TextRead.atEnd()){
+            data_line=TextRead.readLine();
+            if(wave_count < 1024){
+                original_wavelength[wave_count]= data_line.toFloat();
+                wave_count++;
+            }
+        }
+        file_txt.close();
     }
-    file_txt->close();
+
+    // 在构造时创建定时器（此时还未 moveToThread，parent 安全）
+    timer2 = new QTimer(this);
+    timer3 = new QTimer(this);
 }
 
 analyzepackets::~analyzepackets()
 {
-    delete timer2;
-    delete timer3;
+    // 关闭自动保存文件句柄
+    if (m_saveDynamicFile != nullptr) {
+        if (m_saveDynamicFile->isOpen())
+            m_saveDynamicFile->close();
+        delete m_saveDynamicFile;
+        m_saveDynamicFile = nullptr;
+    }
+    disconnect(m_saveConnection);
+
+    // timer 的 parent 设为 nullptr 避免跨线程析构问题
+    if (timer2) {
+        timer2->stop();
+        timer2->setParent(nullptr);
+        delete timer2;
+        timer2 = nullptr;
+    }
+    if (timer3) {
+        timer3->stop();
+        timer3->setParent(nullptr);
+        delete timer3;
+        timer3 = nullptr;
+    }
 }
 
 void analyzepackets::setObj(connectwindow *obj)
@@ -110,16 +137,16 @@ void analyzepackets::processReset()
         original_wavelength_temp[i] = original_wavelength_temp[i] + original_datagram.all;
     }
     if(count_num == 20){
-        QFile *file_txt=new QFile("./初始波长.txt");//声明QFile类指针
-        file_txt->open(QIODevice::WriteOnly|QIODevice::Text);
-        QTextStream TextWrite(file_txt);
-        for(int i=0;i<CH_SUM;i++){
-            original_wavelength[i] = original_wavelength_temp[i]/20;
-            original_wavelength_temp[i] = 0;//初始波长过渡数组清零，为下一次复位键按下做准备
-            QString data_line;
-            TextWrite << original_wavelength[i] << endl;//将初始波长逐行写入TXT文件
+        QFile file_txt("./初始波长.txt");
+        if(file_txt.open(QIODevice::WriteOnly|QIODevice::Text)){
+            QTextStream TextWrite(&file_txt);
+            for(int i=0;i<CH_SUM;i++){
+                original_wavelength[i] = original_wavelength_temp[i]/20;
+                original_wavelength_temp[i] = 0;
+                TextWrite << original_wavelength[i] << endl;
+            }
+            file_txt.close();
         }
-     file_txt->close();
      Flag_Reset = 0;//标志位设为0，在下一次复位键按下之前不再改变初始波长的值
      count_num = 0;
      qDebug() << "FINISH RESET";
@@ -284,46 +311,42 @@ void analyzepackets::freshCH(const int *Flag)
 void analyzepackets::saveAuto(int AutoSaveCycle)
 {
     Flag_DynamicSave =! Flag_DynamicSave;
-    static QFile *save_dynamic_file = nullptr;
-    static QMetaObject::Connection connection;
 
     if(Flag_DynamicSave == 0){               //关闭自动保存
         timer2->stop();
-        if (save_dynamic_file!=nullptr)
+        if (m_saveDynamicFile!=nullptr)
         {
-            if(save_dynamic_file->isOpen())
-                save_dynamic_file->close();
+            if(m_saveDynamicFile->isOpen())
+                m_saveDynamicFile->close();
 
-            delete save_dynamic_file;
-            save_dynamic_file = nullptr;
+            delete m_saveDynamicFile;
+            m_saveDynamicFile = nullptr;
         }
-        disconnect(connection);
+        disconnect(m_saveConnection);
     }
     if(Flag_DynamicSave == 1){                               //开启自动保存
         timer2->start(AutoSaveCycle);
         QDateTime data_time=QDateTime::currentDateTime();
         QString time_str = data_time.toString("yyyy-MM-dd hh_mm_ss");
-        QDir *DataFile = new QDir;
-        bool exist = DataFile->exists("自动存储");
+        QDir DataFile;
+        bool exist = DataFile.exists("自动存储");
         if(!exist){
             qDebug() << "No File";
-            bool isok = DataFile->mkdir("自动存储");
+            bool isok = DataFile.mkdir("自动存储");
             if(!isok){
                 qDebug() << "新建文件夹失败";
-//              QMessageBox::warning(this,"sdf"," 新建文件夹失败 ",QMessageBox::Yes) ;
             }
         }
         QString time_ms_str = time_str+" "+ QString::number(AutoSaveCycle) +"ms ";
-        save_dynamic_file=new QFile("自动存储/"+time_ms_str+"data.txt");
-        save_dynamic_file->open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Append);
-        connection = connect(timer2,&QTimer::timeout,[=](){
-                QTextStream stream(save_dynamic_file);
-                stream.seek(save_dynamic_file->size());
-                if(!save_dynamic_file->size()){
+        m_saveDynamicFile=new QFile("自动存储/"+time_ms_str+"data.txt");
+        m_saveDynamicFile->open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Append);
+        m_saveConnection = connect(timer2,&QTimer::timeout,[this](){
+                QTextStream stream(m_saveDynamicFile);
+                stream.seek(m_saveDynamicFile->size());
+                if(!m_saveDynamicFile->size()){
                     stream << fbg_txt_1 << "\n";
                 }
                 stream << str_txt << "\n";
-                //qDebug() << "Dynamic Save Success" << time_str;
             });
     }
 }
@@ -332,25 +355,24 @@ void analyzepackets::saveManual()
 {
     QDateTime data_time=QDateTime::currentDateTime();
     QString strTime=data_time.toString("yyyy-MM-dd hh:mm:ss");
-    QDir *DataFile=new QDir;
-    bool exist=DataFile->exists("手动存储");
+    QDir DataFile;
+    bool exist=DataFile.exists("手动存储");
     if(!exist)
     {
-        bool isok=DataFile->mkdir("手动存储");
+        bool isok=DataFile.mkdir("手动存储");
         if(!isok){
             qDebug() << "创建文件夹失败";
-//          QMessageBox::warning(this,"sdf","Creat Flie Fail",QMessageBox::Yes) ;
         }
     }
-    QFile *save_static_file=new QFile("手动存储/data.txt");
-    save_static_file->open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Append);
-    QTextStream stream(save_static_file);
-    stream.seek(save_static_file->size());
-    if(!save_static_file->size()){              // 如果是新文件，先写入表头
+    QFile save_static_file("手动存储/data.txt");
+    save_static_file.open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Append);
+    QTextStream stream(&save_static_file);
+    stream.seek(save_static_file.size());
+    if(!save_static_file.size()){
         stream <<fbg_txt_1+"\n";
     }
-    QString static_txt = strTime + "\t" + wavelength_static_txt + "\t" + strain_static_txt;   // 写入当前静态数据，包含时间戳、波长和应变信息
+    QString static_txt = strTime + "\t" + wavelength_static_txt + "\t" + strain_static_txt;
     stream << static_txt << "\n";
-    save_static_file->close();
+    save_static_file.close();
     emit saveManualFinished();
 }
