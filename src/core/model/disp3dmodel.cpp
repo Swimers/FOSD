@@ -19,6 +19,13 @@
 #include <vtkProperty.h>
 #include <vtkPointData.h>
 #include <vtkLookupTable.h>
+#include <vtkTriangleFilter.h>
+#include <vtkLoopSubdivisionFilter.h>
+#include <vtkWindowedSincPolyDataFilter.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkSTLWriter.h>
+#include <QDir>
+#include <QCoreApplication>
 
 #include <QTextCodec>
 #include <stdio.h>
@@ -90,6 +97,88 @@ void disp3dmodel::PickerClear()
     style1->ClearPicker();
 }
 
+// =============================================================================
+// OptimizeMesh — Loop细分 + Sinc平滑 模型优化
+//   输入: 原始低模 PolyData
+//   输出: 细分平滑后的高模 PolyData
+//   配置: MeshOptimizeConfig 结构体常量
+// =============================================================================
+vtkSmartPointer<vtkPolyData> disp3dmodel::OptimizeMesh(vtkSmartPointer<vtkPolyData> input)
+{
+    static const MeshOptimizeConfig cfg;
+
+    if (!input || input->GetNumberOfPoints() == 0) {
+        qWarning() << "[OptimizeMesh] 输入数据为空";
+        return input;
+    }
+
+    const vtkIdType origPoints = input->GetNumberOfPoints();
+    const vtkIdType origFaces  = input->GetNumberOfPolys();
+
+    // ---- Step 0: 确保全是三角面 ----
+    vtkSmartPointer<vtkTriangleFilter> triFilter = vtkSmartPointer<vtkTriangleFilter>::New();
+    triFilter->SetInputData(input);
+    triFilter->Update();
+    vtkSmartPointer<vtkPolyData> current = triFilter->GetOutput();
+
+    // ---- Step 1: Loop 细分 ----
+    if (cfg.subdivisionLevel > 0) {
+        vtkSmartPointer<vtkLoopSubdivisionFilter> loop = vtkSmartPointer<vtkLoopSubdivisionFilter>::New();
+        loop->SetInputData(current);
+        loop->SetNumberOfSubdivisions(cfg.subdivisionLevel);
+        loop->Update();
+        current = loop->GetOutput();
+    }
+
+    // ---- Step 2: Sinc 平滑 ----
+    if (cfg.enableSmooth && cfg.smoothIterations > 0) {
+        vtkSmartPointer<vtkWindowedSincPolyDataFilter> sinc = vtkSmartPointer<vtkWindowedSincPolyDataFilter>::New();
+        sinc->SetInputData(current);
+        sinc->SetNumberOfIterations(cfg.smoothIterations);
+        sinc->SetPassBand(cfg.smoothPassBand);
+        sinc->FeatureEdgeSmoothingOff();
+        sinc->BoundarySmoothingOn();
+        sinc->NormalizeCoordinatesOn();
+        sinc->Update();
+        current = sinc->GetOutput();
+    }
+
+    // ---- Step 3: 重算法线 ----
+    vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New();
+    normals->SetInputData(current);
+    normals->ComputePointNormalsOn();
+    normals->ComputeCellNormalsOff();
+    normals->SplittingOff();
+    normals->Update();
+    current = normals->GetOutput();
+
+    // ---- Step 4: 可选保存 ----
+    if (cfg.saveOptimized) {
+        // 保存到 data/mesh_optimized/ 目录，文件名加 _optimized 后缀
+        QString saveDir = QCoreApplication::applicationDirPath() + "/data/mesh_optimized";
+        QDir().mkpath(saveDir);
+        QString savePath = saveDir + "/optimized_model.stl";
+
+        QTextCodec *codec = QTextCodec::codecForName("GBK");
+        std::string localSavePath = codec->fromUnicode(savePath).data();
+
+        vtkSmartPointer<vtkSTLWriter> writer = vtkSmartPointer<vtkSTLWriter>::New();
+        writer->SetFileName(localSavePath.c_str());
+        writer->SetInputData(current);
+        writer->Write();
+
+        qDebug() << "[OptimizeMesh] 优化模型已保存:" << savePath;
+    }
+
+    // ---- 日志 ----
+    const vtkIdType newPoints = current->GetNumberOfPoints();
+    const vtkIdType newFaces  = current->GetNumberOfPolys();
+    qDebug() << QString("[OptimizeMesh] 完成: 面数 %1 → %2, 点数 %3 → %4")
+                .arg(origFaces).arg(newFaces).arg(origPoints).arg(newPoints);
+
+    return current;
+}
+
 bool disp3dmodel::LoadModel(const QString &filePath)
 {
     // ---- 路径有效性校验 ----
@@ -143,6 +232,9 @@ bool disp3dmodel::LoadModel(const QString &filePath)
         Flag_Actor = false;
         return false;
     }
+
+    // ---- 模型细分优化（Loop + Sinc） ----
+    //rawPolyData = OptimizeMesh(rawPolyData);
 
 //    // ========== 新增：模型平移核心逻辑 ==========
 //    // 1. 创建平移变换对象，设置x/y/z方向的平移量

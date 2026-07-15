@@ -229,6 +229,7 @@ LIBS += $$VTK_DIR/lib/vtkCommonTransforms-8.2.lib
 # ---- Filters 过滤器 ----
 LIBS += $$VTK_DIR/lib/vtkFiltersCore-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkFiltersGeneral-8.2.lib
+LIBS += $$VTK_DIR/lib/vtkFiltersModeling-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkFiltersTexture-8.2.lib
 LIBS += $$VTK_DIR/lib/vtkFiltersSources-8.2.lib
 # ---- Rendering 渲染 ----
@@ -281,6 +282,7 @@ LIBS +=$$VTK_DIR/lib/vtkCommonTransforms-8.2D.lib
 # ---- Filters 过滤器 ----
 LIBS +=$$VTK_DIR/lib/vtkFiltersCore-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkFiltersGeneral-8.2D.lib
+LIBS +=$$VTK_DIR/lib/vtkFiltersModeling-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkFiltersTexture-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkFiltersSources-8.2D.lib
 # ---- Rendering 渲染 ----
@@ -335,6 +337,7 @@ LIBS += -lvtkCommonTransforms-8.2
 # ---- Filters 过滤器 ----
 LIBS += -lvtkFiltersCore-8.2
 LIBS += -lvtkFiltersGeneral-8.2
+LIBS += -lvtkFiltersModeling-8.2
 LIBS += -lvtkFiltersTexture-8.2
 LIBS += -lvtkFiltersSources-8.2
 # ---- Rendering 渲染 ----

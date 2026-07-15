@@ -21,8 +21,25 @@
 #include <vtkRenderer.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <QVTKOpenGLNativeWidget.h>
+#include <vtkTriangleFilter.h>
+#include <vtkLoopSubdivisionFilter.h>
+#include <vtkWindowedSincPolyDataFilter.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkSTLWriter.h>
 
 #include <disp3dglobal.h>
+
+// 模型细分优化配置（编译期常量）
+struct MeshOptimizeConfig
+{
+    const int   subdivisionLevel   = 1;     // Loop细分等级（每级面数×4）
+    const bool  enableSmooth       = false;  // 是否启用Sinc平滑
+    const int   smoothIterations   = 10;    // Sinc平滑迭代次数
+    const double smoothPassBand    = 0.1;   // Sinc通带系数（0~2，越小越平滑）
+    const bool  smoothBoundary     = false;  // 是否平滑边界
+    const bool  normalizeCoords    = true;  // 是否归一化坐标（防数值漂移）
+    const bool  saveOptimized      = true;  // 是否保存优化后的模型
+};
 
 class disp3dmodel
 {
@@ -54,6 +71,7 @@ public:
 
     bool LoadModel(const QString &filePath);
     void ExportModel(const QString &filePath);
+    vtkSmartPointer<vtkPolyData> OptimizeMesh(vtkSmartPointer<vtkPolyData> input);
     void UnLoadModel();
     void MergeModel(const QString &filePath);
     void ResetModel();
