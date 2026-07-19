@@ -270,7 +270,6 @@ void analyzepackets::analyzeData(const QByteArray datagram)
         qWarning() << "Packet too short:" << datagram.size();
         return;
     }
-
     array = datagram;
     uint8_t b0 = packetByte(datagram, 0);
     uint8_t b1 = packetByte(datagram, 1);

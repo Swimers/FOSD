@@ -50,6 +50,7 @@ public:
     //改为单独获取对象指针
     void GetModelPtr(disp3dmodel* renptr){m_disp3dmodel = renptr;}
     void GetRainbowIFE(rainbowIFE *renptr){m_rainbowIFE = renptr;}
+    void GetIFE(IFE *renptr){ife = renptr;}
     void GetTrackingPointPtr(trackingpoint* trackingpoint){m_trackingpoint = trackingpoint;}
 
     void SetFrameReceiver(QObject *receiver){m_frameReceiver = receiver;}

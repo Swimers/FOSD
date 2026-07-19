@@ -12,6 +12,7 @@ disp2dwindow::disp2dwindow(QWidget *parent) :
     ui->setupUi(this);
     InitWindow();
     ife = new IFE();
+    qDebug()<< "disp2d Creat IFE" << ife;
     ife->modifyOriginalCoordinates("Data/Input/OriginalCoordiante.csv");
     //qDebug()<<IFE::positionOriginal[0][0];
     LoadCoordinates(ife->positionOriginal,POSITION_ORIGINAL);

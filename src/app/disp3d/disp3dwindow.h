@@ -83,7 +83,7 @@ public slots:
     void ApplyDisplayFrame(const DisplayPointUpdateList &pointUpdates,
                            double maxDisplace,
                            const TrackingPointFrameUpdateList &trackingUpdates);
-    void GetIFEPtr(IFE * exife){ife = exife;}
+    void GetIFEPtr(IFE * exife){ife = exife; qDebug() << "disp3d Get IFE" << ife;}
     void GetRainbowIFEPtr(rainbowIFE * ptr){m_rainbowIFE = ptr;}
 
 public:

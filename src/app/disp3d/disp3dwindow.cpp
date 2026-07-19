@@ -456,7 +456,8 @@ void disp3dwindow::on_actionStart_triggered()
     if(m_disp3dthread == nullptr){  //这里使用线程的方式计算数据，如果采用定时器的话，会造成界面很卡
         m_disp3dthread = new disp3dfreshmodelthread(this);
         m_disp3dthread->GetModelPtr(m_disp3dmodel);
-        m_disp3dthread->GetRainbowIFE(m_rainbowIFE);
+        //m_disp3dthread->GetRainbowIFE(m_rainbowIFE);
+        m_disp3dthread->GetIFE(ife);
         m_disp3dthread->GetTrackingPointPtr(m_trackingpoint);
         m_disp3dthread->SetFrameReceiver(this);
     }
@@ -538,7 +539,6 @@ void disp3dwindow::SetScalarMapping(int index)
         QMessageBox::critical(this, "错误", "模型不存在");
         return ;
     }
-
 
     qDebug() << index;
     switch(index){
@@ -640,8 +640,8 @@ void disp3dwindow::on_actionTrackingPointData_triggered()
 
 void disp3dwindow::on_actionBackData_triggered()
 {
-    dispdata *m_dispdata = new dispdata(this);
-    m_dispdata->GetRainbowIFE(m_rainbowIFE);
-    m_dispdata->exec();
-    delete m_dispdata;
+//    dispdata *m_dispdata = new dispdata(this);
+//    m_dispdata->GetRainbowIFE(m_rainbowIFE);
+//    m_dispdata->exec();
+//    delete m_dispdata;
 }

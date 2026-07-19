@@ -23,7 +23,7 @@ public:
     ~disp2dwindow();
 
     void GetStrainPtr(float* strain_float){ife->strain = strain_float;}
-    IFE* SendIFEPtr(){return ife;}
+    IFE* SendIFEPtr(){qDebug() << "disp2d Send IFE" << ife; return ife;}
 
 private:
     QStandardItemModel *TwoD_model = new QStandardItemModel();      //二维观测界面表格模型

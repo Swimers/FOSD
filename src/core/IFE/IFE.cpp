@@ -238,9 +238,10 @@ void IFE::calculateDisp()
 {
     //传递传感器应变值
     QMutexLocker locker(&mutexStrain);
-//    for (int i = 0; i < SensorNum; ++i) {
-//        sortedstrain[i] = strain[order[i] - 1] * static_cast<float>(para[i]);
-//    }
+    for (int i = 0; i < SensorNum; ++i) {
+        sortedstrain[i] = strain[order[i] - 1] * static_cast<float>(para[i]);
+    }
+
     sortedstrain[0] = 6.6519e-004;
     sortedstrain[1] = 4.0582e-005;
     sortedstrain[2] = -6.11E-05;
@@ -251,27 +252,15 @@ void IFE::calculateDisp()
     sortedstrain[6] = 1.518e-005;
     sortedstrain[7] = -8.63E-05;
     sortedstrain[8] = -2.99E-04;
-    sortedstrain[9] = -1.53E-05;
+    sortedstrain[9] = -3.53E-05;
     sortedstrain[10] = -8.00E-06;
     sortedstrain[11] = 1.4629e-004;
+
     //乘以类刚度矩阵
     for (int i = 0; i < 20; i++){
         node_u[i] = 0;
         for (int j = 0; j < 12; j++){
             node_u[i] += aa_k_New[i][j] * sortedstrain[j];
         }
-    }
-
-    for(int i=0; i < MARKPOINTNUM; i++){
-        double Globalbeampointdisplace[3];
-        ShapeFunction_New(positionOriginal[i][0],positionOriginal[i][1],node_u,Globalbeampointdisplace);
-        //N_shapefunction(positionOriginal[i][0],positionOriginal[i][1],positionOriginal[i][2],node_u,Globalbeampointdisplace);
-        positionDisp[i][0] = Globalbeampointdisplace[0]*1000 + axis[0];
-        positionDisp[i][1] = Globalbeampointdisplace[1]*1000 + axis[1];
-        positionDisp[i][2] = Globalbeampointdisplace[2]*1000 + axis[2];
-    }
-    for(int i = 0; i < MARKPOINTNUM; i++){
-        for(int j=0;j<=2;j++)
-            positionFinal[i][j] = positionDisp[i][j]+positionOriginal[i][j];
     }
 }

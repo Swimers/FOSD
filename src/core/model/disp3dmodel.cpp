@@ -419,7 +419,7 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 
 void disp3dmodel::SetupColorMapping(const std::string &scalarName)
 {
-    mapper->SetScalarRange(0,50);
+    mapper->SetScalarRange(0,0.5);
     dynPolyData->GetPointData()->SetActiveScalars(scalarName.c_str());
     mapper->ScalarVisibilityOn();
     renderWindow->Render();
@@ -432,7 +432,7 @@ void disp3dmodel::OFFScalars()
     modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
     modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
     modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.9529, 0.8510, 0.3490);
+    modelActor->GetProperty()->SetColor(static_cast<double>(ModelColor[0]), static_cast<double>(ModelColor[1]), static_cast<double>(ModelColor[2]));
     renderWindow->Render();
 }
 
