@@ -55,8 +55,6 @@ public:
 
     void SetFrameReceiver(QObject *receiver){m_frameReceiver = receiver;}
 
-    void normalizeScalarArray(vtkSmartPointer<vtkDoubleArray> arr);
-
 protected:
     void run() override;
 

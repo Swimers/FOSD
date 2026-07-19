@@ -777,7 +777,6 @@ void connectwindow::on_pbtn_SaveDynamic_clicked()
         ui->pbtn_SaveStatic->setEnabled(true);
         ui->pbtn_SaveDynamic->setText("自动保存");
     }
-
 }
 
 void connectwindow::on_pbtn_SaveStatic_clicked()

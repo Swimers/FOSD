@@ -109,33 +109,6 @@ void disp3dfreshmodelthread::captureInputData()
     }
 }
 
-void disp3dfreshmodelthread::normalizeScalarArray(vtkSmartPointer<vtkDoubleArray> arr)
-{
-    double minV = VTK_DOUBLE_MAX;
-    double maxV = -VTK_DOUBLE_MAX;
-
-    vtkIdType n = arr->GetNumberOfTuples();
-    for (vtkIdType i = 0; i < n; i++) {
-        double v = arr->GetValue(i);
-        if (v < minV) minV = v;
-        if (v > maxV) maxV = v;
-    }
-
-    double range = maxV - minV;
-    if (range < 1e-12) {
-        for (vtkIdType i = 0; i < n; i++) {
-            arr->SetValue(i, 0.0);
-        }
-        return;
-    }
-
-    for (vtkIdType i = 0; i < n; i++) {
-        double v = arr->GetValue(i);
-        double norm = (v - minV) / range;
-        arr->SetValue(i, norm);
-    }
-}
-
 void disp3dfreshmodelthread::run()
 {
     while (!isInterruptionRequested()) {

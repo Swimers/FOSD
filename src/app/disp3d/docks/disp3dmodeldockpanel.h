@@ -24,6 +24,9 @@ public:
     QDockWidget *dockWidget() const override;
     int fps() const;
     int scalarIndex() const;
+    bool isNormalized() const;
+    double mapRangeMin() const;
+    double mapRangeMax() const;
 
 signals:
     void modelLoadRequested();
@@ -36,6 +39,8 @@ signals:
     void scalarClearRequested();
     void fpsChanged(int fps);
     void colorSelected();
+    void normalizeToggled(bool enabled);
+    void mapRangeChanged(double rangeMin, double rangeMax);
 
 private:
     Ui::Disp3DModelDockPanel *ui = nullptr;

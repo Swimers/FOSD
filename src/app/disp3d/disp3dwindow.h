@@ -56,6 +56,8 @@ private slots:
     void SelectKeyPoint();
     void SetScalarMapping(int index);
     void ClearScalarMapping();
+    void SetNormalizeMode(bool enabled);
+    void SetCustomRange(double rangeMin, double rangeMax);
     void SetAxesVisible(bool checked);
     void SetGridVisible(bool checked);
     void SwitchView(int viewIndex);

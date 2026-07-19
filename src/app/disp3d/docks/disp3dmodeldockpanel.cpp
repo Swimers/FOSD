@@ -28,6 +28,23 @@ Disp3DModelDockPanel::Disp3DModelDockPanel(QWidget *parent)
     connect(ui->cbox_FPS, &QComboBox::currentTextChanged, this, [this](const QString &) {
         emit fpsChanged(fps());
     });
+
+    connect(ui->pbtn_Normalize, &QPushButton::toggled, this, [this](bool checked) {
+        ui->pbtn_Normalize->setText(checked ? tr("归一化:开") : tr("归一化:关"));
+        ui->le_MapRangeMin->setEnabled(!checked);
+        ui->le_MapRangeMax->setEnabled(!checked);
+        emit normalizeToggled(checked);
+    });
+
+    auto emitRangeChanged = [this]() {
+        double lo = ui->le_MapRangeMin->text().toDouble();
+        double hi = ui->le_MapRangeMax->text().toDouble();
+        if (lo < hi) {
+            emit mapRangeChanged(lo, hi);
+        }
+    };
+    connect(ui->le_MapRangeMin, &QLineEdit::editingFinished, this, emitRangeChanged);
+    connect(ui->le_MapRangeMax, &QLineEdit::editingFinished, this, emitRangeChanged);
 }
 
 Disp3DModelDockPanel::~Disp3DModelDockPanel()
@@ -54,4 +71,19 @@ int Disp3DModelDockPanel::fps() const
 int Disp3DModelDockPanel::scalarIndex() const
 {
     return ui->cbox_ScalarSelect->currentIndex();
+}
+
+bool Disp3DModelDockPanel::isNormalized() const
+{
+    return ui->pbtn_Normalize->isChecked();
+}
+
+double Disp3DModelDockPanel::mapRangeMin() const
+{
+    return ui->le_MapRangeMin->text().toDouble();
+}
+
+double Disp3DModelDockPanel::mapRangeMax() const
+{
+    return ui->le_MapRangeMax->text().toDouble();
 }
