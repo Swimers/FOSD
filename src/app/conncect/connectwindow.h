@@ -140,6 +140,7 @@ private slots:
     void on_pbtn_TcpSend_clicked();
     void on_pbtn_TcpClear_clicked();
     void on_pbtn_WaveLengthReset_clicked();
+    void sendPresetCommand(const QString &cmd);
     void SwitchToB();
     void SwitchToW();
 

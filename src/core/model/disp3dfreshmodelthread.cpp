@@ -134,7 +134,7 @@ void disp3dfreshmodelthread::run()
 
         ife->calculateDisp();
 
-        double node_u_local[20];
+        double node_u_local[22];
         {
             QMutexLocker locker(&mutexStrain);
             memcpy(node_u_local, ife->node_u, sizeof(node_u_local));
@@ -146,8 +146,9 @@ void disp3dfreshmodelthread::run()
 
         for (const RawPointSample &sample : rawPointSamples) {
             double disp[3] = {0.0, 0.0, 0.0};
-            ife->ShapeFunction_New(sample.position[0],
+            ife->ShapeFunction_New_ZB(sample.position[0],
                                    sample.position[1],
+                                   sample.position[2],
                                    node_u_local,
                                    disp);
 
@@ -172,8 +173,9 @@ void disp3dfreshmodelthread::run()
         trackingUpdates.reserve(trackingPointSamples.size());
         for (const TrackingPointSample &sample : trackingPointSamples) {
             double disp[3] = {0.0, 0.0, 0.0};
-            ife->ShapeFunction_New(sample.originalPos[0],
+            ife->ShapeFunction_New_ZB(sample.originalPos[0],
                                         sample.originalPos[1],
+                                        sample.originalPos[2],
                                         node_u_local,
                                         disp);
 
