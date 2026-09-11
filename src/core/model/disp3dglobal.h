@@ -17,6 +17,7 @@ struct ModelScalars
     vtkSmartPointer<vtkDoubleArray> dispX;   // X方向位移
     vtkSmartPointer<vtkDoubleArray> dispY;   // Y方向位移
     vtkSmartPointer<vtkDoubleArray> dispZ;   // Z方向位移
+    vtkSmartPointer<vtkDoubleArray> dispMag; // 总位移模长
     vtkSmartPointer<vtkDoubleArray> strain;  // 应变
     vtkSmartPointer<vtkDoubleArray> temp;    // 温度
 
@@ -25,12 +26,14 @@ struct ModelScalars
         dispX = vtkSmartPointer<vtkDoubleArray>::New();
         dispY = vtkSmartPointer<vtkDoubleArray>::New();
         dispZ = vtkSmartPointer<vtkDoubleArray>::New();
+        dispMag = vtkSmartPointer<vtkDoubleArray>::New();
         strain = vtkSmartPointer<vtkDoubleArray>::New();
         temp = vtkSmartPointer<vtkDoubleArray>::New();
 
         dispX->SetName("Displacement_X");
         dispY->SetName("Displacement_Y");
         dispZ->SetName("Displacement_Z");
+        dispMag->SetName("Displacement_Magnitude");
         strain->SetName("Strain");
         temp->SetName("Temperature");
     }

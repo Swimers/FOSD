@@ -109,33 +109,6 @@ void disp3dfreshmodelthread::captureInputData()
     }
 }
 
-void disp3dfreshmodelthread::normalizeScalarArray(vtkSmartPointer<vtkDoubleArray> arr)
-{
-    double minV = VTK_DOUBLE_MAX;
-    double maxV = -VTK_DOUBLE_MAX;
-
-    vtkIdType n = arr->GetNumberOfTuples();
-    for (vtkIdType i = 0; i < n; i++) {
-        double v = arr->GetValue(i);
-        if (v < minV) minV = v;
-        if (v > maxV) maxV = v;
-    }
-
-    double range = maxV - minV;
-    if (range < 1e-12) {
-        for (vtkIdType i = 0; i < n; i++) {
-            arr->SetValue(i, 0.0);
-        }
-        return;
-    }
-
-    for (vtkIdType i = 0; i < n; i++) {
-        double v = arr->GetValue(i);
-        double norm = (v - minV) / range;
-        arr->SetValue(i, norm);
-    }
-}
-
 void disp3dfreshmodelthread::run()
 {
     while (!isInterruptionRequested()) {
@@ -144,7 +117,7 @@ void disp3dfreshmodelthread::run()
             continue;
         }
 
-        if (!m_rainbowIFE) {
+        if (!ife) {
             msleep(100);
             continue;
         }
@@ -159,12 +132,12 @@ void disp3dfreshmodelthread::run()
             displaceFactor = m_displaceFactor;
         }
 
-        m_rainbowIFE->calculateDisp();
+        ife->calculateDisp();
 
-        double node_u_local[16];
+        double node_u_local[22];
         {
             QMutexLocker locker(&mutexStrain);
-            memcpy(node_u_local, m_rainbowIFE->node_u, sizeof(node_u_local));
+            memcpy(node_u_local, ife->node_u, sizeof(node_u_local));
         }
 
         DisplayPointUpdateList pointUpdates;
@@ -173,11 +146,11 @@ void disp3dfreshmodelthread::run()
 
         for (const RawPointSample &sample : rawPointSamples) {
             double disp[3] = {0.0, 0.0, 0.0};
-            m_rainbowIFE->shapefunction(sample.position[0],
-                                        sample.position[1],
-                                        sample.position[2],
-                                        node_u_local,
-                                        disp);
+            ife->ShapeFunction_New_ZB(sample.position[0],
+                                   sample.position[1],
+                                   sample.position[2],
+                                   node_u_local,
+                                   disp);
 
             if (m_dispsave && Flag_Save) {
                 m_dispsave->appendPointSample(sample.position[0], sample.position[1], sample.position[2], disp[0], disp[1], disp[2]);
@@ -200,7 +173,7 @@ void disp3dfreshmodelthread::run()
         trackingUpdates.reserve(trackingPointSamples.size());
         for (const TrackingPointSample &sample : trackingPointSamples) {
             double disp[3] = {0.0, 0.0, 0.0};
-            m_rainbowIFE->shapefunction(sample.originalPos[0],
+            ife->ShapeFunction_New_ZB(sample.originalPos[0],
                                         sample.originalPos[1],
                                         sample.originalPos[2],
                                         node_u_local,

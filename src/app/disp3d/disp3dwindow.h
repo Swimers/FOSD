@@ -56,6 +56,8 @@ private slots:
     void SelectKeyPoint();
     void SetScalarMapping(int index);
     void ClearScalarMapping();
+    void SetNormalizeMode(bool enabled);
+    void SetCustomRange(double rangeMin, double rangeMax);
     void SetAxesVisible(bool checked);
     void SetGridVisible(bool checked);
     void SwitchView(int viewIndex);
@@ -83,7 +85,7 @@ public slots:
     void ApplyDisplayFrame(const DisplayPointUpdateList &pointUpdates,
                            double maxDisplace,
                            const TrackingPointFrameUpdateList &trackingUpdates);
-    void GetIFEPtr(IFE * exife){ife = exife;}
+    void GetIFEPtr(IFE * exife){ife = exife; qDebug() << "disp3d Get IFE" << ife;}
     void GetRainbowIFEPtr(rainbowIFE * ptr){m_rainbowIFE = ptr;}
 
 public:

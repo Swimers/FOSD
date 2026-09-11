@@ -6,6 +6,7 @@
 #include "disp3dcolorpicker.h"
 
 #include <stdio.h>
+#include <cmath>
 #include <QDebug>
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -157,6 +158,8 @@ void disp3dwindow::InitDockPanels()
     connect(m_modelDockPanel, &Disp3DModelDockPanel::scalarClearRequested, this, &disp3dwindow::ClearScalarMapping);
     connect(m_modelDockPanel, &Disp3DModelDockPanel::fpsChanged, this, &disp3dwindow::SetFPS);
     connect(m_modelDockPanel, &Disp3DModelDockPanel::colorSelected, this, &disp3dwindow::SetModelColor);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::normalizeToggled, this, &disp3dwindow::SetNormalizeMode);
+    connect(m_modelDockPanel, &Disp3DModelDockPanel::mapRangeChanged, this, &disp3dwindow::SetCustomRange);
 
     connect(m_viewDockPanel, &Disp3DViewDockPanel::axesVisibleChanged, this, &disp3dwindow::SetAxesVisible);
     connect(m_viewDockPanel, &Disp3DViewDockPanel::axesSizeChanged, this, &disp3dwindow::SetAxisSize);
@@ -268,9 +271,22 @@ void disp3dwindow::ApplyDisplayFrame(const DisplayPointUpdateList &pointUpdates,
     }
 
     points->Modified();
+    for (auto it = m_disp3dmodel->pointDisplace.constBegin();
+         it != m_disp3dmodel->pointDisplace.constEnd(); ++it) {
+        const QVector<double> &d = it.value();
+        double mag = std::sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
+        m_disp3dmodel->modelScalars.dispMag->SetValue(it.key(), mag);
+    }
+    if (m_disp3dmodel->m_normalize) {
+        m_disp3dmodel->normalizeScalarArray(m_disp3dmodel->modelScalars.dispX);
+        m_disp3dmodel->normalizeScalarArray(m_disp3dmodel->modelScalars.dispY);
+        m_disp3dmodel->normalizeScalarArray(m_disp3dmodel->modelScalars.dispZ);
+        m_disp3dmodel->normalizeScalarArray(m_disp3dmodel->modelScalars.dispMag);
+    }
     m_disp3dmodel->modelScalars.dispX->Modified();
     m_disp3dmodel->modelScalars.dispY->Modified();
     m_disp3dmodel->modelScalars.dispZ->Modified();
+    m_disp3dmodel->modelScalars.dispMag->Modified();
     m_disp3dmodel->dynPolyData->Modified();
     m_disp3dmodel->FreshKeyPoint();
 }
@@ -456,7 +472,8 @@ void disp3dwindow::on_actionStart_triggered()
     if(m_disp3dthread == nullptr){  //这里使用线程的方式计算数据，如果采用定时器的话，会造成界面很卡
         m_disp3dthread = new disp3dfreshmodelthread(this);
         m_disp3dthread->GetModelPtr(m_disp3dmodel);
-        m_disp3dthread->GetRainbowIFE(m_rainbowIFE);
+        //m_disp3dthread->GetRainbowIFE(m_rainbowIFE);
+        m_disp3dthread->GetIFE(ife);
         m_disp3dthread->GetTrackingPointPtr(m_trackingpoint);
         m_disp3dthread->SetFrameReceiver(this);
     }
@@ -539,7 +556,6 @@ void disp3dwindow::SetScalarMapping(int index)
         return ;
     }
 
-
     qDebug() << index;
     switch(index){
         case 0:
@@ -552,9 +568,12 @@ void disp3dwindow::SetScalarMapping(int index)
             m_disp3dmodel->SetupColorMapping("Displacement_Z");
             break;
         case 3:
-            m_disp3dmodel->SetupColorMapping("Strain");
+            m_disp3dmodel->SetupColorMapping("Displacement_Magnitude");
             break;
         case 4:
+            m_disp3dmodel->SetupColorMapping("Strain");
+            break;
+        case 5:
             m_disp3dmodel->SetupColorMapping("Temperature");
             break;
         default:
@@ -570,6 +589,18 @@ void disp3dwindow::ClearScalarMapping()
         return ;
     }
     m_disp3dmodel->OFFScalars();
+}
+
+void disp3dwindow::SetNormalizeMode(bool enabled)
+{
+    if (!m_disp3dmodel->Flag_Actor) return;
+    m_disp3dmodel->SetNormalizeMode(enabled);
+}
+
+void disp3dwindow::SetCustomRange(double rangeMin, double rangeMax)
+{
+    if (!m_disp3dmodel->Flag_Actor) return;
+    m_disp3dmodel->SetCustomRange(rangeMin, rangeMax);
 }
 
 void disp3dwindow::SetXOZGridVisible(bool checked)
@@ -640,8 +671,8 @@ void disp3dwindow::on_actionTrackingPointData_triggered()
 
 void disp3dwindow::on_actionBackData_triggered()
 {
-    dispdata *m_dispdata = new dispdata(this);
-    m_dispdata->GetRainbowIFE(m_rainbowIFE);
-    m_dispdata->exec();
-    delete m_dispdata;
+//    dispdata *m_dispdata = new dispdata(this);
+//    m_dispdata->GetRainbowIFE(m_rainbowIFE);
+//    m_dispdata->exec();
+//    delete m_dispdata;
 }

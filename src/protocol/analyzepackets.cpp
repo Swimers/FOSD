@@ -230,16 +230,21 @@ void analyzepackets::processMain()
             wavelength[global_index]  = QString::number(static_cast<double>(datagram.all), 'f', 5);                       //波长字符串数据
             NewStrain[global_index]   =(0.00075*(datagram.all-original_wavelength[i]))/A+B;   //计算得到应变
             strain[global_index]      = QString::number(static_cast<double>(NewStrain[global_index]), 'f', 5);            //应变字符串数组
-            // 动态保存至TXT文本
-            fbg_txt        = fbg_txt + "\t" + FBG_count[global_index];
-            wavelength_txt = wavelength_txt + "\t" + wavelength[global_index];
-            strain_txt     = strain_txt + "\t" + strain[global_index];
+            // 动态保存至CSV
+            if (Checked_CH_Count > 0) {
+                fbg_txt        += ",";
+                wavelength_txt += ",";
+                strain_txt     += ",";
+            }
+            fbg_txt        += FBG_count[global_index];
+            wavelength_txt += wavelength[global_index];
+            strain_txt     += strain[global_index];
             // 最后一个数据点处理
             if (i == CH_SUM - 1) {
-                fbg_txt_1 = "time\t" + fbg_txt + "\t" + fbg_txt;
+                fbg_txt_1 = "time," + fbg_txt + "," + fbg_txt;
                 strain_txt_1 = strain_txt;
-                wavelength_txt_1 = strTime + "\t" + wavelength_txt;
-                str_txt = wavelength_txt_1 + "\t" + strain_txt_1 + "\n";
+                wavelength_txt_1 = wavelength_txt;
+                str_txt = strTime + "," + wavelength_txt_1 + "," + strain_txt_1;
                 fbg_txt = "";
                 strain_txt = "";
                 wavelength_txt = "";
@@ -251,8 +256,12 @@ void analyzepackets::processMain()
     for (int i = 0; i < Checked_CH_Count; i++){
          wavelength_static[i] = QString::number(static_cast<double>(CH_datagram[i]),'f',5);
          strain_static[i] = QString::number(static_cast<double>(NewStrain[i]),'f',5);
-         wavelength_static_txt_temp = wavelength_static_txt_temp + "\t" + wavelength_static[i];
-         strain_static_txt_temp = strain_static_txt_temp + "\t" + strain_static[i];
+         if (i > 0) {
+             wavelength_static_txt_temp += ",";
+             strain_static_txt_temp += ",";
+         }
+         wavelength_static_txt_temp += wavelength_static[i];
+         strain_static_txt_temp += strain_static[i];
          if(i == Checked_CH_Count - 1){
              wavelength_static_txt=wavelength_static_txt_temp;
              wavelength_static_txt_temp="";
@@ -270,7 +279,6 @@ void analyzepackets::analyzeData(const QByteArray datagram)
         qWarning() << "Packet too short:" << datagram.size();
         return;
     }
-
     array = datagram;
     uint8_t b0 = packetByte(datagram, 0);
     uint8_t b1 = packetByte(datagram, 1);
@@ -329,16 +337,9 @@ void analyzepackets::saveAuto(int AutoSaveCycle)
         QDateTime data_time=QDateTime::currentDateTime();
         QString time_str = data_time.toString("yyyy-MM-dd hh_mm_ss");
         QDir DataFile;
-        bool exist = DataFile.exists("自动存储");
-        if(!exist){
-            qDebug() << "No File";
-            bool isok = DataFile.mkdir("自动存储");
-            if(!isok){
-                qDebug() << "新建文件夹失败";
-            }
-        }
+        DataFile.mkpath("data/outputs/自动存储");
         QString time_ms_str = time_str+" "+ QString::number(AutoSaveCycle) +"ms ";
-        m_saveDynamicFile=new QFile("自动存储/"+time_ms_str+"data.txt");
+        m_saveDynamicFile=new QFile("data/outputs/自动存储/"+time_ms_str+"data.csv");
         m_saveDynamicFile->open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Append);
         m_saveConnection = connect(timer2,&QTimer::timeout,[this](){
                 QTextStream stream(m_saveDynamicFile);
@@ -356,22 +357,15 @@ void analyzepackets::saveManual()
     QDateTime data_time=QDateTime::currentDateTime();
     QString strTime=data_time.toString("yyyy-MM-dd hh:mm:ss");
     QDir DataFile;
-    bool exist=DataFile.exists("手动存储");
-    if(!exist)
-    {
-        bool isok=DataFile.mkdir("手动存储");
-        if(!isok){
-            qDebug() << "创建文件夹失败";
-        }
-    }
-    QFile save_static_file("手动存储/data.txt");
+    DataFile.mkpath("data/outputs/手动存储");
+    QFile save_static_file("data/outputs/手动存储/data.csv");
     save_static_file.open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Append);
     QTextStream stream(&save_static_file);
     stream.seek(save_static_file.size());
     if(!save_static_file.size()){
         stream <<fbg_txt_1+"\n";
     }
-    QString static_txt = strTime + "\t" + wavelength_static_txt + "\t" + strain_static_txt;
+    QString static_txt = strTime + "," + wavelength_static_txt + "," + strain_static_txt;
     stream << static_txt << "\n";
     save_static_file.close();
     emit saveManualFinished();

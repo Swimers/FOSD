@@ -36,6 +36,7 @@ public slots:
     void udpClose();
     void udpSendData(const QString text,const  QHostAddress IPAddress,const  quint16 PortNum);
 
+
 private slots:
     void udpRecData();
 

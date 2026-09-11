@@ -390,12 +390,14 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
     scalars.dispX->SetNumberOfValues(0);
     scalars.dispY->SetNumberOfValues(0);
     scalars.dispZ->SetNumberOfValues(0);
+    scalars.dispMag->SetNumberOfValues(0);
     scalars.strain->SetNumberOfValues(0);
     scalars.temp->SetNumberOfValues(0);
     for (vtkIdType i = 0; i < nPoints; i++){
         scalars.dispX->InsertNextValue(0);
         scalars.dispY->InsertNextValue(0);
         scalars.dispZ->InsertNextValue(0);
+        scalars.dispMag->InsertNextValue(0);
         scalars.strain->InsertNextValue(0.1);
         scalars.temp->InsertNextValue(0.1);
     }
@@ -403,6 +405,7 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
     pd->AddArray(scalars.dispX);
     pd->AddArray(scalars.dispY);
     pd->AddArray(scalars.dispZ);
+    pd->AddArray(scalars.dispMag);
     pd->AddArray(scalars.strain);
     pd->AddArray(scalars.temp);
 
@@ -419,10 +422,65 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 
 void disp3dmodel::SetupColorMapping(const std::string &scalarName)
 {
-    mapper->SetScalarRange(0,50);
+    m_activeScalarName = scalarName;
+
     dynPolyData->GetPointData()->SetActiveScalars(scalarName.c_str());
+    if (m_normalize) {
+        mapper->SetScalarRange(0, 1);
+    } else {
+        mapper->SetScalarRange(m_customRangeMin, m_customRangeMax);
+    }
     mapper->ScalarVisibilityOn();
     renderWindow->Render();
+}
+
+void disp3dmodel::SetNormalizeMode(bool enabled)
+{
+    m_normalize = enabled;
+    if (!m_activeScalarName.empty()) {
+        if (enabled) {
+            mapper->SetScalarRange(0, 1);
+        } else {
+            mapper->SetScalarRange(m_customRangeMin, m_customRangeMax);
+        }
+        renderWindow->Render();
+    }
+}
+
+void disp3dmodel::SetCustomRange(double rangeMin, double rangeMax)
+{
+    m_customRangeMin = rangeMin;
+    m_customRangeMax = rangeMax;
+    if (!m_normalize && !m_activeScalarName.empty()) {
+        mapper->SetScalarRange(rangeMin, rangeMax);
+        renderWindow->Render();
+    }
+}
+
+void disp3dmodel::normalizeScalarArray(vtkSmartPointer<vtkDoubleArray> arr)
+{
+    double minV = VTK_DOUBLE_MAX;
+    double maxV = -VTK_DOUBLE_MAX;
+
+    vtkIdType n = arr->GetNumberOfTuples();
+    for (vtkIdType i = 0; i < n; i++) {
+        double v = arr->GetValue(i);
+        if (v < minV) minV = v;
+        if (v > maxV) maxV = v;
+    }
+
+    double range = maxV - minV;
+    if (range < 1e-12) {
+        for (vtkIdType i = 0; i < n; i++) {
+            arr->SetValue(i, 0.0);
+        }
+        return;
+    }
+
+    for (vtkIdType i = 0; i < n; i++) {
+        double v = arr->GetValue(i);
+        arr->SetValue(i, (v - minV) / range);
+    }
 }
 
 void disp3dmodel::OFFScalars()
@@ -432,7 +490,7 @@ void disp3dmodel::OFFScalars()
     modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
     modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
     modelActor->GetProperty()->SetRepresentationToSurface();
-    modelActor->GetProperty()->SetColor(0.9529, 0.8510, 0.3490);
+    modelActor->GetProperty()->SetColor(static_cast<double>(ModelColor[0]), static_cast<double>(ModelColor[1]), static_cast<double>(ModelColor[2]));
     renderWindow->Render();
 }
 

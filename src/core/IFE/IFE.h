@@ -102,12 +102,14 @@ public:
     void calculateDisp();
     void N_shapefunction(double x_para,double y_para,double z_para,double node_u[8],double* disp);  //加入单元长度，将mn和xy建立等参关系
     void ShapeFunction_New(double x_para,double y_para,double node_u[8],double* disp);
+    void ShapeFunction_New_HYY(double x_para, double y_para, double node_u[22], double *disp);
+    void ShapeFunction_New_ZB(double x_para, double y_para, double z_para, double node_u[22], double *disp);
 
     float* strain = nullptr;  //应变数组指针
     float positionOriginal[MARKPOINTNUM][3];    //初始坐标
     float positionDisp[MARKPOINTNUM][3];        //坐标变化量
     float positionFinal[MARKPOINTNUM][3];       //坐标最终值
-    double node_u[20];   //自由度变化值
+    double node_u[22];   //自由度变化值
 
     int order[SensorNum] = {0};     //顺序数组
     double para[SensorNum] = {1};   //系数数组

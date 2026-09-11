@@ -97,7 +97,10 @@ public:
     //映射相关
     void InitScalarsValues(ModelScalars &scalars, vtkPolyData* poly);
     void SetupColorMapping(const std::string &scalarName);
+    void SetNormalizeMode(bool enabled);
+    void SetCustomRange(double rangeMin, double rangeMax);
     void OFFScalars();
+    void normalizeScalarArray(vtkSmartPointer<vtkDoubleArray> arr);
 
 public:
     bool Flag_Actor = false;
@@ -122,6 +125,11 @@ public:
     QMap<vtkIdType, struct SelectedPointEntity> SelectedPointMap;
 
     ModelScalars modelScalars;      //颜色映射表
+
+    bool m_normalize = true;        //归一化映射模式
+    double m_customRangeMin = 0.0;  //自定义映射范围最小值
+    double m_customRangeMax = 50.0; //自定义映射范围最大值
+    std::string m_activeScalarName; //当前激活的标量名称
 
     int displacefactor = 2;
 };

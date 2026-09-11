@@ -264,8 +264,11 @@ void connectwindow::setLED(int color, int size)
 
 void connectwindow::serialDataRec(const QString& data)
 {
-    ui->ptedit_SerialRec->insertPlainText(data);
-    ui->ptedit_SerialRec->moveCursor(QTextCursor::End);
+    QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
+    ui->ptedit_SerialRec->appendHtml(
+        QString("<span style='color:#888'>[%1]</span> "
+                "<span style='color:#2196F3'>RX ▸ %2</span>")
+            .arg(ts, data.toHtmlEscaped()));
 }
 
 void connectwindow::serialStatusChange(bool State)
@@ -375,6 +378,14 @@ void connectwindow::InitSerial()
     // 串口状态信号
     connect(m_serialtask, &serialtask::dataReceived, this, &connectwindow::serialDataRec);
     connect(m_serialtask, &serialtask::connectionStatusChanged, this, &connectwindow::serialStatusChange);
+
+    // 预制指令按钮
+    connect(ui->pbtn_CmdSerial, &QPushButton::clicked, this, [this](){ sendPresetCommand("serial"); });
+    connect(ui->pbtn_CmdUdp,    &QPushButton::clicked, this, [this](){ sendPresetCommand("udp"); });
+    connect(ui->pbtn_CmdFbg,    &QPushButton::clicked, this, [this](){ sendPresetCommand("fbg"); });
+    connect(ui->pbtn_CmdStart,  &QPushButton::clicked, this, [this](){ sendPresetCommand("start"); });
+    connect(ui->pbtn_CmdReset,  &QPushButton::clicked, this, [this](){ sendPresetCommand("reset"); });
+    connect(ui->pbtn_CmdDebug,  &QPushButton::clicked, this, [this](){ sendPresetCommand("debug"); });
 
     Flag_ConnectSerial = 0;
     on_pbtn_RefreshSerial_clicked();
@@ -511,6 +522,23 @@ void connectwindow::on_pbtn_SerialSend_clicked()
 {
     QString dataSend = ui->ptedit_SerialSend->toPlainText() + "\r\n";
     emit serialDataSend(dataSend);
+
+    QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
+    ui->ptedit_SerialRec->appendHtml(
+        QString("<span style='color:#888'>[%1]</span> "
+                "<span style='color:#4CAF50'>TX ▸ %2</span>")
+            .arg(ts, ui->ptedit_SerialSend->toPlainText().toHtmlEscaped()));
+}
+
+void connectwindow::sendPresetCommand(const QString &cmd)
+{
+    emit serialDataSend(cmd + "\r\n");
+
+    QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
+    ui->ptedit_SerialRec->appendHtml(
+        QString("<span style='color:#888'>[%1]</span> "
+                "<span style='color:#4CAF50'>TX ▸ %2</span>")
+            .arg(ts, cmd.toHtmlEscaped()));
 }
 
 void connectwindow::on_pbtn_SerialClear_clicked()
@@ -777,7 +805,6 @@ void connectwindow::on_pbtn_SaveDynamic_clicked()
         ui->pbtn_SaveStatic->setEnabled(true);
         ui->pbtn_SaveDynamic->setText("自动保存");
     }
-
 }
 
 void connectwindow::on_pbtn_SaveStatic_clicked()

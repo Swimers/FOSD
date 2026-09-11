@@ -622,9 +622,9 @@ QTabBar::tab:selected {
            <enum>QTabWidget::Triangular</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
-          <widget class="QWidget" name="tab">
+          <widget class="QWidget" name="tab_guangpu">
            <attribute name="title">
             <string>光谱</string>
            </attribute>
@@ -634,7 +634,7 @@ QTabBar::tab:selected {
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_2">
+          <widget class="QWidget" name="tab_bochang">
            <attribute name="title">
             <string>波长</string>
            </attribute>
@@ -644,11 +644,11 @@ QTabBar::tab:selected {
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_3">
+          <widget class="QWidget" name="tab_usart">
            <attribute name="title">
             <string>串口</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,50,10,5">
+           <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,50,10,5,0">
             <item>
              <widget class="QLabel" name="label_13">
               <property name="text">
@@ -671,6 +671,88 @@ QTabBar::tab:selected {
                </size>
               </property>
              </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_PresetCmd">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="pbtn_CmdSerial">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>serial</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="pbtn_CmdUdp">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>udp</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="pbtn_CmdFbg">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>fbg</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="pbtn_CmdStart">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>start</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="pbtn_CmdReset">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>reset</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="pbtn_CmdDebug">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>debug</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,20,10,20,10">
@@ -749,7 +831,7 @@ QTabBar::tab:selected {
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_4">
+          <widget class="QWidget" name="tab_udp">
            <attribute name="title">
             <string>UDP</string>
            </attribute>
@@ -854,7 +936,7 @@ QTabBar::tab:selected {
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_5">
+          <widget class="QWidget" name="tab_tcp">
            <attribute name="title">
             <string>TCP</string>
            </attribute>
