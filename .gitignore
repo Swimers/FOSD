@@ -9,3 +9,22 @@ lib/VTK/VTK-Linux-debug/include/vtk-9.5/
 *.pro.user
 *.pro.user.*
 
+# 忽略 AI 编程助手 / Agent 的本地配置与中间产物
+# （各工具的本地设置、会话记录、附件缓存等，不应纳入版本管理）
+.claude/
+.codex/
+.cursor/
+.windsurf/
+.continue/
+.cline/
+.roo/
+.aider*
+.gemini/
+.qwen/
+.mimocode/
+.specstory/
+.hermes/
+
+# 忽略上述工具可能生成的散落配置文件
+.mcp.json
+
