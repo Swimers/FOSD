@@ -10,27 +10,25 @@
     <height>400</height>
    </rect>
   </property>
+  <!-- 分段：模型文件 → 关键点 → 外观（可视化方法/着色/归一化/映射范围/模型颜色）→ 刷新率 -->
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="pbtn_ModelLoad">
-       <property name="maximumSize">
-        <size>
-         <width>240</width>
-         <height>23</height>
-        </size>
-       </property>
        <property name="text">
         <string>模型导入</string>
        </property>
       </widget>
      </item>
      <item>
+      <!-- 清除模型是不可撤销的破坏性操作（清空前会弹确认框），
+           故收窄尺寸并与相邻的「模型导入」拉开视觉权重；
+           悬停时的警示描边由主题里针对 objectName 的规则提供。 -->
       <widget class="QPushButton" name="pbtn_ModelClear">
        <property name="maximumSize">
         <size>
-         <width>40</width>
+         <width>56</width>
          <height>16777215</height>
         </size>
        </property>
@@ -84,16 +82,153 @@
     </widget>
    </item>
    <item row="5" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>可视化方法：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="cbox_ScalarSelect">
+     <item>
+      <property name="text">
+       <string>X轴向变形</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Y轴向变形</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Z轴向变形</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>总位移</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QPushButton" name="pbtn_ScalarSet">
+       <property name="text">
+        <string>颜色映射</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pbtn_ScalarClear">
+       <property name="maximumSize">
+        <size>
+         <width>56</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>清除</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QPushButton" name="pbtn_Normalize">
+     <property name="text">
+      <string>归一化:开</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <!-- 映射范围压成一行：原先「~」单独占一整行左半格，
+        与两个输入框相距整个面板宽度，读起来是断开的。 -->
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_RangeMin">
+     <property name="text">
+      <string>映射范围：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_Range">
+     <item>
+      <widget class="QLineEdit" name="le_MapRangeMin">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="placeholderText">
+        <string>最小值</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_RangeSep">
+       <property name="text">
+        <string>~</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="le_MapRangeMax">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>50</string>
+       </property>
+       <property name="placeholderText">
+        <string>最大值</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <!-- 模型颜色属于「外观」，原先被 line_3 分隔线切到颜色映射之外、且只占左半格 -->
+   <item row="9" column="0" colspan="2">
+    <widget class="QPushButton" name="pbtn_SelectColor">
+     <property name="text">
+      <string>模型颜色</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0" colspan="2">
+    <widget class="Line" name="line_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <!-- 刷新率是全局渲染性能设置，不是「外观」的一部分；
+        原先它被单独夹在关键点与外观之间，占掉一段分隔线。 -->
+   <item row="11" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>刷新率：</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignRight|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="11" column="1">
     <widget class="QComboBox" name="cbox_FPS">
      <item>
       <property name="text">
@@ -127,138 +262,8 @@
      </item>
     </widget>
    </item>
-   <item row="6" column="0" colspan="2">
-    <widget class="Line" name="line_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>可视化方法：</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QComboBox" name="cbox_ScalarSelect">
-     <item>
-      <property name="text">
-       <string>X轴向变形</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Y轴向变形</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Z轴向变形</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>总位移</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="8" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="QPushButton" name="pbtn_ScalarSet">
-       <property name="text">
-        <string>颜色映射</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pbtn_ScalarClear">
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>清除</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="9" column="0" colspan="2">
-    <widget class="QPushButton" name="pbtn_Normalize">
-     <property name="text">
-      <string>归一化:开</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QLabel" name="label_RangeMin">
-     <property name="text">
-      <string>映射范围：</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="1">
-    <widget class="QLineEdit" name="le_MapRangeMin">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="placeholderText">
-      <string>最小值</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="0">
-    <widget class="QLabel" name="label_RangeSep">
-     <property name="text">
-      <string>~</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="1">
-    <widget class="QLineEdit" name="le_MapRangeMax">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="text">
-      <string>50</string>
-     </property>
-     <property name="placeholderText">
-      <string>最大值</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="0">
-    <widget class="QPushButton" name="pbtn_SelectColor">
-     <property name="text">
-      <string>模型颜色</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="0">
+   <!-- 原先这个弹簧只占左半格，右侧留空 -->
+   <item row="12" column="0" colspan="2">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

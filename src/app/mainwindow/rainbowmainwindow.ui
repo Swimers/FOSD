@@ -94,8 +94,8 @@
          <string>退出系统</string>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>:/icon/Resource/icon/TurnOff.png</normaloff>:/icon/Resource/icon/TurnOff.png</iconset>
+         <iconset resource="../../../res/resource.qrc">
+          <normaloff>:/icon/icon/TurnOff.png</normaloff>:/icon/icon/TurnOff.png</iconset>
         </property>
         <property name="iconSize">
          <size>

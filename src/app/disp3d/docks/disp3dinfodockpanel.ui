@@ -11,10 +11,16 @@
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <!-- 四项只读统计量。原先用 QRadioButton 承载，但同一父控件下的单选钮
+        天然互斥，会让人误以为这四项需要四选一；它们只是字段名，故改为 QLabel。
+        左侧字段名右对齐、右侧数值左对齐，形成整齐的两列表格。 -->
    <item row="0" column="0">
-    <widget class="QRadioButton" name="radioButton">
+    <widget class="QLabel" name="radioButton">
      <property name="text">
       <string>节点数：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -23,12 +29,18 @@
      <property name="text">
       <string/>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QRadioButton" name="radioButton_2">
+    <widget class="QLabel" name="radioButton_2">
      <property name="text">
       <string>三角形数：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -37,12 +49,18 @@
      <property name="text">
       <string/>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QRadioButton" name="radioButton_3">
+    <widget class="QLabel" name="radioButton_3">
      <property name="text">
       <string>关键点数：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -51,12 +69,18 @@
      <property name="text">
       <string/>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QRadioButton" name="radioButton_4">
+    <widget class="QLabel" name="radioButton_4">
      <property name="text">
       <string>主方向最大变形：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -64,6 +88,9 @@
     <widget class="QLabel" name="lab_MaxDeformation">
      <property name="text">
       <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -81,7 +108,9 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <!-- 吸收剩余高度：统计量吸顶、按钮贴底。
+        原先这里的弹簧 sizeHint 只有 3px，既推不动任何东西又白占一个网格单元。 -->
+   <item row="6" column="0" colspan="2">
     <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -89,7 +118,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>3</height>
+       <height>20</height>
       </size>
      </property>
     </spacer>

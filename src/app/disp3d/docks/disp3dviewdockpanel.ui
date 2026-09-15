@@ -10,6 +10,8 @@
     <height>300</height>
    </rect>
   </property>
+  <!-- 面板宽度只有 250px，所有控件按单列布局排布，避免横向挤压。
+       分段：坐标轴/网格 → 网格平面（子选项）→ 相机 -->
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QCheckBox" name="cbox_AxisAble">
@@ -22,6 +24,9 @@
     <widget class="QSlider" name="hsd_AxisSize">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="toolTip">
+      <string>坐标轴长度</string>
      </property>
     </widget>
    </item>
@@ -37,10 +42,55 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
+     <property name="toolTip">
+      <string>网格范围与密度</string>
+     </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <!-- 三个网格平面是「网格显示」的子选项，紧跟其下并左对齐。
+        原先行号跳到了 3（第 2 行整行空置），且被一个前置弹簧推到右半、
+        宽度锁死 40px 装不下「XOZ」加指示器。 -->
+   <item row="2" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QCheckBox" name="cbox_XOZGrid">
+       <property name="minimumSize">
+        <size>
+         <width>64</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>XOZ</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="cbox_XOYGrid">
+       <property name="minimumSize">
+        <size>
+         <width>64</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>XOY</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="cbox_ZOYGrid">
+       <property name="minimumSize">
+        <size>
+         <width>64</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>ZOY</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <spacer name="horizontalSpacer_6">
        <property name="orientation">
@@ -54,95 +104,39 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QCheckBox" name="cbox_XOZGrid">
-       <property name="minimumSize">
-        <size>
-         <width>40</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>XOZ</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="cbox_XOYGrid">
-       <property name="minimumSize">
-        <size>
-         <width>40</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>XOY</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="cbox_ZOYGrid">
-       <property name="minimumSize">
-        <size>
-         <width>40</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>ZOY</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
-   <item row="5" column="0">
-    <widget class="QCheckBox" name="cbox_CareamLockAble">
-     <property name="text">
-      <string>视角锁定</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QCheckBox" name="cbox_FellowAble">
-     <property name="text">
-      <string>焦点跟踪</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <widget class="Line" name="line_4">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="7" column="0" colspan="2">
+   <!-- 以下四项都是相机相关，归在分隔线之下成为一段。
+        原先「视角锁定/焦点跟踪」被放在分隔线之上、与坐标轴网格同段，分组是错的。 -->
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="cbox_CareamLockAble">
+     <property name="text">
+      <string>视角锁定</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QCheckBox" name="cbox_FellowAble">
+     <property name="text">
+      <string>焦点跟踪</string>
+     </property>
+    </widget>
+   </item>
+   <!-- 相机视角：下拉框独占一行。原先「标签+下拉框+按钮」挤在一行，
+        250px 宽下面板里下拉框被压到几乎读不出文字。 -->
+   <item row="5" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>相机视角：</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -180,22 +174,16 @@
        </item>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="pbtn_SwitchView">
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>切换</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
-   <item row="8" column="0">
+   <item row="6" column="0" colspan="2">
+    <widget class="QPushButton" name="pbtn_SwitchView">
+     <property name="text">
+      <string>切换视角</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
     <spacer name="verticalSpacer_3">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

@@ -14,8 +14,8 @@
    <string>OldMainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="D:\CommonFiles\Projects_And_Works\SummerProject\Qt_Software\TestVersion\Test3\Resource\icon\UserIcon2.png">
-    <normaloff>.</normaloff>.</iconset>
+   <iconset resource="../../../res/resource.qrc">
+    <normaloff>:/icon/icon/xidian_logo.jpg</normaloff>:/icon/icon/xidian_logo.jpg</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -34,6 +34,13 @@
     </item>
     <item row="0" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <!-- 与左栏 20px 的 topMargin 对齐，避免窗口按钮比导航按钮高一截、视觉悬空 -->
+      <property name="topMargin">
+       <number>20</number>
+      </property>
+      <property name="rightMargin">
+       <number>12</number>
+      </property>
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -62,7 +69,20 @@
          </size>
         </property>
         <property name="text">
-         <string>-</string>
+         <string/>
+        </property>
+        <property name="toolTip">
+         <string>最小化</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../res/resource.qrc">
+          <normaloff>:/icon/icon/Win_Min.png</normaloff>:/icon/icon/Win_Min.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>14</width>
+          <height>14</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -81,7 +101,20 @@
          </size>
         </property>
         <property name="text">
-         <string>口</string>
+         <string/>
+        </property>
+        <property name="toolTip">
+         <string>全屏切换</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../res/resource.qrc">
+          <normaloff>:/icon/icon/Win_Max.png</normaloff>:/icon/icon/Win_Max.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>14</width>
+          <height>14</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -100,7 +133,20 @@
          </size>
         </property>
         <property name="text">
-         <string>X</string>
+         <string/>
+        </property>
+        <property name="toolTip">
+         <string>关闭</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../res/resource.qrc">
+          <normaloff>:/icon/icon/Win_Close.png</normaloff>:/icon/icon/Win_Close.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>14</width>
+          <height>14</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -252,6 +298,15 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <!-- 分隔线：把「退出系统」这个不可撤销的操作与上方的显示设置拉开。
+           纯装饰控件，无 objectName 引用。 -->
+      <item>
+       <widget class="Line" name="line_SysSep">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pbtn_TurnOff">
