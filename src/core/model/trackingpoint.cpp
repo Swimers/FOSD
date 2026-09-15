@@ -83,9 +83,11 @@ vtkActor *trackingpoint::CreateSphereSource(double x, double y, double z)
     vtkActor *sphereActor = vtkActor::New();                            // 创建小球对象
     sphereActor->SetMapper(sphereMapper);
     sphereActor->SetPosition(x, y, z);                                  // 设置小球的位置为世界坐标
-    sphereActor->GetProperty()->SetColor(0, 1, 0);                      // 设置小球对象为红色
+    sphereActor->GetProperty()->SetColor(0.0, 0.90, 0.46);  // ok 翠绿 #00E676（追踪点=正常态）
+    sphereActor->GetProperty()->LightingOff();              // 自发光，深色场景下保持明亮
+    sphereActor->GetProperty()->SetAmbient(1.0);
     sphereActor->SetScale(m_disp3dmodel->ModelSize / 1.2);                    // 设置小球的大小
-    return sphereActor;                                                 // 返回红色小球对象
+    return sphereActor;                                                 // 返回小球对象
 }
 
 vtkCaptionActor2D *trackingpoint::CreateTextActor(double x, double y, double z)
@@ -101,12 +103,12 @@ vtkCaptionActor2D *trackingpoint::CreateTextActor(double x, double y, double z)
 
     // 设置文本属性
     vtkTextProperty *textProp = textActor->GetCaptionTextProperty();
-    textProp->SetFontSize(10);           // 字体大小（配合Height使用）
-    textProp->SetColor(0, 1, 0);         // 文字颜色：红色 (R, G, B)
+    textProp->SetFontSize(12);           // 字体大小（配合Height使用）
+    textProp->SetColor(0.0, 0.90, 0.46); // ok 翠绿 #00E676
     textProp->SetBold(0);                // 是否粗体：0=正常，1=粗体
     textProp->ShadowOff();               // 关闭阴影
     textProp->SetOpacity(0.9);           // 透明度：0.0-1.0
-    textProp->SetFontFamilyToArial();    // 字体：Arial
+    textProp->SetFontFamilyToCourier();  // 等宽字体，读数对齐更整齐
     textProp->SetJustificationToLeft();  // 左对齐
 
     return textActor;

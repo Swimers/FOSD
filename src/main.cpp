@@ -2,6 +2,7 @@
 #include "oldmainwindow.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <QSurfaceFormat>
 
 #include <vtkOutputWindow.h>
@@ -29,10 +30,15 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    //加载qss文件
-    QFile qssFile("./data/QSS/MaterialDark-B.qss");//1.
-    if(qssFile.open(QFile::ReadOnly)){//2.
-        a.setStyleSheet(qssFile.readAll());//3.
+    //加载qss文件（显控台深色主题，随 exe 部署在 data/QSS/ 下）
+    QFile qssFile(QCoreApplication::applicationDirPath() + "/data/QSS/ConsoleDark.qss");
+    if(qssFile.open(QFile::ReadOnly)){
+        a.setStyleSheet(QString::fromUtf8(qssFile.readAll()));
+    }
+    else {
+        // 主题缺失时程序仍能启动，但界面会退回 Qt 默认外观。
+        // 常见原因是构建后没有把仓库的 data/ 目录拷到可执行文件旁边。
+        qWarning() << "主题文件缺失，界面将使用 Qt 默认外观:" << qssFile.fileName();
     }
     qssFile.close();
 

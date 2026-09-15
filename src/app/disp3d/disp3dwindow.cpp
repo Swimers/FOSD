@@ -102,7 +102,11 @@ void disp3dwindow::InitWindow()
     //m_disp3dmodel->initdisp3dmodel();
 
     m_disp3dbackground = new disp3dbackground(m_disp3dmodel->GetVTKRenderer(),m_vtkrenderwindow);
-    m_disp3dbackground->SetVtkRenderBackGradient(0.53, 0.81, 0.98, 0.87, 0.94, 1.0);
+    // 显控台深色天空：底部 bg-base #070B12 → 顶部 #16283A。
+    // 顶部刻意比 bg-panel 亮一档，否则底部与顶部色差过小（红分量仅差 0.03），
+    // 观感上会被当成"背景没有渲染"。想要更纯粹的近黑效果就把顶部三个分量调小。
+    m_disp3dbackground->SetVtkRenderBackGradient(0.027, 0.043, 0.071,
+                                                 0.086, 0.157, 0.227);
     m_disp3dbackground->AddAxesActor();
     m_disp3dbackground->AddAxesGrid();
     m_disp3dbackground->GetModel(m_disp3dmodel);
@@ -175,14 +179,20 @@ void disp3dwindow::InitDockPanels()
 
 void disp3dwindow::InitPointInfor()
 {
-    ui->label->setStyleSheet("QLabel { font-weight: bold; color: #4169E1; }");
-    ui->lab_KeyPointID->setStyleSheet("QLabel { font-weight: bold; color: #4169E1; }");
-    ui->label_6->setStyleSheet("QLabel { font-weight: bold; color: green; }");
-    ui->lab_KeyPointRawPos->setStyleSheet("QLabel { font-weight: bold; color: green; }");
-    ui->label_8->setStyleSheet("QLabel { font-weight: bold; color: green; }");
-    ui->lab_KeyPointDisplace->setStyleSheet("QLabel { font-weight: bold; color: green; }");
-    ui->label_10->setStyleSheet("QLabel { font-weight: bold; color: green; }");
-    ui->lab_KeyPointNewPos->setStyleSheet("QLabel { font-weight: bold; color: green; }");
+    // 拾取点信息区：拾取点编号用冰青强调，坐标/变形量用正常态绿。
+    // 颜色写死在这里是为了区分语义；注意不能用 #label 这类 objectName 选择器，
+    // 因为 "label" 在全项目多个 .ui 中重名。
+    const QString captionStyle = "QLabel { font-weight: bold; color: #00D4FF; }";
+    const QString valueStyle   = "QLabel { font-weight: bold; color: #00E676; }";
+
+    ui->label->setStyleSheet(captionStyle);
+    ui->lab_KeyPointID->setStyleSheet(captionStyle);
+    ui->label_6->setStyleSheet(valueStyle);
+    ui->lab_KeyPointRawPos->setStyleSheet(valueStyle);
+    ui->label_8->setStyleSheet(valueStyle);
+    ui->lab_KeyPointDisplace->setStyleSheet(valueStyle);
+    ui->label_10->setStyleSheet(valueStyle);
+    ui->lab_KeyPointNewPos->setStyleSheet(valueStyle);
     m_disp3dmodel->PickerGetLabPtr(std::make_tuple(ui->lab_KeyPointID, ui->lab_KeyPointRawPos, ui->lab_KeyPointDisplace, ui->lab_KeyPointNewPos));
 }
 

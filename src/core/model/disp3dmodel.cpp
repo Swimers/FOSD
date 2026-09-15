@@ -259,9 +259,10 @@ bool disp3dmodel::LoadModel(const QString &filePath)
     InitScalarsValues(modelScalars, dynPolyData);
 
     modelActor->SetMapper(mapper);
-    modelActor->GetProperty()->SetEdgeVisibility(0);
-    modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
-    modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
+    modelActor->GetProperty()->SetEdgeVisibility(0);   // 边线默认关闭（大网格上会显得杂乱）；
+                                                        // 若想要 HUD 轮廓效果，把 0 改为 1 即可
+    modelActor->GetProperty()->SetLineWidth(static_cast<float>(1.0));
+    modelActor->GetProperty()->SetEdgeColor(0.0, 0.83, 1.0);   // accent 冰青
     modelActor->GetProperty()->SetRepresentationToSurface();
     modelActor->GetProperty()->SetColor(static_cast<double>(ModelColor[0]), static_cast<double>(ModelColor[1]), static_cast<double>(ModelColor[2]));
 
@@ -411,7 +412,9 @@ void disp3dmodel::InitScalarsValues(ModelScalars &scalars, vtkPolyData *poly)
 
     vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
     lut->SetNumberOfColors(256);
-    lut->SetHueRange(0.6, 0.1);
+    // 冷→暖映射：低位移=冰青，高位移=红，方向符合告警语义
+    // （原为 0.6→0.1，起点偏蓝紫）
+    lut->SetHueRange(0.55, 0.0);
     lut->Build();
     mapper->SetLookupTable(lut);
     mapper->SelectColorArray("Displacement_X");
@@ -486,9 +489,10 @@ void disp3dmodel::normalizeScalarArray(vtkSmartPointer<vtkDoubleArray> arr)
 void disp3dmodel::OFFScalars()
 {
     mapper->ScalarVisibilityOff();
-    modelActor->GetProperty()->SetEdgeVisibility(0);
-    modelActor->GetProperty()->SetLineWidth(static_cast<float>(0.02));
-    modelActor->GetProperty()->SetEdgeColor(0, 0.88, 0.88);
+    modelActor->GetProperty()->SetEdgeVisibility(0);   // 边线默认关闭（大网格上会显得杂乱）；
+                                                        // 若想要 HUD 轮廓效果，把 0 改为 1 即可
+    modelActor->GetProperty()->SetLineWidth(static_cast<float>(1.0));
+    modelActor->GetProperty()->SetEdgeColor(0.0, 0.83, 1.0);   // accent 冰青
     modelActor->GetProperty()->SetRepresentationToSurface();
     modelActor->GetProperty()->SetColor(static_cast<double>(ModelColor[0]), static_cast<double>(ModelColor[1]), static_cast<double>(ModelColor[2]));
     renderWindow->Render();

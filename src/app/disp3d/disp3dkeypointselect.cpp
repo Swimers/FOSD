@@ -8,6 +8,8 @@
 #include <vtkTextProperty.h>
 #include <vtkRenderer.h>
 #include <vtkPolyDataMapper.h>
+// GetProperty() 返回 vtkProperty*，调用其成员函数需要完整类型定义
+#include <vtkProperty.h>
 
 #include <disp3dglobal.h>
 
@@ -153,6 +155,10 @@ void disp3dkeypointselect::on_pbtn_AddPoint_clicked()
         mapper->SetInputConnection(sphereSource->GetOutputPort());
         vtkActor* SphereActor = vtkActor::New();
         SphereActor->SetMapper(mapper);
+        // 原实现从未设色，球体一直是 VTK 默认纯白；显式设为警示琥珀并关闭光照
+        SphereActor->GetProperty()->SetColor(1.0, 0.67, 0.0);
+        SphereActor->GetProperty()->LightingOff();
+        SphereActor->GetProperty()->SetAmbient(1.0);
         SphereActor->SetPosition(NewPos[0], NewPos[1], NewPos[2]);
         m_disp3dmodel->GetVTKRenderer()->AddActor(SphereActor);
 
@@ -161,7 +167,7 @@ void disp3dkeypointselect::on_pbtn_AddPoint_clicked()
         sprintf(textbuf, "(%0.2f,%0.2f,%0.2f)", NewPos[0], NewPos[1], NewPos[2]);
         TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1]));
         TextActor->SetInput(textbuf);
-        TextActor->GetTextProperty()->SetColor(1, 0, 0);
+        TextActor->GetTextProperty()->SetColor(0.0, 0.83, 1.0);   // accent 冰青
         TextActor->GetTextProperty()->SetFontSize(20);
         m_disp3dmodel->GetVTKRenderer()->AddActor2D(TextActor);
         m_disp3dmodel->GetVTKRenderWindow()->Render();
@@ -273,6 +279,10 @@ void disp3dkeypointselect::on_pbtn_EditPoint_clicked()
 
             vtkActor* SphereActor = vtkActor::New();
             SphereActor->SetMapper(mapper);
+            // 原实现从未设色，球体一直是 VTK 默认纯白；显式设为警示琥珀并关闭光照
+            SphereActor->GetProperty()->SetColor(1.0, 0.67, 0.0);
+            SphereActor->GetProperty()->LightingOff();
+            SphereActor->GetProperty()->SetAmbient(1.0);
             SphereActor->SetPosition(NewPos[0], NewPos[1], NewPos[2]);
             m_disp3dmodel->GetVTKRenderer()->AddActor(SphereActor);
 
@@ -282,7 +292,7 @@ void disp3dkeypointselect::on_pbtn_EditPoint_clicked()
             sprintf(textbuf, "(%0.2f,%0.2f,%0.2f)", NewPos[0], NewPos[1], NewPos[2]);
             TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1]));
             TextActor->SetInput(textbuf);
-            TextActor->GetTextProperty()->SetColor(1, 0, 0);
+            TextActor->GetTextProperty()->SetColor(0.0, 0.83, 1.0);   // accent 冰青
             TextActor->GetTextProperty()->SetFontSize(20);
             m_disp3dmodel->GetVTKRenderer()->AddActor2D(TextActor);
 

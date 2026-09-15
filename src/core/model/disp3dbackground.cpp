@@ -230,9 +230,26 @@ void disp3dbackground::AddAxesActor()
 {
     this->axe = vtkAxesActor::New();
     axe->SetAxisLabels(1);      //设置lable是否可见
-    axe->GetXAxisCaptionActor2D()->GetCaptionTextProperty()->SetColor(1, 0, 0);
-    axe->GetYAxisCaptionActor2D()->GetCaptionTextProperty()->SetColor(0, 2, 0);
-    axe->GetZAxisCaptionActor2D()->GetCaptionTextProperty()->SetColor(0, 0, 3);
+
+    // 显控台色板：三轴各取一个语义色，保证彼此可区分。
+    // 原实现用 (0,2,0)/(0,0,3) 这类超出 [0,1] 的分量，会被钳制为纯绿/纯蓝，
+    // 且轴杆本身仍是 vtkAxesActor 默认的红绿蓝，与标签对不上。
+    // 注意：VTK 的 SetColor(double[3]) 重载接收的是非 const 数组，
+    // 这里不能加 const，否则 MSVC 会以 C2664 拒绝。
+    double colorX[3] = {0.0, 0.83, 1.0};   // 冰青
+    double colorY[3] = {0.0, 0.90, 0.46};  // 翠绿
+    double colorZ[3] = {1.0, 0.67, 0.0};   // 琥珀
+
+    axe->GetXAxisCaptionActor2D()->GetCaptionTextProperty()->SetColor(colorX);
+    axe->GetYAxisCaptionActor2D()->GetCaptionTextProperty()->SetColor(colorY);
+    axe->GetZAxisCaptionActor2D()->GetCaptionTextProperty()->SetColor(colorZ);
+
+    axe->GetXAxisShaftProperty()->SetColor(colorX);
+    axe->GetYAxisShaftProperty()->SetColor(colorY);
+    axe->GetZAxisShaftProperty()->SetColor(colorZ);
+    axe->GetXAxisTipProperty()->SetColor(colorX);
+    axe->GetYAxisTipProperty()->SetColor(colorY);
+    axe->GetZAxisTipProperty()->SetColor(colorZ);
     axe->GetXAxisCaptionActor2D()->GetTextActor()->SetTextScaleModeToNone();
     axe->GetYAxisCaptionActor2D()->GetTextActor()->SetTextScaleModeToNone();
     axe->GetZAxisCaptionActor2D()->GetTextActor()->SetTextScaleModeToNone();
@@ -321,8 +338,10 @@ vtkSmartPointer<vtkActor> disp3dbackground::CreateGridActor(PlaneType type)
 
     vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
     actor->SetMapper(mapper);
-    actor->GetProperty()->SetColor(0.7, 0.7, 0.7);
-    actor->GetProperty()->SetOpacity(0.1);
+    // 深色场景下网格需要比原来更亮、更实才看得见：
+    // 原先的浅灰 + 0.1 不透明度在近黑背景上几乎不可见。
+    actor->GetProperty()->SetColor(0.11, 0.16, 0.23);   // border 色 #1B2A3A
+    actor->GetProperty()->SetOpacity(0.85);
     actor->GetProperty()->SetLineWidth(1.0);
 
     return actor;
@@ -407,15 +426,13 @@ void disp3dbackground::CreateWorld()
         m_skyActor = nullptr;
     }
 
-    m_groundActor = CreateGroundWithTexture(200);
-    if (m_groundActor) {
-        m_renderer->AddActor(m_groundActor);
-    }
-
-    m_skyActor = CreateSkyDome(700);
-    if (m_skyActor) {
-        m_renderer->AddActor(m_skyActor);
-    }
+    // 显控台深色场景不使用任何地面/天空几何体，背景完全由渲染器的渐变承担
+    // （见 SetVtkRenderBackGradient）。
+    //
+    // 历史沿革：原实现走贴图路径（CreateGroundWithTexture + CreateSkyDome），
+    // 贴图是亮的 .jpg，会整个盖住渐变背景色。
+    m_groundActor = nullptr;
+    m_skyActor = nullptr;
 
     vtkCamera* camera = m_renderer->GetActiveCamera();
     double focalPoint[3] = {0.0, 0.0, 0.0};
@@ -439,11 +456,17 @@ vtkActor *disp3dbackground::CreateGround(double modelSize)
 {
     vtkPlaneSource* plane = vtkPlaneSource::New();
 
-    double scale = modelSize * 50.0;
+    // 地面必须建在水平面上（XZ 平面，三个点的 y 相同），并与
+    // CreateGroundWithTexture 保持同一尺度与高度，二者才是可互换的。
+    //
+    // 原实现把三个点的 z 都写成 0，得到的是立在 XOY 平面上的竖直方块，
+    // 会直接切穿模型、并挡住渲染器的渐变背景。
+    const double scale = modelSize * 5000.0;
+    const double groundY = -modelSize * 500.0;
 
-    plane->SetOrigin(-scale, -scale, 0);
-    plane->SetPoint1(scale, -scale, 0);
-    plane->SetPoint2(-scale, scale, 0);
+    plane->SetOrigin(-scale, groundY, -scale);
+    plane->SetPoint1(scale, groundY, -scale);
+    plane->SetPoint2(-scale, groundY, scale);
     plane->Update();
 
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
@@ -451,10 +474,10 @@ vtkActor *disp3dbackground::CreateGround(double modelSize)
 
     vtkActor* groundActor = vtkActor::New();
     groundActor->SetMapper(mapper);
-    groundActor->GetProperty()->SetColor(0.3, 0.6, 0.3); // 草绿色
-    groundActor->GetProperty()->SetAmbient(0.8); // 防止太暗
+    groundActor->GetProperty()->SetColor(0.04, 0.07, 0.10); // 深板岩地面，与主题底色同族
+    groundActor->GetProperty()->SetAmbient(1.0); // 自发光，不参与光照计算
     groundActor->GetProperty()->LightingOff();   // 更像背景地面
-    groundActor->SetPosition(0, -modelSize * 30.0, -modelSize * 2.0);
+    groundActor->SetPosition(0, -modelSize * 40.0, -modelSize * 2.0);
 
     return groundActor;
 }
@@ -474,7 +497,7 @@ vtkActor *disp3dbackground::CreateSkyPlane(double modelSize)
     mapper->SetInputConnection(plane->GetOutputPort());
     vtkActor* skyActor = vtkActor::New();
     skyActor->SetMapper(mapper);
-    skyActor->GetProperty()->SetColor(0.6, 0.85, 1.0);
+    skyActor->GetProperty()->SetColor(0.027, 0.043, 0.071); // bg-base，与渲染器背景一致
     skyActor->GetProperty()->LightingOff();
     skyActor->GetProperty()->SetAmbient(1.0);
     skyActor->SetPosition(0, modelSize * 50.0, 0);

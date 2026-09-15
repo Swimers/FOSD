@@ -44,15 +44,15 @@ void disp2dwindow::InitWindow()
             if(j==0){  //第一列为编号
                 QStandardItem *item = new QStandardItem(QString::number(i+1));
                 item->setTextAlignment(Qt::AlignCenter);
-                item->setForeground(QBrush(QColor(0, 0, 0)));
-                item->setFont(QFont( "Times New Roman", 10, QFont::Bold) );
+                // 前景色交给 QSS 的 QTableView::item 统一控制。
+                // 原先在此写死纯黑，深色主题下文字会完全看不见。
+                item->setFont(QFont( "Consolas", 10, QFont::Bold) );
                 TwoD_model->setItem(i,j,item);
             }
             else{
                 QStandardItem *item = new QStandardItem(QString::number(0));
                 item->setTextAlignment(Qt::AlignCenter);
-                item->setForeground(QBrush(QColor(0, 0, 0)));
-                item->setFont(QFont( "Times New Roman", 10, QFont::Normal) );
+                item->setFont(QFont( "Consolas", 10, QFont::Normal) );
                 TwoD_model->setItem(i,j,item);
             }
         }

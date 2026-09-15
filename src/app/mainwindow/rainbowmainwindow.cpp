@@ -21,7 +21,7 @@ RainbowMainWindow::RainbowMainWindow(QWidget *parent) :
     m_liveflag = std::make_shared<std::atomic_bool>(true);
     Flag_WindowFull = false;
 
-    setWindowIcon(QIcon(":/icon/Resource/icon/favicon.ico"));
+    setWindowIcon(QIcon(":/icon/icon/favicon.ico"));
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
     InitMainwindow();

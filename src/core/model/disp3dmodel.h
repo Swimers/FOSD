@@ -120,7 +120,9 @@ public:
     uint ModelPolysNum;
     uint ModelKeyPointsNum;
     double ModelSize;
-    QVector<float> ModelColor{1.0000f, 1.0000f, 0.2000f};
+    // 显控台深色场景下的模型基色：冷调钢蓝，与近黑背景拉开对比又不喧宾夺主。
+    // 原值 {1.0, 1.0, 0.2} 是亮黄，在深色场景里过于刺眼。
+    QVector<float> ModelColor{0.1800f, 0.2800f, 0.4000f};
 
     QMap<vtkIdType, struct SelectedPointEntity> SelectedPointMap;
 

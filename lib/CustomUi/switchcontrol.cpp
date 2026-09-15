@@ -8,10 +8,10 @@ SwitchControl::SwitchControl(QWidget *parent)
       m_bChecked(false),
       m_radius(8.0),
       m_nMargin(3),
-      m_checkedColor(0, 150, 136),
-      m_thumbColor(Qt::white),
-      m_disabledColor(190, 190, 190),
-      m_background(Qt::black)
+      m_checkedColor(0x00, 0xD4, 0xFF),   // accent     冰青（开）
+      m_thumbColor(0xD6, 0xE4, 0xF0),     // text-main  滑块（关）
+      m_disabledColor(0x6B, 0x82, 0x99),  // text-dim   禁用
+      m_background(0x0E, 0x16, 0x20)      // bg-panel   轨道（关）
 {
     // 鼠标滑过光标形状 - 手型
     setCursor(Qt::PointingHandCursor);

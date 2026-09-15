@@ -8,6 +8,7 @@
 #include "vtkTextProperty.h"
 #include "vtkSphereSource.h"
 #include "vtkPolyDataMapper.h"
+#include "vtkProperty.h"
 
 #include <QDebug>
 #include <QString>
@@ -83,7 +84,7 @@ void disp3dinteractor::OnLeftButtonDown()
             sprintf(text, "%d", static_cast<int>(ID));
             m_TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1])); // 设置屏幕显示位置
             m_TextActor->SetInput(text);                                     // 显示文本
-            m_TextActor->GetTextProperty()->SetColor(1, 0, 0);               // 设置文本颜色为红色
+            m_TextActor->GetTextProperty()->SetColor(0.0, 0.83, 1.0);       // accent 冰青
             m_TextActor->GetTextProperty()->SetFontSize(20);                 // 设置字体大小
             m_disp3dmodel->GetVTKRenderer()->AddActor2D(m_TextActor);        // 添加到渲染器中
 
@@ -103,6 +104,11 @@ void disp3dinteractor::OnLeftButtonDown()
             mapper->SetInputConnection(sphereSource->GetOutputPort());
             m_SphereActor->SetMapper(mapper);
             m_SphereActor->SetPosition(NewPos[0], NewPos[1], NewPos[2]); // 设置小球位置（初始坐标）
+            // 原实现从未给拾取球设色，一直是 VTK 默认的纯白，在浅色天空上几乎不可见。
+            // 这里显式设为警示琥珀并关闭光照，保证在任何背景下都是一个稳定的亮点。
+            m_SphereActor->GetProperty()->SetColor(1.0, 0.67, 0.0);
+            m_SphereActor->GetProperty()->LightingOff();
+            m_SphereActor->GetProperty()->SetAmbient(1.0);
             if(Flag_CameraFellow && !Flag_CameraLock){
                 vtkCamera* camera = this->GetCurrentRenderer()->GetActiveCamera();
                 camera->SetFocalPoint(NewPos[0], NewPos[1], NewPos[2]);

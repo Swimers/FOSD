@@ -28,3 +28,9 @@ lib/VTK/VTK-Linux-debug/include/vtk-9.5/
 # 忽略上述工具可能生成的散落配置文件
 .mcp.json
 
+# 忽略 Python 缓存（tools/gen_icons.py 使用 Pillow 生成图标）
+__pycache__/
+*.pyc
+# 图标脚本的 24×24 预览产物（用 python tools/gen_icons.py --preview 生成）
+tools/preview_24/
+

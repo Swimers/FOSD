@@ -113,34 +113,24 @@ void connectwindow::InitCustomPlot(QCustomPlot *customPlot)
     // 连接鼠标滚轮事件到自定义槽函数
     connect(customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(handleWheel(QWheelEvent*)));
 
-    QPen pen1(Qt::blue); // 曲线1的笔（蓝色）
-    pen1.setWidth(2);    // 设置笔宽度
-    customPlot->addGraph();
-    customPlot->graph(0)->setPen(pen1);
-    QPen pen2(Qt::black); // 曲线2的笔（黑色）
-    pen2.setWidth(2);     // 设置笔宽度
-    customPlot->addGraph();
-    customPlot->graph(1)->setPen(pen2);
-    QPen pen3(Qt::yellow); // 曲线3的笔（黄色）
-    pen3.setWidth(2);      // 设置笔宽度
-    customPlot->addGraph();
-    customPlot->graph(2)->setPen(pen3);
-    QPen pen4(Qt::green); // 曲线4的笔（绿色）
-    pen4.setWidth(2);     // 设置笔宽度
-    customPlot->addGraph();
-    customPlot->graph(3)->setPen(pen4);
-    QPen pen5(Qt::gray); // 曲线5的笔（灰色）
-    pen5.setWidth(2);    // 设置笔宽度
-    customPlot->addGraph();
-    customPlot->graph(4)->setPen(pen5);
-    QPen pen6(Qt::magenta); // 曲线6的笔（洋红色）
-    pen6.setWidth(2);       // 设置笔宽度
-    customPlot->addGraph();
-    customPlot->graph(5)->setPen(pen6);
-    QPen pen7(Qt::cyan); // 曲线7的笔（青色）
-    pen7.setWidth(2);    // 设置笔宽度
-    customPlot->addGraph();
-    customPlot->graph(6)->setPen(pen7);
+    // 通道曲线配色：显控台色板下的高辨识度序列。
+    // 原先用的 Qt::black 在近黑绘图区上完全不可见，Qt::gray 对比度也不足。
+    static const QColor graphColors[7] = {
+        QColor("#00D4FF"),   // 冰青
+        QColor("#FFAA00"),   // 琥珀
+        QColor("#00E676"),   // 翠绿
+        QColor("#FF3B30"),   // 朱红
+        QColor("#9C6BFF"),   // 紫
+        QColor("#00FFC6"),   // 青绿
+        QColor("#FF7AB6")    // 品红
+    };
+
+    for (int i = 0; i < 7; i++) {
+        QPen pen(graphColors[i]);
+        pen.setWidth(2);
+        customPlot->addGraph();
+        customPlot->graph(i)->setPen(pen);
+    }
     customPlot->replot();
 }
 
@@ -150,12 +140,13 @@ void connectwindow::ApplyCustomPlotTheme(QCustomPlot *customPlot, bool dark)
         return;
     }
 
-    const QColor widgetBg = dark ? QColor("#302f3a") : QColor("#f4f4f4");
-    const QColor plotBg = dark ? QColor("#24232b") : QColor("#ffffff");
-    const QColor textColor = dark ? QColor("#f5f5f5") : QColor("#202020");
-    const QColor axisColor = dark ? QColor("#cfd3dc") : QColor("#202020");
-    const QColor gridColor = dark ? QColor("#4b4a55") : QColor("#d0d0d0");
-    const QColor subGridColor = dark ? QColor("#3a3942") : QColor("#e8e8e8");
+    // 深色档与 data/QSS/ConsoleDark.qss 的调色板同源
+    const QColor widgetBg    = dark ? QColor("#0E1620") : QColor("#f4f4f4");
+    const QColor plotBg      = dark ? QColor("#0B1119") : QColor("#ffffff");
+    const QColor textColor   = dark ? QColor("#D6E4F0") : QColor("#202020");
+    const QColor axisColor   = dark ? QColor("#2A4258") : QColor("#202020");
+    const QColor gridColor   = dark ? QColor("#1B2A3A") : QColor("#d0d0d0");
+    const QColor subGridColor= dark ? QColor("#16202C") : QColor("#e8e8e8");
 
     customPlot->setBackground(QBrush(widgetBg));
     customPlot->axisRect()->setBackground(QBrush(plotBg));
@@ -240,23 +231,24 @@ void connectwindow::setLED(int color, int size)
     QString max_width = QString("max-width: %1px;").arg(size);              // 最小宽度：size
     QString max_height = QString("max-height: %1px;").arg(size);            // 最小高度：size
     QString border_radius = QString("border-radius: %1px;").arg(size/2);    // 边框是圆角，半径为size/2
-    QString border = QString("border:1px solid black;");                    // 边框为1px黑色
+    QString border = QString("border:1px solid #1B2A3A;");                  // 描边与主题同源
     QString background = "background-color:";
     switch (color) {
     case 0:
-        background += "rgb(190,190,190)";    // 灰色
+        background += "#6B8299";             // 灰   —— 空闲/停止
         break;
     case 1:
-        background += "rgb(255,0,0)";        // 红色
+        background += "#FF3B30";             // 红   —— 连接失败/故障
         break;
     case 2:
-        background += "rgb(0,255,0)";        // 绿色
+        background += "#00E676";             // 绿   —— 已连接/运行中
         break;
     case 3:
-        background += "rgb(255,255,0)";      // 黄色
+        background += "#FFAA00";             // 黄   —— 监听中/待机
         break;
     default:
-        break;
+        background += "#6B8299";             // 兜底：原实现 default 不赋值，
+        break;                               //        会拼出非法的 "background-color:" 空规则
     }
     const QString SheetStyle = min_width + min_height + max_width + max_height + border_radius + border + background;
     ui->label_led->setStyleSheet(SheetStyle);
@@ -266,8 +258,8 @@ void connectwindow::serialDataRec(const QString& data)
 {
     QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
     ui->ptedit_SerialRec->appendHtml(
-        QString("<span style='color:#888'>[%1]</span> "
-                "<span style='color:#2196F3'>RX ▸ %2</span>")
+        QString("<span style='color:#6B8299'>[%1]</span> "
+                "<span style='color:#00D4FF'>RX ▸ %2</span>")
             .arg(ts, data.toHtmlEscaped()));
 }
 
@@ -525,8 +517,8 @@ void connectwindow::on_pbtn_SerialSend_clicked()
 
     QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
     ui->ptedit_SerialRec->appendHtml(
-        QString("<span style='color:#888'>[%1]</span> "
-                "<span style='color:#4CAF50'>TX ▸ %2</span>")
+        QString("<span style='color:#6B8299'>[%1]</span> "
+                "<span style='color:#00E676'>TX ▸ %2</span>")
             .arg(ts, ui->ptedit_SerialSend->toPlainText().toHtmlEscaped()));
 }
 
@@ -536,8 +528,8 @@ void connectwindow::sendPresetCommand(const QString &cmd)
 
     QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
     ui->ptedit_SerialRec->appendHtml(
-        QString("<span style='color:#888'>[%1]</span> "
-                "<span style='color:#4CAF50'>TX ▸ %2</span>")
+        QString("<span style='color:#6B8299'>[%1]</span> "
+                "<span style='color:#00E676'>TX ▸ %2</span>")
             .arg(ts, cmd.toHtmlEscaped()));
 }
 

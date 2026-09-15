@@ -3,6 +3,8 @@
 #include "login.h"
 
 #include <QApplication>
+#include <QCoreApplication>
+#include <QDebug>
 #include <QFile>
 #include <QGuiApplication>
 #include <QMessageBox>
@@ -101,6 +103,15 @@ void OldMainWindow::mousePressEvent(QMouseEvent *e)
 
 void OldMainWindow::onButtonGroupClicked(int id)
 {
+    // 选中态为冰青填充底，因此图标需在浅色描边与深色描边两份之间切换，
+    // 否则浅色的常规图标落在冰青底上会看不清。
+    static const char* iconOff[3] = {
+        ":/icon/icon/Menu.png", ":/icon/icon/2D_Plot.png", ":/icon/icon/3D_Plot.png"
+    };
+    static const char* iconOn[3] = {
+        ":/icon/icon/Menu_on.png", ":/icon/icon/2D_Plot_on.png", ":/icon/icon/3D_Plot_on.png"
+    };
+
     for (int i = 0; i < 3; i++) {
         QPushButton* button = qobject_cast<QPushButton*>(btnGroup.button(i));
         if (!button) {
@@ -108,9 +119,12 @@ void OldMainWindow::onButtonGroupClicked(int id)
         }
 
         if (i == id) {
-            button->setStyleSheet("background-color: #0078D7; border-color: #005A9E; color: white;");
+            button->setStyleSheet("background-color: #00D4FF; border-color: #00D4FF;"
+                                  "color: #070B12; font-weight: bold;");
+            button->setIcon(QIcon(iconOn[i]));
         } else {
             button->setStyleSheet(originalStyleSheets[i]);
+            button->setIcon(QIcon(iconOff[i]));
         }
     }
 }
@@ -120,9 +134,22 @@ void OldMainWindow::switchUiStyle(bool flag)
     Flag_Style = flag;
     emit Flag_Style ? setUiBlacked() : setUiWhited();
 
-    QFile qssFile(Flag_Style ? "./QSS/MaterialDark.qss" : "./QSS/MacOS.qss");
+    applyTheme(Flag_Style ? "ConsoleDark.qss" : "MacOS.qss");
+}
+
+void OldMainWindow::applyTheme(const QString &fileName)
+{
+    // 主题文件随可执行文件部署在 data/QSS/ 下，用 applicationDirPath() 定位，
+    // 避免依赖进程当前工作目录（原实现用的是 ./QSS/ ，该目录并不存在）。
+    const QString path = QCoreApplication::applicationDirPath()
+                         + QStringLiteral("/data/QSS/") + fileName;
+
+    QFile qssFile(path);
     if (qssFile.open(QFile::ReadOnly)) {
-        qApp->setStyleSheet(qssFile.readAll());
+        qApp->setStyleSheet(QString::fromUtf8(qssFile.readAll()));
+        qssFile.close();
+    } else {
+        qWarning() << "主题加载失败:" << path;
     }
 }
 

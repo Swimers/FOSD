@@ -13,23 +13,40 @@
         <file>backgrounds/image2.png</file>
         <file>backgrounds/jianbian_background.png</file>
     </qresource>
+    <!-- 注意：前缀为 /icon，而文件路径本身又以 icon/ 开头，
+         因此运行时资源路径是 :/icon/icon/xxx.png（icon 双写）。 -->
     <qresource prefix="/icon">
-        <file>icon/2D_Plot.png</file>
-        <file>icon/2D_Plot2.png</file>
-        <file>icon/3D_Plot.png</file>
-        <file>icon/favicon.ico</file>
-        <file>icon/Help_icon.png</file>
+        <!-- 左侧导航（*_on 为选中态深色变体，用于冰青填充底） -->
         <file>icon/Menu.png</file>
-        <file>icon/Model_icon.png</file>
-        <file>icon/Pasue_icon.png</file>
-        <file>icon/Play_icon.png</file>
-        <file>icon/Play_icon1.png</file>
-        <file>icon/Reset_icon.png</file>
-        <file>icon/Stop_icon.png</file>
+        <file>icon/Menu_on.png</file>
+        <file>icon/2D_Plot.png</file>
+        <file>icon/2D_Plot_on.png</file>
+        <file>icon/3D_Plot.png</file>
+        <file>icon/3D_Plot_on.png</file>
         <file>icon/TurnOff.png</file>
-        <file>icon/UserIcon.png</file>
-        <file>icon/UserIcon2.png</file>
-        <file>icon/UserManage.png</file>
+        <file>icon/TurnOff_on.png</file>
+
+        <!-- disp3dwindow 工具栏 -->
+        <file>icon/Play_icon.png</file>
+        <file>icon/Stop_icon.png</file>
+        <file>icon/Pause_icon.png</file>
+        <file>icon/Reset_icon.png</file>
+        <file>icon/Model_icon.png</file>
+        <file>icon/Help_icon.png</file>
+
+        <!-- 窗口控制 -->
+        <file>icon/Win_Min.png</file>
+        <file>icon/Win_Max.png</file>
+        <file>icon/Win_Close.png</file>
+
+        <!-- 小尺寸 UI 元件，由 data/QSS/ConsoleDark.qss 引用 -->
+        <file>icon/arrow_down.png</file>
+        <file>icon/arrow_down_dim.png</file>
+        <file>icon/arrow_up.png</file>
+        <file>icon/check.png</file>
+
+        <!-- 应用图标 -->
+        <file>icon/favicon.ico</file>
         <file>icon/xidian_logo.jpg</file>
     </qresource>
 </RCC>

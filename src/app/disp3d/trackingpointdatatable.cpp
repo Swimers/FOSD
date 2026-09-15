@@ -87,13 +87,13 @@ void trackingpointdatatable::InitializeTableRows()
         ui->tab_datatable->setItem(i, 4, new QTableWidgetItem());  // 初始Y
         ui->tab_datatable->setItem(i, 5, new QTableWidgetItem());  // 初始Z
 
-        // 变形量列（带绿色背景）
+        // 变形量列（深色强调底，保留"这三列是变形量"的视觉分组）
         QTableWidgetItem* dispX = new QTableWidgetItem();
         QTableWidgetItem* dispY = new QTableWidgetItem();
         QTableWidgetItem* dispZ = new QTableWidgetItem();
-        dispX->setBackground(QColor(200, 255, 200));
-        dispY->setBackground(QColor(200, 255, 200));
-        dispZ->setBackground(QColor(200, 255, 200));
+        dispX->setBackground(QColor("#0F2A22"));
+        dispY->setBackground(QColor("#0F2A22"));
+        dispZ->setBackground(QColor("#0F2A22"));
         ui->tab_datatable->setItem(i, 6, dispX);
         ui->tab_datatable->setItem(i, 7, dispY);
         ui->tab_datatable->setItem(i, 8, dispZ);

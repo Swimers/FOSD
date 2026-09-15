@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>FOSD-Pro 显控台主题 · 设计预览</title>
+<style>
+  /* ============================================================
+     显控台主题调色板 —— 与 ConsoleDark.qss 保持同源
+     ============================================================ */
+  :root {
+    --bg-base:   #070B12;
+    --bg-panel:  #0E1620;
+    --border:    #1B2A3A;
+    --accent:    #00D4FF;
+    --text-main: #D6E4F0;
+    --text-dim:  #6B8299;
+    --ok:        #00E676;
+    --warn:      #FFAA00;
+    --alarm:     #FF3B30;
+    --mono: "Consolas", "DejaVu Sans Mono", monospace;
+  }
+
+  * { box-sizing: border-box; border-radius: 0; }
+
+  body {
+    margin: 0; padding: 28px;
+    background: var(--bg-base);
+    color: var(--text-main);
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  h1 { font-size: 19px; font-weight: 600; letter-spacing: 2px; margin: 0 0 4px; }
+  h1::after { content: ""; display: block; width: 56px; height: 2px; background: var(--accent); margin-top: 8px; }
+  .sub { color: var(--text-dim); font-size: 12px; margin-bottom: 26px; letter-spacing: .5px; }
+
+  h2 {
+    font-size: 13px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--accent); margin: 30px 0 12px;
+    padding-left: 9px; border-left: 2px solid var(--accent);
+  }
+  h2 .n { color: var(--text-dim); font-family: var(--mono); margin-right: 7px; }
+
+  /* ---------- 调色板 ---------- */
+  .swatches { display: flex; flex-wrap: wrap; gap: 2px; }
+  .sw { width: 118px; border: 1px solid var(--border); background: var(--bg-panel); }
+  .sw .chip { height: 52px; box-shadow: inset 0 0 0 1px rgba(107,130,153,.45); }
+  .sw .meta { padding: 7px 9px; }
+  .sw .name { font-size: 11px; letter-spacing: .6px; }
+  .sw .hex { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+
+  /* ---------- 通用面板 ---------- */
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+    margin-bottom: 2px;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .row:last-child { margin-bottom: 0; }
+  .cap { color: var(--text-dim); font-size: 11px; letter-spacing: .8px; min-width: 62px; }
+
+  /* ---------- 按钮四态 ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 7px 16px; font-size: 12.5px; font-family: inherit;
+    background: var(--bg-panel); color: var(--text-main);
+    border: 1px solid var(--border); cursor: default;
+    letter-spacing: .5px; transition: none;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:active { background: #12242E; }
+  .btn.checked { background: var(--accent); color: var(--bg-base); border-color: var(--accent); font-weight: 600; }
+  .btn.disabled { color: var(--text-dim); border-color: var(--border); background: #0B1119; }
+  .btn.sm { padding: 4px 11px; font-size: 12px; }
+  /* 危险/中断操作 */
+  .btn.danger:hover { border-color: var(--alarm); color: var(--alarm); }
+
+  /* ---------- 输入控件 ---------- */
+  .inp {
+    background: var(--bg-base); color: var(--text-main);
+    border: 1px solid var(--border); padding: 6px 9px;
+    font-family: inherit; font-size: 12.5px; min-width: 92px;
+  }
+  .inp:hover { border-color: #2A4258; }
+  .inp:focus { outline: none; border-color: var(--accent); }
+  .inp.mono { font-family: var(--mono); letter-spacing: .5px; }
+  .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; }
+  .box {
+    width: 15px; height: 15px; border: 1px solid var(--border);
+    background: var(--bg-base); display: inline-flex;
+    align-items: center; justify-content: center;
+    color: var(--accent); font-size: 11px; line-height: 1;
+  }
+  .box.on { border-color: var(--accent); }
+
+  /* ---------- 表格 ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th {
+    background: var(--bg-panel); color: var(--accent);
+    border: 1px solid var(--border); padding: 7px 10px;
+    text-align: left; font-weight: 600; letter-spacing: .8px; font-size: 11.5px;
+  }
+  td {
+    border: 1px solid var(--border); padding: 6px 10px;
+    background: var(--bg-panel); font-family: var(--mono); font-size: 12px;
+  }
+  tr.sel td { background: #0F2230; color: var(--accent); }
+  td.ook { color: var(--ok); }
+  td.owarn { color: var(--warn); }
+  td.oalarm { color: var(--alarm); }
+
+  /* ---------- 页签 ---------- */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 8px 20px; font-size: 12.5px; color: var(--text-dim);
+    border: 1px solid transparent; border-bottom: none; cursor: default;
+    letter-spacing: .8px; margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--text-main); }
+  .tab.on {
+    color: var(--accent); border-color: var(--border);
+    border-top: 2px solid var(--accent); background: var(--bg-panel);
+  }
+
+  /* ---------- 滚动条 ---------- */
+  .scroll-demo { height: 118px; overflow-y: scroll; background: var(--bg-base); border: 1px solid var(--border); padding: 10px 12px; }
+  .scroll-demo::-webkit-scrollbar { width: 10px; }
+  .scroll-demo::-webkit-scrollbar-track { background: var(--bg-panel); }
+  .scroll-demo::-webkit-scrollbar-thumb { background: #1B2A3A; border: 1px solid #22384E; }
+  .scroll-demo::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  .scroll-demo p { margin: 0 0 7px; font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); }
+  .scroll-demo p b { color: var(--accent); font-weight: 400; }
+  .scroll-demo p i { color: var(--ok); font-style: normal; }
+
+  /* ---------- 停靠面板 ---------- */
+  .dock { border: 1px solid var(--border); background: var(--bg-panel); margin-bottom: 2px; }
+  .dock > .title {
+    background: #12202E; border-bottom: 1px solid var(--border);
+    padding: 6px 11px; font-size: 11.5px; letter-spacing: 1.2px;
+    color: var(--accent); display: flex; justify-content: space-between;
+  }
+  .dock > .title span { color: var(--text-dim); }
+  .dock > .body { padding: 13px 14px; }
+
+  /* ---------- 状态灯 ---------- */
+  .led { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
+  .dot { width: 11px; height: 11px; border: 1px solid var(--border); display: inline-block; }
+  .dot.ok { background: var(--ok); }
+  .dot.warn { background: var(--warn); }
+  .dot.alarm { background: var(--alarm); }
+  .dot.idle { background: var(--text-dim); }
+
+  /* ---------- 图标 ---------- */
+  .icons { display: flex; flex-wrap: wrap; gap: 2px; }
+  .ic {
+    width: 96px; padding: 13px 6px; text-align: center;
+    background: var(--bg-panel); border: 1px solid var(--border);
+  }
+  .ic svg { display: block; margin: 0 auto 7px; }
+  .ic .lbl { font-size: 11px; color: var(--text-dim); letter-spacing: .4px; }
+  .ic.hi svg { stroke: var(--accent); }
+  .ic .onfill { width: 34px; height: 34px; margin: 0 auto 7px; background: var(--accent);
+                display: flex; align-items: center; justify-content: center; }
+  .ic .onfill svg { margin: 0; stroke: var(--bg-base); }
+  svg { stroke: var(--text-main); stroke-width: 2; fill: none;
+        stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- 主窗口整机示意 ---------- */
+  .app { border: 1px solid var(--border); background: var(--bg-base); display: flex; height: 306px; }
+  .app .side {
+    width: 152px; background: var(--bg-panel);
+    border-right: 1px solid var(--border); padding: 10px 8px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .nav {
+    display: flex; align-items: center; gap: 9px;
+    padding: 11px 10px; font-size: 12.5px; letter-spacing: 1px;
+    color: var(--text-main); border: 1px solid transparent; cursor: default;
+  }
+  .nav:hover { border-color: var(--accent); color: var(--accent); }
+  .nav.on { background: var(--accent); color: var(--bg-base); font-weight: 600; }
+  .nav.on svg { stroke: var(--bg-base); }
+  .nav svg { flex: none; }
+  .nav .sp { flex: 1; }
+  .app .main { flex: 1; display: flex; flex-direction: column; }
+  .app .topbar {
+    height: 34px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 2px; padding: 0 6px; background: var(--bg-panel);
+  }
+  .wbtn {
+    width: 27px; height: 24px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid transparent; cursor: default;
+  }
+  .wbtn:hover { border-color: var(--accent); }
+  .wbtn.close:hover { border-color: var(--alarm); }
+  .wbtn.close:hover svg { stroke: var(--alarm); }
+  .app .content { flex: 1; padding: 14px 16px; overflow: hidden; }
+  .app .crumb { color: var(--text-dim); font-size: 11.5px; letter-spacing: 1.2px; margin-bottom: 11px; }
+  .app .crumb b { color: var(--accent); font-weight: 500; }
+
+  .note { color: var(--text-dim); font-size: 11.5px; margin-top: 9px; line-height: 1.7; }
+  .note b { color: var(--text-main); font-weight: 500; }
+  code { font-family: var(--mono); color: var(--accent); font-size: 11.5px; }
+</style>
+</head>
+<body>
+
+<h1>FOSD-PRO 显控台主题</h1>
+<div class="sub">近黑冰青 · 纯直角 · 描边按钮 · 等宽读数 &nbsp;|&nbsp; 设计预览</div>
+
+<!-- ============ 调色板 ============ -->
+<h2><span class="n">01</span>调色板</h2>
+<div class="swatches">
+  <div class="sw"><div class="chip" style="background:#070B12"></div><div class="meta"><div class="name">bg-base</div><div class="hex">#070B12</div></div></div>
+  <div class="sw"><div class="chip" style="background:#0E1620"></div><div class="meta"><div class="name">bg-panel</div><div class="hex">#0E1620</div></div></div>
+  <div class="sw"><div class="chip" style="background:#1B2A3A"></div><div class="meta"><div class="name">border</div><div class="hex">#1B2A3A</div></div></div>
+  <div class="sw"><div class="chip" style="background:#00D4FF"></div><div class="meta"><div class="name">accent</div><div class="hex">#00D4FF</div></div></div>
+  <div class="sw"><div class="chip" style="background:#D6E4F0"></div><div class="meta"><div class="name">text-main</div><div class="hex">#D6E4F0</div></div></div>
+  <div class="sw"><div class="chip" style="background:#6B8299"></div><div class="meta"><div class="name">text-dim</div><div class="hex">#6B8299</div></div></div>
+  <div class="sw"><div class="chip" style="background:#00E676"></div><div class="meta"><div class="name">ok</div><div class="hex">#00E676</div></div></div>
+  <div class="sw"><div class="chip" style="background:#FFAA00"></div><div class="meta"><div class="name">warn</div><div class="hex">#FFAA00</div></div></div>
+  <div class="sw"><div class="chip" style="background:#FF3B30"></div><div class="meta"><div class="name">alarm</div><div class="hex">#FF3B30</div></div></div>
+</div>
+
+<!-- ============ 主窗口整机 ============ -->
+<h2><span class="n">02</span>主窗口整机示意</h2>
+<div class="app">
+  <div class="side">
+    <div class="nav on">
+      <svg width="19" height="19" viewBox="0 0 24 24"><path d="M2 12h4l3-7 4 14 3-7h6"/></svg>
+      <span>调 解 仪</span>
+    </div>
+    <div class="nav">
+      <svg width="19" height="19" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><path d="M7 17v-5M12 17V8M17 17v-3"/></svg>
+      <span>二维验证</span>
+    </div>
+    <div class="nav">
+      <svg width="19" height="19" viewBox="0 0 24 24"><path d="M12 2.6 21 7.3v9.4L12 21.4 3 16.7V7.3z"/><path d="M3 7.3 12 12l9-4.7M12 12v9.4"/></svg>
+      <span>变 形 场</span>
+    </div>
+    <div class="sp" style="flex:1"></div>
+    <div class="nav" style="gap:8px">
+      <svg width="19" height="19" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.6 6.6a8 8 0 1 0 10.8 0"/></svg>
+      <span>退出系统</span>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="wbtn"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+      <div class="wbtn"><svg width="14" height="14" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></div>
+      <div class="wbtn close"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    </div>
+    <div class="content">
+      <div class="crumb">FOSD MONITOR &nbsp;/&nbsp; <b>管理员</b></div>
+      <div class="grid2">
+        <div class="dock">
+          <div class="title">实时状态 <span>■</span></div>
+          <div class="body">
+            <div class="row" style="margin-bottom:9px"><span class="led"><span class="dot ok"></span>解调仪已连接</span></div>
+            <div class="row" style="margin-bottom:0"><span class="led"><span class="dot warn"></span>监听中 · 待机</span></div>
+          </div>
+        </div>
+        <div class="dock">
+          <div class="title">采样参数 <span>■</span></div>
+          <div class="body" style="padding:10px 12px">
+            <div class="row" style="margin-bottom:7px"><span class="cap">采样频率</span><input class="inp mono" value="100" style="min-width:60px;width:60px"><span style="color:var(--text-dim);font-size:11.5px">Hz</span></div>
+            <div class="row" style="margin-bottom:0"><span class="cap">应变上限</span><input class="inp mono" value="2000" style="min-width:70px;width:70px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 按钮四态 ============ -->
+<h2><span class="n">03</span>按钮四态</h2>
+<div class="panel">
+  <div class="row">
+    <span class="cap">常态</span>
+    <span class="btn">打开串口</span>
+    <span class="btn">打开网络</span>
+    <span class="btn sm">刷新</span>
+  </div>
+  <div class="row">
+    <span class="cap">悬停</span>
+    <span class="btn" style="border-color:var(--accent);color:var(--accent)">打开串口</span>
+    <span class="cap" style="margin-left:16px">按下</span>
+    <span class="btn" style="background:#12242E">打开串口</span>
+  </div>
+  <div class="row">
+    <span class="cap">选中</span>
+    <span class="btn checked">全部通道</span>
+    <span class="btn checked">CH 1-8</span>
+    <span class="cap" style="margin-left:16px">禁用</span>
+    <span class="btn disabled">默认比例</span>
+  </div>
+  <div class="row" style="margin-bottom:0">
+    <span class="cap">危险操作</span>
+    <span class="btn danger" style="border-color:var(--alarm);color:var(--alarm)">停止采集</span>
+    <span class="btn">保存频谱</span>
+    <span class="btn">波长置零</span>
+  </div>
+</div>
+
+<!-- ============ 表单控件 ============ -->
+<h2><span class="n">04</span>表单控件</h2>
+<div class="grid2">
+  <div class="panel">
+    <div class="row"><span class="cap">输入框</span><input class="inp" value="COM3" style="width:96px"><input class="inp" value="聚焦态" style="width:96px;border-color:var(--accent)"></div>
+    <div class="row"><span class="cap">数值</span><input class="inp mono" value="1543.129" style="width:110px"><span style="color:var(--text-dim);font-size:11.5px">nm · 等宽</span></div>
+    <div class="row" style="margin-bottom:0"><span class="cap">下拉框</span>
+      <select class="inp" style="width:110px"><option>解调仪</option><option>应变</option></select>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <span class="cap">复选</span>
+      <span class="chk"><span class="box on">✓</span>CH1</span>
+      <span class="chk"><span class="box on">✓</span>CH2</span>
+      <span class="chk"><span class="box"></span>CH3</span>
+    </div>
+    <div class="row" style="margin-bottom:0">
+      <span class="cap">单选</span>
+      <span class="chk"><span class="box on">●</span>串口</span>
+      <span class="chk"><span class="box"></span>UDP</span>
+      <span class="chk"><span class="box"></span>TCP</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 页签 ============ -->
+<h2><span class="n">05</span>页签</h2>
+<div class="panel" style="padding:0;border:none">
+  <div class="tabs">
+    <div class="tab on">光谱</div>
+    <div class="tab">波长</div>
+    <div class="tab">串口</div>
+    <div class="tab">UDP</div>
+    <div class="tab">TCP</div>
+  </div>
+  <div class="panel" style="border-top:none;margin:0">
+    <div style="height:56px;display:flex;align-items:center;color:var(--text-dim);font-size:12px;letter-spacing:1px">页签内容区 · QCustomPlot 绘图区背景 <code>#0E1620</code></div>
+  </div>
+</div>
+
+<!-- ============ 数据表格 ============ -->
+<h2><span class="n">06</span>数据表格 <span style="color:var(--text-dim);font-weight:400;letter-spacing:0">（等宽数字 + 状态语义色）</span></h2>
+<table>
+  <thead>
+    <tr><th style="width:130px">传感器编号</th><th style="width:150px">波长 (nm)</th><th style="width:150px">应变 (με)</th><th>状态</th></tr>
+  </thead>
+  <tbody>
+    <tr class="sel"><td>CH1_1</td><td>1543.129</td><td>12.4810</td><td style="font-family:inherit">选中行 · 冰青高亮</td></tr>
+    <tr><td>CH1_2</td><td>1548.458</td><td class="ook">-3.2210</td><td class="ook" style="font-family:inherit">正常</td></tr>
+    <tr><td>CH2_1</td><td>1552.017</td><td class="owarn">1841.55</td><td class="owarn" style="font-family:inherit">接近上限</td></tr>
+    <tr><td>CH2_2</td><td>1556.884</td><td class="oalarm">2298.14</td><td class="oalarm" style="font-family:inherit">outRange 超限</td></tr>
+  </tbody>
+</table>
+<div class="note">状态列的三档配色即调色板的 <code>ok</code> / <code>warn</code> / <code>alarm</code>，对应现有 <code>connectwindow</code> 里应变上下限的越限判定。</div>
+
+<!-- ============ 滚动条与日志 ============ -->
+<h2><span class="n">07</span>滚动条与收发日志</h2>
+<div class="grid2">
+  <div>
+    <div class="scroll-demo">
+      <p><b>[12:04:31]</b> 串口 COM3 已打开 @ 115200</p>
+      <p><i>[12:04:31] RX</i> 解调仪握手成功</p>
+      <p><b>[12:04:32]</b> <i>TX</i> CMD_START</p>
+      <p><i>[12:04:33] RX</i> 收到 16 通道数据帧</p>
+      <p><b>[12:04:33]</b> 波长基准 λ₀ 校准完成</p>
+      <p><i>[12:04:34 RX</i>] 应变解算 12 路正常</p>
+      <p><b>[12:04:35]</b> <i>TX</i> 自动保存已开启 1000ms</p>
+      <p><b>[12:04:36]</b> 队列积压 0 帧</p>
+    </div>
+    <div class="note">滚动条原本<code>零条规则</code>，深色底上会露出系统浅灰滑块。现改为轨道 <code>#0E1620</code>、滑块 <code>#1B2A3A</code>、悬停转冰青。</div>
+  </div>
+  <div class="panel">
+    <div class="row"><span class="cap">收发着色</span></div>
+    <div style="font-family:var(--mono);font-size:12px;line-height:2">
+      <div><span style="color:#6B8299">[12:04:31]</span> 串口已打开</div>
+      <div><span style="color:#00D4FF">RX</span> 解调仪握手成功</div>
+      <div><span style="color:#00E676">TX</span> CMD_START</div>
+    </div>
+    <div class="note" style="margin-top:14px">时间戳 <code>#6B8299</code> · 接收 <code>#00D4FF</code> · 发送 <code>#00E676</code></div>
+  </div>
+</div>
+
+<!-- ============ 状态灯 ============ -->
+<h2><span class="n">08</span>状态指示灯</h2>
+<div class="panel">
+  <div class="row" style="margin-bottom:0">
+    <span class="led"><span class="dot idle"></span>空闲 / 停止</span>
+    <span style="width:20px"></span>
+    <span class="led"><span class="dot warn"></span>监听中 / 待机</span>
+    <span style="width:20px"></span>
+    <span class="led"><span class="dot ok"></span>已连接 / 运行</span>
+    <span style="width:20px"></span>
+    <span class="led"><span class="dot alarm"></span>连接失败 / 故障</span>
+  </div>
+  <div class="note">对应 <code>connectwindow::setLED(0/3/2/1)</code>。原实现是纯黑描边加超高饱和的 <code>rgb(0,255,0)</code>，且缺少 default 分支。</div>
+</div>
+
+<!-- ============ 图标 ============ -->
+<h2><span class="n">09</span>轮廓图标 <span style="color:var(--text-dim);font-weight:400;letter-spacing:0">（统一描边风格 · 替换现有实心图标）</span></h2>
+<div class="icons">
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M2 12h4l3-7 4 14 3-7h6"/></svg>
+    <div class="lbl">调解仪</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><path d="M7 17v-5M12 17V8M17 17v-3"/></svg>
+    <div class="lbl">二维验证</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M12 2.6 21 7.3v9.4L12 21.4 3 16.7V7.3z"/><path d="M3 7.3 12 12l9-4.7M12 12v9.4"/></svg>
+    <div class="lbl">变形场</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.6 6.6a8 8 0 1 0 10.8 0"/></svg>
+    <div class="lbl">退出系统</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M7 4.5 19 12 7 19.5z"/></svg>
+    <div class="lbl">启动</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>
+    <div class="lbl">停止</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg>
+    <div class="lbl">暂停</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4.4h-4.4"/></svg>
+    <div class="lbl">复位</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M12 2.6 21 7.3v9.4L12 21.4 3 16.7V7.3z"/><path d="M3 7.3 12 12l9-4.7"/><circle cx="12" cy="12" r="1.6"/></svg>
+    <div class="lbl">模型</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.4 9.4a2.7 2.7 0 1 1 3.3 3.2v1.7"/><path d="M12.4 17.6h.1"/></svg>
+    <div class="lbl">帮助</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+    <div class="lbl">最小化</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg>
+    <div class="lbl">最大化</div>
+  </div>
+  <div class="ic hi">
+    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    <div class="lbl">关闭</div>
+  </div>
+  <div class="ic">
+    <div class="onfill"><svg width="22" height="22" viewBox="0 0 24 24" style="stroke:var(--bg-base)"><path d="M12 2.6 21 7.3v9.4L12 21.4 3 16.7V7.3z"/><path d="M3 7.3 12 12l9-4.7M12 12v9.4"/></svg></div>
+    <div class="lbl">选中态变体</div>
+  </div>
+</div>
+<div class="note">
+  源文件为 <code>200×200</code> PNG，实际显示 <code>24×24</code>。因此 200 画布上的线宽须按 <code>2 × 200 ÷ 24 ≈ 17px</code> 绘制，否则缩到 24px 后线条会消失。
+  选中态整块填充冰青，故另出一份深色描边变体。
+</div>
+
+<div class="note" style="margin-top:30px;padding-top:16px;border-top:1px solid var(--border)">
+  本页为设计预览，最终效果以 <code>data/QSS/ConsoleDark.qss</code> 在 Qt 中渲染为准。QSS 不支持阴影与过渡动画，故本页的发光感仅靠描边与底色对比表达。
+</div>
+
+</body>
+</html>

@@ -36,6 +36,12 @@ private slots:
 private:
     void InitOldMainWindow();
 
+    /**
+     * @brief 从 data/QSS/ 加载指定主题文件并应用到整个应用
+     * @param fileName 主题文件名，如 "ConsoleDark.qss"
+     */
+    void applyTheme(const QString &fileName);
+
 protected:
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);

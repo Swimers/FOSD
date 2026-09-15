@@ -153,7 +153,7 @@ void disp3dkeypointedit::on_pbtn_DispCube_clicked()
     mapper->SetInputConnection(cubeSource->GetOutputPort());
     cubeActor = vtkSmartPointer<vtkActor>::New();
     cubeActor->SetMapper(mapper);
-    cubeActor->GetProperty()->SetColor(1, 0, 0);
+    cubeActor->GetProperty()->SetColor(1.0, 0.23, 0.19);   // alarm 朱红 #FF3B30
     cubeActor->GetProperty()->SetOpacity(0.4);
     cubeActor->GetProperty()->SetRepresentationToWireframe();
     renderer->AddActor(cubeActor);
