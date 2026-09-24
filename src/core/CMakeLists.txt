@@ -1,0 +1,19 @@
+target_sources(FOSD-Pro PRIVATE
+    IFE/IFE.cpp
+    IFE/IFE.h
+    RainbowIFE/rainbowife.cpp
+    RainbowIFE/rainbowife.h
+    RainbowIFE/rainbowloadcalibration.cpp
+    RainbowIFE/rainbowloadcalibration.h
+    model/disp3dbackground.cpp
+    model/disp3dbackground.h
+    model/disp3dfreshmodelthread.cpp
+    model/disp3dfreshmodelthread.h
+    model/disp3dglobal.h
+    model/disp3dinteractor.cpp
+    model/disp3dinteractor.h
+    model/disp3dmodel.cpp
+    model/disp3dmodel.h
+    model/trackingpoint.cpp
+    model/trackingpoint.h
+)
