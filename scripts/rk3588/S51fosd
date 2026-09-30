@@ -1,0 +1,80 @@
+#!/bin/sh
+# Start FOSD after Buildroot's S49weston has opened the Wayland socket.
+
+APP_DIR=/root/Qt_Project/Qt_Test_Compilation
+PID_FILE=$APP_DIR/run.pid
+LOG_FILE=$APP_DIR/run.log
+
+is_running()
+{
+    [ -r "$PID_FILE" ] || return 1
+    pid=$(cat "$PID_FILE")
+    case "$pid" in
+        ''|*[!0-9]*) return 1 ;;
+    esac
+    [ -r "/proc/$pid/cmdline" ] || return 1
+    tr '\000' ' ' < "/proc/$pid/cmdline" | grep -Fq "$APP_DIR/FOSD-Pro"
+}
+
+start_app()
+{
+    if is_running; then
+        echo "FOSD already running (PID $(cat "$PID_FILE"))"
+        return 0
+    fi
+    if [ ! -x "$APP_DIR/run-fosd.sh" ]; then
+        echo "FOSD launcher missing: $APP_DIR/run-fosd.sh" >&2
+        return 1
+    fi
+
+    . /etc/profile
+    export XDG_RUNTIME_DIR=/run
+    export WAYLAND_DISPLAY=wayland-0
+
+    waited=0
+    while [ "$waited" -lt 60 ]; do
+        if [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ] && wayland-info >/dev/null 2>&1; then
+            break
+        fi
+        sleep 1
+        waited=$((waited + 1))
+    done
+    if [ "$waited" -ge 60 ]; then
+        echo "Weston Wayland socket did not become ready" >&2
+        return 1
+    fi
+
+    cd "$APP_DIR" || return 1
+    nohup "$APP_DIR/run-fosd.sh" >> "$LOG_FILE" 2>&1 </dev/null &
+    echo $! > "$PID_FILE"
+    sleep 2
+    if ! is_running; then
+        echo "FOSD exited during startup; see $LOG_FILE" >&2
+        return 1
+    fi
+    echo "FOSD started (PID $(cat "$PID_FILE"))"
+}
+
+stop_app()
+{
+    if is_running; then
+        kill "$(cat "$PID_FILE")" || return 1
+        echo "FOSD stopped"
+    fi
+    rm -f "$PID_FILE"
+}
+
+case "$1" in
+    start) start_app ;;
+    stop) stop_app ;;
+    restart) stop_app && start_app ;;
+    status)
+        if is_running; then
+            echo "FOSD running (PID $(cat "$PID_FILE"))"
+        else
+            echo "FOSD not running"
+            exit 1
+        fi
+        ;;
+    *) echo "Usage: $0 {start|stop|restart|status}" >&2; exit 2 ;;
+esac

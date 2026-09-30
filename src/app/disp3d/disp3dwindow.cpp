@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QFileDialog>
+#include <QFont>
 
 #include <vtkPolyDataMapper.h>
 #include <vtkAutoInit.h>
@@ -92,6 +93,17 @@ void disp3dwindow::InitWindow()
     m_disp3dmodel->SetInteractor(m_iren);
     disp3dinteractor *style = disp3dinteractor::New();
     style->GetDisplayModelPtr(m_disp3dmodel);
+    QLabel* pointIdOverlay = new QLabel(ui->vtk_openGL);
+    pointIdOverlay->setObjectName("pointIdOverlay");
+    pointIdOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+    pointIdOverlay->setAttribute(Qt::WA_TranslucentBackground);
+    pointIdOverlay->setStyleSheet("QLabel#pointIdOverlay { color: #ff4040; background: transparent; border: none; }");
+    QFont pointIdFont = pointIdOverlay->font();
+    pointIdFont.setPixelSize(20);
+    pointIdFont.setBold(true);
+    pointIdOverlay->setFont(pointIdFont);
+    pointIdOverlay->hide();
+    style->SetPointIdOverlay(pointIdOverlay);
     m_iren->SetInteractorStyle(style);
     style->SetDefaultRenderer(m_disp3dmodel->GetVTKRenderer());
     style->Delete();  //智能指针管理，这里可以Delete

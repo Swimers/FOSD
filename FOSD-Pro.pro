@@ -7,10 +7,18 @@
 QT       += core gui
 QT       += opengl
 
+# Invoke the Buildroot qmake with CONFIG+=rk3588_arm_linux.
+contains(CONFIG, rk3588_arm_linux) {
+    !unix: error(rk3588_arm_linux requires the RK3588 Linux cross qmake)
+    CONFIG -= debug
+    CONFIG += release
+    DEFINES += FOSD_RK3588_ARM_LINUX
+}
+
 win32 {
     SYSTEM_NAME = windows
 }
-unix:!macx {
+unix:!macx:!contains(CONFIG, rk3588_arm_linux) {
     QT += waylandcompositor
     LIBS += -lwayland-server -lxkbcommon
 }
@@ -54,7 +62,7 @@ INCLUDEPATH +=  src/main \
                 src/app/disp3d/docks \
                 src/app/mainwindow \
                 src/app/user \
-                src/communication \
+                src/Communication \
                 src/core/IFE \
                 src/core/RainbowIFE \
                 src/core/model \
@@ -103,9 +111,9 @@ HEADERS += \
     src/app/disp3d/disp3dwindow.h \
     src/app/mainwindow/oldmainwindow.h \
     src/app/user/login.h \
-    src/communication/serialtask.h \
-    src/communication/tcptask.h \
-    src/communication/udptask.h \
+    src/Communication/serialtask.h \
+    src/Communication/tcptask.h \
+    src/Communication/udptask.h \
     src/core/IFE/IFE.h \
     src/protocol/analyzepackets.h \
     src/protocol/pocketsconfig.h \
@@ -149,9 +157,9 @@ SOURCES += \
     src/app/disp3d/disp3dwindow.cpp \
     src/app/mainwindow/oldmainwindow.cpp \
     src/app/user/login.cpp \
-    src/communication/serialtask.cpp \
-    src/communication/tcptask.cpp \
-    src/communication/udptask.cpp \
+    src/Communication/serialtask.cpp \
+    src/Communication/tcptask.cpp \
+    src/Communication/udptask.cpp \
     src/core/IFE/IFE.cpp \
     src/protocol/analyzepackets.cpp \
     src/utils/database/database.cpp \
@@ -173,7 +181,6 @@ SOURCES += \
     src/utils/Storage/DataStorageThread.cpp \
     src/app/mainwindow/rainbowmainwindow.cpp \
     src/fosdplugin.cpp \
-    src/main.cpp \
     src/test/teststorge.cpp \
     src/app/disp3d/dispdata.cpp \
     src/test/testdatainjector.cpp \
@@ -318,6 +325,33 @@ LIBS +=$$VTK_DIR/lib/vtktiff-8.2D.lib
 LIBS +=$$VTK_DIR/lib/vtkzlib-8.2D.lib
 }
 else:unix {
+contains(CONFIG, rk3588_arm_linux) {
+    VTK_ROOT = $$clean_path($$PWD/lib/VTK/VTK-Linux-release)
+    !exists($$VTK_ROOT/include/vtk-8.2/vtkVersion.h): error(RK3588 VTK Release headers are missing: $$VTK_ROOT)
+    !exists($$VTK_ROOT/lib/libvtkGUISupportQt-8.2.so): error(RK3588 VTK Release libraries are missing: $$VTK_ROOT)
+    INCLUDEPATH += $$VTK_ROOT/include/vtk-8.2
+    LIBS += -L$$VTK_ROOT/lib
+    QMAKE_RPATHLINKDIR += $$VTK_ROOT/lib
+    LIBS += -lvtkGUISupportQt-8.2 \
+            -lvtkRenderingOpenGL2-8.2 \
+            -lvtkRenderingFreeType-8.2 \
+            -lvtkRenderingAnnotation-8.2 \
+            -lvtkInteractionStyle-8.2 \
+            -lvtkInteractionWidgets-8.2 \
+            -lvtkIOGeometry-8.2 \
+            -lvtkIOImage-8.2 \
+            -lvtkIOLegacy-8.2 \
+            -lvtkIOCore-8.2 \
+            -lvtkFiltersSources-8.2 \
+            -lvtkFiltersTexture-8.2 \
+            -lvtkFiltersModeling-8.2 \
+            -lvtkFiltersGeneral-8.2 \
+            -lvtkFiltersCore-8.2 \
+            -lvtkRenderingCore-8.2 \
+            -lvtkCommonExecutionModel-8.2 \
+            -lvtkCommonDataModel-8.2 \
+            -lvtkCommonCore-8.2
+} else {
 VTK_ROOT = $$PWD/lib/VTK/VTK-Linux-debug
 VTK_INCLUDE_DIR = $$VTK_ROOT/include/vtk-8.2
 VTK_LIB_DIR     = $$VTK_ROOT/lib
@@ -372,6 +406,7 @@ LIBS += -lvtksys-8.2
 LIBS += -lvtktiff-8.2
 LIBS += -lvtkzlib-8.2
 }
+}
 
 
 win32 {
@@ -385,6 +420,7 @@ macx {
 }
 
 BUILD_ROOT = $$PWD/build/QMake/$$SYSTEM_NAME
+contains(CONFIG, rk3588_arm_linux): BUILD_ROOT = $$PWD/build/Qmake/RK3588-ARM-Linux
 
 CONFIG(release, debug|release) {
     BUILD_MODE = release

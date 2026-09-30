@@ -13,12 +13,17 @@
 int main(int argc, char *argv[])
 {
     //OpenGL初始化
+#ifdef FOSD_RK3588_ARM_LINUX
+    QSurfaceFormat format = QVTKOpenGLNativeWidget::defaultFormat();
+    format.setSamples(0);
+#else
     QSurfaceFormat format;
     format.setRenderableType(QSurfaceFormat::OpenGL);
     format.setVersion(3, 2);  // 指定 OpenGL 版本
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     format.setSamples(4);  // 抗锯齿
+#endif
     QSurfaceFormat::setDefaultFormat(format);
 
     //VTK相关初始化
@@ -46,7 +51,7 @@ int main(int argc, char *argv[])
 
     //直接注册老主界面
     OldMainWindow *  m_MainWindow = new OldMainWindow("1");
-    m_MainWindow->show();
+    m_MainWindow->showFullScreen();
 
     return a.exec();
 }

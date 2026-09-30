@@ -2,8 +2,8 @@
 #define DISP3DINTERACTOR_H
 
 #include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkTextActor.h>
 #include <vtkActor.h>
+#include <QPointer>
 #include <math.h>
 
 #include "disp3dmodel.h"
@@ -17,6 +17,7 @@ public:
 
     static disp3dinteractor* New(); //内存管理
     void GetDisplayModelPtr(disp3dmodel* ptr){m_disp3dmodel = ptr;}
+    void SetPointIdOverlay(QLabel* overlay){m_pointIdOverlay = overlay;}
 
 public: //重定向交互功能
     virtual void OnLeftButtonDown();    //鼠标左键按下
@@ -55,12 +56,14 @@ public: //变量
     QLabel * lab_KeyPointDisplace;
     QLabel * lab_KeyPointNewPos;
 
-    vtkTextActor* m_TextActor;
     vtkActor* m_SphereActor;
 
     vtkIdType OldID;
 
 private:
+    void UpdatePointIdOverlay(const double worldPos[3]);
+
+    QPointer<QLabel> m_pointIdOverlay;
     disp3dinteractor* style;
 
     disp3dmodel* m_disp3dmodel;

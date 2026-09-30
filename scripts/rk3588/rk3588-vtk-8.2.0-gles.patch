@@ -1,0 +1,163 @@
+--- a/GUISupport/Qt/QVTKOpenGLNativeWidget.cxx
++++ b/GUISupport/Qt/QVTKOpenGLNativeWidget.cxx
+@@ -21,7 +21,18 @@
+ #include <QOpenGLDebugLogger>
+ #include <QOpenGLFramebufferObject>
+ #include <QOpenGLFunctions>
+-#include <QOpenGLFunctions_3_2_Core>
++#include <QOpenGLExtraFunctions>
++#if GL_ES_VERSION_3_0 == 1
++#ifndef GL_DRAW_FRAMEBUFFER
++#define GL_DRAW_FRAMEBUFFER 0x8CA9
++#endif
++#ifndef GL_READ_FRAMEBUFFER
++#define GL_READ_FRAMEBUFFER 0x8CA8
++#endif
++#ifndef GL_RENDERBUFFER_SAMPLES
++#define GL_RENDERBUFFER_SAMPLES 0x8CAB
++#endif
++#endif
+ #include <QOpenGLTexture>
+ #include <QPointer>
+ #include <QScopedValueRollback>
+@@ -326,9 +337,14 @@
+ QSurfaceFormat QVTKOpenGLNativeWidget::defaultFormat()
+ {
+   QSurfaceFormat fmt;
++#if GL_ES_VERSION_3_0 == 1
++  fmt.setRenderableType(QSurfaceFormat::OpenGLES);
++  fmt.setVersion(3, 0);
++#else
+   fmt.setRenderableType(QSurfaceFormat::OpenGL);
+   fmt.setVersion(3, 2);
+   fmt.setProfile(QSurfaceFormat::CoreProfile);
++#endif
+   fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+   fmt.setRedBufferSize(1);
+   fmt.setGreenBufferSize(1);
+@@ -534,14 +550,14 @@
+ 
+   // blit from this->FBO to QOpenGLWidget's FBO.
+   vtkQVTKOpenGLNativeWidgetDebugMacro("paintGL::blit-to-defaultFBO");
+-  QOpenGLFunctions_3_2_Core* f =
+-    QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_2_Core>();
++  QOpenGLExtraFunctions* f = QOpenGLContext::currentContext()->extraFunctions();
+   if (f)
+   {
+     vtkOpenGLState *ostate = this->RenderWindow->GetState();
+ 
+     f->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->defaultFramebufferObject());
+-    f->glDrawBuffer(GL_COLOR_ATTACHMENT0);
++    const GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
++    f->glDrawBuffers(1, &drawBuffer);
+ 
+     f->glBindFramebuffer(GL_READ_FRAMEBUFFER, this->FBO->handle());
+     f->glReadBuffer(GL_COLOR_ATTACHMENT0);
+--- a/GUISupport/Qt/QVTKOpenGLWindow.cxx
++++ b/GUISupport/Qt/QVTKOpenGLWindow.cxx
+@@ -16,6 +16,11 @@
+ #include <QMouseEvent>
+ #include <QtGui/QOffscreenSurface>
+ #include <QOpenGLFunctions>
++#if GL_ES_VERSION_3_0 == 1
++#ifndef GL_DRAW_FRAMEBUFFER
++#define GL_DRAW_FRAMEBUFFER 0x8CA9
++#endif
++#endif
+ #include <QResizeEvent>
+ #include <QSurfaceFormat>
+ 
+--- a/Rendering/OpenGL2/vtkOpenGLRenderWindow.cxx
++++ b/Rendering/OpenGL2/vtkOpenGLRenderWindow.cxx
+@@ -13,6 +13,11 @@
+ 
+ =========================================================================*/
+ #include "vtk_glew.h"
++
++#if GL_ES_VERSION_3_0 == 1
++// OpenGL ES 3 uses glDrawBuffers, including for a single color target.
++#define glDrawBuffer(mode) do { GLenum vtkDrawBufferMode = (mode); glDrawBuffers(1, &vtkDrawBufferMode); } while (false)
++#endif
+ #include "vtkOpenGLRenderWindow.h"
+ 
+ #include "vtkOpenGLHelper.h"
+--- a/Rendering/OpenGL2/vtkOpenGLFramebufferObject.cxx
++++ b/Rendering/OpenGL2/vtkOpenGLFramebufferObject.cxx
+@@ -15,6 +15,11 @@
+ #include "vtkOpenGLFramebufferObject.h"
+ 
+ #include "vtk_glew.h"
++
++#if GL_ES_VERSION_3_0 == 1
++// OpenGL ES 3 uses glDrawBuffers, including for a single color target.
++#define glDrawBuffer(mode) do { GLenum vtkDrawBufferMode = (mode); glDrawBuffers(1, &vtkDrawBufferMode); } while (false)
++#endif
+ 
+ #include "vtkObjectFactory.h"
+ #include "vtkOpenGLRenderUtilities.h"
+--- a/Rendering/OpenGL2/vtkTextureObject.cxx
++++ b/Rendering/OpenGL2/vtkTextureObject.cxx
+@@ -933,7 +933,7 @@
+       return GL_CLAMP_TO_EDGE;
+     case Repeat:
+       return GL_REPEAT;
+-#ifdef GL_CLAMP_TO_BORDER
++#if GL_ES_VERSION_3_0 != 1 && defined(GL_CLAMP_TO_BORDER)
+     case ClampToBorder:
+       return GL_CLAMP_TO_BORDER;
+ #endif
+@@ -1674,7 +1674,7 @@
+ bool vtkTextureObject::Allocate1D(unsigned int width, int numComps,
+                                   int vtkType)
+ {
+-#ifdef GL_TEXTURE_1D
++#if GL_ES_VERSION_3_0 != 1 && defined(GL_TEXTURE_1D)
+   assert(this->Context);
+ 
+   this->Target = GL_TEXTURE_1D;
+@@ -2065,7 +2065,7 @@
+                static_cast<GLsizei>(this->Depth), 0,
+                this->Format, this->Type, nullptr);
+   }
+-#ifdef GL_TEXTURE_1D
++#if GL_ES_VERSION_3_0 != 1 && defined(GL_TEXTURE_1D)
+   else if (this->NumberOfDimensions == 1)
+   {
+     glTexImage1D(this->Target, 0, static_cast<GLint>(this->InternalFormat),
+@@ -2092,7 +2092,7 @@
+ 
+   switch(this->Target)
+   {
+-#ifdef GL_TEXTURE_1D
++#if GL_ES_VERSION_3_0 != 1 && defined(GL_TEXTURE_1D)
+     case GL_TEXTURE_1D:
+       os << "GL_TEXTURE_1D" << endl;
+       break;
+--- a/Rendering/Qt/vtkQtStringToImage.cxx
++++ b/Rendering/Qt/vtkQtStringToImage.cxx
+@@ -31,6 +31,7 @@
+ #include <QFontMetrics>
+ #include <QImage>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPixmap>
+ #include <QTextDocument>
+ #include <QTextStream>
+--- a/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
++++ b/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
+@@ -41,6 +41,7 @@
+ #include <QImage>
+ #include <QMap>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPair>
+ #include <QPixmap>
+ #include <QTextDocument>
+--- a/ThirdParty/png/vtkpng/CMakeLists.txt
++++ b/ThirdParty/png/vtkpng/CMakeLists.txt
+@@ -60,3 +60,5 @@
+       m)
+ endif ()
+ 
++# Bundled libpng has no ARM NEON source files in this VTK tree.
++target_compile_definitions(vtkpng PRIVATE PNG_ARM_NEON_OPT=0)

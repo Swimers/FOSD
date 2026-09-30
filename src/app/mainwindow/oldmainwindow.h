@@ -23,7 +23,6 @@ public:
 
 public:
     bool Flag_Style;
-    bool Flag_WindowFull;
 
 private slots:
     void on_pbtn_TurnOff_clicked();

@@ -5,21 +5,20 @@
 #include "vtkCallbackCommand.h"
 #include "vtkRenderer.h"
 #include "vtkPointPicker.h"
-#include "vtkTextProperty.h"
 #include "vtkSphereSource.h"
 #include "vtkPolyDataMapper.h"
 
 #include <QDebug>
 #include <QString>
 #include <QtMath>
+#include <algorithm>
+#include <cmath>
 
 vtkStandardNewMacro(disp3dinteractor);
 
 disp3dinteractor::disp3dinteractor()
 {
-    m_TextActor = vtkTextActor::New();
     m_SphereActor = vtkActor::New();
-    m_TextActor->PickableOff();
     m_SphereActor->PickableOff();
     Flag_Pick = false;
 }
@@ -30,13 +29,6 @@ disp3dinteractor::~disp3dinteractor()
         ClearPicker();
     }
 
-    if (m_TextActor) {
-        if (m_disp3dmodel && m_disp3dmodel->GetVTKRenderer()) {
-            m_disp3dmodel->GetVTKRenderer()->RemoveActor2D(m_TextActor);
-        }
-        m_TextActor->Delete();
-        m_TextActor = nullptr;
-    }
     if (m_SphereActor) {
         if (m_disp3dmodel && m_disp3dmodel->GetVTKRenderer()) {
             m_disp3dmodel->GetVTKRenderer()->RemoveActor(m_SphereActor);
@@ -66,26 +58,11 @@ void disp3dinteractor::OnLeftButtonDown()
     pick1->Pick(pos[0], pos[1], 0, m_disp3dmodel->GetVTKRenderer());
     vtkIdType ID = pick1->GetPointId();
 
-    char text[20] = { '\0' }; // 存放要显示的文本内容（节点编号）
-
     if (ID != -1){
         if(m_disp3dmodel->keyPointSet.contains(ID)){
             QVector<double> RawPos = m_disp3dmodel->rawPointMap.value(ID);
             QVector<double> Displace = m_disp3dmodel->pointDisplace.value(ID);
             QVector<double> NewPos = m_disp3dmodel->pointpos.value(ID);
-
-            // 将三维世界坐标转换为屏幕显示坐标
-            double DisplayCord[3];
-            m_disp3dmodel->GetVTKRenderer()->SetWorldPoint(NewPos[0], NewPos[1], NewPos[2], 1.0);
-            m_disp3dmodel->GetVTKRenderer()->WorldToDisplay();
-            m_disp3dmodel->GetVTKRenderer()->GetDisplayPoint(DisplayCord);
-
-            sprintf(text, "%d", static_cast<int>(ID));
-            m_TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1])); // 设置屏幕显示位置
-            m_TextActor->SetInput(text);                                     // 显示文本
-            m_TextActor->GetTextProperty()->SetColor(1, 0, 0);               // 设置文本颜色为红色
-            m_TextActor->GetTextProperty()->SetFontSize(20);                 // 设置字体大小
-            m_disp3dmodel->GetVTKRenderer()->AddActor2D(m_TextActor);        // 添加到渲染器中
 
             double bounds[6];
             m_disp3dmodel->GetVTKActor()->GetBounds(bounds);
@@ -108,6 +85,11 @@ void disp3dinteractor::OnLeftButtonDown()
                 camera->SetFocalPoint(NewPos[0], NewPos[1], NewPos[2]);
             }
             m_disp3dmodel->GetVTKRenderer()->AddActor(m_SphereActor);
+
+            if (m_pointIdOverlay) {
+                m_pointIdOverlay->setText(QString::number(ID));
+                UpdatePointIdOverlay(NewPos.constData());
+            }
 
             m_disp3dmodel->GetVTKRenderWindow()->Render();
 
@@ -281,32 +263,68 @@ void disp3dinteractor::OnKeyRelease()
     return;
 }
 
+void disp3dinteractor::UpdatePointIdOverlay(const double worldPos[3])
+{
+    if (!m_pointIdOverlay || !m_disp3dmodel) {
+        return;
+    }
+
+    QWidget* viewport = m_pointIdOverlay->parentWidget();
+    vtkRenderWindow* renderWindow = m_disp3dmodel->GetVTKRenderWindow();
+    vtkRenderer* renderer = m_disp3dmodel->GetVTKRenderer();
+    if (!viewport || !renderWindow || !renderer) {
+        m_pointIdOverlay->hide();
+        return;
+    }
+
+    const int* renderSize = renderWindow->GetSize();
+    if (renderSize[0] <= 0 || renderSize[1] <= 0) {
+        m_pointIdOverlay->hide();
+        return;
+    }
+
+    renderer->SetWorldPoint(worldPos[0], worldPos[1], worldPos[2], 1.0);
+    renderer->WorldToDisplay();
+    double displayPos[3];
+    renderer->GetDisplayPoint(displayPos);
+    if (!std::isfinite(displayPos[0]) || !std::isfinite(displayPos[1]) ||
+        displayPos[0] < 0 || displayPos[0] > renderSize[0] ||
+        displayPos[1] < 0 || displayPos[1] > renderSize[1]) {
+        m_pointIdOverlay->hide();
+        return;
+    }
+
+    m_pointIdOverlay->adjustSize();
+    const double scaleX = static_cast<double>(viewport->width()) / renderSize[0];
+    const double scaleY = static_cast<double>(viewport->height()) / renderSize[1];
+    const int x = qRound(displayPos[0] * scaleX) + 8;
+    const int y = viewport->height() - qRound(displayPos[1] * scaleY)
+                  - m_pointIdOverlay->height() - 4;
+    m_pointIdOverlay->move(std::max(0, std::min(x, viewport->width() - m_pointIdOverlay->width())),
+                           std::max(0, std::min(y, viewport->height() - m_pointIdOverlay->height())));
+    m_pointIdOverlay->raise();
+    m_pointIdOverlay->show();
+}
+
 void disp3dinteractor::RefreshText()
 {
     if(Flag_Pick){
-        double DisplayCord[3];
-        QVector<double> RawPos = m_disp3dmodel->rawPointMap.value(OldID);
-        QVector<double> Displace = m_disp3dmodel->pointDisplace.value(OldID);
         QVector<double> NewPos = m_disp3dmodel->pointpos.value(OldID);
-
-        m_disp3dmodel->GetVTKRenderer()->SetWorldPoint(NewPos[0], NewPos[1], NewPos[2], 1.0);
-        m_disp3dmodel->GetVTKRenderer()->WorldToDisplay();
-        m_disp3dmodel->GetVTKRenderer()->GetDisplayPoint(DisplayCord);
-
-        m_TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1]));
+        if (NewPos.size() < 3) {
+            if (m_pointIdOverlay) m_pointIdOverlay->hide();
+            return;
+        }
+        UpdatePointIdOverlay(NewPos.constData());
         m_SphereActor->SetPosition(NewPos[0],NewPos[1],NewPos[2]);
 
         m_disp3dmodel->GetVTKRenderWindow()->Render();
-//        qDebug() << static_cast<int>(DisplayCord[0]) << static_cast<int>(DisplayCord[1]);
-//        qDebug() << NewPos[0]<< NewPos[1] << NewPos[2];
-//        qDebug() << 1;
     }
 }
 
 void disp3dinteractor::ClearPicker()
 {
     if(Flag_Pick == true){
-        m_disp3dmodel->GetVTKRenderer()->RemoveActor2D(m_TextActor);
+        if (m_pointIdOverlay) m_pointIdOverlay->hide();
         m_disp3dmodel->GetVTKRenderer()->RemoveActor(m_SphereActor);
 
         QString str0 = "###";
@@ -325,22 +343,5 @@ void disp3dinteractor::ClearPicker()
 
 void disp3dinteractor::RefreshSelectedPoints()
 {
-    if(Flag_Pick){
-        double DisplayCord[3];
-        QVector<double> RawPos = m_disp3dmodel->rawPointMap.value(OldID);
-        QVector<double> Displace = m_disp3dmodel->pointDisplace.value(OldID);
-        QVector<double> NewPos = m_disp3dmodel->pointpos.value(OldID);
-
-        m_disp3dmodel->GetVTKRenderer()->SetWorldPoint(NewPos[0], NewPos[1], NewPos[2], 1.0);
-        m_disp3dmodel->GetVTKRenderer()->WorldToDisplay();
-        m_disp3dmodel->GetVTKRenderer()->GetDisplayPoint(DisplayCord);
-
-        m_TextActor->SetDisplayPosition(static_cast<int>(DisplayCord[0]), static_cast<int>(DisplayCord[1]));
-        m_SphereActor->SetPosition(NewPos[0],NewPos[1],NewPos[2]);
-
-        m_disp3dmodel->GetVTKRenderWindow()->Render();
-//        qDebug() << static_cast<int>(DisplayCord[0]) << static_cast<int>(DisplayCord[1]);
-//        qDebug() << NewPos[0]<< NewPos[1] << NewPos[2];
-//        qDebug() << 1;
-    }
+    RefreshText();
 }

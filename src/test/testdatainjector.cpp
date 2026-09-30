@@ -1,4 +1,5 @@
 #include "testdatainjector.h"
+#include <cstring>
 
 static float littleEndianBytesToFloat(const uchar *p)
 {

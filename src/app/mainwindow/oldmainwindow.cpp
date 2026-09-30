@@ -87,14 +87,14 @@ void OldMainWindow::InitOldMainWindow()
 
 void OldMainWindow::mouseMoveEvent(QMouseEvent *e)
 {
-    if (!Flag_WindowFull && (e->buttons() & Qt::LeftButton)) {
+    if (!isFullScreen() && (e->buttons() & Qt::LeftButton)) {
         move(e->globalPos() - p);
     }
 }
 
 void OldMainWindow::mousePressEvent(QMouseEvent *e)
 {
-    if (!Flag_WindowFull && e->button() == Qt::LeftButton) {
+    if (!isFullScreen() && e->button() == Qt::LeftButton) {
         p = e->globalPos() - frameGeometry().topLeft();
     }
 }
@@ -147,8 +147,7 @@ void OldMainWindow::on_pbtn_Minimize_clicked()
 
 void OldMainWindow::on_pbtn_Full_clicked()
 {
-    Flag_WindowFull = !Flag_WindowFull;
-    if (Flag_WindowFull) {
+    if (!isFullScreen()) {
         showFullScreen();
         return;
     }

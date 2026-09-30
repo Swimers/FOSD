@@ -355,7 +355,7 @@ void loginwindow::on_btn_Login_clicked()
         write_json();
 
         m_MainWindow = new OldMainWindow(privilege);
-        m_MainWindow->show();
+        m_MainWindow->showFullScreen();
         close();
         return;
     }

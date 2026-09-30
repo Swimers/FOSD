@@ -1,6 +1,8 @@
-#include "rainbowIFE.h"
+#include "rainbowife.h"
 
 #include "global.h"
+
+#include <cmath>
 
 #include <QIODevice>
 #include <QFile>

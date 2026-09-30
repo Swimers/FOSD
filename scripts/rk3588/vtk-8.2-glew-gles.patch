@@ -1,0 +1,14 @@
+--- a/Rendering/OpenGL2/vtkOpenGLRenderWindow.cxx
++++ b/Rendering/OpenGL2/vtkOpenGLRenderWindow.cxx
+@@ -738,6 +738,12 @@ void vtkOpenGLRenderWindow::OpenGLInitContext()
+   if (!this->Initialized)
+   {
+ #ifdef GLEW_OK
++#if GL_ES_VERSION_3_0 == 1
++    // Bundled GLEW treats core GLES entry points such as glClearDepthf as
++    // optional desktop extensions. Probe them even when the desktop extension
++    // string is absent, otherwise VTK can call a null function pointer.
++    glewExperimental = GL_TRUE;
++#endif
+     GLenum result = glewInit();
+     this->GlewInitValid = (result == GLEW_OK);
