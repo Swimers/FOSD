@@ -3,14 +3,12 @@
 
 #include <QObject>
 #include <QString>
-#include <QHostAddress>
-#include <QMessageBox>
+#include <QFile>
 #include <QTimer>
 #include <QDebug>
-#include <QStandardItemModel>
 
 #include <pocketsconfig.h>
-#include <connectwindow.h>
+#include "wavelengthframe.h"
 
 class connectwindow;
 class analyzepackets : public QObject
@@ -41,15 +39,15 @@ signals:
     void saveManualFinished();
 
 public:
-    bool Flag_Reset;
-    bool Flag_DynamicSave;
+    bool Flag_Reset = false;
+    bool Flag_DynamicSave = false;
 
-    int  channel_counts[MAX_CHANNELS];              //每个通道传感器个数
-    int  channel_flags[MAX_CHANNELS];               //通道选择标志位
-    int  CH_SUM;                                    //总传感器数目
+    int  channel_counts[MAX_CHANNELS] = {};         //每个通道传感器个数
+    int  channel_flags[MAX_CHANNELS] = {};          //通道选择标志位
+    int  CH_SUM = 0;                                //总传感器数目
 
-    float A;
-    float B;
+    float A = 1.0f;
+    float B = 0.0f;
 
     float NewStrain[1024]={0};
     float StrainFloat[1024]={0};                    //浮点数据类型的应变
@@ -92,6 +90,9 @@ public:
     QString strain_static_txt_temp="";
 
 private:
+    void processWavelengthFrame(const WavelengthFrame &frame);
+    WavelengthFrame m_wavelengthFrame;
+
     connectwindow * m_connectwindow = nullptr;
     QTimer *timer2 = nullptr;  //第二个定时器（在构造函数中创建）
     QTimer *timer3 = nullptr;  //第三个定时器用于串口通信

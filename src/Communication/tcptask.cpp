@@ -1,4 +1,6 @@
 #include "tcptask.h"
+#include "wavelengthframe.h"
+#include <QtEndian>
 
 #include <QFile>
 #include <QDateTime>
@@ -92,10 +94,12 @@ void tcptask::handleClientDisconnected()
     delete m_TcpSocket;
     m_TcpSocket = nullptr;
     m_hasConnection = false;
+    m_ReceArray.clear();
 }
 
 void tcptask::disconnectCurrentClient()
 {
+    m_ReceArray.clear();
     if (m_TcpSocket) {
         m_TcpSocket->disconnect();
         m_TcpSocket->disconnectFromHost();
@@ -121,8 +125,40 @@ void tcptask::tcpSendData(const QString text)
 
 void tcptask::tcpRecData()
 {
-    QByteArray datagram;
-    datagram = m_TcpSocket->readAll();
+    QByteArray datagram = m_TcpSocket->readAll();
+    // New frames carry an explicit record count, so buffer TCP fragments and
+    // split concatenated frames. Keep the legacy receive path unchanged.
+    if (!m_ReceArray.isEmpty() || isWavelengthFrame(datagram) ||
+        datagram == QByteArray(1, char(0x5A))) {
+        m_ReceArray.append(datagram);
+        bool hasUnframedData = false;
+        while (!m_ReceArray.isEmpty()) {
+            if (m_ReceArray.size() < 2)
+                return;
+            if (!isWavelengthFrame(m_ReceArray)) {
+                datagram = m_ReceArray;
+                m_ReceArray.clear();
+                hasUnframedData = true;
+                break;
+            }
+            if (m_ReceArray.size() < 10)
+                return;
+            const int count = qFromLittleEndian<quint16>(
+                reinterpret_cast<const uchar *>(m_ReceArray.constData() + 4));
+            if (count > 1024) {
+                qWarning() << "TCP wavelength record count exceeds capacity:" << count;
+                m_ReceArray.clear();
+                return;
+            }
+            const int length = 10 + count * 6;
+            if (m_ReceArray.size() < length)
+                return;
+            emit tcpPocketsReceived(m_ReceArray.left(length));
+            m_ReceArray.remove(0, length);
+        }
+        if (!hasUnframedData)
+            return;
+    }
     if(datagram.size() >= 4 &&
        static_cast<uint8_t>(datagram.at(0)) == 0xFA &&
        static_cast<uint8_t>(datagram.at(2)) == 0xFA){

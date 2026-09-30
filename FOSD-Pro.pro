@@ -108,6 +108,7 @@ HEADERS += \
     src/communication/udptask.h \
     src/core/IFE/IFE.h \
     src/protocol/analyzepackets.h \
+    src/protocol/wavelengthframe.h \
     src/protocol/pocketsconfig.h \
     src/utils/database/database.h \
     src/utils/global/global.h \
@@ -154,6 +155,7 @@ SOURCES += \
     src/communication/udptask.cpp \
     src/core/IFE/IFE.cpp \
     src/protocol/analyzepackets.cpp \
+    src/protocol/wavelengthframe.cpp \
     src/utils/database/database.cpp \
     src/utils/global/global.cpp \
     src/utils/QCustomPlot/qcpdocumentobject.cpp \

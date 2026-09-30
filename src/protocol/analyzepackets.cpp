@@ -3,11 +3,13 @@
 #include <QFile>
 #include <QDateTime>
 #include <QTimer>
-#include <QMessageBox>
+#include <algorithm>
 #include <QIODevice>
+#include <QDir>
+#include <QTextStream>
+#include <QStringList>
 
 #include "global.h"
-#include "Timer.h"
 
 namespace {
 constexpr int PacketHeaderSize = 4;
@@ -129,12 +131,7 @@ void analyzepackets::processReset()
 {
     count_num++;
     for(int i=0;i<CH_SUM;i++){
-        FLOATA2 original_datagram;
-        original_datagram.u8Byte[0] = array.data()[i*4+DataAddress];
-        original_datagram.u8Byte[1] = array.data()[i*4+DataAddress + 1];
-        original_datagram.u8Byte[2] = array.data()[i*4+DataAddress + 2];
-        original_datagram.u8Byte[3] = array.data()[i*4+DataAddress + 3];
-        original_wavelength_temp[i] = original_wavelength_temp[i] + original_datagram.all;
+        original_wavelength_temp[i] += m_wavelengthFrame.records[i].wavelength;
     }
     if(count_num == 20){
         QFile file_txt("./初始波长.txt");
@@ -156,124 +153,93 @@ void analyzepackets::processReset()
 
 void analyzepackets::processMain()
 {
-    FLOATA data_count_xy;
-    QDateTime dateTime = QDateTime::currentDateTime();
-    QString strTime = dateTime.toString("yyyy-MM-dd hh:mm:ss");
+    WavelengthFrame frame;
+    QString error;
+    if (!parseLegacyWavelengthFrame(array, frame, &error)) {
+        qWarning() << "Legacy wavelength packet rejected:" << error;
+        return;
+    }
+    processWavelengthFrame(frame);
+}
+
+void analyzepackets::processWavelengthFrame(const WavelengthFrame &frame)
+{
     QMutexLocker locker(&mutexAnalyze);
-
-    if (!hasPacketBytes(array, DataAddress)) {
-        qWarning() << "Main packet too short:" << array.size();
-        return;
+    // A changed sensor layout must not mix samples during the 20-frame reset.
+    bool sameLayout = frame.records.size() == m_wavelengthFrame.records.size();
+    for (int i = 0; sameLayout && i < frame.records.size(); ++i) {
+        sameLayout = frame.records[i].channel == m_wavelengthFrame.records[i].channel &&
+                     frame.records[i].sensor == m_wavelengthFrame.records[i].sensor;
     }
-
-    const int totalSensors = packetByte(array, MAX_CHANNELS + 4);
-    if (totalSensors > 1024 ||
-        !hasPacketBytes(array, DataAddress + totalSensors * 4)) {
-        qWarning() << "Invalid main packet length, size:" << array.size()
-                   << "sensor count:" << totalSensors;
-        return;
+    if (Flag_Reset && !sameLayout) {
+        count_num = 0;
+        std::fill(original_wavelength_temp, original_wavelength_temp + 1024, 0.0f);
     }
-
-    //数组初始化
-    for(int j=0;j<1024;j++){
-        FBG_count[j]  = "";
-        NewStrain[j]  = 0;
-        wavelength[j] = "";
-        strain[j]     = "";
+    m_wavelengthFrame = frame;
+    CH_SUM = frame.records.size();
+    std::fill(channel_counts, channel_counts + MAX_CHANNELS, 0);
+    std::fill(CH_point, CH_point + MAX_CHANNELS, 0);
+    for (const auto &record : frame.records)
+        ++channel_counts[record.channel - 1];
+    for (int i = 0; i < 1024; ++i) {
+        FBG_count[i].clear();
+        wavelength[i].clear();
+        strain[i].clear();
+        CH_datagram[i] = 0;
+        NewStrain[i] = 0;
+        wavelength_static[i].clear();
+        strain_static[i].clear();
     }
-    //获取传感器数量
-    for (int i=0;i<MAX_CHANNELS;i++) {
-        channel_counts[i] = packetByte(array, i + 4);//通道1传感器数目
-    }
-    CH_SUM = totalSensors;//总传感器数目
-    int Checked_CH_Count = 0;
-    //获取每个通道的计数点数
-    for(int i=0;i<7;i++){
-        data_count_xy.u8Byte[0]=0;
-        data_count_xy.u8Byte[1]=0;
-        data_count_xy.u8Byte[2]=0;
-        data_count_xy.u8Byte[3]=0;
-        CH_point[i]=data_count_xy.all;
-    }
-    //初始波长校准
-    if(Flag_Reset == 1){
+    if (Flag_Reset && CH_SUM > 0)
         processReset();
+
+    QStringList names, waves, strains;
+    int selected = 0;
+    for (int i = 0; i < CH_SUM; ++i) {
+        const auto &record = frame.records[i];
+        if (!channel_flags[record.channel - 1])
+            continue;
+        FBG_count[selected] = QString("CH%1_%2").arg(record.channel).arg(record.sensor);
+        CH_datagram[selected] = record.wavelength;
+        wavelength[selected] = QString::number(double(record.wavelength), 'f', 5);
+        NewStrain[selected] = (0.00075 * (record.wavelength - original_wavelength[i])) / A + B;
+        strain[selected] = QString::number(double(NewStrain[selected]), 'f', 5);
+        wavelength_static[selected] = wavelength[selected];
+        strain_static[selected] = strain[selected];
+        names.append(FBG_count[selected]);
+        waves.append(wavelength[selected]);
+        strains.append(strain[selected]);
+        ++selected;
     }
-    // 按通道分类处理数据（7个通道）
-    int   channel_offsets [MAX_CHANNELS + 1] = {0};                  // 计算通道偏移量数组
-    for (int ch = 0; ch < MAX_CHANNELS; ch++) {
-        channel_offsets[ch + 1] = channel_offsets[ch] + channel_counts[ch];
-    }
-    for (int i = 0; i < CH_SUM; i++) {
-        FLOATA2 datagram;                                 // 提取数据
-        datagram.u8Byte[0] = array.data()[i * 4 + DataAddress];
-        datagram.u8Byte[1] = array.data()[i * 4 + DataAddress + 1];
-        datagram.u8Byte[2] = array.data()[i * 4 + DataAddress + 2];
-        datagram.u8Byte[3] = array.data()[i * 4 + DataAddress + 3];
-        int channel = -1;                                 // 确定当前数据属于哪个通道
-        for (int ch = 0; ch < MAX_CHANNELS; ch++) {
-            if (i >= channel_offsets[ch] && i < channel_offsets[ch + 1] && channel_counts[ch] != 0) {
-                channel = ch;
-                break;
-            }
-        }
-        if (channel != -1 && channel_flags[channel]) {   // 处理有效通道数据
-            int sensor_num = i - channel_offsets[channel];// 计算通道内传感器编号
-            int global_index = Checked_CH_Count;
-            int offset_sum = 0;                           // 计算累积偏移量
-            for (int ch = 0; ch < channel; ch++) {
-                offset_sum += (channel_flags[ch]) * channel_counts[ch];
-            }
-            // 设置数据
-            FBG_count[global_index]   = QString("CH%1_%2").arg(channel + 1).arg(sensor_num + 1);                          //传感器编码号
-            CH_datagram[global_index] = datagram.all;                                                                     //原始波长数据
-            wavelength[global_index]  = QString::number(static_cast<double>(datagram.all), 'f', 5);                       //波长字符串数据
-            NewStrain[global_index]   =(0.00075*(datagram.all-original_wavelength[i]))/A+B;   //计算得到应变
-            strain[global_index]      = QString::number(static_cast<double>(NewStrain[global_index]), 'f', 5);            //应变字符串数组
-            // 动态保存至CSV
-            if (Checked_CH_Count > 0) {
-                fbg_txt        += ",";
-                wavelength_txt += ",";
-                strain_txt     += ",";
-            }
-            fbg_txt        += FBG_count[global_index];
-            wavelength_txt += wavelength[global_index];
-            strain_txt     += strain[global_index];
-            // 最后一个数据点处理
-            if (i == CH_SUM - 1) {
-                fbg_txt_1 = "time," + fbg_txt + "," + fbg_txt;
-                strain_txt_1 = strain_txt;
-                wavelength_txt_1 = wavelength_txt;
-                str_txt = strTime + "," + wavelength_txt_1 + "," + strain_txt_1;
-                fbg_txt = "";
-                strain_txt = "";
-                wavelength_txt = "";
-            }
-            Checked_CH_Count++;
-        }
-    }
-    // 静态保存字符串格式化
-    for (int i = 0; i < Checked_CH_Count; i++){
-         wavelength_static[i] = QString::number(static_cast<double>(CH_datagram[i]),'f',5);
-         strain_static[i] = QString::number(static_cast<double>(NewStrain[i]),'f',5);
-         if (i > 0) {
-             wavelength_static_txt_temp += ",";
-             strain_static_txt_temp += ",";
-         }
-         wavelength_static_txt_temp += wavelength_static[i];
-         strain_static_txt_temp += strain_static[i];
-         if(i == Checked_CH_Count - 1){
-             wavelength_static_txt=wavelength_static_txt_temp;
-             wavelength_static_txt_temp="";
-             strain_static_txt=strain_static_txt_temp;
-             strain_static_txt_temp="";
-         }
-     }
+    // Finalize after filtering: the final physical channel may be deselected.
+    fbg_txt_1 = "time," + names.join(',') + "," + names.join(',');
+    wavelength_txt_1 = waves.join(',');
+    strain_txt_1 = strains.join(',');
+    str_txt = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +
+              "," + wavelength_txt_1 + "," + strain_txt_1;
+    wavelength_static_txt = wavelength_txt_1;
+    strain_static_txt = strain_txt_1;
+    fbg_txt.clear();
+    wavelength_txt.clear();
+    strain_txt.clear();
+    wavelength_static_txt_temp.clear();
+    strain_static_txt_temp.clear();
     updateData();
 }
 
 void analyzepackets::analyzeData(const QByteArray datagram)
 {
+    if (isWavelengthFrame(datagram)) {
+        WavelengthFrame frame;
+        QString error;
+        if (!parseWavelengthFrame(datagram, frame, &error)) {
+            qWarning() << "Wavelength packet rejected:" << error;
+            return;
+        }
+        array = datagram;
+        processWavelengthFrame(frame);
+        return;
+    }
 
     if (!hasPacketBytes(datagram, PacketHeaderSize)) {
         qWarning() << "Packet too short:" << datagram.size();
@@ -306,6 +272,8 @@ void analyzepackets::updateData()
 
 void analyzepackets::resetOriginalWavelength()
 {
+    count_num = 0;
+    std::fill(original_wavelength_temp, original_wavelength_temp + 1024, 0.0f);
     Flag_Reset = true;
 }
 
