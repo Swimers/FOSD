@@ -3,15 +3,14 @@
     <!-- 显示信息 -->
     <DisplayName>FOSD-Pro</DisplayName>
     <Description>FOSD 光纤传感数据采集与分析上位机软件</Description>
-    <Description xml:lang="zh_CN">FOSD 光纤传感数据采集与分析上位机软件</Description>
 
     <!-- 版本信息 -->
-    <Version>1.0.0</Version>
-    <ReleaseDate>2026-07-10</ReleaseDate>
+    <Version>1.0.1</Version>
+    <ReleaseDate>2026-10-08</ReleaseDate>
 
     <!-- 包属性 -->
     <Default>true</Default>
-    <Required>true</Required>
+    <ForcedInstallation>true</ForcedInstallation>
 
     <!-- 安装脚本 -->
     <Script>installscript.qs</Script>

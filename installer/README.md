@@ -1,162 +1,97 @@
-# FOSD-Pro 安装程序构建指南
+# FOSD-Pro Windows 安装程序
 
-## 目录结构
+当前安装包版本 **1.0.1**，发布日期 **2026-10-08**，面向 **Windows 10/11 x64**。
+离线包包含最新 Release 程序、Qt 5.12.2、VTK 8.2、VC++ 运行库、Qt 插件、ANGLE、D3D 编译器和软件 OpenGL，以及模型、QSS、标定等项目数据。
+目标电脑不需要安装 Qt、VTK 或 Visual Studio。Python 测试发送脚本仅在运行该脚本时需要 Python，不是应用启动依赖。
 
-```
-installer/
-├── config/
-│   └── config.xml                  # 安装程序全局配置
-├── packages/
-│   └── com.fosd.pro/
-│       ├── meta/
-│       │   ├── package.xml         # 包元数据
-│       │   └── installscript.qs    # 安装脚本（快捷方式等）
-│       └── data/                   # [构建时生成] 安装文件
-├── build_installer.bat             # Windows 构建脚本
-├── .gitignore                      # 忽略构建产物
-└── README.md                       # 本文件
-```
+## 输出文件
 
-## 前置条件
+- `installer/FOSD-Pro-Setup.exe`：可分发的完整离线安装程序。
+- `installer/FOSD-Pro-Setup.exe.sha256`：安装程序 SHA256。
+- `installer/FOSD-Pro-build-manifest.json`：版本、源码 commit、EXE/安装程序哈希、文件数量。
+- `installer/FOSD-Pro-runtime-audit.json`：所有应用 EXE/DLL 的架构、哈希和导入依赖。
 
-1. **Qt Installer Framework** 已安装
-   - 通过 Qt Maintenance Tool 安装：`Tools → Qt Installer Framework`
-   - 或从 https://download.qt.io/official_releases/qt-installer-framework/ 下载
+这些产物以及 `packages/com.fosd.pro/data/` 暂存文件均被 Git 忽略。
 
-2. **FOSD-Pro Release 编译完成**
-   - 确保 `build/QMake/windows/bin/release/FOSD-Pro.exe` 存在
+## 构建
 
-3. **Qt 环境** 已安装（需要 `windeployqt` 工具）
+在项目根目录执行：
 
-## 快速开始
-
-### 1. 修改构建脚本配置
-
-编辑 `build_installer.bat` 顶部的配置变量：
-
-```batch
-:: 修改为你的 Qt 安装路径
-set QT_DIR=C:\Qt\5.15.2\msvc2019_64
-
-:: 修改为你的 IFW 安装路径
-set IFW_DIR=C:\Qt\Tools\QtInstallerFramework\4.x\bin
-
-:: VTK DLL 路径（如果 VTK 是动态链接的）
-set VTK_DLL_DIR=%PROJECT_DIR%\lib\VTK\VTK-release\bin
+```powershell
+.\installer\build_installer.bat
 ```
 
-**如何找到你的 Qt 路径？**
-- 打开 Qt Creator → 工具 → 选项 → Kits → 查看 Qt 版本路径
-- 或在 Qt Command Prompt 中执行：`qmake -v`
+批处理调用 `build_installer.ps1`，默认使用本机已验证的路径：
 
-**如何找到 IFW 路径？**
-- 通常在 Qt 安装目录下的 `Tools/QtInstallerFramework/4.x/bin/`
-- 如果通过 Maintenance Tool 安装，默认在 Qt 根目录
+| 项目 | 默认路径 |
+| --- | --- |
+| Qt | `D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64` |
+| VTK DLL | `D:/VTK/VTK-release/bin` |
+| IFW | 在 `build/tools/qtifw-4.7` 下自动查找 `binarycreator.exe` |
+| Release 构建 | `build/installer-release` |
+| 输出目录 | `installer` |
+| VC++ CRT | 自动查找 Visual Studio 的 v141 x64 redistributable |
 
-### 2. 运行构建
+构建电脑需要 CMake、Visual Studio C++ 工具和 v141 编译器、Qt、VTK DLL、Qt Installer Framework。
+可覆盖路径，不必编辑脚本：
 
-双击 `build_installer.bat`，或在命令行中执行：
-
-```cmd
-cd C:\Users\Swimers\Documents\GitHub\FOSD_Project\installer
-build_installer.bat
+```powershell
+.\installer\build_installer.bat -QtDir "D:/Qt/5.12.2/msvc2017_64" -IfwDir "D:/Qt/Tools/QtInstallerFramework/4.7/bin" -VtkDir "D:/VTK/VTK-release/bin"
 ```
 
-### 3. 获取安装程序
+本次使用 Qt 官方仓库的 IFW 4.7 工具包，下载后按官方 SHA1 校验，解压至项目 `build/tools`，未向系统安装 IFW。
 
-构建成功后，安装程序位于：
+- [IFW 官方工具包目录](https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_ifw/qt.tools.ifw.47/)
+- [Qt Windows 部署说明](https://doc.qt.io/archives/qt-5.15/windows-deployment.html)
+- [IFW 离线安装包构建说明](https://doc.qt.io/qtinstallerframework/ifw-tools.html)
 
-```
-installer_output/FOSD-Pro-Setup.exe
-```
+## 构建流程与依赖检查
 
-## 构建流程说明
+1. 配置并编译当前源码的 x64 Release，拒绝使用未成功编译的旧 EXE。
+2. 重建固定的包暂存目录，拷贝程序和项目数据，排除采集输出目录及历史 packet log。
+3. 使用 `windeployqt` 部署 Qt 模块、平台/图像/打印/样式插件、ANGLE、D3D 和软件 OpenGL。VC++ DLL 来自 Visual Studio 官方可再分发目录。
+4. 使用 `dumpbin` 递归扫描全部 EXE/DLL 导入依赖，补齐 VTK 及其间接 DLL；拒绝缺失 DLL、x86 DLL 和 Debug DLL，并核对 EXE 哈希。
+5. 使用 `binarycreator --offline-only` 生成安装程序与校验报告。各步骤失败时立即退出，禁止将缺库状态当作成功。
 
-```
-build_installer.bat 执行流程：
+`verify_runtime.ps1` 只允许 Windows 自带系统 DLL/API-set 在包外解析。Qt、VTK、VC++ 依赖必须在包内，不能靠开发电脑 PATH 蒙混通过。
+在已初始化 MSVC x64 环境的终端可独立验证：
 
-[1/4] windeployqt 收集 Qt 依赖
-      → 自动拷贝 Qt5Core.dll, Qt5Gui.dll, Qt5Widgets.dll 等
-      → 自动拷贝 platforms/qwindows.dll 等插件
-
-[2/4] 拷贝所有文件到打包目录
-      → FOSD-Pro.exe + Qt DLL + VTK DLL + 数据文件
-
-[3/4] 统计打包内容
-
-[4/4] binarycreator 生成安装程序
-      → 读取 config/config.xml（全局配置）
-      → 读取 packages/com.fosd.pro/meta/package.xml（包信息）
-      → 执行 installscript.qs（创建快捷方式）
-      → 输出 FOSD-Pro-Setup.exe
+```powershell
+.\installer\verify_runtime.ps1 -PayloadDir .\installer\packages\com.fosd.pro\data
 ```
 
-## 安装程序功能
+## 安装布局
 
-安装完成后，安装程序会自动：
+默认安装到当前用户目录 `FOSD-Pro`，无需管理员权限。安装程序创建桌面及开始菜单快捷方式，并提供维护/卸载工具。
 
-- ✅ 创建桌面快捷方式 `FOSD-Pro`
-- ✅ 创建开始菜单快捷方式 `FOSD-Pro`
-- ✅ 创建开始菜单卸载快捷方式
-- ✅ 创建数据目录快捷方式
-- ✅ 自带卸载工具 `FOSD-Pro Maintenance Tool.exe`
-
-## 自定义修改
-
-### 修改安装程序名称/版本
-
-编辑 `config/config.xml`：
-
-```xml
-<Name>FOSD-Pro</Name>           <!-- 程序名称 -->
-<Version>1.0.0</Version>        <!-- 版本号 -->
-<Title>FOSD-Pro 安装程序</Title>  <!-- 安装窗口标题 -->
-<Publisher>FOSD Team</Publisher> <!-- 发布者 -->
+```text
+FOSD-Pro/
+  FOSD-Pro.exe
+  Qt5*.dll / vtk*.dll / VC++ DLL
+  platforms/qwindows.dll
+  imageformats/ / styles/ / printsupport/ / bearer/
+  data/                       模型、QSS、标定等
+  licenses/                   运行库许可资料
+  send_wavelength_packets.py  新旧协议/回环适配器测试脚本
+  wavelength-protocol.md      协议及测试说明
+  FOSD-Pro Maintenance Tool.exe
 ```
 
-### 修改默认安装路径
+程序与 `data` 同级，快捷方式的工作目录为安装根目录，匹配项目使用的 `./data/...` 相对路径。
+安装器配置版本和组件版本必须一致；图标由构建时从 `res/icon/favicon.ico` 拷贝，避免引用不存在的图标。
 
-编辑 `config/config.xml` 中的 `TargetDir`：
+## 验证方式
 
-```xml
-<!-- 安装到用户目录 -->
-<TargetDir>@HomeDir@/FOSD-Pro</TargetDir>
+安装器支持 IFW 的命令行安装。测试使用项目 `build` 内的独立安装目录，传入 `SkipShortcuts=true` 避免写入用户桌面和开始菜单：
 
-<!-- 安装到 Program Files -->
-<TargetDir>@ApplicationsDir@/FOSD-Pro</TargetDir>
-
-<!-- 安装到自定义路径 -->
-<TargetDir>C:/FOSD-Pro</TargetDir>
+```powershell
+.\installer\FOSD-Pro-Setup.exe --root "D:/Documents/GitHub/FOSD_Project/build/installer-smoke/FOSD Test" --accept-messages --confirm-command install SkipShortcuts=true
 ```
 
-### 添加许可协议
+安装后应核对文件哈希，并在 PATH 仅含 Windows 系统目录、清除 Qt 插件环境变量的情况下启动应用，确认 Qt/VTK/CRT 从安装目录加载。
+这类本机隔离验证不能替代其他 Windows 版本和显卡上的实机兼容性测试。
 
-1. 将 `license.txt` 放到 `packages/com.fosd.pro/meta/` 目录
-2. 编辑 `package.xml`，取消注释许可协议部分：
-
-```xml
-<Licenses>
-    <License name="许可协议" file="license.txt" />
-</Licenses>
-```
-
-### 修改快捷方式
-
-编辑 `installscript.qs` 中的 `CreateOperations` 部分。
-
-## 常见问题
-
-### Q: 运行构建脚本提示"未找到 windeployqt"
-A: 检查 `QT_DIR` 是否正确指向 Qt 安装目录（包含 `bin/windeployqt.exe`）
-
-### Q: 安装后运行 FOSD-Pro.exe 报错"缺少 DLL"
-A: 可能缺少 VTK DLL 或 VC++ 运行时。检查：
-1. VTK DLL 是否已拷贝到打包目录
-2. 目标机器是否安装了 VC++ 2015-2022 Redistributable
-
-### Q: 如何添加更多组件（如示例数据、文档）
-A: 在 `packages/` 下新建子包目录，如 `com.fosd.examples/`，包含 `meta/package.xml` 和 `data/`
-
-### Q: 如何生成在线安装程序
-A: 修改 `build_installer.bat` 中的 `binarycreator` 命令，去掉 `--offline-only` 参数，
-   并使用 `repogen` 生成仓库，`archivegen` 打包数据
+2026-10-08 本机验证通过：完整 Release 编译；73 个 x64 二进制依赖审计
+（含 40 个 VTK DLL）；107 个安装文件逐一匹配打包源 SHA256；隔离安装成功；
+干净 PATH 下应用正常启动，49 个实际加载的 Qt/VTK/VC++/软件 OpenGL 模块均来自安装目录；
+维护工具卸载成功；故意遗漏 Qt5Core.dll 的测试包被依赖审计拒绝。
