@@ -13,6 +13,11 @@ contains(CONFIG, rk3588_arm_linux) {
     CONFIG -= debug
     CONFIG += release
     DEFINES += FOSD_RK3588_ARM_LINUX
+    # The board has glibc 2.37; this build needs the private 2.38 loader.
+    # Embed it in the ELF so Qt Creator can run the deployed binary directly.
+    RK3588_RUNTIME_DIR = /root/Qt_Project/Qt_Test_Compilation/lib/runtime
+    QMAKE_LFLAGS += -Wl,--dynamic-linker=$$RK3588_RUNTIME_DIR/ld-linux-aarch64.so.1
+    QMAKE_LFLAGS += -Wl,--disable-new-dtags -Wl,-rpath,$$RK3588_RUNTIME_DIR
 }
 
 win32 {

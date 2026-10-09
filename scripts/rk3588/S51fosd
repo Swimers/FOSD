@@ -22,8 +22,8 @@ start_app()
         echo "FOSD already running (PID $(cat "$PID_FILE"))"
         return 0
     fi
-    if [ ! -x "$APP_DIR/run-fosd.sh" ]; then
-        echo "FOSD launcher missing: $APP_DIR/run-fosd.sh" >&2
+    if [ ! -x "$APP_DIR/FOSD-Pro" ]; then
+        echo "FOSD executable missing: $APP_DIR/FOSD-Pro" >&2
         return 1
     fi
 
@@ -45,7 +45,7 @@ start_app()
     fi
 
     cd "$APP_DIR" || return 1
-    nohup "$APP_DIR/run-fosd.sh" >> "$LOG_FILE" 2>&1 </dev/null &
+    nohup "$APP_DIR/FOSD-Pro" >> "$LOG_FILE" 2>&1 </dev/null &
     echo $! > "$PID_FILE"
     sleep 2
     if ! is_running; then

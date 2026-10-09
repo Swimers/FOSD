@@ -2,6 +2,7 @@
 #include "oldmainwindow.h"
 
 #include <QApplication>
+#include <QDir>
 #include <QSurfaceFormat>
 
 #include <vtkOutputWindow.h>
@@ -12,6 +13,19 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef FOSD_RK3588_ARM_LINUX
+    if (qEnvironmentVariableIsEmpty("XDG_RUNTIME_DIR"))
+        qputenv("XDG_RUNTIME_DIR", "/run");
+    if (qEnvironmentVariableIsEmpty("WAYLAND_DISPLAY"))
+        qputenv("WAYLAND_DISPLAY", "wayland-0");
+    if (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
+        qputenv("QT_QPA_PLATFORM", "wayland");
+    const QString dataRoot = qEnvironmentVariable(
+        "FOSD_DATA_ROOT", QStringLiteral("/root/Qt_Project/Qt_Test_Compilation"));
+    if (QDir(dataRoot).exists())
+        QDir::setCurrent(dataRoot);
+#endif
+
     //OpenGL初始化
 #ifdef FOSD_RK3588_ARM_LINUX
     QSurfaceFormat format = QVTKOpenGLNativeWidget::defaultFormat();
