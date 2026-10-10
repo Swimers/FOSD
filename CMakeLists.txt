@@ -7,7 +7,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-find_package(Qt5 COMPONENTS Widgets REQUIRED) # Qt COMPONENTS
+
+find_package(Qt5 COMPONENTS 
+    Widgets 
+    SerialPort 
+    Network 
+REQUIRED) # Qt COMPONENTS
 aux_source_directory(./src srcs)
 
 # Specify MSVC UTF-8 encoding   
@@ -18,4 +23,9 @@ add_executable(${PROJECT_NAME}
     WIN32 # If you need a terminal for debug, please comment this statement 
     ${srcs} 
 ) 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets) # Qt5 Shared Library
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    Qt5::Widgets 
+    Qt5::SerialPort     
+    Qt5::Network
+) # Qt5 Shared Library
