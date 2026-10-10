@@ -120,7 +120,7 @@ void OldMainWindow::switchUiStyle(bool flag)
     Flag_Style = flag;
     emit Flag_Style ? setUiBlacked() : setUiWhited();
 
-    QFile qssFile(Flag_Style ? "./QSS/MaterialDark.qss" : "./QSS/MacOS.qss");
+    QFile qssFile(Flag_Style ? "./data/QSS/MaterialDark.qss" : "./data/QSS/MacOS.qss");
     if (qssFile.open(QFile::ReadOnly)) {
         qApp->setStyleSheet(qssFile.readAll());
     }

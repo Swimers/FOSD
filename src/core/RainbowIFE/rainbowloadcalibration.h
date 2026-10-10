@@ -49,7 +49,7 @@ private:
     void initLogFile();
 
     /**
-     * @brief 加载初始波长文件（./初始波长.txt）
+     * @brief 加载初始波长文件（data/calibration/初始波长.txt）
      */
     void loadOriginalWavelength();
 

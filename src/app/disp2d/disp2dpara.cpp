@@ -119,7 +119,7 @@ void disp2dpara::on_pbtn_SenerSet_clicked()
     ife->axis[1] = ui->edit_Yaxis->text().toDouble();
     ife->axis[2] = ui->edit_Zaxis->text().toDouble();
 
-    ife->saveConfig("ifepara.ini");
+    ife->saveConfig("data/config/ifepara.ini");
     this->close();
     emit DataSeted();
 }

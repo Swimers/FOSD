@@ -13,7 +13,7 @@ disp2dwindow::disp2dwindow(QWidget *parent) :
     InitWindow();
     ife = new IFE();
     qDebug()<< "disp2d Creat IFE" << ife;
-    ife->modifyOriginalCoordinates("Data/Input/OriginalCoordiante.csv");
+    ife->modifyOriginalCoordinates("data/input/OriginalCoordiante.csv");
     //qDebug()<<IFE::positionOriginal[0][0];
     LoadCoordinates(ife->positionOriginal,POSITION_ORIGINAL);
 }
@@ -81,7 +81,7 @@ void disp2dwindow::UpdatatabelSlot()
 
 void disp2dwindow::on_pbtn_ChangeOriginalCoordinates_clicked()
 {
-    QString path=QFileDialog::getOpenFileName(this,"open","./Data/Input","CSV(*.csv)");
+    QString path=QFileDialog::getOpenFileName(this,"open","./data/input","CSV(*.csv)");
     if(path.isEmpty()){
         qDebug() << "未选中文件";
     }
@@ -134,7 +134,7 @@ void disp2dwindow::on_pbtn_Observe_clicked()
 
 void disp2dwindow::FreshData()
 {
-    ife->modifyOriginalCoordinates("Data/Input/OriginalCoordiante.csv");
+    ife->modifyOriginalCoordinates("data/input/OriginalCoordiante.csv");
     //qDebug()<<IFE::positionOriginal[0][0];
     LoadCoordinates(ife->positionOriginal,POSITION_ORIGINAL);
 }

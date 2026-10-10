@@ -20,10 +20,6 @@ int main(int argc, char *argv[])
         qputenv("WAYLAND_DISPLAY", "wayland-0");
     if (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
         qputenv("QT_QPA_PLATFORM", "wayland");
-    const QString dataRoot = qEnvironmentVariable(
-        "FOSD_DATA_ROOT", QStringLiteral("/root/Qt_Project/Qt_Test_Compilation"));
-    if (QDir(dataRoot).exists())
-        QDir::setCurrent(dataRoot);
 #endif
 
     //OpenGL初始化
@@ -47,6 +43,13 @@ int main(int argc, char *argv[])
     vtkOutputWindow::SetGlobalWarningDisplay(0); //屏蔽vtkOutputWindow窗口及其发出的警告
 
     QApplication a(argc, argv);
+
+#ifdef FOSD_RK3588_ARM_LINUX
+    const QString dataRoot = qEnvironmentVariable(
+        "FOSD_DATA_ROOT", a.applicationDirPath());
+    if (QDir(dataRoot).exists())
+        QDir::setCurrent(dataRoot);
+#endif
 
     //加载qss文件
     QFile qssFile("./data/QSS/MaterialDark-B.qss");//1.

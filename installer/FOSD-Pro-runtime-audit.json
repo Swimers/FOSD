@@ -1,0 +1,1278 @@
+﻿[
+    {
+        "file":  "bearer/qgenericbearer.dll",
+        "sha256":  "EE83FEAEFA6DDF3C81E4B8C414250E5F9D9C805DB0E5407B91BD56F94C7F3222",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "IPHLPAPI.DLL",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Network.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "concrt140.dll",
+        "sha256":  "A93C3A12A2521DC91FE7451DE56F90FD12010536DD91003C57646B230E80DCF9",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "d3dcompiler_47.dll",
+        "sha256":  "E407B9FFADEF47E87994DC488214F75405CF04EE99589F2315FC7AB99FD1DFE2",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "KERNEL32.dll",
+                        "RPCRT4.dll"
+                    ]
+    },
+    {
+        "file":  "FOSD-Pro.exe",
+        "sha256":  "B8C509507278D046396DF349FE58DC6F6CA7F3BAE0904DB46C54C91CF8496944",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-locale-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Network.dll",
+                        "Qt5SerialPort.dll",
+                        "Qt5Widgets.dll",
+                        "SHELL32.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkFiltersCore-8.2.dll",
+                        "vtkFiltersSources-8.2.dll",
+                        "vtkFiltersTexture-8.2.dll",
+                        "vtkGUISupportQt-8.2.dll",
+                        "vtkInteractionStyle-8.2.dll",
+                        "vtkIOCore-8.2.dll",
+                        "vtkIOGeometry-8.2.dll",
+                        "vtkIOImage-8.2.dll",
+                        "vtkRenderingAnnotation-8.2.dll",
+                        "vtkRenderingCore-8.2.dll",
+                        "vtkRenderingFreeType-8.2.dll",
+                        "vtkRenderingOpenGL2-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "iconengines/qsvgicon.dll",
+        "sha256":  "8643E648567526D35020AAB429811D82D8339B75FEDF9252488BDE2881F92707",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Svg.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qgif.dll",
+        "sha256":  "AA962E8261180292A25BC8803B0020D6CBB8A7A992535582BA61C6A3673C4675",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qicns.dll",
+        "sha256":  "4ABD054DE33087F818685045DF1382781E8052660ADF8B6D669BB554334AB1BA",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qico.dll",
+        "sha256":  "1F93C9BDB046D4CECD1EC21BBF23963CD15F104ECA20455AF45E1AF4ADB95CA7",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qjpeg.dll",
+        "sha256":  "E877FBCE4C1EC44F8586E33A334A52CDA2701204781860878FAA69C9FD05F8AC",
+        "imports":  [
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qsvg.dll",
+        "sha256":  "B7F96CB31D12FB4BDD55E156ACCF3701427AC0886FA3CE680D04E6EB07AE9AD0",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Svg.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qtga.dll",
+        "sha256":  "F5E6C922978677E2A8C921123A3033F31CE023E22036D3F65C6AA95A5B614B04",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qtiff.dll",
+        "sha256":  "01942786CE34E94748BEBF4A52562E23A1D96BA01983985CD7454BC573A06D3D",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qwbmp.dll",
+        "sha256":  "2D777C5AA2E4DE93A316B4E6A4BC3D6AD2FD2EE0676B8AD86900CDE15C65CEB1",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "imageformats/qwebp.dll",
+        "sha256":  "7D6CE218D044934C910DC5628451FA05F66E9C67E9C5AA0D4C7125E9B5A443AC",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "libEGL.dll",
+        "sha256":  "C2E00D58E2AC2925B386A8C922CA47AE391ED3C024F7C49E3F3FD0620146F540",
+        "imports":  [
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "libGLESv2.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "libGLESV2.dll",
+        "sha256":  "356CB6EB7975E270D906046EDF2EA807EFAAB72535954D442DEBF1D6027FA096",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "d3d9.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "USER32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "msvcp140.dll",
+        "sha256":  "72D7BB30AAA1F7F63345F536698C6908FA24032C5B2D30B42F3F8B84102B8909",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-locale-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "CONCRT140.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "msvcp140_1.dll",
+        "sha256":  "B848A00958C26885FDCC2DC44588B695AABFCD550EC1A9983253EDB44725FBEA",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "msvcp140_2.dll",
+        "sha256":  "0D9947CE7AF8C1C57DBD3EE02E371CA61674C33B22D9BF45DAE04E6086CF04F5",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-locale-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "opengl32sw.dll",
+        "sha256":  "963641A718F9CAE2705D5299EAE9B7444E84E72AB3BEF96A691510DD05FA1DA4",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "GDI32.dll",
+                        "imagehlp.dll",
+                        "KERNEL32.dll",
+                        "SHELL32.dll",
+                        "USER32.dll"
+                    ]
+    },
+    {
+        "file":  "platforms/qwindows.dll",
+        "sha256":  "7B5E521B03C54546A8DA7FEC1DD6692C0E995EE4D31D3F86FA006BF4D8942404",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "dwmapi.dll",
+                        "GDI32.dll",
+                        "IMM32.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "ole32.dll",
+                        "OLEAUT32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "SHELL32.dll",
+                        "USER32.dll",
+                        "VCRUNTIME140.dll",
+                        "WTSAPI32.dll"
+                    ]
+    },
+    {
+        "file":  "printsupport/windowsprintersupport.dll",
+        "sha256":  "87ED5E259341821BE967744DC5F2A3883EC3AF1EE95F5FD104D53F2F9985AD05",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "GDI32.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5PrintSupport.dll",
+                        "VCRUNTIME140.dll",
+                        "WINSPOOL.DRV"
+                    ]
+    },
+    {
+        "file":  "Qt5Core.dll",
+        "sha256":  "6B6AB5DD03E9164C097304EB553B08BDAD4A1ACDCC936A737D074BFE8031CD64",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MPR.dll",
+                        "MSVCP140.dll",
+                        "NETAPI32.dll",
+                        "ole32.dll",
+                        "SHELL32.dll",
+                        "USER32.dll",
+                        "USERENV.dll",
+                        "VCRUNTIME140.dll",
+                        "VERSION.dll",
+                        "WINMM.dll",
+                        "WS2_32.dll"
+                    ]
+    },
+    {
+        "file":  "Qt5Gui.dll",
+        "sha256":  "F2C69EFB160F927E85577728ACE8466AD28D02572F420BD56693B2F0FE1351F4",
+        "imports":  [
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-locale-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "GDI32.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "ole32.dll",
+                        "Qt5Core.dll",
+                        "USER32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "Qt5Network.dll",
+        "sha256":  "D0E5CC45131928A906D2E7E9A93F3956B6EFAA8363E16C351F6EDDD1D15E0141",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "CRYPT32.dll",
+                        "DNSAPI.dll",
+                        "IPHLPAPI.DLL",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "Qt5Core.dll",
+                        "VCRUNTIME140.dll",
+                        "WS2_32.dll"
+                    ]
+    },
+    {
+        "file":  "Qt5OpenGL.dll",
+        "sha256":  "31AF0D6177DA5D6C9C1E221559710EF37DBC4CE18B00DDDB0E30653276D006DA",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Widgets.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "Qt5PrintSupport.dll",
+        "sha256":  "2378C33B37CA0C78A4912A4EC5CB9C3FE008C2C38FB73568CFABAA0E1C5FA80C",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "COMDLG32.dll",
+                        "GDI32.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Widgets.dll",
+                        "USER32.dll",
+                        "VCRUNTIME140.dll",
+                        "WINSPOOL.DRV"
+                    ]
+    },
+    {
+        "file":  "Qt5SerialPort.dll",
+        "sha256":  "8FC711E3E4330BBC8E3E30F3E8E84F194A17289D2F5351B99B052753FA452FB2",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "Qt5Core.dll",
+                        "SETUPAPI.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "Qt5Svg.dll",
+        "sha256":  "5705F15FFDCA19231F80807B5B0EC95AF1A8D9FE3D5D4FE42453C89BD814A9B8",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Widgets.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "Qt5Widgets.dll",
+        "sha256":  "24B62555381D4EBF04B0FC8F20A3B9D6E6806E89FBBA8AB7B952C1A8C3C3A20B",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "dwmapi.dll",
+                        "GDI32.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "USER32.dll",
+                        "UxTheme.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "styles/qwindowsvistastyle.dll",
+        "sha256":  "AD5FEFA6696D6B1759D390256327DC6B047B22EA79F1C73C40770D40C9272EC8",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "GDI32.dll",
+                        "KERNEL32.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Widgets.dll",
+                        "USER32.dll",
+                        "UxTheme.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vccorlib140.dll",
+        "sha256":  "BB30804B8E8B3AB834FAF554DF358195F29275A29EBE7BA9584B27BC38D17F13",
+        "imports":  [
+                        "api-ms-win-core-winrt-error-l1-1-0.dll",
+                        "api-ms-win-core-winrt-l1-1-0.dll",
+                        "api-ms-win-core-winrt-string-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "ole32.dll",
+                        "OLEAUT32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vcruntime140.dll",
+        "sha256":  "0269BF091AF2CFCE2B68C41ED8BBC41353443792D657648E109736851A19DF68",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonColor-8.2.dll",
+        "sha256":  "5B72B7C9B65868731B579B516703D592C11AAE120DF6394AD304AC1A7FCED05A",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonComputationalGeometry-8.2.dll",
+        "sha256":  "68C20CC8E41684B0CB8903A267F16108738E3AF86CE5569F31171EF89FA823D6",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonCore-8.2.dll",
+        "sha256":  "D9C25F94BC39BB3CE49E3AA6D1A69D8FD853B00B584A6C7C309C59B73507FA28",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "GDI32.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "USER32.dll",
+                        "VCRUNTIME140.dll",
+                        "vtksys-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonDataModel-8.2.dll",
+        "sha256":  "2FC5D4B804235E7576D8F7FA9A098F564B37383A38F893635BA4BF800A61AA58",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonMisc-8.2.dll",
+                        "vtkCommonSystem-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtksys-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonExecutionModel-8.2.dll",
+        "sha256":  "6440BC9DC086A6D6B8CC89131033D95EE567AEBA283F5F441DFAE1934F77A202",
+        "imports":  [
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonMisc-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonMath-8.2.dll",
+        "sha256":  "274FF2669868B20E2E49C542108E1458D2D4AE13D583FA4C1CFF6B4B0C38E9BB",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonMisc-8.2.dll",
+        "sha256":  "FA4EEDA4884B22EA8F1784AF0E6AC42C000C70E6F6BBD51A75B08BADD6FE0E65",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtksys-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonSystem-8.2.dll",
+        "sha256":  "7271216A1A50A9330A73992E453101FCFBF0AE791C26A2B5E95CB671D44C5C57",
+        "imports":  [
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtksys-8.2.dll",
+                        "WS2_32.dll"
+                    ]
+    },
+    {
+        "file":  "vtkCommonTransforms-8.2.dll",
+        "sha256":  "19C7600BDCF0CB836B24568BBBCBCCF1BF9709BD41D8B02D56D1CD4DD0C898A9",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonMath-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkDICOMParser-8.2.dll",
+        "sha256":  "3B17B6D753CE0C826FD3D162277143E32C5EA8FADEFA252171ADB82100041F8D",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vtkdoubleconversion-8.2.dll",
+        "sha256":  "446CBF4054C1484C38D9CB381CE0987C118CFE5E952E2430C4AB363E83883F64",
+        "imports":  [
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vtkFiltersCore-8.2.dll",
+        "sha256":  "439FE4C91DE23D554947C76FFD2D9C0696526B36BE41C797FF69DDCB2B0D1B25",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonMisc-8.2.dll",
+                        "vtkCommonSystem-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkFiltersExtraction-8.2.dll",
+        "sha256":  "BCF97848C6048AE45DFB7AE87BCD88C455FAD1AE706AEA5AC654D48447A1FCF0",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkFiltersCore-8.2.dll",
+                        "vtkFiltersGeneral-8.2.dll",
+                        "vtkFiltersStatistics-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkFiltersGeneral-8.2.dll",
+        "sha256":  "265AE61B94F40D000680D020B8C00AA81AAF32D3CE7EE899A8E0D92E7A41C6B6",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonComputationalGeometry-8.2.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonMisc-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkFiltersCore-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkFiltersGeometry-8.2.dll",
+        "sha256":  "C7DE8DEDF8BEF6601F31E129F6B49082B681F5850663598996795068E362C5D7",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkFiltersCore-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkFiltersSources-8.2.dll",
+        "sha256":  "202070F5C51C3170A4022E3DEE006FA4C9415DFDADF166AFB553327665D64DB1",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkFiltersCore-8.2.dll",
+                        "vtkFiltersGeneral-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkFiltersStatistics-8.2.dll",
+        "sha256":  "53C8FC90088766664DF515F81002E2B820F407C7FDD4856F827BAA075DD3F079",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMisc-8.2.dll",
+                        "vtkImagingFourier-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkFiltersTexture-8.2.dll",
+        "sha256":  "D7D68C1FBABE8327F6EC4A8CD0F5CB8D14F7C1B5BC89C0BEA1E50C7D366512DA",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkFiltersCore-8.2.dll",
+                        "vtkFiltersGeneral-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkfreetype-8.2.dll",
+        "sha256":  "1DADA32A60C04CBA66869E18376BE8CFB73A49F08730CD6DFF2783F907317196",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkzlib-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkglew-8.2.dll",
+        "sha256":  "B8837AF5DA18D8FB6EA3A3441B75F66C3354B845A9120B7E60AB1A68DBCFCDBA",
+        "imports":  [
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "OPENGL32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vtkGUISupportQt-8.2.dll",
+        "sha256":  "E1271E551F8FA502D47DA609D9D726A674A651FFE9ACC8507321CFD76AB5F778",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "Qt5Core.dll",
+                        "Qt5Gui.dll",
+                        "Qt5Widgets.dll",
+                        "USER32.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkFiltersExtraction-8.2.dll",
+                        "vtkInteractionStyle-8.2.dll",
+                        "vtkRenderingCore-8.2.dll",
+                        "vtkRenderingOpenGL2-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkImagingColor-8.2.dll",
+        "sha256":  "09D69411B9DDCACEBCB92C696E4596FD5624A1AC836323035D62ADD99615D704",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonSystem-8.2.dll",
+                        "vtkImagingCore-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkImagingCore-8.2.dll",
+        "sha256":  "3FCB806E8B6D45931606D60661568ACD28317857A4FECCCDE5CCD8BF969AC5C1",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkImagingFourier-8.2.dll",
+        "sha256":  "59D47EAAFEC5DE1E3DF6E8532D1F4C361ED608A97A571AD0D31971DE838C0801",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkImagingCore-8.2.dll",
+                        "vtksys-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkInteractionStyle-8.2.dll",
+        "sha256":  "0C969659EFBBBBB1EF54DD17F1BF7C0176861E3A810234172618A9D2A636D74D",
+        "imports":  [
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkFiltersExtraction-8.2.dll",
+                        "vtkFiltersSources-8.2.dll",
+                        "vtkRenderingCore-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkIOCore-8.2.dll",
+        "sha256":  "07DF1BD2B70D9128C12750BC6358EA30C6AC5104F363A3FB13EF7C12BAEE9F0E",
+        "imports":  [
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkdoubleconversion-8.2.dll",
+                        "vtklz4-8.2.dll",
+                        "vtklzma-8.2.dll",
+                        "vtksys-8.2.dll",
+                        "vtkzlib-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkIOGeometry-8.2.dll",
+        "sha256":  "A950C47C49B4D5A02A4E96472481D9C782747D189D40340EB1DCE06534DFAAD2",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonSystem-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkIOCore-8.2.dll",
+                        "vtkIOImage-8.2.dll",
+                        "vtksys-8.2.dll",
+                        "vtkzlib-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkIOImage-8.2.dll",
+        "sha256":  "D9099AFE4B21B6A0F6A817BE88D1FAA0F4A0AB1CA087DF538E0D59C15D9D06B3",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonSystem-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkDICOMParser-8.2.dll",
+                        "vtkjpeg-8.2.dll",
+                        "vtkmetaio-8.2.dll",
+                        "vtkpng-8.2.dll",
+                        "vtksys-8.2.dll",
+                        "vtktiff-8.2.dll",
+                        "vtkzlib-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkjpeg-8.2.dll",
+        "sha256":  "D1878FECB17BBCE32FA8D494B928FA199E3123C53A93B5425CCC8DEEDA82E819",
+        "imports":  [
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vtklz4-8.2.dll",
+        "sha256":  "FDA947088489E6A37D3AF8426D0C1CE935C6CF7AC6F598937F732ABBB541DE3D",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vtklzma-8.2.dll",
+        "sha256":  "B53F37BFC96FA89EA5619B4108092AAC8ACB5D1E7435E4CEF8A76A48302B8899",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    },
+    {
+        "file":  "vtkmetaio-8.2.dll",
+        "sha256":  "9C5CD9C2AD3A37DEAD9E58B0CC74082867FD8CC176E3F273642ECF5FA1D450C3",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkzlib-8.2.dll",
+                        "WSOCK32.dll"
+                    ]
+    },
+    {
+        "file":  "vtkpng-8.2.dll",
+        "sha256":  "CE8AD062EBE5FC70F06E6855A2560668ABCDA0E0C83A38F786864412006CE456",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkzlib-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkRenderingAnnotation-8.2.dll",
+        "sha256":  "2D92C0F076D0141229AF6915E78F6856DC9C6C30987017257CE1F3FC5AEF93DC",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkFiltersCore-8.2.dll",
+                        "vtkFiltersGeneral-8.2.dll",
+                        "vtkFiltersSources-8.2.dll",
+                        "vtkImagingColor-8.2.dll",
+                        "vtkRenderingCore-8.2.dll",
+                        "vtkRenderingFreeType-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkRenderingCore-8.2.dll",
+        "sha256":  "5C80F95598EC511FC7F98711B867F23F03049E080BB2BCB113397B4BEF259995",
+        "imports":  [
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonColor-8.2.dll",
+                        "vtkCommonComputationalGeometry-8.2.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonMisc-8.2.dll",
+                        "vtkCommonSystem-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkFiltersCore-8.2.dll",
+                        "vtkFiltersGeneral-8.2.dll",
+                        "vtkFiltersGeometry-8.2.dll",
+                        "vtkFiltersSources-8.2.dll",
+                        "vtksys-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkRenderingFreeType-8.2.dll",
+        "sha256":  "DBC37E6BF20E559645E4126B3A34A57D361B2F31045CE0880A4F3B9B5FE06AD7",
+        "imports":  [
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkfreetype-8.2.dll",
+                        "vtkRenderingCore-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkRenderingOpenGL2-8.2.dll",
+        "sha256":  "A8637F58372EFB89D069AB94295C7E1304A5E36C79857B4A74E08893E5EDA19B",
+        "imports":  [
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "GDI32.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "OPENGL32.dll",
+                        "USER32.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkCommonCore-8.2.dll",
+                        "vtkCommonDataModel-8.2.dll",
+                        "vtkCommonExecutionModel-8.2.dll",
+                        "vtkCommonMath-8.2.dll",
+                        "vtkCommonSystem-8.2.dll",
+                        "vtkCommonTransforms-8.2.dll",
+                        "vtkFiltersCore-8.2.dll",
+                        "vtkglew-8.2.dll",
+                        "vtkRenderingCore-8.2.dll",
+                        "vtksys-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtksys-8.2.dll",
+        "sha256":  "27C486113D1983421B7BD13CE32FB953003043F6A259712B140DED0F41128274",
+        "imports":  [
+                        "ADVAPI32.dll",
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-time-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "MSVCP140.dll",
+                        "PSAPI.DLL",
+                        "SHELL32.dll",
+                        "VCRUNTIME140.dll",
+                        "WS2_32.dll"
+                    ]
+    },
+    {
+        "file":  "vtktiff-8.2.dll",
+        "sha256":  "422008360758C666B66D84BD6880E6E1CCEC81D3A34614CE74500729585A21EF",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-environment-l1-1-0.dll",
+                        "api-ms-win-crt-filesystem-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-math-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "api-ms-win-crt-string-l1-1-0.dll",
+                        "api-ms-win-crt-utility-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll",
+                        "vtkjpeg-8.2.dll",
+                        "vtkzlib-8.2.dll"
+                    ]
+    },
+    {
+        "file":  "vtkzlib-8.2.dll",
+        "sha256":  "9E9C41728B6A94FBACAFA85D42787A32A75BB4D262F71000453AE579C3C18CB3",
+        "imports":  [
+                        "api-ms-win-crt-convert-l1-1-0.dll",
+                        "api-ms-win-crt-heap-l1-1-0.dll",
+                        "api-ms-win-crt-runtime-l1-1-0.dll",
+                        "api-ms-win-crt-stdio-l1-1-0.dll",
+                        "KERNEL32.dll",
+                        "VCRUNTIME140.dll"
+                    ]
+    }
+]

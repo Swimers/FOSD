@@ -155,7 +155,9 @@ vtkSmartPointer<vtkPolyData> disp3dmodel::OptimizeMesh(vtkSmartPointer<vtkPolyDa
     // ---- Step 4: 可选保存 ----
     if (cfg.saveOptimized) {
         // 保存到 data/mesh_optimized/ 目录，文件名加 _optimized 后缀
-        QString saveDir = QCoreApplication::applicationDirPath() + "/data/mesh_optimized";
+        QString saveDir = qEnvironmentVariable(
+            "FOSD_DATA_ROOT", QCoreApplication::applicationDirPath())
+            + "/data/mesh_optimized";
         QDir().mkpath(saveDir);
         QString savePath = saveDir + "/optimized_model.stl";
 

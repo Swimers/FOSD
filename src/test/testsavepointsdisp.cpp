@@ -1,9 +1,15 @@
 #include "testsavepointsdisp.h"
+#include <QDir>
 
 testsavepointsdisp::testsavepointsdisp(QObject* parent)
     : QThread(parent),
+#ifdef FOSD_RK3588_ARM_LINUX
+      m_fileNeg("data/outputs/disp_point_neg13500.txt"),
+      m_filePos("data/outputs/disp_point_pos13500.txt")
+#else
       m_fileNeg("D:/disp_point_neg13500.txt"),
       m_filePos("D:/disp_point_pos13500.txt")
+#endif
 {
 }
 
@@ -40,6 +46,10 @@ void testsavepointsdisp::stopThread()
 
 bool testsavepointsdisp::openFiles()
 {
+#ifdef FOSD_RK3588_ARM_LINUX
+    if (!QDir().mkpath("data/outputs"))
+        return false;
+#endif
     if (!m_fileNeg.open(QIODevice::Append | QIODevice::Text))
     {
         qDebug() << "Open neg file failed:" << m_fileNeg.fileName();

@@ -1,0 +1,11 @@
+﻿{
+    "version":  "1.0.1",
+    "release_date":  "2026-10-08",
+    "source_commit":  "f4988da7a686c10e5638e58ee92fa52ff84da80c",
+    "application_sha256":  "B8C509507278D046396DF349FE58DC6F6CA7F3BAE0904DB46C54C91CF8496944",
+    "installer_sha256":  "D67B07C95E33A84E8EB0B0BBCC6930719EBC681C6C83D91D7AD4E4E21AE9EE6D",
+    "installer_bytes":  69287014,
+    "payload_files":  107,
+    "payload_dlls":  72,
+    "required_os":  "Windows 10/11 x64"
+}

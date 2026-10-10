@@ -10,7 +10,7 @@
  * 传入文件地址，将数据导入positionOriginal中
  */
 IFE::IFE(){
-    loadConfig("ifepara.ini");
+    loadConfig("data/config/ifepara.ini");
 }
 
 void IFE::modifyOriginalCoordinates(const QString &filePath)

@@ -40,7 +40,7 @@ UserManage* UserManage::getInstance()
 
 void UserManage::ReadInit(const QString &key, QStringList &value) {
     //value.clear();
-    QString path = "login.ini";
+    QString path = "data/config/login.ini";
     QSettings config(path, QSettings::IniFormat);
     QVariant variant = config.value(QString("config/") + key);
     value = variant.toStringList();
@@ -48,7 +48,7 @@ void UserManage::ReadInit(const QString &key, QStringList &value) {
 }
 
 void UserManage::WriteInit(const QString &key, const QStringList &value) {
-    QString path = "login.ini";
+    QString path = "data/config/login.ini";
     QSettings config(path, QSettings::IniFormat);
     config.beginGroup("config");
     config.setValue(key, value);

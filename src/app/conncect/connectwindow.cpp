@@ -821,7 +821,8 @@ bool connectwindow::on_pbtn_SaveSpectrum_clicked()
     QString fileName = QFileDialog::getSaveFileName(
         this,
         "保存频谱",
-        qApp->applicationDirPath() + "/" + defaultFileName,
+        qEnvironmentVariable("FOSD_DATA_ROOT", qApp->applicationDirPath())
+            + "/" + defaultFileName,
         filter
     );
     if (fileName.isEmpty())

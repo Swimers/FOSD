@@ -5,7 +5,7 @@
 #include <QMutex>  // 新增
 
 // 该宏意味着定值，即只初始化8行表格
-#define MARKPOINTNUM 12         //注意这里修改了，要保证与Data/Input/OriginalCoordiante.csv中的行数一致，否则无效
+#define MARKPOINTNUM 12         //与 data/input/OriginalCoordiante.csv 的行数保持一致
 #define SensorNum 12
 
 class IFE

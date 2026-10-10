@@ -30,9 +30,15 @@ RainbowMainWindow::RainbowMainWindow(QWidget *parent) :
     //m_testInjector = new TestDataInjector(m_rainbowIFE, this);
     //m_testInjector->startStaticInjection(25);
     // 动态注入
-    QString filePath = "C:/Users/User/Desktop/蒲城/数据处理/2026-04-18data.txt";
-    m_testInjector = new TestDataInjector(m_rainbowIFE, this);
-    m_testInjector->startTxtInjection(filePath, 25);
+#ifdef FOSD_RK3588_ARM_LINUX
+    const QString filePath = QStringLiteral("data/input/test_injection.txt");
+#else
+    const QString filePath = QStringLiteral("C:/Users/User/Desktop/蒲城/数据处理/2026-04-18data.txt");
+#endif
+    if (QFile::exists(filePath)) {
+        m_testInjector = new TestDataInjector(m_rainbowIFE, this);
+        m_testInjector->startTxtInjection(filePath, 25);
+    }
 }
 
 RainbowMainWindow::~RainbowMainWindow()

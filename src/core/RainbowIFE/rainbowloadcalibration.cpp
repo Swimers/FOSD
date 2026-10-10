@@ -1,6 +1,6 @@
 #include "rainbowloadcalibration.h"
 
- rainbowloadcalibration:: rainbowloadcalibration(QObject *parent) : QObject(parent), m_packetLogFile("packet_log.csv")
+ rainbowloadcalibration:: rainbowloadcalibration(QObject *parent) : QObject(parent), m_packetLogFile("data/packet_log.csv")
 {
     // 构造函数仅保留核心初始化逻辑：日志初始化 + 读取初始波长
     initLogFile();
@@ -30,7 +30,7 @@ void  rainbowloadcalibration::initLogFile()
  */
 void  rainbowloadcalibration::loadOriginalWavelength()
 {
-    QFile file_txt("./初始波长.txt");
+    QFile file_txt("data/calibration/初始波长.txt");
     if (!file_txt.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "警告：无法打开初始波长.txt";
         return;
@@ -252,12 +252,12 @@ bool  rainbowloadcalibration::loadCsvSingleColumn(const QString& path, QVector<f
 void  rainbowloadcalibration::loadAllCalibrationData()
 {
     // 1. 优先加载矩阵模式S表
-    bool loaded_s = loadCsvMatrixSensors_S("Data/Input/data_s.csv");
+    bool loaded_s = loadCsvMatrixSensors_S("data/calibration/data_s.csv");
     if (!loaded_s) {
         // 回退单列模式
         QVector<float> t_list, s_list;
-        bool ok_t = loadCsvSingleColumn("Data/Input/data_t.csv", t_list);
-        bool ok_s = loadCsvSingleColumn("Data/Input/data_s.csv", s_list);
+        bool ok_t = loadCsvSingleColumn("data/calibration/data_t.csv", t_list);
+        bool ok_s = loadCsvSingleColumn("data/calibration/data_s.csv", s_list);
 
         if (ok_t && ok_s) {
             int n = std::min(t_list.size(), s_list.size());
@@ -283,12 +283,12 @@ void  rainbowloadcalibration::loadAllCalibrationData()
     }
 
     // 2. 优先加载矩阵模式T表
-    bool loaded_t = loadCsvMatrixSensors_T("Data/Input/data_t.csv");
+    bool loaded_t = loadCsvMatrixSensors_T("data/calibration/data_t.csv");
     if (!loaded_t) {
         // 回退单列模式
         QVector<float> t_list_only, s_list_only;
-        bool ok_t2 = loadCsvSingleColumn("Data/Input/data_t.csv", t_list_only);
-        bool ok_s2 = loadCsvSingleColumn("Data/Input/data_s.csv", s_list_only);
+        bool ok_t2 = loadCsvSingleColumn("data/calibration/data_t.csv", t_list_only);
+        bool ok_s2 = loadCsvSingleColumn("data/calibration/data_s.csv", s_list_only);
 
         if (ok_t2 && ok_s2) {
             int n2 = std::min(t_list_only.size(), s_list_only.size());

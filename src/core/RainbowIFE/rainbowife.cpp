@@ -21,7 +21,7 @@
  * 传入文件地址，将数据导入positionOriginal中
  */
 rainbowIFE::rainbowIFE(QObject *parent) : QObject(parent){
-    loadConfig("ifepara.ini");
+    loadConfig("data/config/ifepara.ini");
     startStorageThread();  // 启动存储线程
 }
 

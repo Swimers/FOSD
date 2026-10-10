@@ -25,7 +25,7 @@ bool hasPacketBytes(const QByteArray &bytes, int minSize)
 
 analyzepackets::analyzepackets(QObject *parent) : QObject(parent)
 {
-    QFile file_txt("./初始波长.txt");
+    QFile file_txt("data/calibration/初始波长.txt");
     if(file_txt.open(QIODevice::ReadOnly|QIODevice::Text)){
         //读取文件
         QTextStream TextRead(&file_txt);
@@ -137,7 +137,7 @@ void analyzepackets::processReset()
         original_wavelength_temp[i] = original_wavelength_temp[i] + original_datagram.all;
     }
     if(count_num == 20){
-        QFile file_txt("./初始波长.txt");
+        QFile file_txt("data/calibration/初始波长.txt");
         if(file_txt.open(QIODevice::WriteOnly|QIODevice::Text)){
             QTextStream TextWrite(&file_txt);
             for(int i=0;i<CH_SUM;i++){

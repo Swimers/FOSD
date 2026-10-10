@@ -106,7 +106,7 @@ bool loginwindow::loadUsers()
     ReadInit("isrembered", m_isremberList);
 
     if (m_userNameList.isEmpty()) {
-        QSettings legacyConfig("login.ini", QSettings::IniFormat);
+        QSettings legacyConfig("data/config/login.ini", QSettings::IniFormat);
         m_userNameList = legacyConfig.value("config/username").toStringList();
         m_passwdList = legacyConfig.value("config/password").toStringList();
         m_privilegeList = legacyConfig.value("config/privilege").toStringList();
@@ -215,7 +215,8 @@ void loginwindow::read_json()
 {
     auto &loginConfig = ConfigManager::instance().config().login;
     if (!loginConfig.legacyRememberFlagsMigrated) {
-        QFile legacyFile(QApplication::applicationDirPath() + "/config.json");
+        QFile legacyFile(qEnvironmentVariable(
+            "FOSD_DATA_ROOT", QApplication::applicationDirPath()) + "/config.json");
         if (legacyFile.open(QIODevice::ReadOnly)) {
             const QJsonObject obj = QJsonDocument::fromJson(legacyFile.readAll()).object();
             loginConfig.saveName = obj.value("SAVE_NAME").toString() == "1";
