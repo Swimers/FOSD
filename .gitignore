@@ -24,6 +24,7 @@ lib/VTK/VTK-Linux-debug/include/vtk-9.5/
 .mimocode/
 .specstory/
 .hermes/
+.vscode/
 
 # 忽略上述工具可能生成的散落配置文件
 .mcp.json
