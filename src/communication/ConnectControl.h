@@ -44,8 +44,12 @@ signals:
                       fosd::communication::ConnectionState state);
     void errorOccurred(const fosd::communication::CommunicationError &error);
 
+private slots:
+    void handleBytesReceived(const QByteArray &bytes, const fosd::communication::Endpoint &peer);
+    void handleTransportStateChanged(fosd::communication::ConnectionState state);
+
 private:
-    void wire(fosd::communication::Channel channel, ITransport *transport);
+    void wire(ITransport *transport);
     void forward(fosd::communication::Channel channel, const QByteArray &bytes,
                  const fosd::communication::Endpoint &peer);
     IPacketDecoder *decoder(fosd::communication::Channel channel);

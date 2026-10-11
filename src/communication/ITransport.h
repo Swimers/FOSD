@@ -18,6 +18,8 @@ public:
     virtual void close() = 0;
     virtual void send(const QByteArray &bytes, const Endpoint &peer = Endpoint()) = 0;
 
+    Channel channel() const { return m_channel; }
+
 signals:
     void bytesReceived(const QByteArray &bytes, const Endpoint &peer);
     void stateChanged(fosd::communication::ConnectionState state);

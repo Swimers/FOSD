@@ -5,31 +5,35 @@ namespace communication {
 
 Udp::Udp(QObject *parent)
     : ITransport(Channel::Udp, parent) {
-    connect(&m_socket, &QUdpSocket::readyRead, this, [this]() {
-        while (m_socket.hasPendingDatagrams()) {
-            const qint64 pending = m_socket.pendingDatagramSize();
-            if (pending < 0) {
-                reportError(QStringLiteral("receive"), m_socket.errorString(),
-                            static_cast<int>(m_socket.error()));
-                break;
-            }
-            QByteArray bytes(static_cast<int>(pending), Qt::Uninitialized);
-            Endpoint peer;
-            const qint64 received = m_socket.readDatagram(bytes.data(), bytes.size(),
-                                                            &peer.address, &peer.port);
-            if (received < 0) {
-                reportError(QStringLiteral("receive"), m_socket.errorString(),
-                            static_cast<int>(m_socket.error()));
-                break;
-            }
-            bytes.resize(static_cast<int>(received));
-            emit bytesReceived(bytes, peer);
-        }
-    });
+    connect(&m_socket, &QUdpSocket::readyRead, this, &Udp::handleReadyRead);
     connect(&m_socket, QOverload<QAbstractSocket::SocketError>::of(&QUdpSocket::error),
-            this, [this](QAbstractSocket::SocketError error) {
-        reportError(QStringLiteral("udp"), m_socket.errorString(), static_cast<int>(error));
-    });
+            this, &Udp::handleSocketError);
+}
+
+void Udp::handleReadyRead() {
+    while (m_socket.hasPendingDatagrams()) {
+        const qint64 pending = m_socket.pendingDatagramSize();
+        if (pending < 0) {
+            reportError(QStringLiteral("receive"), m_socket.errorString(),
+                        static_cast<int>(m_socket.error()));
+            break;
+        }
+        QByteArray bytes(static_cast<int>(pending), Qt::Uninitialized);
+        Endpoint peer;
+        const qint64 received = m_socket.readDatagram(bytes.data(), bytes.size(),
+                                                        &peer.address, &peer.port);
+        if (received < 0) {
+            reportError(QStringLiteral("receive"), m_socket.errorString(),
+                        static_cast<int>(m_socket.error()));
+            break;
+        }
+        bytes.resize(static_cast<int>(received));
+        emit bytesReceived(bytes, peer);
+    }
+}
+
+void Udp::handleSocketError(QAbstractSocket::SocketError error) {
+    reportError(QStringLiteral("udp"), m_socket.errorString(), static_cast<int>(error));
 }
 
 void Udp::open(const UdpConfig &config) {

@@ -5,25 +5,28 @@ namespace communication {
 
 Tcp::Tcp(QObject *parent)
     : ITransport(Channel::Tcp, parent) {
-    connect(&m_server, &QTcpServer::newConnection, this, [this]() {
-        while (m_server.hasPendingConnections()) {
-            QTcpSocket *socket = m_server.nextPendingConnection();
-            if (m_socket) {
-                socket->disconnectFromHost();
-                socket->deleteLater();
-                reportError(QStringLiteral("accept"),
-                            QStringLiteral("Only one TCP client is supported"));
-                continue;
-            }
-            socket->setParent(this);
-            attachSocket(socket);
-            setState(ConnectionState::Connected);
+    connect(&m_server, &QTcpServer::newConnection, this, &Tcp::handleNewConnection);
+    connect(&m_server, &QTcpServer::acceptError, this, &Tcp::handleAcceptError);
+}
+
+void Tcp::handleNewConnection() {
+    while (m_server.hasPendingConnections()) {
+        QTcpSocket *socket = m_server.nextPendingConnection();
+        if (m_socket) {
+            socket->disconnectFromHost();
+            socket->deleteLater();
+            reportError(QStringLiteral("accept"),
+                        QStringLiteral("Only one TCP client is supported"));
+            continue;
         }
-    });
-    connect(&m_server, &QTcpServer::acceptError, this,
-            [this](QAbstractSocket::SocketError error) {
-        reportError(QStringLiteral("accept"), m_server.errorString(), static_cast<int>(error));
-    });
+        socket->setParent(this);
+        attachSocket(socket);
+        setState(ConnectionState::Connected);
+    }
+}
+
+void Tcp::handleAcceptError(QAbstractSocket::SocketError error) {
+    reportError(QStringLiteral("accept"), m_server.errorString(), static_cast<int>(error));
 }
 
 void Tcp::open(const TcpConfig &config) {
@@ -81,33 +84,44 @@ void Tcp::send(const QByteArray &bytes, const Endpoint &peer) {
 
 void Tcp::attachSocket(QTcpSocket *socket) {
     m_socket = socket;
-    connect(socket, &QTcpSocket::connected, this, [this, socket]() {
-        if (socket == m_socket)
-            setState(ConnectionState::Connected);
-    });
-    connect(socket, &QTcpSocket::readyRead, this, [this, socket]() {
-        if (socket != m_socket)
-            return;
-        const QByteArray bytes = socket->readAll();
-        if (!bytes.isEmpty()) {
-            Endpoint peer;
-            peer.address = socket->peerAddress();
-            peer.port = socket->peerPort();
-            emit bytesReceived(bytes, peer);
-        }
-    });
-    connect(socket, &QTcpSocket::disconnected, this, [this, socket]() {
-        if (socket != m_socket)
-            return;
-        m_socket = nullptr;
-        socket->deleteLater();
-        setState(m_server.isListening() ? ConnectionState::Listening : ConnectionState::Closed);
-    });
+    connect(socket, &QTcpSocket::connected, this, &Tcp::handleSocketConnected);
+    connect(socket, &QTcpSocket::readyRead, this, &Tcp::handleSocketReadyRead);
+    connect(socket, &QTcpSocket::disconnected, this, &Tcp::handleSocketDisconnected);
     connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error),
-            this, [this, socket](QAbstractSocket::SocketError error) {
-        if (socket == m_socket)
-            reportError(QStringLiteral("tcp"), socket->errorString(), static_cast<int>(error));
-    });
+            this, &Tcp::handleSocketError);
+}
+
+void Tcp::handleSocketConnected() {
+    if (!m_socket)
+        return;
+    setState(ConnectionState::Connected);
+}
+
+void Tcp::handleSocketReadyRead() {
+    if (!m_socket)
+        return;
+    const QByteArray bytes = m_socket->readAll();
+    if (bytes.isEmpty())
+        return;
+    Endpoint peer;
+    peer.address = m_socket->peerAddress();
+    peer.port = m_socket->peerPort();
+    emit bytesReceived(bytes, peer);
+}
+
+void Tcp::handleSocketDisconnected() {
+    QTcpSocket *socket = m_socket;
+    if (!socket)
+        return;
+    m_socket = nullptr;
+    socket->deleteLater();
+    setState(m_server.isListening() ? ConnectionState::Listening : ConnectionState::Closed);
+}
+
+void Tcp::handleSocketError(QAbstractSocket::SocketError error) {
+    if (!m_socket)
+        return;
+    reportError(QStringLiteral("tcp"), m_socket->errorString(), static_cast<int>(error));
 }
 
 void Tcp::discardSocket() {

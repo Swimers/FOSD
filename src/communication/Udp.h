@@ -18,6 +18,10 @@ public:
 
     quint16 localPort() const;
 
+private slots:
+    void handleReadyRead();
+    void handleSocketError(QAbstractSocket::SocketError error);
+
 private:
     QUdpSocket m_socket;
     Endpoint m_defaultPeer;

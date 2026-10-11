@@ -19,9 +19,9 @@ void ConnectWorker::initialize() {
     m_tcp = new Tcp(this);
     m_serialport = new Serialport(this);
 
-    wire(Channel::Udp, m_udp);
-    wire(Channel::Tcp, m_tcp);
-    wire(Channel::Serial, m_serialport);
+    wire(m_udp);
+    wire(m_tcp);
+    wire(m_serialport);
 
     if (m_decoderFactory) {
         m_serialportDecoder = m_decoderFactory(Channel::Serial);
@@ -30,20 +30,27 @@ void ConnectWorker::initialize() {
     }
 }
 
-void ConnectWorker::wire(Channel channel, ITransport *transport) {
-    connect(transport, &ITransport::bytesReceived, 
-            this,
-            [this, channel](const QByteArray &bytes, const Endpoint &peer) {
-        forward(channel, bytes, peer);
-    });
-    connect(transport, 
-            &ITransport::stateChanged, 
-            this,
-            [this, channel](ConnectionState state) { emit stateChanged(channel, state); });
-    connect(transport, 
-            &ITransport::errorOccurred, 
-            this,
-            [this](const CommunicationError &error) { emit errorOccurred(error); });
+void ConnectWorker::wire(ITransport *transport) {
+    connect(transport, &ITransport::bytesReceived,
+            this, &ConnectWorker::handleBytesReceived);
+    connect(transport, &ITransport::stateChanged,
+            this, &ConnectWorker::handleTransportStateChanged);
+    connect(transport, &ITransport::errorOccurred,
+            this, &ConnectWorker::errorOccurred);
+}
+
+void ConnectWorker::handleBytesReceived(const QByteArray &bytes, const Endpoint &peer) {
+    ITransport *transport = qobject_cast<ITransport *>(sender());
+    if (!transport)
+        return;
+    forward(transport->channel(), bytes, peer);
+}
+
+void ConnectWorker::handleTransportStateChanged(ConnectionState state) {
+    ITransport *transport = qobject_cast<ITransport *>(sender());
+    if (!transport)
+        return;
+    emit stateChanged(transport->channel(), state);
 }
 
 void ConnectWorker::forward(Channel channel, const QByteArray &bytes, const Endpoint &peer) {
@@ -115,6 +122,7 @@ void ConnectWorker::shutdown() {
 
 ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
     : QObject(parent), m_worker(new detail::ConnectWorker(std::move(decoderFactory))) {
+
     qRegisterMetaType<Channel>("fosd::communication::Channel");
     qRegisterMetaType<ConnectionState>("fosd::communication::ConnectionState");
     qRegisterMetaType<Endpoint>("fosd::communication::Endpoint");

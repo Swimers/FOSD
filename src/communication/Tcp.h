@@ -17,6 +17,14 @@ public:
     void close() override;
     void send(const QByteArray &bytes, const Endpoint &peer = Endpoint()) override;
 
+private slots:
+    void handleNewConnection();
+    void handleAcceptError(QAbstractSocket::SocketError error);
+    void handleSocketConnected();
+    void handleSocketReadyRead();
+    void handleSocketDisconnected();
+    void handleSocketError(QAbstractSocket::SocketError error);
+
 private:
     void attachSocket(QTcpSocket *socket);
     void discardSocket();
