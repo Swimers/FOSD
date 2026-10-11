@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-msvc2017",
+      "displayName": "Windows x64 (MSVC 2017)",
+      "description": "Visual Studio 15 2017 x64。多配置生成器，Debug/Release 共用 build/ 目录，具体配置由 build/test preset 指定。",
+      "generator": "Visual Studio 15 2017",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "FOSD_QT_ROOT": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64",
+        "FOSD_BUILD_TESTS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-debug",
+      "displayName": "构建 Debug",
+      "configurePreset": "windows-msvc2017",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-release",
+      "displayName": "构建 Release",
+      "configurePreset": "windows-msvc2017",
+      "configuration": "Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-debug",
+      "displayName": "运行测试 (Debug)",
+      "configurePreset": "windows-msvc2017",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    }
+  ]
+}

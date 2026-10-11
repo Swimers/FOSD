@@ -1,0 +1,15 @@
+add_executable(FOSD
+    WIN32
+    main.cpp
+    FOSD.cpp
+    FOSD.h
+)
+
+target_link_libraries(FOSD
+    PRIVATE
+        Qt5::Widgets
+        fosd_communication
+)
+
+# Qt5::Widgets already implies Qt5::Core / Qt5::Gui.
+target_compile_features(FOSD PRIVATE cxx_std_11)
