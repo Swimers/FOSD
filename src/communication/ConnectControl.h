@@ -12,9 +12,9 @@ namespace fosd {
 namespace communication {
 
 class ITransport;
-class Usart;
 class Udp;
 class Tcp;
+class Serialport;
 
 using DecoderFactory = std::function<std::unique_ptr<IPacketDecoder>(Channel)>;
 
@@ -51,12 +51,13 @@ private:
     IPacketDecoder *decoder(fosd::communication::Channel channel);
 
     DecoderFactory m_decoderFactory;
-    Usart *m_usart = nullptr;
     Udp *m_udp = nullptr;
     Tcp *m_tcp = nullptr;
-    std::unique_ptr<IPacketDecoder> m_serialDecoder;
+    Serialport *m_serialport = nullptr;
+
     std::unique_ptr<IPacketDecoder> m_udpDecoder;
     std::unique_ptr<IPacketDecoder> m_tcpDecoder;
+    std::unique_ptr<IPacketDecoder> m_serialportDecoder;
 };
 
 } // namespace detail

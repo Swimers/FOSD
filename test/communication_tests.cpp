@@ -26,6 +26,7 @@ private slots:
     void tcpClientRoundTrip();
     void tcpServerRoundTrip();
     void invalidSerialConfiguration();
+    void sendOnClosedSerialReportsError();
 };
 
 void CommunicationTests::udpRoundTripAndDecoder() {
@@ -154,8 +155,21 @@ void CommunicationTests::invalidSerialConfiguration() {
     QTRY_VERIFY(errorSpy.count() > 0);
     const CommunicationError error =
         qvariant_cast<CommunicationError>(errorSpy.last().at(0));
-    QCOMPARE(error.channel, Channel::Usart);
+    QCOMPARE(error.channel, Channel::Serial);
     QCOMPARE(error.operation, QStringLiteral("open"));
+}
+
+void CommunicationTests::sendOnClosedSerialReportsError() {
+    ConnectControl control;
+    QSignalSpy dataSpy(&control, &ConnectControl::rawDataReceived);
+    QSignalSpy errorSpy(&control, &ConnectControl::errorOccurred);
+    control.send(Channel::Serial, QByteArray("ping"));
+    QTRY_VERIFY(errorSpy.count() > 0);
+    const CommunicationError error =
+        qvariant_cast<CommunicationError>(errorSpy.last().at(0));
+    QCOMPARE(error.channel, Channel::Serial);
+    QCOMPARE(error.operation, QStringLiteral("send"));
+    QCOMPARE(dataSpy.count(), 0);
 }
 
 QTEST_MAIN(CommunicationTests)

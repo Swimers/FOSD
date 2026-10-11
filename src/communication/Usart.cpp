@@ -4,7 +4,7 @@ namespace fosd {
 namespace communication {
 
 Usart::Usart(QObject *parent)
-    : ITransport(Channel::Usart, parent) {
+    : ITransport(Channel::Serial, parent) {
     connect(&m_port, &QSerialPort::readyRead, this, [this]() {
         const QByteArray bytes = m_port.readAll();
         if (!bytes.isEmpty())

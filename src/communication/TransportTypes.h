@@ -8,7 +8,7 @@
 namespace fosd {
 namespace communication {
 
-enum class Channel { Usart, Udp, Tcp };
+enum class Channel { Serial, Udp, Tcp };
 enum class ConnectionState { Closed, Opening, Ready, Listening, Connected };
 enum class TcpRole { Client, Server };
 
@@ -42,7 +42,7 @@ struct TcpConfig {
 };
 
 struct CommunicationError {
-    Channel channel = Channel::Usart;
+    Channel channel = Channel::Serial;
     QString operation;
     QString message;
     int nativeCode = 0;

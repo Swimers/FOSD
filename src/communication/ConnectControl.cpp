@@ -3,7 +3,7 @@
 #include "ITransport.h"
 #include "Tcp.h"
 #include "Udp.h"
-#include "Usart.h"
+#include "Serialport.h"
 
 #include <QMetaObject>
 
@@ -15,27 +15,34 @@ ConnectWorker::ConnectWorker(DecoderFactory decoderFactory)
     : m_decoderFactory(std::move(decoderFactory)) {}
 
 void ConnectWorker::initialize() {
-    m_usart = new Usart(this);
     m_udp = new Udp(this);
     m_tcp = new Tcp(this);
-    wire(Channel::Usart, m_usart);
+    m_serialport = new Serialport(this);
+
     wire(Channel::Udp, m_udp);
     wire(Channel::Tcp, m_tcp);
+    wire(Channel::Serial, m_serialport);
+
     if (m_decoderFactory) {
-        m_serialDecoder = m_decoderFactory(Channel::Usart);
+        m_serialportDecoder = m_decoderFactory(Channel::Serial);
         m_udpDecoder = m_decoderFactory(Channel::Udp);
         m_tcpDecoder = m_decoderFactory(Channel::Tcp);
     }
 }
 
 void ConnectWorker::wire(Channel channel, ITransport *transport) {
-    connect(transport, &ITransport::bytesReceived, this,
+    connect(transport, &ITransport::bytesReceived, 
+            this,
             [this, channel](const QByteArray &bytes, const Endpoint &peer) {
         forward(channel, bytes, peer);
     });
-    connect(transport, &ITransport::stateChanged, this,
+    connect(transport, 
+            &ITransport::stateChanged, 
+            this,
             [this, channel](ConnectionState state) { emit stateChanged(channel, state); });
-    connect(transport, &ITransport::errorOccurred, this,
+    connect(transport, 
+            &ITransport::errorOccurred, 
+            this,
             [this](const CommunicationError &error) { emit errorOccurred(error); });
 }
 
@@ -51,7 +58,7 @@ void ConnectWorker::forward(Channel channel, const QByteArray &bytes, const Endp
 
 IPacketDecoder *ConnectWorker::decoder(Channel channel) {
     switch (channel) {
-    case Channel::Usart: return m_serialDecoder.get();
+    case Channel::Serial: return m_serialportDecoder.get();
     case Channel::Udp: return m_udpDecoder.get();
     case Channel::Tcp: return m_tcpDecoder.get();
     }
@@ -59,9 +66,9 @@ IPacketDecoder *ConnectWorker::decoder(Channel channel) {
 }
 
 void ConnectWorker::openSerial(const SerialConfig &config) {
-    if (m_serialDecoder)
-        m_serialDecoder->reset();
-    m_usart->open(config);
+    if (m_serialportDecoder)
+        m_serialportDecoder->reset();
+    m_serialport->open(config);
 }
 
 void ConnectWorker::openUdp(const UdpConfig &config) {
@@ -81,7 +88,7 @@ void ConnectWorker::close(Channel channel) {
     if (parser)
         parser->reset();
     switch (channel) {
-    case Channel::Usart: m_usart->close(); break;
+    case Channel::Serial: m_serialport->close(); break;
     case Channel::Udp: m_udp->close(); break;
     case Channel::Tcp: m_tcp->close(); break;
     }
@@ -89,17 +96,17 @@ void ConnectWorker::close(Channel channel) {
 
 void ConnectWorker::send(Channel channel, const QByteArray &bytes, const Endpoint &peer) {
     switch (channel) {
-    case Channel::Usart: m_usart->send(bytes, peer); break;
+    case Channel::Serial: m_serialport->send(bytes, peer); break;
     case Channel::Udp: m_udp->send(bytes, peer); break;
     case Channel::Tcp: m_tcp->send(bytes, peer); break;
     }
 }
 
 void ConnectWorker::shutdown() {
-    close(Channel::Usart);
+    close(Channel::Serial);
     close(Channel::Udp);
     close(Channel::Tcp);
-    m_serialDecoder.reset();
+    m_serialportDecoder.reset();
     m_udpDecoder.reset();
     m_tcpDecoder.reset();
 }

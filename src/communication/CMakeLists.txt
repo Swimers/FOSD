@@ -10,6 +10,8 @@ add_library(fosd_communication STATIC
     Udp.h
     Usart.cpp
     Usart.h
+    Serialport.cpp
+    Serialport.h
 )
 
 # Consumers include these headers as "communication/ConnectControl.h", so the
