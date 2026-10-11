@@ -9,6 +9,7 @@ target_link_libraries(FOSD
     PRIVATE
         Qt5::Widgets
         fosd_communication
+        fosd_protocol
 )
 
 # Qt5::Widgets already implies Qt5::Core / Qt5::Gui.
