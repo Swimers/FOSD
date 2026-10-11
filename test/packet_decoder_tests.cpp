@@ -41,6 +41,7 @@ private slots:
     void serialCustomTerminator();
     void invalidConfiguration();
     void decoderErrorSignals();
+    void jcsChannelPackets();
 };
 
 void PacketDecoderTests::initTestCase() {
@@ -243,6 +244,50 @@ void PacketDecoderTests::decoderErrorSignals() {
     QCOMPARE(qvariant_cast<DecoderError>(serialErrors.first().at(0)).channel, Channel::Serial);
     QCOMPARE(serial.feed("oversized\rX\r", Endpoint()), QVector<QByteArray>({"X\r"}));
     QCOMPARE(serialErrors.count(), 2);
+}
+
+void PacketDecoderTests::jcsChannelPackets() {
+    const PacketRule rule = JCS_Channel_PacketRule();
+    for (int channel = 1; channel <= 16; ++channel) {
+        QByteArray packet = frame(2);
+        packet[0] = packet[2] = char(0xFA);
+        packet[1] = packet[3] = char(channel);
+        UdpPacketDecoder udp({rule});
+        QCOMPARE(udp.feed(packet, Endpoint()), QVector<QByteArray>({packet}));
+        for (int split = 0; split <= packet.size(); ++split) {
+            TcpPacketDecoder tcp({rule});
+            QSignalSpy errors(&tcp, &IPacketDecoder::errorOccurred);
+            QVector<QByteArray> packets = tcp.feed(packet.left(split), Endpoint());
+            packets += tcp.feed(packet.mid(split), Endpoint());
+            QCOMPARE(packets, QVector<QByteArray>({packet}));
+            QCOMPARE(errors.count(), 0);
+        }
+    }
+
+    QByteArray channelPacket = frame();
+    channelPacket.replace(0, 4, QByteArray::fromHex("fa01fa01"));
+    UdpPacketDecoder udp({rule});
+    const QVector<QByteArray> badHeaders = {
+        QByteArray::fromHex("fa00fa00"), QByteArray::fromHex("fa11fa11"),
+        QByteArray::fromHex("fa01fa02"), QByteArray::fromHex("fa010001")
+    };
+    for (const QByteArray &header : badHeaders) {
+        QByteArray bad = channelPacket;
+        bad.replace(0, 4, header);
+        QCOMPARE(rule.frameSize(bad), -1);
+        QVERIFY(udp.feed(bad, Endpoint()).isEmpty());
+    }
+
+    // A fixed FA FB FA FB header takes priority over the FA candidate marker.
+    QByteArray dataPacket = frame();
+    dataPacket.replace(0, 4, QByteArray::fromHex("fafbfafb"));
+    const QByteArray stream = dataPacket + channelPacket + dataPacket;
+    for (int split = 0; split <= stream.size(); ++split) {
+        TcpPacketDecoder tcp({JCS_Data_PacketRule(), rule});
+        QVector<QByteArray> packets = tcp.feed(stream.left(split), Endpoint());
+        packets += tcp.feed(stream.mid(split), Endpoint());
+        QCOMPARE(packets, QVector<QByteArray>({dataPacket, channelPacket, dataPacket}));
+    }
 }
 
 QTEST_GUILESS_MAIN(PacketDecoderTests)

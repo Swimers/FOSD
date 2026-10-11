@@ -7,25 +7,6 @@ namespace fosd {
 namespace communication {
 namespace {
 
-const int RecordHeaderSize = 10;
-const int RecordSize = 6;
-const int MaximumRecordFrameSize = RecordHeaderSize + 65535 * RecordSize;
-
-int recordFrameSize(const QByteArray &bytes) {
-    if (bytes.size() < RecordHeaderSize)
-        return 0;
-    const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
-    return RecordHeaderSize + int(qFromLittleEndian<quint16>(data + 4)) * RecordSize;
-}
-
-PacketRule makeRecordPacketRule(const QByteArray &marker) {
-    PacketRule rule;
-    rule.marker = marker;
-    rule.maxFrameSize = MaximumRecordFrameSize;
-    rule.frameSize = recordFrameSize;
-    return rule;
-}
-
 QString checkRules(const QVector<PacketRule> &rules) {
     if (rules.isEmpty())
         return QStringLiteral("At least one packet rule is required");
@@ -60,15 +41,57 @@ int markerSuffixSize(const QByteArray &bytes, const QVector<PacketRule> &rules) 
 } // namespace
 
 PacketRule JCS_Data_PacketRule() {
-    return makeRecordPacketRule(QByteArray::fromHex("fafbfafb"));
+    const int headerSize = 10;
+    const int recordSize = 6;
+    PacketRule rule;
+    rule.marker = QByteArray::fromHex("fafbfafb");
+    rule.maxFrameSize = headerSize + 65535 * recordSize;
+    rule.frameSize = [headerSize, recordSize](const QByteArray &bytes) -> int {
+        if (bytes.size() < headerSize)
+            return 0;
+        const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
+        return headerSize + int(qFromLittleEndian<quint16>(data + 4)) * recordSize;
+    };
+    return rule;
 }
 
 PacketRule JCS_Channel_PacketRule() {
-    return makeRecordPacketRule(QByteArray::fromHex("fab1fab1"));
+    const int headerSize = 10;
+    const int recordSize = 6;
+    const int maxChannel = 16;
+    PacketRule rule;
+    rule.marker = QByteArray::fromHex("fa");
+    rule.maxFrameSize = headerSize + 65535 * recordSize;
+    rule.frameSize = [headerSize, recordSize, maxChannel](const QByteArray &bytes) -> int {
+        if (bytes.size() < 4)
+            return 0;
+
+        const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
+        const uchar channel = data[1];
+        if (data[0] != 0xFA || data[2] != 0xFA ||
+            channel < 1 || channel > maxChannel || data[3] != channel)
+            return -1;
+
+        if (bytes.size() < headerSize)
+            return 0;
+        return headerSize + int(qFromLittleEndian<quint16>(data + 4)) * recordSize;
+    };
+    return rule;
 }
 
 PacketRule MP_PacketRule() {
-    return makeRecordPacketRule(QByteArray::fromHex("5aa5"));
+    const int headerSize = 10;
+    const int recordSize = 6;
+    PacketRule rule;
+    rule.marker = QByteArray::fromHex("5aa5");
+    rule.maxFrameSize = headerSize + 65535 * recordSize;
+    rule.frameSize = [headerSize, recordSize](const QByteArray &bytes) -> int {
+        if (bytes.size() < headerSize)
+            return 0;
+        const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
+        return headerSize + int(qFromLittleEndian<quint16>(data + 4)) * recordSize;
+    };
+    return rule;
 }
 
 UdpPacketDecoder::UdpPacketDecoder(QVector<PacketRule> rules)

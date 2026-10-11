@@ -23,8 +23,13 @@ struct PacketRule {
 // followed by 6-byte records. No version restriction or checksum is specified.
 // MP uses little-endian 0xA55A; JCS rules use the markers named below.
 PacketRule JCS_Data_PacketRule();
+// FA ch FA ch, ch = 1..16. When both JCS rules are enabled, place the
+// fixed JCS_Data_PacketRule before this single-byte candidate marker rule.
 PacketRule JCS_Channel_PacketRule();
 PacketRule MP_PacketRule();
+
+// Suitable for ConnectControl's DecoderFactory; instances are channel-local.
+std::unique_ptr<IPacketDecoder> createPacketDecoder(Channel channel);
 
 class UdpPacketDecoder final : public IPacketDecoder {
 public:
@@ -64,8 +69,7 @@ private:
     bool m_discarding = false;
 };
 
-// Suitable for ConnectControl's DecoderFactory; instances are channel-local.
-std::unique_ptr<IPacketDecoder> createPacketDecoder(Channel channel);
+
 
 } // namespace communication
 } // namespace fosd
