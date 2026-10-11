@@ -5,21 +5,25 @@ namespace communication {
 
 Usart::Usart(QObject *parent)
     : ITransport(Channel::Serial, parent) {
-    connect(&m_port, &QSerialPort::readyRead, this, [this]() {
-        const QByteArray bytes = m_port.readAll();
-        if (!bytes.isEmpty())
-            emit bytesReceived(bytes, Endpoint());
-    });
+    connect(&m_port, &QSerialPort::readyRead, this, &Usart::handleReadyRead);
     connect(&m_port, QOverload<QSerialPort::SerialPortError>::of(&QSerialPort::error),
-            this, [this](QSerialPort::SerialPortError error) {
-        if (error == QSerialPort::NoError)
-            return;
-        reportError(QStringLiteral("serial"), m_port.errorString(), static_cast<int>(error));
-        if (error == QSerialPort::ResourceError) {
-            m_port.close();
-            emit stateChanged(ConnectionState::Closed);
-        }
-    });
+            this, &Usart::handlePortError);
+}
+
+void Usart::handleReadyRead() {
+    const QByteArray bytes = m_port.readAll();
+    if (!bytes.isEmpty())
+        emit bytesReceived(bytes, Endpoint());
+}
+
+void Usart::handlePortError(QSerialPort::SerialPortError error) {
+    if (error == QSerialPort::NoError)
+        return;
+    reportError(QStringLiteral("serial"), m_port.errorString(), static_cast<int>(error));
+    if (error == QSerialPort::ResourceError) {
+        m_port.close();
+        emit stateChanged(ConnectionState::Closed);
+    }
 }
 
 void Usart::open(const SerialConfig &config) {

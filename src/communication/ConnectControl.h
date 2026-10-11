@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPacketDecoder.h"
-#include "TransportTypes.h"
+#include "ITransportTypes.h"
 
 #include <QObject>
 #include <QThread>
@@ -43,6 +43,7 @@ signals:
     void stateChanged(fosd::communication::Channel channel,
                       fosd::communication::ConnectionState state);
     void errorOccurred(const fosd::communication::CommunicationError &error);
+    void decoderErrorOccurred(const fosd::communication::DecoderError &error);
 
 private slots:
     void handleBytesReceived(const QByteArray &bytes, const fosd::communication::Endpoint &peer);
@@ -50,6 +51,7 @@ private slots:
 
 private:
     void wire(ITransport *transport);
+    std::unique_ptr<IPacketDecoder> initializeDecoder(Channel channel);
     void forward(fosd::communication::Channel channel, const QByteArray &bytes,
                  const fosd::communication::Endpoint &peer);
     IPacketDecoder *decoder(fosd::communication::Channel channel);
@@ -67,6 +69,8 @@ private:
 } // namespace detail
 
 // Create and destroy on the caller/UI thread. All I/O runs on m_thread.
+// An empty factory selects the built-in UDP/TCP/serial decoders. A supplied
+// factory replaces that policy; returning nullptr disables decoding per channel.
 class ConnectControl final : public QObject {
     Q_OBJECT
 public:
@@ -89,6 +93,7 @@ signals:
     void stateChanged(fosd::communication::Channel channel,
                       fosd::communication::ConnectionState state);
     void errorOccurred(const fosd::communication::CommunicationError &error);
+    void decoderErrorOccurred(const fosd::communication::DecoderError &error);
 
     void requestOpenSerial(const fosd::communication::SerialConfig &config);
     void requestOpenUdp(const fosd::communication::UdpConfig &config);

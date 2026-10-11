@@ -25,3 +25,6 @@ fosd_add_test(test_communication
 )
 
 target_link_libraries(test_communication PRIVATE fosd_communication)
+
+fosd_add_test(test_packet_decoders packet_decoder_tests.cpp)
+target_link_libraries(test_packet_decoders PRIVATE fosd_communication)

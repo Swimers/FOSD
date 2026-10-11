@@ -16,6 +16,10 @@ public:
     void close() override;
     void send(const QByteArray &bytes, const Endpoint &peer = Endpoint()) override;
 
+private slots:
+    void handleReadyRead();
+    void handlePortError(QSerialPort::SerialPortError error);
+
 private:
     QSerialPort m_port;
 };

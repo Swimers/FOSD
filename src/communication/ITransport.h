@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TransportTypes.h"
+#include "ITransportTypes.h"
 
 #include <QByteArray>
 #include <QObject>

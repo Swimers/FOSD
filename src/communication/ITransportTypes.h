@@ -48,6 +48,13 @@ struct CommunicationError {
     int nativeCode = 0;
 };
 
+struct DecoderError {
+    Channel channel = Channel::Serial;
+    QString operation;
+    QString message;
+    int code = 0;
+};
+
 } // namespace communication
 } // namespace fosd
 
@@ -58,4 +65,5 @@ Q_DECLARE_METATYPE(fosd::communication::SerialConfig)
 Q_DECLARE_METATYPE(fosd::communication::UdpConfig)
 Q_DECLARE_METATYPE(fosd::communication::TcpConfig)
 Q_DECLARE_METATYPE(fosd::communication::CommunicationError)
+Q_DECLARE_METATYPE(fosd::communication::DecoderError)
 

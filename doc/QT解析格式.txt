@@ -1,0 +1,38 @@
+void MainWindow::onReadyRead()
+{
+    while (udpSocket->hasPendingDatagrams())
+    {
+        QByteArray datagram;
+        datagram.resize(
+            int(udpSocket->pendingDatagramSize()));
+
+        QHostAddress senderAddress;
+        quint16 senderPort;
+
+        udpSocket->readDatagram(
+            datagram.data(),
+            datagram.size(),
+            &senderAddress,
+            &senderPort);
+
+        WavelengthFrame frame;
+        QString error;
+
+        if (!parseWavelengthFrame(datagram, frame, &error))
+        {
+            qDebug() << "UDP解析失败:" << error;
+            continue;
+        }
+
+        qDebug() << "帧序号:" << frame.sequence
+                 << "记录数:" << frame.recordCount;
+
+        for (const auto& record : frame.records)
+        {
+            qDebug().nospace()
+                << "通道=" << record.channel
+                << ", 传感器=" << record.sensor
+                << ", 波长=" << record.wavelength;
+        }
+    }
+}

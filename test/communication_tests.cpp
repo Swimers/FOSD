@@ -1,4 +1,5 @@
 #include "communication/ConnectControl.h"
+#include "communication/PacketDecoders.h"
 
 #include <QCoreApplication>
 #include <QSignalSpy>
@@ -8,26 +9,157 @@
 #include <QUdpSocket>
 #include <QtTest>
 #include <atomic>
+#include <functional>
 
 using namespace fosd::communication;
 
 class PassthroughDecoder final : public IPacketDecoder {
 public:
+    PassthroughDecoder() : IPacketDecoder(Channel::Udp) {}
     QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &) override {
         return QVector<QByteArray>() << bytes;
     }
 };
+
+namespace {
+
+std::unique_ptr<IPacketDecoder> createInvalidDecoder(Channel channel) {
+    switch (channel) {
+    case Channel::Serial:
+        return std::unique_ptr<IPacketDecoder>(new SerialPacketDecoder(QByteArray(), 1));
+    case Channel::Udp:
+        return std::unique_ptr<IPacketDecoder>(new UdpPacketDecoder(QVector<PacketRule>()));
+    case Channel::Tcp:
+        return std::unique_ptr<IPacketDecoder>(new TcpPacketDecoder({PacketRule()}));
+    }
+    return nullptr;
+}
+
+std::unique_ptr<IPacketDecoder> createPassthroughDecoder(
+    Channel channel, std::atomic<bool> *factoryOnWorker, QThread *mainThread) {
+    factoryOnWorker->store(QThread::currentThread() != mainThread);
+    if (channel == Channel::Udp)
+        return std::unique_ptr<IPacketDecoder>(new PassthroughDecoder);
+    return nullptr;
+}
+
+} // namespace
 
 class CommunicationTests : public QObject {
     Q_OBJECT
 
 private slots:
     void udpRoundTripAndDecoder();
+    void udpDefaultDecoder();
+    void tcpDefaultDecoderAndReconnect();
     void tcpClientRoundTrip();
     void tcpServerRoundTrip();
     void invalidSerialConfiguration();
     void sendOnClosedSerialReportsError();
+    void invalidDecoderConfigurationReportsErrors();
 };
+
+void CommunicationTests::invalidDecoderConfigurationReportsErrors() {
+    ConnectControl control(nullptr, createInvalidDecoder);
+    QSignalSpy errorSpy(&control, &ConnectControl::decoderErrorOccurred);
+    QSignalSpy transportErrorSpy(&control, &ConnectControl::errorOccurred);
+    QSignalSpy stateSpy(&control, &ConnectControl::stateChanged);
+    QSignalSpy rawSpy(&control, &ConnectControl::rawDataReceived);
+    QSignalSpy packetSpy(&control, &ConnectControl::packetReceived);
+    QTRY_COMPARE(errorSpy.count(), 3);
+    const QVector<Channel> channels = {Channel::Serial, Channel::Udp, Channel::Tcp};
+    for (int index = 0; index < channels.size(); ++index) {
+        const DecoderError error = qvariant_cast<DecoderError>(errorSpy.at(index).at(0));
+        QCOMPARE(error.channel, channels.at(index));
+        QCOMPARE(error.operation, QStringLiteral("initialize"));
+        QVERIFY(!error.message.isEmpty());
+        QCOMPARE(error.code, 0);
+    }
+    // Configuration failure is reported once, and transport I/O stays usable.
+    UdpConfig config;
+    config.bindAddress = QHostAddress::LocalHost;
+    config.localPort = 0;
+    control.openUdp(config);
+    QTRY_VERIFY(!stateSpy.isEmpty());
+    QCOMPARE(qvariant_cast<ConnectionState>(stateSpy.last().at(1)), ConnectionState::Ready);
+    QCOMPARE(errorSpy.count(), 3);
+    QCOMPARE(transportErrorSpy.count(), 0);
+    QCOMPARE(packetSpy.count(), 0);
+    QCOMPARE(rawSpy.count(), 0);
+}
+
+void CommunicationTests::udpDefaultDecoder() {
+    QUdpSocket probe;
+    QVERIFY(probe.bind(QHostAddress(QHostAddress::LocalHost), quint16(0)));
+    const quint16 port = probe.localPort();
+    probe.close();
+    ConnectControl control;
+    QSignalSpy stateSpy(&control, &ConnectControl::stateChanged);
+    QSignalSpy rawSpy(&control, &ConnectControl::rawDataReceived);
+    QSignalSpy packetSpy(&control, &ConnectControl::packetReceived);
+    QSignalSpy decoderErrorSpy(&control, &ConnectControl::decoderErrorOccurred);
+    UdpConfig config;
+    config.bindAddress = QHostAddress::LocalHost;
+    config.localPort = port;
+    control.openUdp(config);
+    QTRY_VERIFY(!stateSpy.isEmpty());
+    QCOMPARE(qvariant_cast<ConnectionState>(stateSpy.last().at(1)), ConnectionState::Ready);
+    QUdpSocket peer;
+    const QByteArray packet = QByteArray::fromHex("5aa50100000001000000");
+    QCOMPARE(peer.writeDatagram("invalid", 7, QHostAddress::LocalHost, port), qint64(7));
+    QCOMPARE(peer.writeDatagram(packet, QHostAddress::LocalHost, port), qint64(packet.size()));
+    QTRY_COMPARE(rawSpy.count(), 2);
+    QTRY_COMPARE(packetSpy.count(), 1);
+    QTRY_COMPARE(decoderErrorSpy.count(), 1);
+    const DecoderError decoderError = qvariant_cast<DecoderError>(decoderErrorSpy.first().at(0));
+    QCOMPARE(decoderError.channel, Channel::Udp);
+    QCOMPARE(decoderError.operation, QStringLiteral("decode"));
+    QCOMPARE(packetSpy.first().at(1).toByteArray(), packet);
+    const Endpoint source = qvariant_cast<Endpoint>(packetSpy.first().at(2));
+    QCOMPARE(source.port, peer.localPort());
+    QVERIFY(source.address == QHostAddress(QHostAddress::LocalHost));
+}
+
+void CommunicationTests::tcpDefaultDecoderAndReconnect() {
+    QTcpServer probe;
+    QVERIFY(probe.listen(QHostAddress::LocalHost, 0));
+    const quint16 port = probe.serverPort();
+    probe.close();
+    ConnectControl control;
+    QSignalSpy stateSpy(&control, &ConnectControl::stateChanged);
+    QSignalSpy rawSpy(&control, &ConnectControl::rawDataReceived);
+    QSignalSpy packetSpy(&control, &ConnectControl::packetReceived);
+    TcpConfig config;
+    config.role = TcpRole::Server;
+    config.listenAddress = QHostAddress::LocalHost;
+    config.port = port;
+    control.openTcp(config);
+    QTRY_VERIFY(!stateSpy.isEmpty());
+    QCOMPARE(qvariant_cast<ConnectionState>(stateSpy.last().at(1)), ConnectionState::Listening);
+    QTcpSocket peer;
+    peer.connectToHost(QHostAddress::LocalHost, port);
+    QVERIFY(peer.waitForConnected(3000));
+    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) == ConnectionState::Connected);
+    const QByteArray packet = QByteArray::fromHex("5aa50100000001000000");
+    QCOMPARE(peer.write(packet.left(1)), qint64(1));
+    QTRY_COMPARE(rawSpy.count(), 1);
+    QCOMPARE(packetSpy.count(), 0);
+    const QByteArray rest = packet.mid(1) + packet;
+    QCOMPARE(peer.write(rest), qint64(rest.size()));
+    QTRY_COMPARE(packetSpy.count(), 2);
+    QCOMPARE(packetSpy.first().at(1).toByteArray(), packet);
+    const int received = rawSpy.count();
+    QCOMPARE(peer.write(packet.left(8)), qint64(8));
+    QTRY_VERIFY(rawSpy.count() > received);
+    peer.disconnectFromHost();
+    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) == ConnectionState::Listening);
+    peer.connectToHost(QHostAddress::LocalHost, port);
+    QVERIFY(peer.waitForConnected(3000));
+    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) == ConnectionState::Connected);
+    QCOMPARE(peer.write(packet), qint64(packet.size()));
+    QTRY_COMPARE(packetSpy.count(), 3);
+    QCOMPARE(packetSpy.last().at(1).toByteArray(), packet);
+}
 
 void CommunicationTests::udpRoundTripAndDecoder() {
     QUdpSocket probe;
@@ -40,13 +172,9 @@ void CommunicationTests::udpRoundTripAndDecoder() {
 
     std::atomic<bool> factoryOnWorker(false);
     QThread *mainThread = QCoreApplication::instance()->thread();
-    ConnectControl control(nullptr, [&factoryOnWorker, mainThread](Channel channel)
-                           -> std::unique_ptr<IPacketDecoder> {
-        factoryOnWorker.store(QThread::currentThread() != mainThread);
-        if (channel == Channel::Udp)
-            return std::unique_ptr<IPacketDecoder>(new PassthroughDecoder);
-        return std::unique_ptr<IPacketDecoder>();
-    });
+    ConnectControl control(nullptr, std::bind(createPassthroughDecoder,
+                                             std::placeholders::_1,
+                                             &factoryOnWorker, mainThread));
     QSignalSpy stateSpy(&control, &ConnectControl::stateChanged);
     QSignalSpy dataSpy(&control, &ConnectControl::rawDataReceived);
     QSignalSpy packetSpy(&control, &ConnectControl::packetReceived);

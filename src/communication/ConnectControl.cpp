@@ -1,6 +1,7 @@
 #include "ConnectControl.h"
 
 #include "ITransport.h"
+#include "PacketDecoders.h"
 #include "Tcp.h"
 #include "Udp.h"
 #include "Serialport.h"
@@ -12,7 +13,8 @@ namespace communication {
 namespace detail {
 
 ConnectWorker::ConnectWorker(DecoderFactory decoderFactory)
-    : m_decoderFactory(std::move(decoderFactory)) {}
+    : m_decoderFactory(decoderFactory ? std::move(decoderFactory)
+                                     : DecoderFactory(createPacketDecoder)) {}
 
 void ConnectWorker::initialize() {
     m_udp = new Udp(this);
@@ -23,11 +25,19 @@ void ConnectWorker::initialize() {
     wire(m_tcp);
     wire(m_serialport);
 
-    if (m_decoderFactory) {
-        m_serialportDecoder = m_decoderFactory(Channel::Serial);
-        m_udpDecoder = m_decoderFactory(Channel::Udp);
-        m_tcpDecoder = m_decoderFactory(Channel::Tcp);
+    m_serialportDecoder = initializeDecoder(Channel::Serial);
+    m_udpDecoder = initializeDecoder(Channel::Udp);
+    m_tcpDecoder = initializeDecoder(Channel::Tcp);
+}
+
+std::unique_ptr<IPacketDecoder> ConnectWorker::initializeDecoder(Channel channel) {
+    std::unique_ptr<IPacketDecoder> parser = m_decoderFactory(channel);
+    if (parser) {
+        connect(parser.get(), &IPacketDecoder::errorOccurred,
+                this, &ConnectWorker::decoderErrorOccurred);
+        parser->initialize();
     }
+    return parser;
 }
 
 void ConnectWorker::wire(ITransport *transport) {
@@ -50,6 +60,13 @@ void ConnectWorker::handleTransportStateChanged(ConnectionState state) {
     ITransport *transport = qobject_cast<ITransport *>(sender());
     if (!transport)
         return;
+    // A server returns to Listening after a peer disconnects. Discard partial
+    // frames before accepting a new peer, including one using the same endpoint.
+    if (state == ConnectionState::Closed || state == ConnectionState::Listening) {
+        IPacketDecoder *parser = decoder(transport->channel());
+        if (parser)
+            parser->reset();
+    }
     emit stateChanged(transport->channel(), state);
 }
 
@@ -130,6 +147,7 @@ ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
     qRegisterMetaType<UdpConfig>("fosd::communication::UdpConfig");
     qRegisterMetaType<TcpConfig>("fosd::communication::TcpConfig");
     qRegisterMetaType<CommunicationError>("fosd::communication::CommunicationError");
+    qRegisterMetaType<DecoderError>("fosd::communication::DecoderError");
 
     m_worker->moveToThread(&m_thread);
     connect(&m_thread, &QThread::started, m_worker, &detail::ConnectWorker::initialize);
@@ -154,6 +172,8 @@ ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
             this, &ConnectControl::stateChanged);
     connect(m_worker, &detail::ConnectWorker::errorOccurred,
             this, &ConnectControl::errorOccurred);
+    connect(m_worker, &detail::ConnectWorker::decoderErrorOccurred,
+            this, &ConnectControl::decoderErrorOccurred);
 
     m_thread.start();
 }

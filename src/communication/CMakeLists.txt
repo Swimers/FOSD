@@ -3,7 +3,9 @@ add_library(fosd_communication STATIC
     ConnectControl.h
     ITransport.h
     IPacketDecoder.h
-    TransportTypes.h
+    PacketDecoders.cpp
+    PacketDecoders.h
+    ITransportTypes.h
     Tcp.cpp
     Tcp.h
     Udp.cpp
