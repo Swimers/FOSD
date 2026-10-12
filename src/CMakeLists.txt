@@ -9,5 +9,7 @@
 # and will be added here once they have sources and a CMakeLists.txt.
 
 add_subdirectory(communication)
-add_subdirectory(core)
-add_subdirectory(protocol)
+if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS)
+    add_subdirectory(core)
+    add_subdirectory(protocol)
+endif()

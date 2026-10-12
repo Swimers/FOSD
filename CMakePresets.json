@@ -17,6 +17,18 @@
         "FOSD_QT_ROOT": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64",
         "FOSD_BUILD_TESTS": "ON"
       }
+    },
+    {
+      "name": "communication-assistant",
+      "displayName": "独立通信助手 (MSVC 2017 x64)",
+      "inherits": "windows-msvc2017",
+      "binaryDir": "${sourceDir}/build/communication-assistant",
+      "cacheVariables": {
+        "FOSD_BUILD_MAIN_APP": "OFF",
+        "FOSD_BUILD_TESTS": "OFF",
+        "FOSD_BUILD_COMMUNICATION_ASSISTANT": "ON",
+        "FOSD_ASSISTANT_BUILD_TESTS": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -31,6 +43,17 @@
       "displayName": "构建 Release",
       "configurePreset": "windows-msvc2017",
       "configuration": "Release"
+    },
+    {
+      "name": "assistant-debug",
+      "configurePreset": "communication-assistant",
+      "configuration": "Debug"
+    },
+    {
+      "name": "assistant-release",
+      "configurePreset": "communication-assistant",
+      "configuration": "Release",
+      "targets": ["CommunicationAssistant"]
     }
   ],
   "testPresets": [
@@ -45,6 +68,16 @@
       "execution": {
         "noTestsAction": "error"
       }
+    },
+    {
+      "name": "assistant-debug",
+      "configurePreset": "communication-assistant",
+      "configuration": "Debug",
+      "environment": {
+        "PATH": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;$penv{PATH}"
+      },
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error" }
     }
   ]
 }

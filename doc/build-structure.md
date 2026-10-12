@@ -56,6 +56,8 @@ FOSD-ReArc/
 | `fosd_core` | 静态库 | [src/core/CMakeLists.txt](../src/core/CMakeLists.txt) | 共享数据类型和只读快照仓库 |
 | `fosd_protocol` | 静态库 | [src/protocol/CMakeLists.txt](../src/protocol/CMakeLists.txt) | 协议解析、数据发布和通知 |
 | `FOSD` | 可执行程序 (WIN32) | [apps/FOSD-Win/CMakeLists.txt](../apps/FOSD-Win/CMakeLists.txt) | Windows 桌面应用 |
+| `fosd_assistant_presenter` | 静态库（可选） | [ui/CommunicationAssistant/CMakeLists.txt](../ui/CommunicationAssistant/CMakeLists.txt) | QML 通信助手的 MVP Presenter |
+| `CommunicationAssistant` | 可执行程序（可选） | [apps/CommunicationAssistant/CMakeLists.txt](../apps/CommunicationAssistant/CMakeLists.txt) | 三合一原始通信助手，独立构建与部署见 [说明](communication-assistant.md) |
 | `test_communication` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | `communication` 模块单元测试，注册到 CTest |
 | `test_packet_decoders` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | 拆帧规则与错误信号测试 |
 | `test_protocol` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | 协议解析、并发读取与真实通信全链路测试 |
@@ -138,6 +140,9 @@ target_include_directories(fosd_communication
 | 变量 | 类型 | 默认值 | 作用 |
 | --- | --- | --- | --- |
 | `FOSD_BUILD_TESTS` | option | `ON` | 是否查找 `Qt5::Test`、启用 CTest 并构建 `test/` |
+| `FOSD_BUILD_MAIN_APP` | option | `ON` | 是否构建主程序；core/protocol 在主程序或业务测试启用时加入 |
+| `FOSD_BUILD_COMMUNICATION_ASSISTANT` | option | `OFF` | 启用独立 QML 通信助手及 Qml/Quick/QuickControls2 依赖 |
+| `FOSD_ASSISTANT_BUILD_TESTS` | option | `OFF` | 启用助手专用测试，需要启用助手 |
 | `FOSD_QT_ROOT` | cache PATH | `d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64` | Qt5 kit 目录，会追加到 `CMAKE_PREFIX_PATH` |
 
 `FOSD_QT_ROOT` 是 CACHE 变量，Qt 装在别处时在配置阶段覆盖即可：
@@ -189,6 +194,8 @@ ctest --preset windows-debug            # 测试
 - configure：`windows-msvc2017` —— VS 2017 x64，`binaryDir` 为 `${sourceDir}/build`
 - build：`windows-debug`、`windows-release`
 - test：`windows-debug`
+
+独立通信助手配置预设为 `communication-assistant`，构建预设为 `assistant-debug` / `assistant-release`，测试预设为 `assistant-debug`。独立产物输出至 `build/communication-assistant`，默认主程序构建不启用助手。操作步骤及 MVP 对接见 [通信助手说明](communication-assistant.md)。
 
 ---
 
