@@ -56,8 +56,8 @@ FOSD-ReArc/
 | `fosd_core` | 静态库 | [src/core/CMakeLists.txt](../src/core/CMakeLists.txt) | 共享数据类型和只读快照仓库 |
 | `fosd_protocol` | 静态库 | [src/protocol/CMakeLists.txt](../src/protocol/CMakeLists.txt) | 协议解析、数据发布和通知 |
 | `FOSD` | 可执行程序 (WIN32) | [apps/FOSD-Win/CMakeLists.txt](../apps/FOSD-Win/CMakeLists.txt) | Windows 桌面应用 |
-| `fosd_assistant_presenter` | 静态库（可选） | [ui/CommunicationAssistant/CMakeLists.txt](../ui/CommunicationAssistant/CMakeLists.txt) | QML 通信助手的 MVP Presenter |
-| `CommunicationAssistant` | 可执行程序（可选） | [apps/CommunicationAssistant/CMakeLists.txt](../apps/CommunicationAssistant/CMakeLists.txt) | 三合一原始通信助手，独立构建与部署见 [说明](communication-assistant.md) |
+| `fosd_assistant_presenter` | 静态库（可选） | [ui/communication-assistant-QML/CMakeLists.txt](../ui/communication-assistant-QML/CMakeLists.txt) | QML 通信助手的 MVP Presenter |
+| `communication-assistant-QML` | 可执行程序（可选） | [apps/communication-assistant-QML/CMakeLists.txt](../apps/communication-assistant-QML/CMakeLists.txt) | 三合一原始通信助手，独立构建与部署见 [说明](communication-assistant-QML.md) |
 | `CommunicationAssistantWidgets` | 可执行程序（可选） | [apps/CommunicationAssistantWidgets/CMakeLists.txt](../apps/CommunicationAssistantWidgets/CMakeLists.txt) | 复用 Presenter 的 QWidgets 前端，见 [说明](communication-assistant-widgets.md) |
 | `test_communication` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | `communication` 模块单元测试，注册到 CTest |
 | `test_packet_decoders` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | 拆帧规则与错误信号测试 |
@@ -142,8 +142,8 @@ target_include_directories(fosd_communication
 | --- | --- | --- | --- |
 | `FOSD_BUILD_TESTS` | option | `ON` | 是否查找 `Qt5::Test`、启用 CTest 并构建 `test/` |
 | `FOSD_BUILD_MAIN_APP` | option | `ON` | 是否构建主程序；core/protocol 在主程序或业务测试启用时加入 |
-| `FOSD_BUILD_COMMUNICATION_ASSISTANT` | option | `ON` | 启用独立 QML 通信助手及 Qml/Quick/QuickControls2 依赖 |
-| `FOSD_ASSISTANT_BUILD_TESTS` | option | `ON` | 启用助手专用测试，需要启用助手 |
+| `FOSD_BUILD_COMMUNICATION_ASSISTANT_QML` | option | `ON` | 启用独立 QML 通信助手及 Qml/Quick/QuickControls2 依赖 |
+| `FOSD_ASSISTANT_QML_BUILD_TESTS` | option | `ON` | 启用助手专用测试，需要启用助手 |
 | `FOSD_BUILD_WIDGETS_ASSISTANT` | option | `OFF` | 启用 QWidgets 助手，不要求 Qt Quick |
 | `FOSD_WIDGETS_ASSISTANT_BUILD_TESTS` | option | `OFF` | 启用共享 Presenter 和 Widgets 界面测试，需要启用 Widgets 助手 |
 | `FOSD_QT_ROOT` | cache PATH | `d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64` | Qt5 kit 目录，会追加到 `CMAKE_PREFIX_PATH` |
@@ -198,7 +198,7 @@ ctest --preset windows-debug            # 测试
 - build：`windows-debug`、`windows-release`
 - test：`windows-debug`
 
-独立通信助手配置预设为 `communication-assistant`，构建预设为 `assistant-debug` / `assistant-release`，测试预设为 `assistant-debug`。独立产物输出至 `build/communication-assistant`，默认主程序构建不启用助手。操作步骤及 MVP 对接见 [通信助手说明](communication-assistant.md)。
+QML 通信助手配置预设为 `communication-assistant-QML`，构建预设为 `assistant-QML-debug` / `assistant-QML-release`，测试预设为 `assistant-QML-debug`。独立产物输出至 `build/communication-assistant-QML`，独立预设关闭主程序和业务测试。主程序预设中的助手是否构建由上述选项决定。操作步骤及 MVP 对接见 [QML 通信助手说明](communication-assistant-QML.md)。
 
 ---
 

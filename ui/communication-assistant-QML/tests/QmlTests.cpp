@@ -1,4 +1,4 @@
-#include "CommunicationAssistant/CommunicationPresenter.h"
+#include "communication-assistant-QML/CommunicationPresenter.h"
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQmlError>
@@ -27,7 +27,7 @@ void QmlTests::viewLoadsAndSwitchesChannels() {
     QQmlApplicationEngine engine;
     QSignalSpy warnings(&engine, &QQmlEngine::warnings);
     engine.rootContext()->setContextProperty(QStringLiteral("presenter"), &presenter);
-    engine.load(QUrl(QStringLiteral("qrc:/communication-assistant/Main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/communication-assistant-QML/Main.qml")));
     QCOMPARE(engine.rootObjects().size(), 1);
     QQuickWindow *window = qobject_cast<QQuickWindow *>(engine.rootObjects().first());
     QVERIFY(window);
@@ -90,7 +90,7 @@ void QmlTests::viewLoadsAndSwitchesChannels() {
     const QImage image = renderControl.grab();
     QVERIFY(!image.isNull());
     QVERIFY(image.save(QCoreApplication::applicationDirPath()
-                       + QStringLiteral("/assistant-preview.png")));
+                       + QStringLiteral("/assistant-QML-preview.png")));
     renderControl.invalidate();
     QCOMPARE(warnings.count(), 0);
 }

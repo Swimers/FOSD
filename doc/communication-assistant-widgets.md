@@ -15,13 +15,13 @@ ui/CommunicationAssistantWidgets/CommunicationWindow.h/.cpp
 
 窗口借用 Presenter 引用，Presenter 必须比窗口存活更久。入口先创建 Presenter，再创建窗口，退出时按相反顺序销毁；通信对象负责关闭通道并等待线程退出。View 不直接持有传输对象，也不承担参数校验、编码、协议解析或错误恢复逻辑。事件处理使用具名槽函数，没有新增 Lambda 表达式。
 
-源码位于 `ui/CommunicationAssistantWidgets`，独立程序入口位于 `apps/CommunicationAssistantWidgets`。公共 Presenter 保留在 `ui/CommunicationAssistant`；该目录的 Presenter 构建仅依赖通信模块，与 QML 资源、引擎和 Qt Quick 无关。
+源码位于 `ui/CommunicationAssistantWidgets`，独立程序入口位于 `apps/CommunicationAssistantWidgets`。公共 Presenter 保留在 `ui/communication-assistant-QML`；该目录的 Presenter 构建仅依赖通信模块，与 QML 资源、引擎和 Qt Quick 无关。
 
 ## 功能与 QML 版一致
 
 支持串口扫描及手动输入串口、自定义波特率、数据位、校验、停止位和流控；UDP 本地绑定与可修改的目标地址；TCP 客户端与单客户端服务端。切换通道保留其他连接，关闭仅作用于当前通道。连接期间禁用当前通道配置，发送按钮随通信状态启用或禁用。
 
-支持 UTF-8 文本/HEX 发送、追加 CRLF、收发记录 HEX/文本切换、自动滚动、清空记录及计数清零。日志与字节计数汇总所有通道，接收区域只读且允许复制。HEX 校验、内嵌 NUL 显示、日志容量限制、TCP/串口原始读取块语义均继承 Presenter。`TX请求` 与发送计数表示提交请求，不代表对端收妥。详细数据约定见 [原通信助手说明](communication-assistant.md)。
+支持 UTF-8 文本/HEX 发送、追加 CRLF、收发记录 HEX/文本切换、自动滚动、清空记录及计数清零。日志与字节计数汇总所有通道，接收区域只读且允许复制。HEX 校验、内嵌 NUL 显示、日志容量限制、TCP/串口原始读取块语义均继承 Presenter。`TX请求` 与发送计数表示提交请求，不代表对端收妥。详细数据约定见 [原通信助手说明](communication-assistant-QML.md)。
 
 ## 独立构建与运行
 

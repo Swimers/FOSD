@@ -19,15 +19,15 @@
       }
     },
     {
-      "name": "communication-assistant",
-      "displayName": "独立通信助手 (MSVC 2017 x64)",
+      "name": "communication-assistant-QML",
+      "displayName": "独立 QML 通信助手 (MSVC 2017 x64)",
       "inherits": "windows-msvc2017",
-      "binaryDir": "${sourceDir}/build/communication-assistant",
+      "binaryDir": "${sourceDir}/build/communication-assistant-QML",
       "cacheVariables": {
         "FOSD_BUILD_MAIN_APP": "OFF",
         "FOSD_BUILD_TESTS": "OFF",
-        "FOSD_BUILD_COMMUNICATION_ASSISTANT": "ON",
-        "FOSD_ASSISTANT_BUILD_TESTS": "ON"
+        "FOSD_BUILD_COMMUNICATION_ASSISTANT_QML": "ON",
+        "FOSD_ASSISTANT_QML_BUILD_TESTS": "ON"
       }
     },
     {
@@ -38,8 +38,8 @@
       "cacheVariables": {
         "FOSD_BUILD_MAIN_APP": "OFF",
         "FOSD_BUILD_TESTS": "OFF",
-        "FOSD_BUILD_COMMUNICATION_ASSISTANT": "OFF",
-        "FOSD_ASSISTANT_BUILD_TESTS": "OFF",
+        "FOSD_BUILD_COMMUNICATION_ASSISTANT_QML": "OFF",
+        "FOSD_ASSISTANT_QML_BUILD_TESTS": "OFF",
         "FOSD_BUILD_WIDGETS_ASSISTANT": "ON",
         "FOSD_WIDGETS_ASSISTANT_BUILD_TESTS": "ON"
       }
@@ -59,16 +59,16 @@
       "configuration": "Release"
     },
     {
-      "name": "assistant-debug",
-      "configurePreset": "communication-assistant",
+      "name": "assistant-QML-debug",
+      "configurePreset": "communication-assistant-QML",
       "configuration": "Debug"
     },
     {
-      "name": "assistant-release",
-      "configurePreset": "communication-assistant",
+      "name": "assistant-QML-release",
+      "configurePreset": "communication-assistant-QML",
       "configuration": "Release",
       "targets": [
-        "CommunicationAssistant"
+        "communication-assistant-QML"
       ]
     },
     {
@@ -99,8 +99,8 @@
       }
     },
     {
-      "name": "assistant-debug",
-      "configurePreset": "communication-assistant",
+      "name": "assistant-QML-debug",
+      "configurePreset": "communication-assistant-QML",
       "configuration": "Debug",
       "environment": {
         "PATH": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;$penv{PATH}"

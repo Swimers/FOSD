@@ -1,20 +1,22 @@
-# 独立三合一通信助手
+# QML 三合一通信助手
 
 这是用于学习、调试通信模块的独立程序，提供 SerialPort、UDP 和 TCP 原始字节收发。界面使用 Qt Quick Controls 2，采用 MVP 架构。它不创建协议控制器，也不进行包头、包尾或协议字段解析。
 
 另有复用同一 Presenter 的 [QWidgets 前端](communication-assistant-widgets.md)，可以独立构建，无需 Qt Quick。
 
+QML 版目录、资源前缀、程序目标和配置预设统一命名为 `communication-assistant-QML`。构建/测试预设为 `assistant-QML-debug`，Release 构建预设为 `assistant-QML-release`。请使用下面的新命令重新配置；旧生成目录中的 CMake 缓存含有绝对路径，不能直接改目录名复用。共享库 `fosd_assistant_presenter` 和共享测试 `test_assistant_presenter` 保持通用名称，两个前端继续复用它们。
+
 ## 目录与模块连接
 
 ```text
-ui/CommunicationAssistant/
+ui/communication-assistant-QML/
 ├── CommunicationPresenter.h/.cpp  # 参数校验、命令转发、状态与显示数据
 ├── qml/Main.qml                   # View：连接配置、收发区域、状态与计数
 ├── resources.qrc                  # QML 嵌入可执行程序
 ├── tests/PresenterTests.cpp       # 校验、UDP/TCP 实际收发与错误恢复
 ├── tests/QmlTests.cpp             # 界面加载、通道切换与软件渲染
 └── CMakeLists.txt                 # Presenter 库及其测试
-apps/CommunicationAssistant/
+apps/communication-assistant-QML/
 ├── main.cpp                      # QGuiApplication、上下文对象、QML 引擎
 └── CMakeLists.txt                 # 独立程序及界面测试入口
 ```
@@ -53,34 +55,34 @@ Presenter 在界面线程创建和销毁，通信 I/O 继续在 `ConnectControl`
 在仓库根目录执行：
 
 ```powershell
-cmake --preset communication-assistant
-cmake --build --preset assistant-debug
-ctest --preset assistant-debug
+cmake --preset communication-assistant-QML
+cmake --build --preset assistant-QML-debug
+ctest --preset assistant-QML-debug
 ```
 
-生成 Debug 程序：`build/communication-assistant/bin/Debug/CommunicationAssistant.exe`。运行前将 Qt kit 的 `bin` 加入 PATH，或按下一节部署依赖。
+生成 Debug 程序：`build/communication-assistant-QML/bin/Debug/communication-assistant-QML.exe`。运行前将 Qt kit 的 `bin` 加入 PATH，或按下一节部署依赖。
 
 ```powershell
 $env:PATH = 'D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
-& ./build/communication-assistant/bin/Debug/CommunicationAssistant.exe
+& ./build/communication-assistant-QML/bin/Debug/communication-assistant-QML.exe
 ```
 
 Release 构建：
 
 ```powershell
-cmake --build --preset assistant-release
+cmake --build --preset assistant-QML-release
 ```
 
-生成 Release 程序：`build/communication-assistant/bin/Release/CommunicationAssistant.exe`。
+生成 Release 程序：`build/communication-assistant-QML/bin/Release/communication-assistant-QML.exe`。
 
-独立预设将主程序与业务测试关闭，仅构建通信模块、Presenter 和助手；构建缓存、库和程序均位于 `build/communication-assistant`，与原有 `build` 根目录下的主程序产物分开。`windows-msvc2017` / `windows-debug` / `windows-release` 根据现有选项构建主程序、业务测试及启用的助手。当前 QML 助手和其测试默认启用；只构建主程序时须同时关闭 `FOSD_BUILD_COMMUNICATION_ASSISTANT` 和 `FOSD_ASSISTANT_BUILD_TESTS`，以免要求 Qt Quick。
+独立预设将主程序与业务测试关闭，仅构建通信模块、Presenter 和助手；构建缓存、库和程序均位于 `build/communication-assistant-QML`，与原有 `build` 根目录下的主程序产物分开。`windows-msvc2017` / `windows-debug` / `windows-release` 根据现有选项构建主程序、业务测试及启用的助手。当前 QML 助手和其测试默认启用；只构建主程序时须同时关闭 `FOSD_BUILD_COMMUNICATION_ASSISTANT_QML` 和 `FOSD_ASSISTANT_QML_BUILD_TESTS`，以免要求 Qt Quick。
 
 | CMake 选项 | 默认值 | 用途 |
 | --- | --- | --- |
 | `FOSD_BUILD_MAIN_APP` | ON | 主程序入口及业务模块 |
 | `FOSD_BUILD_TESTS` | ON | 原有通信、拆包和协议测试 |
-| `FOSD_BUILD_COMMUNICATION_ASSISTANT` | ON | 独立 QML 助手 |
-| `FOSD_ASSISTANT_BUILD_TESTS` | ON | 助手 Presenter 与界面测试，需要启用助手 |
+| `FOSD_BUILD_COMMUNICATION_ASSISTANT_QML` | ON | 独立 QML 助手 |
+| `FOSD_ASSISTANT_QML_BUILD_TESTS` | ON | 助手 Presenter 与界面测试，需要启用助手 |
 
 独立预设启用最后两项、关闭前两项。仅业务主程序或业务测试启用时才加入 core/protocol。Qt kit 位于其他位置时，配置时传入 `-DFOSD_QT_ROOT=<kit>`，同时在测试前更新 PATH；测试预设内的 Qt PATH 也需要相应修改。
 
@@ -91,8 +93,8 @@ cmake --build --preset assistant-release
 ```powershell
 & 'D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin/windeployqt.exe' `
     --release --no-compiler-runtime --no-translations `
-    --qmldir ./ui/CommunicationAssistant/qml `
-    ./build/communication-assistant/bin/Release/CommunicationAssistant.exe
+    --qmldir ./ui/communication-assistant-QML/qml `
+    ./build/communication-assistant-QML/bin/Release/communication-assistant-QML.exe
 ```
 
 Qt DLL、平台插件及 QML 依赖会放入程序目录。将整个 Release 目录一起复制；目标机器另需安装 Microsoft Visual C++ 2017 x64 运行库或兼容的新版运行库。Debug 程序仅用于开发机，部署时将参数改为 `--debug` 并使用 Debug 路径。
@@ -101,6 +103,6 @@ Qt DLL、平台插件及 QML 依赖会放入程序目录。将整个 Release 目
 
 `test_assistant_presenter` 覆盖参数与 HEX 输入校验、UDP 任意二进制数据双向传输、TCP 客户端/服务端双向传输、UTF-8 发送、通道切换、监听恢复、传输错误、串口打开失败及有界显示历史。所有网络测试使用本机回环地址与动态获取的端口，不依赖外部设备。
 
-`test_assistant_qml` 在 offscreen/software 模式加载实际 QML，验证通道配置切换、发送按钮状态，以及通过界面控件提交 UDP 配置并执行真实双向收发。使用 `QQuickRenderControl` 渲染实际界面内容，检查渲染成功且无 QML warning，并生成 `bin/Debug/assistant-preview.png`。串口物理收发需通过真实串口或虚拟串口对另行验证；自动测试不会打开实际串口。
+`test_assistant_qml` 在 offscreen/software 模式加载实际 QML，验证通道配置切换、发送按钮状态，以及通过界面控件提交 UDP 配置并执行真实双向收发。使用 `QQuickRenderControl` 渲染实际界面内容，检查渲染成功且无 QML warning，并生成 `bin/Debug/assistant-QML-preview.png`。串口物理收发需通过真实串口或虚拟串口对另行验证；自动测试不会打开实际串口。
 
 新增 UI 功能应继续通过 Presenter 具名方法与属性对接，View 不直接持有套接字或串口。若需要协议解析，应单独添加新的工具配置，避免改变本助手的原始数据收发语义。

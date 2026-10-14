@@ -1,5 +1,5 @@
 #include "CommunicationWindow.h"
-#include "CommunicationAssistant/CommunicationPresenter.h"
+#include "communication-assistant-QML/CommunicationPresenter.h"
 
 #include <QCheckBox>
 #include <QComboBox>

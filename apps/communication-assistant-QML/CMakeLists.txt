@@ -1,13 +1,13 @@
-add_executable(CommunicationAssistant WIN32
+add_executable(communication-assistant-QML WIN32
     main.cpp
-    ../../ui/CommunicationAssistant/resources.qrc)
-target_link_libraries(CommunicationAssistant PRIVATE
+    ../../ui/communication-assistant-QML/resources.qrc)
+target_link_libraries(communication-assistant-QML PRIVATE
     fosd_assistant_presenter Qt5::Qml Qt5::Quick Qt5::QuickControls2)
 
-if(FOSD_ASSISTANT_BUILD_TESTS)
+if(FOSD_ASSISTANT_QML_BUILD_TESTS)
     add_executable(test_assistant_qml
-        ../../ui/CommunicationAssistant/tests/QmlTests.cpp
-        ../../ui/CommunicationAssistant/resources.qrc)
+        ../../ui/communication-assistant-QML/tests/QmlTests.cpp
+        ../../ui/communication-assistant-QML/resources.qrc)
     target_link_libraries(test_assistant_qml PRIVATE
         fosd_assistant_presenter Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::Test)
     add_test(NAME test_assistant_qml COMMAND test_assistant_qml)

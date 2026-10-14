@@ -1,4 +1,4 @@
-#include "CommunicationAssistant/CommunicationPresenter.h"
+#include "communication-assistant-QML/CommunicationPresenter.h"
 #include "CommunicationAssistantWidgets/CommunicationWindow.h"
 #include <QApplication>
 

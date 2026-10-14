@@ -11,7 +11,7 @@ ApplicationWindow {
     height: 800
     minimumWidth: 900
     minimumHeight: 700
-    title: "FOSD · 三合一通信助手"
+    title: "FOSD · 三合一通信助手 · QML"
     color: "#f3f5f8"
     Material.theme: Material.Light
     Material.accent: "#2563eb"
