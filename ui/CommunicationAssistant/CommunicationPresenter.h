@@ -9,7 +9,7 @@ namespace fosd {
 namespace assistant {
 
 // Lives on the UI thread. ConnectControl owns the existing I/O worker thread.
-// Channel indices exposed to QML: 0 = serial, 1 = UDP, 2 = TCP.
+// Channel indices exposed to Views: 0 = serial, 1 = UDP, 2 = TCP.
 class CommunicationPresenter final : public QObject {
     Q_OBJECT
     Q_PROPERTY(int selectedChannel READ selectedChannel WRITE setSelectedChannel NOTIFY selectionChanged)

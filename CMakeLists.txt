@@ -11,6 +11,7 @@ option(FOSD_BUILD_TESTS "Build the unit test suite" ON)
 option(FOSD_BUILD_MAIN_APP "Build the main FOSD application" ON)
 option(FOSD_BUILD_COMMUNICATION_ASSISTANT "Build the standalone raw communication assistant" ON)
 option(FOSD_ASSISTANT_BUILD_TESTS "Build the communication assistant tests" ON)
+
 if(FOSD_ASSISTANT_BUILD_TESTS AND NOT FOSD_BUILD_COMMUNICATION_ASSISTANT)
     message(FATAL_ERROR "Assistant tests require FOSD_BUILD_COMMUNICATION_ASSISTANT=ON")
 endif()

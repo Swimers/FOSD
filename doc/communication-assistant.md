@@ -2,6 +2,8 @@
 
 这是用于学习、调试通信模块的独立程序，提供 SerialPort、UDP 和 TCP 原始字节收发。界面使用 Qt Quick Controls 2，采用 MVP 架构。它不创建协议控制器，也不进行包头、包尾或协议字段解析。
 
+另有复用同一 Presenter 的 [QWidgets 前端](communication-assistant-widgets.md)，可以独立构建，无需 Qt Quick。
+
 ## 目录与模块连接
 
 ```text
@@ -71,14 +73,14 @@ cmake --build --preset assistant-release
 
 生成 Release 程序：`build/communication-assistant/bin/Release/CommunicationAssistant.exe`。
 
-独立预设将主程序与业务测试关闭，仅构建通信模块、Presenter 和助手；构建缓存、库和程序均位于 `build/communication-assistant`，与原有 `build` 根目录下的主程序产物分开。默认 `windows-msvc2017` / `windows-debug` / `windows-release` 仍按原方式构建主程序和业务测试，不要求安装 Qt Quick。
+独立预设将主程序与业务测试关闭，仅构建通信模块、Presenter 和助手；构建缓存、库和程序均位于 `build/communication-assistant`，与原有 `build` 根目录下的主程序产物分开。`windows-msvc2017` / `windows-debug` / `windows-release` 根据现有选项构建主程序、业务测试及启用的助手。当前 QML 助手和其测试默认启用；只构建主程序时须同时关闭 `FOSD_BUILD_COMMUNICATION_ASSISTANT` 和 `FOSD_ASSISTANT_BUILD_TESTS`，以免要求 Qt Quick。
 
 | CMake 选项 | 默认值 | 用途 |
 | --- | --- | --- |
 | `FOSD_BUILD_MAIN_APP` | ON | 主程序入口及业务模块 |
 | `FOSD_BUILD_TESTS` | ON | 原有通信、拆包和协议测试 |
-| `FOSD_BUILD_COMMUNICATION_ASSISTANT` | OFF | 独立 QML 助手 |
-| `FOSD_ASSISTANT_BUILD_TESTS` | OFF | 助手 Presenter 与界面测试，需要启用助手 |
+| `FOSD_BUILD_COMMUNICATION_ASSISTANT` | ON | 独立 QML 助手 |
+| `FOSD_ASSISTANT_BUILD_TESTS` | ON | 助手 Presenter 与界面测试，需要启用助手 |
 
 独立预设启用最后两项、关闭前两项。仅业务主程序或业务测试启用时才加入 core/protocol。Qt kit 位于其他位置时，配置时传入 `-DFOSD_QT_ROOT=<kit>`，同时在测试前更新 PATH；测试预设内的 Qt PATH 也需要相应修改。
 

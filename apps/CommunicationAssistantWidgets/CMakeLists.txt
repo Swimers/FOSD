@@ -1,0 +1,2 @@
+add_executable(CommunicationAssistantWidgets WIN32 main.cpp)
+target_link_libraries(CommunicationAssistantWidgets PRIVATE fosd_assistant_widgets)

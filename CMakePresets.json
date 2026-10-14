@@ -29,6 +29,20 @@
         "FOSD_BUILD_COMMUNICATION_ASSISTANT": "ON",
         "FOSD_ASSISTANT_BUILD_TESTS": "ON"
       }
+    },
+    {
+      "name": "communication-assistant-widgets",
+      "displayName": "独立 QWidgets 通信助手 (MSVC 2017 x64)",
+      "inherits": "windows-msvc2017",
+      "binaryDir": "${sourceDir}/build/communication-assistant-widgets",
+      "cacheVariables": {
+        "FOSD_BUILD_MAIN_APP": "OFF",
+        "FOSD_BUILD_TESTS": "OFF",
+        "FOSD_BUILD_COMMUNICATION_ASSISTANT": "OFF",
+        "FOSD_ASSISTANT_BUILD_TESTS": "OFF",
+        "FOSD_BUILD_WIDGETS_ASSISTANT": "ON",
+        "FOSD_WIDGETS_ASSISTANT_BUILD_TESTS": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -53,7 +67,22 @@
       "name": "assistant-release",
       "configurePreset": "communication-assistant",
       "configuration": "Release",
-      "targets": ["CommunicationAssistant"]
+      "targets": [
+        "CommunicationAssistant"
+      ]
+    },
+    {
+      "name": "assistant-widgets-debug",
+      "configurePreset": "communication-assistant-widgets",
+      "configuration": "Debug"
+    },
+    {
+      "name": "assistant-widgets-release",
+      "configurePreset": "communication-assistant-widgets",
+      "configuration": "Release",
+      "targets": [
+        "CommunicationAssistantWidgets"
+      ]
     }
   ],
   "testPresets": [
@@ -76,8 +105,26 @@
       "environment": {
         "PATH": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;$penv{PATH}"
       },
-      "output": { "outputOnFailure": true },
-      "execution": { "noTestsAction": "error" }
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "assistant-widgets-debug",
+      "configurePreset": "communication-assistant-widgets",
+      "configuration": "Debug",
+      "environment": {
+        "PATH": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;$penv{PATH}"
+      },
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
     }
   ]
 }

@@ -58,6 +58,7 @@ FOSD-ReArc/
 | `FOSD` | 可执行程序 (WIN32) | [apps/FOSD-Win/CMakeLists.txt](../apps/FOSD-Win/CMakeLists.txt) | Windows 桌面应用 |
 | `fosd_assistant_presenter` | 静态库（可选） | [ui/CommunicationAssistant/CMakeLists.txt](../ui/CommunicationAssistant/CMakeLists.txt) | QML 通信助手的 MVP Presenter |
 | `CommunicationAssistant` | 可执行程序（可选） | [apps/CommunicationAssistant/CMakeLists.txt](../apps/CommunicationAssistant/CMakeLists.txt) | 三合一原始通信助手，独立构建与部署见 [说明](communication-assistant.md) |
+| `CommunicationAssistantWidgets` | 可执行程序（可选） | [apps/CommunicationAssistantWidgets/CMakeLists.txt](../apps/CommunicationAssistantWidgets/CMakeLists.txt) | 复用 Presenter 的 QWidgets 前端，见 [说明](communication-assistant-widgets.md) |
 | `test_communication` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | `communication` 模块单元测试，注册到 CTest |
 | `test_packet_decoders` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | 拆帧规则与错误信号测试 |
 | `test_protocol` | 可执行程序 (控制台) | [test/CMakeLists.txt](../test/CMakeLists.txt) | 协议解析、并发读取与真实通信全链路测试 |
@@ -141,8 +142,10 @@ target_include_directories(fosd_communication
 | --- | --- | --- | --- |
 | `FOSD_BUILD_TESTS` | option | `ON` | 是否查找 `Qt5::Test`、启用 CTest 并构建 `test/` |
 | `FOSD_BUILD_MAIN_APP` | option | `ON` | 是否构建主程序；core/protocol 在主程序或业务测试启用时加入 |
-| `FOSD_BUILD_COMMUNICATION_ASSISTANT` | option | `OFF` | 启用独立 QML 通信助手及 Qml/Quick/QuickControls2 依赖 |
-| `FOSD_ASSISTANT_BUILD_TESTS` | option | `OFF` | 启用助手专用测试，需要启用助手 |
+| `FOSD_BUILD_COMMUNICATION_ASSISTANT` | option | `ON` | 启用独立 QML 通信助手及 Qml/Quick/QuickControls2 依赖 |
+| `FOSD_ASSISTANT_BUILD_TESTS` | option | `ON` | 启用助手专用测试，需要启用助手 |
+| `FOSD_BUILD_WIDGETS_ASSISTANT` | option | `OFF` | 启用 QWidgets 助手，不要求 Qt Quick |
+| `FOSD_WIDGETS_ASSISTANT_BUILD_TESTS` | option | `OFF` | 启用共享 Presenter 和 Widgets 界面测试，需要启用 Widgets 助手 |
 | `FOSD_QT_ROOT` | cache PATH | `d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64` | Qt5 kit 目录，会追加到 `CMAKE_PREFIX_PATH` |
 
 `FOSD_QT_ROOT` 是 CACHE 变量，Qt 装在别处时在配置阶段覆盖即可：
