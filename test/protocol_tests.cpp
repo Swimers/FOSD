@@ -1,7 +1,9 @@
 #include "communication/ConnectControl.h"
+#include "communication/PacketDecoders.h"
 #include "protocol/ProtocolControl.h"
 #include "protocol/WavelengthFrameParser.h"
 #include <QCoreApplication>
+#include <QElapsedTimer>
 #include <QSignalSpy>
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -72,6 +74,59 @@ protocol::FrameParsers testParsers(std::atomic<bool> *factoryFlag,
     return parsers;
 }
 
+struct ThreadTrace {
+    std::atomic<QThread *> decoderThread{nullptr};
+    std::atomic<QThread *> parserThread{nullptr};
+    std::atomic<QThread *> parseThread{nullptr};
+    std::atomic<int> decoderDestroyed{0};
+    std::atomic<bool> parserDestroyedOnWorker{false};
+};
+class TrackedDecoder final : public communication::IPacketDecoder {
+public:
+    TrackedDecoder(Channel channel, ThreadTrace *trace)
+        : IPacketDecoder(channel), m_trace(trace),
+          m_decoder(communication::createPacketDecoder(channel)) {
+        m_trace->decoderThread.store(QThread::currentThread());
+    }
+    ~TrackedDecoder() override {
+        if (QThread::currentThread() == m_trace->decoderThread.load())
+            m_trace->decoderDestroyed.fetch_add(1);
+    }
+    QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &peer) override {
+        return m_decoder->feed(bytes, peer);
+    }
+    void reset() override { m_decoder->reset(); }
+private:
+    ThreadTrace *m_trace;
+    std::unique_ptr<communication::IPacketDecoder> m_decoder;
+};
+std::unique_ptr<communication::IPacketDecoder> trackedDecoder(ThreadTrace *trace, Channel channel) {
+    return std::unique_ptr<communication::IPacketDecoder>(new TrackedDecoder(channel, trace));
+}
+class TrackedParser final : public protocol::IFrameParser {
+public:
+    explicit TrackedParser(ThreadTrace *trace) : m_trace(trace) {
+        m_trace->parserThread.store(QThread::currentThread());
+    }
+    ~TrackedParser() override {
+        m_trace->parserDestroyedOnWorker.store(QThread::currentThread() == m_trace->parserThread.load());
+    }
+    QString protocolId() const override { return m_parser.protocolId(); }
+    bool matches(const QByteArray &bytes) const override { return m_parser.matches(bytes); }
+    core::FrameDataPtr parse(const QByteArray &bytes, QString *error) const override {
+        m_trace->parseThread.store(QThread::currentThread());
+        return m_parser.parse(bytes, error);
+    }
+private:
+    ThreadTrace *m_trace;
+    protocol::WavelengthFrameParser m_parser;
+};
+protocol::FrameParsers trackedParsers(ThreadTrace *trace) {
+    protocol::FrameParsers parsers;
+    parsers.emplace_back(new TrackedParser(trace));
+    return parsers;
+}
+
 void readSnapshots(core::FrameRepositoryPtr repository, std::atomic<bool> *stop,
                    std::atomic<bool> *invalid, std::atomic<int> *reads) {
     quint64 previous = 0;
@@ -119,6 +174,8 @@ private slots:
     void concurrentReadersAndLifetime();
     void udpEndToEnd();
     void tcpFragmentsEndToEnd();
+    void sharedThreadWithoutMainDispatchAndShutdown();
+    void hostedCommunicationLifecycle();
 };
 
 void ProtocolTests::parseFieldsAndBoundaries() {
@@ -177,7 +234,7 @@ void ProtocolTests::rejectMalformedFrames() {
 
 void ProtocolTests::dispatchAndThreadOwnership() {
     std::atomic<bool> factoryOnWorker(false), parseOnWorker(false);
-    ProtocolControl control(nullptr, nullptr, std::bind(testParsers, &factoryOnWorker, &parseOnWorker,
+    ProtocolControl control(nullptr, std::bind(testParsers, &factoryOnWorker, &parseOnWorker,
                                                        QCoreApplication::instance()->thread()));
     QSignalSpy frames(&control, &ProtocolControl::frameParsed);
     QSignalSpy errors(&control, &ProtocolControl::errorOccurred);
@@ -246,8 +303,8 @@ void ProtocolTests::udpEndToEnd() {
     QVERIFY(probe.bind(QHostAddress(QHostAddress::LocalHost), quint16(0)));
     const quint16 port = probe.localPort();
     probe.close();
-    communication::ConnectControl communication;
-    ProtocolControl protocol(&communication);
+    ProtocolControl protocol;
+    communication::ConnectControl &communication = protocol.communication();
     QSignalSpy states(&communication, &communication::ConnectControl::stateChanged);
     QSignalSpy frames(&protocol, &ProtocolControl::frameParsed);
     QSignalSpy errors(&protocol, &ProtocolControl::errorOccurred);
@@ -278,8 +335,8 @@ void ProtocolTests::udpEndToEnd() {
 void ProtocolTests::tcpFragmentsEndToEnd() {
     QTcpServer server;
     QVERIFY(server.listen(QHostAddress::LocalHost, 0));
-    communication::ConnectControl communication;
-    ProtocolControl protocol(&communication);
+    ProtocolControl protocol;
+    communication::ConnectControl &communication = protocol.communication();
     QSignalSpy raw(&communication, &communication::ConnectControl::rawDataReceived);
     QSignalSpy frames(&protocol, &ProtocolControl::frameParsed);
     QSignalSpy errors(&protocol, &ProtocolControl::errorOccurred);
@@ -300,6 +357,64 @@ void ProtocolTests::tcpFragmentsEndToEnd() {
     QCOMPARE(snapshotAt(frames, 0)->source.transport, core::TransportKind::Tcp);
     QCOMPARE(snapshotAt(frames, 0)->source.port, server.serverPort());
     QCOMPARE(std::dynamic_pointer_cast<const core::WavelengthFrame>(snapshotAt(frames, 1)->data)->sequence, quint32(2));
+}
+
+void ProtocolTests::sharedThreadWithoutMainDispatchAndShutdown() {
+    QUdpSocket probe;
+    QVERIFY(probe.bind(QHostAddress(QHostAddress::LocalHost), quint16(0)));
+    const quint16 port = probe.localPort();
+    probe.close();
+    ThreadTrace trace;
+    core::FrameRepositoryPtr repository;
+    {
+        ProtocolControl control(nullptr, std::bind(trackedParsers, &trace),
+                                std::bind(trackedDecoder, &trace, std::placeholders::_1));
+        repository = control.dataModel();
+        auto &communication = control.communication();
+        QSignalSpy states(&communication, &communication::ConnectControl::stateChanged);
+        communication::UdpConfig config;
+        config.bindAddress = QHostAddress::LocalHost;
+        config.localPort = port;
+        communication.openUdp(config);
+        QTRY_VERIFY(!states.isEmpty());
+        QCOMPARE(trace.decoderThread.load(), trace.parserThread.load());
+        QVERIFY(trace.parserThread.load() != QThread::currentThread());
+        QUdpSocket peer;
+        const QByteArray packet = goldenPacket();
+        QCOMPARE(peer.writeDatagram(packet, QHostAddress::LocalHost, port), qint64(packet.size()));
+        // Deliberately do not process main-thread events: socket -> decoder ->
+        // parser -> repository must complete entirely on the shared thread.
+        QElapsedTimer deadline;
+        deadline.start();
+        while (!repository->latest() && deadline.elapsed() < 3000)
+            QThread::msleep(1);
+        QVERIFY(repository->latest());
+        QCOMPARE(trace.parseThread.load(), trace.decoderThread.load());
+    }
+    QCOMPARE(trace.decoderDestroyed.load(), 3);
+    QVERIFY(trace.parserDestroyedOnWorker.load());
+    QVERIFY(repository->latest());
+    // Destruction closed the socket before returning to the caller.
+    QVERIFY(probe.bind(QHostAddress(QHostAddress::LocalHost), port));
+}
+
+void ProtocolTests::hostedCommunicationLifecycle() {
+    QThread host;
+    {
+        communication::ConnectControl control(host);
+        QVERIFY(!host.isRunning());
+        QSignalSpy states(&control, &communication::ConnectControl::stateChanged);
+        host.start();
+        communication::UdpConfig config;
+        config.bindAddress = QHostAddress::LocalHost;
+        control.openUdp(config);
+        QTRY_VERIFY(!states.isEmpty());
+    }
+    QVERIFY(host.isRunning()); // Hosted control does not own thread termination.
+    host.quit();
+    QVERIFY(host.wait(3000));
+    // Also cover destruction before a hosted thread has ever started.
+    communication::ConnectControl unstarted(host);
 }
 
 QTEST_GUILESS_MAIN(ProtocolTests)

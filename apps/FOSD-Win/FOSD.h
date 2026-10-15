@@ -3,7 +3,6 @@
 #include <memory>
 
 namespace fosd {
-namespace communication { class ConnectControl; }
 namespace protocol { class ProtocolControl; }
 }
 
@@ -15,7 +14,6 @@ public:
     ~FOSD();
 
 private:
-    // Stop protocol consumers before communication producers on destruction.
-    std::unique_ptr<fosd::communication::ConnectControl> m_communication;
+    // ProtocolControl owns communication and its shared worker thread.
     std::unique_ptr<fosd::protocol::ProtocolControl> m_protocol;
 };

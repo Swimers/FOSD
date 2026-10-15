@@ -1,6 +1,6 @@
 #pragma once
 #include "IFrameParser.h"
-#include "communication/ITransportTypes.h"
+#include "communication/ConnectControl.h"
 #include "core/Datamodel/FrameRepository.h"
 #include <QObject>
 #include <QThread>
@@ -15,6 +15,7 @@ struct ProtocolError {
     QString protocolId;
     QString message;
 };
+
 using ParserFactory = std::function<FrameParsers()>;
 
 namespace detail {
@@ -36,16 +37,20 @@ private:
 };
 }
 
-// Create/destroy on the caller thread. Parsing and publishing run on m_thread.
+// Create/destroy on the caller thread. Owns communication and the shared worker
+// thread. Both factories, I/O, decoding, parsing and publishing run on m_thread.
 // storage consumes frameParsed for every frame; visualization reads latest().
-// Null communication supports feeding complete frames via parseFrame().
 class ProtocolControl final : public QObject {
     Q_OBJECT
 public:
-    explicit ProtocolControl(communication::ConnectControl *communication = nullptr,
-                             QObject *parent = nullptr, ParserFactory factory = ParserFactory());
+    explicit ProtocolControl(QObject *parent = nullptr, 
+                             ParserFactory factory = ParserFactory(),
+                             communication::DecoderFactory decoderFactory = communication::DecoderFactory());
     ~ProtocolControl() override;
+
     core::FrameRepositoryPtr dataModel() const { return m_repository; }
+    communication::ConnectControl &communication() const { return *m_communication; }
+
     void parseFrame(communication::Channel channel, const QByteArray &packet,
                     const communication::Endpoint &peer = communication::Endpoint());
 signals:
@@ -57,6 +62,8 @@ private:
     std::shared_ptr<core::FrameRepository> m_repository;
     QThread m_thread;
     detail::ProtocolWorker *m_worker = nullptr;
+    
+    std::unique_ptr<communication::ConnectControl> m_communication;
 };
 } } // namespace fosd::protocol
 Q_DECLARE_METATYPE(fosd::protocol::ProtocolError)

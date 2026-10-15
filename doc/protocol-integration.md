@@ -7,7 +7,7 @@
 ```mermaid
 flowchart LR
     T[UDP / TCP / 串口传输] --> D[communication 拆包器]
-    D -->|packetReceived| P[protocol 解析线程]
+    D -->|packetReceived 同线程直接调用| P[protocol 协议解析]
     P --> R[core/Datamodel 最新只读快照]
     P -->|frameParsed 经门面转发| S[storage 逐帧处理]
     R -->|latest| V[visualization 获取最新状态]
@@ -66,30 +66,30 @@ core 不包含通信对象、socket 类型或协议解析算法。仓库仅前�
 
 ## 3. 创建、连接与线程
 
-应用组合层负责创建门面。下面示例采用栈对象，反向析构会先停止 protocol，再停止 communication：
+`ProtocolControl` 是集成入口，拥有一个工作线程和托管模式的 `ConnectControl`。应用无需单独创建通信控制器：
 
 ```cpp
 #include "communication/ConnectControl.h"
 #include "protocol/ProtocolControl.h"
 
-fosd::communication::ConnectControl communication;
-fosd::protocol::ProtocolControl protocol(&communication);
+fosd::protocol::ProtocolControl protocol;
+auto &communication = protocol.communication();
 const fosd::core::FrameRepositoryPtr repository = protocol.dataModel();
 ```
 
-构造 `ProtocolControl` 时会自动连接 `ConnectControl::packetReceived`，不要再重复连接，否则同一帧会解析两次。构造门面仅启动工作线程、建立连接，不会自动打开 UDP/TCP/串口；仍需由应用调用 `openUdp()`、`openTcp()` 或 `openSerial()`。
+`ProtocolControl` 先注册协议初始化，再创建托管通信控制器，连接两个 Worker 后启动共享线程。`ConnectWorker::packetReceived` 通过 `Qt::DirectConnection` 直接调用同线程的 `ProtocolWorker::parseFrame`；数据处理不依赖主线程事件循环。不要再连接门面的 `packetReceived` 到解析入口，否则同一帧会解析两次。构造不会自动打开 UDP/TCP/串口；通过 `communication` 调用 `openUdp()`、`openTcp()` 或 `openSerial()`。
 
 | 步骤 | 执行线程 |
 | --- | --- |
-| socket / 串口读取、拆帧 | communication 工作线程 |
-| `ConnectControl` 转发 `packetReceived` | `ConnectControl` 所在线程，通常为 UI 线程 |
-| 解析器工厂、`matches()`、`parse()`、仓库发布 | protocol 工作线程 |
+| socket / 串口读取、拆帧、两个工厂、协议解析、仓库发布 | ProtocolControl 管理的同一个工作线程 |
+| `ConnectWorker::packetReceived` → `ProtocolWorker::parseFrame` | 同线程同步执行，无队列、无主线程中转 |
+| `ConnectControl` 转发通信状态、错误、原始数据及完整帧通知 | `ConnectControl` 所在线程，通常为 UI 线程；仅用于上层观察 |
 | `ProtocolControl` 转发 `frameParsed` / `errorOccurred` | `ProtocolControl` 所在线程，通常为 UI 线程 |
 | 下游处理槽 | 接收对象所在线程；跨线程连接应使用 `Qt::QueuedConnection` |
 
-两个门面应在创建它们的线程析构，不要从它们各自的工作线程析构。门面转发和下游队列接收需要事件循环。新增解析器不得直接操作 UI。
+门面应在创建它们的线程析构，不要从工作线程析构。`ProtocolControl` 析构时先在共享线程同步关闭传输并清除拆包器，再退出并等待线程，两个 Worker 通过 `finished` / `deleteLater` 在工作线程销毁，最后释放通信门面。应用不得删除 `communication()` 返回的对象，也不能让其引用超出 `ProtocolControl` 生命周期。上层通知仍需要接收线程的事件循环；新增解析器不得直接操作 UI，也不应在解析中做阻塞存储。
 
-传入空 communication 指针可用于测试或回放：
+测试或回放可直接提交完整帧，无需打开通信通道：
 
 ```cpp
 fosd::protocol::ProtocolControl protocol;
@@ -97,6 +97,10 @@ protocol.parseFrame(fosd::communication::Channel::Udp, completeFrame, peer);
 ```
 
 `parseFrame()` 异步排队，参数必须是完整帧。它不负责 TCP 半包缓存；实际通信应使用上面的自动连接。
+
+communication 仍能独立使用：`ConnectControl communication;` 会创建并管理自己的线程，通信助手无需依赖 protocol。托管构造方式为 `ConnectControl communication(hostThread, nullptr, decoderFactory);`，要求 hostThread 尚未启动，且其生命周期覆盖通信控制器；外部拥有者负责启动、退出并等待线程。通信控制器不会启动或退出托管线程。线程不应重启复用已有 Worker。
+
+旧的 `ProtocolControl(&communication, parent, factory)` 接口已移除；迁移为 `ProtocolControl(parent, parserFactory, decoderFactory)`，通过 `communication()` 获取受管通信业务接口。两模块仍为独立库，communication 不链接 protocol。
 
 ## 4. 只读共享接口
 
@@ -194,12 +198,12 @@ fosd::protocol::FrameParsers createApplicationParsers() {
 }
 
 fosd::protocol::ProtocolControl protocol(
-    &communication, nullptr, createApplicationParsers);
+    nullptr, createApplicationParsers, applicationDecoderFactory);
 ```
 
 注入工厂替换默认工厂；希望保留默认协议时如上调用 `createFrameParsers()`。解析器按列表顺序匹配，首个匹配者负责解析；该解析器报错后不会尝试后续解析器。若新增解析器与默认波长解析器共享 `5A A5` 包头，需要按 version/dataType 等字段精确分派或调整注册顺序。
 
-工厂和解析器均在 protocol 工作线程执行。解析实现应返回错误，避免让异常逃出 Qt 槽调用；不要创建或保留可被其他线程修改的已发布数据。
+`applicationDecoderFactory` 是应用提供的 `DecoderFactory`；不需要自定义拆包规则时省略第三个参数。两个工厂和解析器均在共享工作线程执行。解析实现应返回错误，避免让异常逃出 Qt 槽调用；不要创建或保留可被其他线程修改的已发布数据。
 
 JCS 通道包头用一条 `FA ch FA ch` 规则覆盖 1～16 通道。当前 TCP 拆包器同位置匹配按规则顺序选择；同时启用 JCS 数据与通道规则时，固定 `FA FB FA FB` 规则要排在通用 `FA` 候选规则之前。新字段协议不能直接沿用现有的 10 字节头、6 字节记录长度而不核对设备协议。
 
@@ -241,6 +245,6 @@ Get-Content build/protocol_result.txt
 | --- | --- |
 | [communication_tests.cpp](../test/communication_tests.cpp) | 真实 UDP/TCP、连接状态、拆包与错误转发 |
 | [packet_decoder_tests.cpp](../test/packet_decoder_tests.cpp) | 半包、粘包、规则、JCS 16 通道、异常与恢复 |
-| [protocol_tests.cpp](../test/protocol_tests.cpp) | 波长字段、小端浮点、零记录及最大记录数、异常帧、扩展解析器、线程归属、真实 UDP/TCP 全链路、并发读取与快照生命周期 |
+| [protocol_tests.cpp](../test/protocol_tests.cpp) | 波长字段、小端浮点、边界、异常帧、扩展解析器、共享线程归属、主线程不调度时的 UDP 解析、托管生命周期与关闭释放端口、真实 UDP/TCP 全链路、并发读取与快照生命周期 |
 
 整体构建组织见 [build-structure.md](build-structure.md)。

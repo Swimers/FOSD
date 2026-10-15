@@ -138,7 +138,20 @@ void ConnectWorker::shutdown() {
 } // namespace detail
 
 ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
-    : QObject(parent), m_worker(new detail::ConnectWorker(std::move(decoderFactory))) {
+    : ConnectControl(parent, std::move(decoderFactory), nullptr) {}
+
+ConnectControl::ConnectControl(QThread &hostThread, QObject *parent, DecoderFactory decoderFactory)
+    : ConnectControl(parent, std::move(decoderFactory), &hostThread) {}
+
+ConnectControl::ConnectControl(QObject *parent, 
+                               DecoderFactory decoderFactory, 
+                               QThread *hostThread)
+    : QObject(parent), 
+      m_ownedThread(hostThread ? nullptr : new QThread),
+      m_thread(hostThread ? hostThread : m_ownedThread.get()),
+      m_worker(new detail::ConnectWorker(std::move(decoderFactory))) {
+        
+    Q_ASSERT(!m_thread->isRunning());
 
     qRegisterMetaType<Channel>("fosd::communication::Channel");
     qRegisterMetaType<ConnectionState>("fosd::communication::ConnectionState");
@@ -149,9 +162,9 @@ ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
     qRegisterMetaType<CommunicationError>("fosd::communication::CommunicationError");
     qRegisterMetaType<DecoderError>("fosd::communication::DecoderError");
 
-    m_worker->moveToThread(&m_thread);
-    connect(&m_thread, &QThread::started, m_worker, &detail::ConnectWorker::initialize);
-    connect(&m_thread, &QThread::finished, m_worker, &QObject::deleteLater);
+    m_worker->moveToThread(m_thread);
+    connect(m_thread, &QThread::started, m_worker.data(), &detail::ConnectWorker::initialize);
+    connect(m_thread, &QThread::finished, m_worker.data(), &QObject::deleteLater);
 
     connect(this, &ConnectControl::requestOpenSerial,
             m_worker, &detail::ConnectWorker::openSerial, Qt::QueuedConnection);
@@ -175,14 +188,26 @@ ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
     connect(m_worker, &detail::ConnectWorker::decoderErrorOccurred,
             this, &ConnectControl::decoderErrorOccurred);
 
-    m_thread.start();
+    if (m_ownedThread)
+        m_thread->start();
 }
 
 ConnectControl::~ConnectControl() {
-    if (m_thread.isRunning()) {
-        QMetaObject::invokeMethod(m_worker, "shutdown", Qt::BlockingQueuedConnection);
-        m_thread.quit();
-        m_thread.wait();
+    shutdown();
+    if (m_ownedThread) {
+        m_thread->quit();
+        m_thread->wait();
+    }
+    // An unstarted hosted thread has no finished signal to delete its worker.
+    if (m_worker && !m_thread->isRunning())
+        delete m_worker.data();
+}
+
+void ConnectControl::shutdown() {
+    if (m_worker && m_thread->isRunning()) {
+        const Qt::ConnectionType type = QThread::currentThread() == m_thread
+            ? Qt::DirectConnection : Qt::BlockingQueuedConnection;
+        QMetaObject::invokeMethod(m_worker.data(), "shutdown", type);
     }
 }
 

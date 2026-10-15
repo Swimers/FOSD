@@ -15,12 +15,16 @@ core::TransportKind transportKind(communication::Channel channel) {
 }
 }
 namespace detail {
-ProtocolWorker::ProtocolWorker(ParserFactory factory, std::shared_ptr<core::FrameRepository> repository)
-    : m_factory(std::move(factory)), m_repository(std::move(repository)) {}
+ProtocolWorker::ProtocolWorker(ParserFactory factory, 
+                               std::shared_ptr<core::FrameRepository> repository)
+    : m_factory(std::move(factory)), 
+      m_repository(std::move(repository)) {}
+
 void ProtocolWorker::initialize() {
     m_parsers = m_factory();
     m_factory = ParserFactory();
 }
+
 void ProtocolWorker::parseFrame(communication::Channel channel, const QByteArray &packet,
                                 const communication::Endpoint &peer) {
     ProtocolError error;
@@ -52,33 +56,53 @@ void ProtocolWorker::parseFrame(communication::Channel channel, const QByteArray
     error.message = QStringLiteral("No parser recognizes this frame");
     emit errorOccurred(error);
 }
+
 }
 
-ProtocolControl::ProtocolControl(communication::ConnectControl *communication,
-                                 QObject *parent, ParserFactory factory)
-    : QObject(parent), m_repository(std::make_shared<core::FrameRepository>()),
-      m_worker(new detail::ProtocolWorker(factory ? std::move(factory) : ParserFactory(createFrameParsers),
-                                          m_repository)) {
+ProtocolControl::ProtocolControl(QObject *parent, 
+                                 ParserFactory factory,
+                                 communication::DecoderFactory decoderFactory)
+    : QObject(parent), 
+      m_repository(std::make_shared<core::FrameRepository>()),
+      m_worker(new detail::ProtocolWorker(factory ? std::move(factory) : ParserFactory(createFrameParsers), m_repository)) {
+
     qRegisterMetaType<communication::Channel>("fosd::communication::Channel");
     qRegisterMetaType<communication::Endpoint>("fosd::communication::Endpoint");
     qRegisterMetaType<core::FrameSnapshotPtr>("fosd::core::FrameSnapshotPtr");
     qRegisterMetaType<ProtocolError>("fosd::protocol::ProtocolError");
+
     m_worker->moveToThread(&m_thread);
-    connect(&m_thread, &QThread::started, m_worker, &detail::ProtocolWorker::initialize);
-    connect(&m_thread, &QThread::finished, m_worker, &QObject::deleteLater);
+
+    connect(&m_thread, &QThread::started, 
+            m_worker, &detail::ProtocolWorker::initialize);
+    connect(&m_thread, &QThread::finished, 
+            m_worker, &QObject::deleteLater);
+
     connect(this, &ProtocolControl::requestParse,
             m_worker, &detail::ProtocolWorker::parseFrame, Qt::QueuedConnection);
-    if (communication)
-        connect(communication, &communication::ConnectControl::packetReceived,
-                m_worker, &detail::ProtocolWorker::parseFrame, Qt::QueuedConnection);
-    connect(m_worker, &detail::ProtocolWorker::frameParsed, this, &ProtocolControl::frameParsed);
-    connect(m_worker, &detail::ProtocolWorker::errorOccurred, this, &ProtocolControl::errorOccurred);
+            
+    connect(m_worker, &detail::ProtocolWorker::frameParsed, 
+            this, &ProtocolControl::frameParsed);
+    connect(m_worker, &detail::ProtocolWorker::errorOccurred, 
+            this, &ProtocolControl::errorOccurred);
+    // Register parser initialization first, then communication initialization.
+    // All started slots complete before the thread processes I/O events.
+    m_communication.reset(new communication::ConnectControl(m_thread, nullptr, std::move(decoderFactory)));
+
+    connect(m_communication->m_worker.data(), &communication::detail::ConnectWorker::packetReceived,
+            m_worker, &detail::ProtocolWorker::parseFrame, Qt::DirectConnection);
+
     m_thread.start();
 }
+
 ProtocolControl::~ProtocolControl() {
+    // Stop transports on their thread before stopping parsing and deleting workers.
+    m_communication->shutdown();
     m_thread.quit();
     m_thread.wait();
+    m_communication.reset();
 }
+
 void ProtocolControl::parseFrame(communication::Channel channel, const QByteArray &packet,
                                  const communication::Endpoint &peer) {
     emit requestParse(channel, packet, peer);

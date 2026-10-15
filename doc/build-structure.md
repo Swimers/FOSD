@@ -18,10 +18,10 @@ FOSD-ReArc/
 │   ├── CMakeLists.txt          # 模块聚合入口
 │   ├── core/                   # 共享数据模型与读写锁仓库
 │   │   └── Datamodel/
-│   ├── protocol/               # 独立线程解析与协议分派
+│   ├── protocol/               # 管理共享工作线程、协议解析与分派
 │   └── communication/          # 通信与拆帧模块
 │       ├── CMakeLists.txt
-│       ├── ConnectControl.{h,cpp}   # 对外门面：线程 + 信号槽
+│       ├── ConnectControl.{h,cpp}   # 通信门面：独立线程 / 外部线程托管
 │       ├── ITransport.h             # 传输层抽象接口
 │       ├── IPacketDecoder.h         # 拆包器接口
 │       ├── ITransportTypes.h        # 公共类型（Config / Endpoint / Error）

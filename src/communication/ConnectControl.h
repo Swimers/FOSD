@@ -5,10 +5,12 @@
 
 #include <QObject>
 #include <QThread>
+#include <QPointer>
 #include <functional>
 #include <memory>
 
 namespace fosd {
+namespace protocol { class ProtocolControl; }
 namespace communication {
 
 class ITransport;
@@ -68,13 +70,17 @@ private:
 
 } // namespace detail
 
-// Create and destroy on the caller/UI thread. All I/O runs on m_thread.
+// Create and destroy on the caller/UI thread. The hosted constructor requires
+// an unstarted thread which outlives this control; its owner starts/stops it.
 // An empty factory selects the built-in UDP/TCP/serial decoders. A supplied
 // factory replaces that policy; returning nullptr disables decoding per channel.
 class ConnectControl final : public QObject {
     Q_OBJECT
 public:
     explicit ConnectControl(QObject *parent = nullptr,
+                            DecoderFactory decoderFactory = DecoderFactory());
+    explicit ConnectControl(QThread &hostThread, 
+                            QObject *parent = nullptr,
                             DecoderFactory decoderFactory = DecoderFactory());
     ~ConnectControl() override;
 
@@ -103,8 +109,15 @@ signals:
                      const fosd::communication::Endpoint &peer);
 
 private:
-    QThread m_thread;
-    detail::ConnectWorker *m_worker = nullptr;
+    friend class fosd::protocol::ProtocolControl;
+    
+    ConnectControl(QObject *parent, DecoderFactory decoderFactory, QThread *hostThread);
+    void shutdown();
+    
+    std::unique_ptr<QThread> m_ownedThread;
+
+    QThread *m_thread = nullptr;
+    QPointer<detail::ConnectWorker> m_worker;
 };
 
 } // namespace communication
