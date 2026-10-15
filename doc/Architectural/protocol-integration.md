@@ -27,7 +27,7 @@ core 不包含通信对象、socket 类型或协议解析算法。仓库仅前�
 
 - [ProtocolControl.h](../src/protocol/ProtocolControl.h)：解析门面、通知信号、共享仓库入口。
 - [IFrameParser.h](../src/protocol/IFrameParser.h)：协议扩展接口。
-- [WavelengthFrameParser.cpp](../src/protocol/WavelengthFrameParser.cpp)：当前波长解析实现。
+- [MPWavelengthParser.cpp](../src/protocol/MPWavelengthParser.cpp)：当前 MP 波长解析实现。
 - [FrameData.h](../src/core/Datamodel/FrameData.h)：数据结构与只读指针类型。
 - [FrameRepository.h](../src/core/Datamodel/FrameRepository.h)：仓库读取接口。
 
@@ -57,7 +57,7 @@ core 不包含通信对象、socket 类型或协议解析算法。仓库仅前�
 
 | 协议标志 | communication 拆帧 | protocol 字段解析 |
 | --- | --- | --- |
-| `5A A5` | 默认启用 | 默认启用 `WavelengthFrameParser` |
+| `5A A5` | 默认启用 | 默认启用 `MPWavelengthParser` |
 | `FA FB FA FB` | 默认启用 JCS 数据规则 | 尚未实现，收到完整帧会报未识别协议 |
 | `FA ch FA ch`，ch=1～16 | 已实现规则，默认工厂未启用 | 尚未实现 |
 | 串口 `\r` 结束的指令 | 默认启用，保留结束符 | 尚未实现指令解析器 |

@@ -56,7 +56,8 @@ public:
 signals:
     void frameParsed(const fosd::core::FrameSnapshotPtr &snapshot);
     void errorOccurred(const fosd::protocol::ProtocolError &error);
-    void requestParse(fosd::communication::Channel channel, const QByteArray &packet,
+    void requestParse(fosd::communication::Channel channel, 
+                      const QByteArray &packet,
                       const fosd::communication::Endpoint &peer);
 private:
     std::shared_ptr<core::FrameRepository> m_repository;

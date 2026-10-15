@@ -1,7 +1,7 @@
 #include "communication/ConnectControl.h"
 #include "communication/PacketDecoders.h"
 #include "protocol/ProtocolControl.h"
-#include "protocol/WavelengthFrameParser.h"
+#include "protocol/MPWavelengthParser.h"
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QSignalSpy>
@@ -63,7 +63,7 @@ public:
 private:
     std::atomic<bool> *m_flag;
     QThread *m_caller;
-    protocol::WavelengthFrameParser m_parser;
+    protocol::MPWavelengthParser m_parser;
 };
 protocol::FrameParsers testParsers(std::atomic<bool> *factoryFlag,
                                   std::atomic<bool> *parseFlag, QThread *caller) {
@@ -119,7 +119,7 @@ public:
     }
 private:
     ThreadTrace *m_trace;
-    protocol::WavelengthFrameParser m_parser;
+    protocol::MPWavelengthParser m_parser;
 };
 protocol::FrameParsers trackedParsers(ThreadTrace *trace) {
     protocol::FrameParsers parsers;
@@ -179,7 +179,7 @@ private slots:
 };
 
 void ProtocolTests::parseFieldsAndBoundaries() {
-    protocol::WavelengthFrameParser parser;
+    protocol::MPWavelengthParser parser;
     QString error = QStringLiteral("old error");
     const auto frame = std::dynamic_pointer_cast<const core::WavelengthFrame>(parser.parse(goldenPacket(), &error));
     QVERIFY(frame);
@@ -216,7 +216,7 @@ void ProtocolTests::parseFieldsAndBoundaries() {
 }
 
 void ProtocolTests::rejectMalformedFrames() {
-    protocol::WavelengthFrameParser parser;
+    protocol::MPWavelengthParser parser;
     QVector<QByteArray> invalid = {{}, goldenPacket().left(9), goldenPacket().left(21), goldenPacket() + 'x'};
     QByteArray wrongMagic = goldenPacket();
     wrongMagic[0] = 0;

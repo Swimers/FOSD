@@ -1,4 +1,4 @@
-#include "WavelengthFrameParser.h"
+#include "MPWavelengthParser.h"
 #include <QtEndian>
 #include <cstring>
 #include <limits>
@@ -13,17 +13,23 @@ core::FrameDataPtr fail(QString *error, const QString &message) {
 }
 }
 
-QString WavelengthFrameParser::protocolId() const { return QStringLiteral("mp.wavelength"); }
-bool WavelengthFrameParser::matches(const QByteArray &packet) const {
+QString MPWavelengthParser::protocolId() const { 
+    return QStringLiteral("mp.wavelength"); 
+}
+
+bool MPWavelengthParser::matches(const QByteArray &packet) const {
     return packet.startsWith(QByteArray::fromHex("5aa5"));
 }
-core::FrameDataPtr WavelengthFrameParser::parse(const QByteArray &packet, QString *error) const {
+
+core::FrameDataPtr MPWavelengthParser::parse(const QByteArray &packet, QString *error) const {
     static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559,
                   "The wire format requires IEEE 754 binary32 floats");
     if (error)
         error->clear();
+        
     const int headerSize = 10;
     const int recordSize = 6;
+
     if (packet.size() < headerSize)
         return fail(error, QStringLiteral("Frame is shorter than the 10-byte header"));
     const uchar *data = reinterpret_cast<const uchar *>(packet.constData());
@@ -51,9 +57,12 @@ core::FrameDataPtr WavelengthFrameParser::parse(const QByteArray &packet, QStrin
     }
     return std::make_shared<const core::WavelengthFrame>(std::move(frame));
 }
+
 FrameParsers createFrameParsers() {
     FrameParsers parsers;
-    parsers.emplace_back(new WavelengthFrameParser);
+    parsers.emplace_back(new MPWavelengthParser);
     return parsers;
 }
-} } // namespace fosd::protocol
+
+}
+} // namespace fosd::protocol

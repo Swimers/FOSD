@@ -1,7 +1,9 @@
 add_library(fosd_protocol STATIC
     IFrameParser.h
-    WavelengthFrameParser.h
-    WavelengthFrameParser.cpp
+    MPWavelengthParser.h
+    MPWavelengthParser.cpp
+    JCSWavelengthParser.h
+    JCSWavelengthParser.cpp
     ProtocolControl.h
     ProtocolControl.cpp
 )
