@@ -35,3 +35,6 @@ target_link_libraries(test_protocol PRIVATE fosd_protocol)
 # Exercise JCS parsing directly, without changing the production parser factory.
 fosd_add_test(test_jcs_wavelength_parser jcs_wavelength_parser_tests.cpp)
 target_link_libraries(test_jcs_wavelength_parser PRIVATE fosd_protocol)
+
+fosd_add_test(test_jcs_channel_parser jcs_channel_parser_tests.cpp)
+target_link_libraries(test_jcs_channel_parser PRIVATE fosd_protocol)

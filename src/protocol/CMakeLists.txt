@@ -4,6 +4,8 @@ add_library(fosd_protocol STATIC
     MPWavelengthParser.cpp
     JCSWavelengthParser.h
     JCSWavelengthParser.cpp
+    JCSChannelParser.h
+    JCSChannelParser.cpp
     ProtocolControl.h
     ProtocolControl.cpp
 )

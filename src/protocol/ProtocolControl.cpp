@@ -33,14 +33,17 @@ void ProtocolWorker::parseFrame(communication::Channel channel, const QByteArray
     for (const std::unique_ptr<IFrameParser> &parser : m_parsers) {
         if (!parser || !parser->matches(packet))
             continue;
+
         error.protocolId = parser->protocolId();
         core::FrameDataPtr data = parser->parse(packet, &error.message);
+
         if (!data) {
             if (error.message.isEmpty())
                 error.message = QStringLiteral("Parser returned no data");
             emit errorOccurred(error);
             return;
         }
+
         core::FrameSnapshot snapshot;
         snapshot.protocolId = error.protocolId;
         snapshot.source.transport = transportKind(channel);
@@ -51,6 +54,7 @@ void ProtocolWorker::parseFrame(communication::Channel channel, const QByteArray
         // publish releases its lock before signals can call consumer code.
         const core::FrameSnapshotPtr published = m_repository->publish(std::move(snapshot));
         emit frameParsed(published);
+        
         return;
     }
     error.message = QStringLiteral("No parser recognizes this frame");
