@@ -5,7 +5,8 @@
 #include <QVector>
 #include <memory>
 
-namespace fosd { namespace core {
+namespace fosd { 
+    namespace core {
 
 // Core remains independent of socket classes and the communication module.
 enum class TransportKind { 

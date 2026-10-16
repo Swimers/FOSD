@@ -10,6 +10,7 @@ target_link_libraries(FOSD
         Qt5::Widgets
         fosd_communication
         fosd_protocol
+        fosd_calculation
 )
 
 # Qt5::Widgets already implies Qt5::Core / Qt5::Gui.
