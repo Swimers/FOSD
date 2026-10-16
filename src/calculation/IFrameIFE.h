@@ -2,8 +2,6 @@
 
 #include <vector>
 #include <array>
-#include "StrainCalibration.h"
-#include <QByteArray>
 #include <QString>
 
 namespace fosd { 
@@ -29,8 +27,9 @@ public:
     virtual QString IFEId() const = 0;
 
     virtual bool initMatrix() = 0;
-    virtual NodeDofs calculateDofs(const Strain& strain) const = 0;
-    virtual Displacement calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs) const = 0;
+    virtual NodeDofs calculateDofs(const Strain& strain, QString *error = nullptr) const = 0;
+    virtual Displacement calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs,
+                                               QString *error = nullptr) const = 0;
 
 protected:
     Matrix m_matrix;  // 矩阵数据

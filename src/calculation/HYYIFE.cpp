@@ -1,9 +1,12 @@
 #include "HYYIFE.h"
+#include <cmath>
+#include <utility>
 
 namespace fosd{
 namespace Calculation{
 
-HYYIFE::HYYIFE()
+HYYIFE::HYYIFE(std::vector<int> freeDofIndices, NodeDofs constrainedDofs)
+    : m_freeDofIndices(std::move(freeDofIndices)), m_constrainedDofs(std::move(constrainedDofs))
 {
     initMatrix();
 }
@@ -49,26 +52,79 @@ bool HYYIFE::initMatrix()
     if (rows != m_numRows || cols != m_numCols) {
         return false; // Invalid matrix
     }
+    for (const auto &row : m_matrix)
+        if (row.size() != static_cast<size_t>(cols))
+            return false;
 
     return true;
 }
 
-NodeDofs HYYIFE::calculateDofs(const Strain& strain) const
+NodeDofs HYYIFE::calculateDofs(const Strain& strain, QString *error) const
 {
-    NodeDofs dofs(m_nodeDofs, 0.0);
-    for (size_t i = 0; i < m_nodeDofs; i++) {
-        for (size_t j = 0; j < m_numCols; j++) {
-            dofs[i] += m_matrix[j][i] * strain[j];
+    if (error)
+        error->clear();
+    QString message;
+    if (m_matrix.size() != 20 || strain.size() != 12)
+        message = QStringLiteral("HYY requires exactly 12 strain values and a 20x12 matrix");
+    else if (m_freeDofIndices.size() != 20 || m_constrainedDofs.size() != 22)
+        message = QStringLiteral("Configure 20 matrix-row DOF indices and 22 constraint values");
+    std::vector<bool> used(22, false);
+    if (message.isEmpty()) {
+        for (int index : m_freeDofIndices) {
+            if (index < 0 || index >= 22 || used[index]) {
+                message = QStringLiteral("Global DOF indices must be unique and in 0..21");
+                break;
+            }
+            used[index] = true;
         }
+    }
+    if (message.isEmpty()) {
+        for (double value : strain)
+            if (!std::isfinite(value))
+                message = QStringLiteral("Strain values must be finite");
+        for (double value : m_constrainedDofs)
+            if (!std::isfinite(value))
+                message = QStringLiteral("Constraint values must be finite");
+    }
+    if (!message.isEmpty()) {
+        if (error)
+            *error = message;
+        return {};
+    }
+    NodeDofs dofs = m_constrainedDofs;
+    for (size_t row = 0; row < m_matrix.size(); ++row) {
+        if (m_matrix[row].size() != strain.size()) {
+            if (error)
+                *error = QStringLiteral("Invalid HYY matrix row length");
+            return {};
+        }
+        double value = 0.0;
+        for (size_t column = 0; column < strain.size(); ++column)
+            value += m_matrix[row][column] * strain[column];
+        if (!std::isfinite(value)) {
+            if (error)
+                *error = QStringLiteral("HYY matrix multiplication overflowed");
+            return {};
+        }
+        dofs[m_freeDofIndices[row]] = value;
     }
     return dofs;
 }
 
-Displacement HYYIFE::calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs) const
+Displacement HYYIFE::calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs,
+                                          QString *error) const
 {
     Displacement displacement = {0.0, 0.0, 0.0};
 
-    if (nodeDofs.size() < 22) {
+    if (error)
+        error->clear();
+    bool finiteDofs = true;
+    for (double value : nodeDofs)
+        finiteDofs = finiteDofs && std::isfinite(value);
+    if (nodeDofs.size() != 22 || !finiteDofs || !std::isfinite(point.x) ||
+        !std::isfinite(point.y) || !std::isfinite(point.z)) {
+        if (error)
+            *error = QStringLiteral("HYY interpolation requires 22 finite DOFs and finite coordinates");
         return displacement;
     }
 
@@ -80,6 +136,8 @@ Displacement HYYIFE::calculateDisplacement(const Point3D& point, const NodeDofs&
     const double elementLength = totalLength / 2.0;
 
     if (xPara < 0.0 || xPara > totalLength) {
+        if (error)
+            *error = QStringLiteral("HYY model X coordinate must be in 0..1400 mm");
         return displacement;
     }
 
@@ -171,6 +229,13 @@ Displacement HYYIFE::calculateDisplacement(const Point3D& point, const NodeDofs&
     displacement[2] =
         w + yPara * thetaX;
 
+    for (double value : displacement) {
+        if (!std::isfinite(value)) {
+            if (error)
+                *error = QStringLiteral("HYY interpolation overflowed");
+            return {{0.0, 0.0, 0.0}};
+        }
+    }
     return displacement;
 }
 

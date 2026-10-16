@@ -6,6 +6,7 @@
 #include <vector>
 #include <array>
 #include <QObject>
+#include <QString>
 
 namespace fosd{
 namespace Calculation{
@@ -15,10 +16,10 @@ using Wavelength =std::vector<double>; // 波长数组
 
 struct CalibrationStrainData
 {
-    std::vector<float> originalWavelength = {0.0};  // 原始波长
-    float calibrationFactor = 0.00075;  // 校准因子
-    float A = 0.0;  // 校准参数A
-    float B = 0.0;  // 校准参数B
+    std::vector<double> originalWavelength;
+    double calibrationFactor = 0.00075;
+    double A = 0.0;
+    double B = 0.0;
 };
 struct CalibrationChannelData
 {
@@ -31,13 +32,14 @@ class StrainCalibration final : public QObject
     Q_OBJECT
 public:
     explicit StrainCalibration(QObject *parent = nullptr);
-    ~StrainCalibration();
+    ~StrainCalibration() = default;
 
     void initializeCalibration();
     void setCalibrationChannelData(const CalibrationChannelData& channelData);
     void setCalibrationStrainData(const CalibrationStrainData& strainData);
-    CalibrationChannelData getCalibrationChannelData();
-    CalibrationStrainData getCalibrationStrainData();
+    CalibrationChannelData getCalibrationChannelData() const;
+    CalibrationStrainData getCalibrationStrainData() const;
+    QString lastError() const { return m_lastError; }
 
     bool checkPara();
 
@@ -48,6 +50,8 @@ signals:
     void errorOccurred(const QString &errorMessage);
 
 private:
+    bool fail(const QString &message);
+    QString m_lastError;
     CalibrationChannelData m_calibrationChannelData;  // 校准通道数据
     CalibrationStrainData m_calibrationStrainData;  // 校准应变数据
 };
@@ -56,3 +60,6 @@ private:
 } // namespace fosd::Calculation
 
 #endif
+
+Q_DECLARE_METATYPE(fosd::Calculation::CalibrationStrainData)
+Q_DECLARE_METATYPE(fosd::Calculation::CalibrationChannelData)

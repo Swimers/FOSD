@@ -4,13 +4,9 @@ namespace fosd{
 namespace Calculation{
 
 StrainCalibration::StrainCalibration(QObject *parent = nullptr)
+    : QObject(parent)
 {
     initializeCalibration();
-}
-
-StrainCalibration::~StrainCalibration()
-{
-    delete this;
 }
 
 void StrainCalibration::initializeCalibration()
@@ -32,12 +28,12 @@ void StrainCalibration::setCalibrationStrainData(const CalibrationStrainData& st
     m_calibrationStrainData = strainData;
 }
 
-CalibrationChannelData StrainCalibration::getCalibrationChannelData()
+CalibrationChannelData StrainCalibration::getCalibrationChannelData() const
 {
     return m_calibrationChannelData;
 }
 
-CalibrationStrainData StrainCalibration::getCalibrationStrainData()
+CalibrationStrainData StrainCalibration::getCalibrationStrainData() const
 {
     return m_calibrationStrainData;
 }

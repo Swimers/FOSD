@@ -38,3 +38,6 @@ target_link_libraries(test_jcs_wavelength_parser PRIVATE fosd_protocol)
 
 fosd_add_test(test_jcs_channel_parser jcs_channel_parser_tests.cpp)
 target_link_libraries(test_jcs_channel_parser PRIVATE fosd_protocol)
+
+fosd_add_test(test_calculation calculation_tests.cpp)
+target_link_libraries(test_calculation PRIVATE fosd_calculation fosd_protocol)
