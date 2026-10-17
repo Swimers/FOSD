@@ -6,12 +6,10 @@
 
 namespace fosd { namespace Calculation {
 namespace {
-std::unique_ptr<IFrameIFE> createHYY(const CalculationConfiguration &configuration) {
-    return std::unique_ptr<IFrameIFE>(new HYYIFE(configuration.freeDofIndices,
-                                              configuration.constrainedDofs));
+std::unique_ptr<IFrameIFE> createHYY() {
+    return std::unique_ptr<IFrameIFE>(new HYYIFE);
 }
-bool validateModel(const core::ModelData &model, const IFrameIFE *algorithm,
-                   const NodeDofs &dofs, QString *error) {
+bool validateModel(const core::ModelData &model, QString *error) {
     if (model.rawPointMap.isEmpty()) {
         *error = QStringLiteral("Model must contain at least one point");
         return false;
@@ -23,13 +21,6 @@ bool validateModel(const core::ModelData &model, const IFrameIFE *algorithm,
             *error = QStringLiteral("Model point %1 requires a nonnegative ID and three finite coordinates")
                 .arg(qlonglong(point.key()));
             return false;
-        }
-        if (algorithm) {
-            Point3D position;
-            position.x = xyz[0]; position.y = xyz[1]; position.z = xyz[2];
-            algorithm->calculateDisplacement(position, dofs, error);
-            if (!error->isEmpty())
-                return false;
         }
     }
     return true;
@@ -58,28 +49,12 @@ void CalculationWorker::configure(const CalculationConfiguration &configuration)
         reportError(QStringLiteral("configuration"), validation.lastError());
         return;
     }
-    auto algorithm = m_factory(configuration);
+    auto algorithm = m_factory();
     if (!algorithm) {
         reportError(QStringLiteral("configuration"), QStringLiteral("IFE factory returned no algorithm"));
         return;
     }
-    QString error;
-    NodeDofs probe = algorithm->calculateDofs(
-        Strain(configuration.channelCalibration.channelIndices.size(), 0.0), &error);
-    for (double value : probe)
-        if (!std::isfinite(value))
-            error = QStringLiteral("IFE returned nonfinite DOFs");
-    if (probe.empty() || !error.isEmpty()) {
-        reportError(QStringLiteral("configuration"), error.isEmpty()
-            ? QStringLiteral("IFE returned no DOFs") : error);
-        return;
-    }
-    if (m_model && !validateModel(*m_model, algorithm.get(), probe, &error)) {
-        reportError(QStringLiteral("configuration"), error);
-        return;
-    }
     m_algorithm = std::move(algorithm);
-    m_probeDofs = std::move(probe);
     m_calibration->setCalibrationStrainData(configuration.strainCalibration);
     m_calibration->setCalibrationChannelData(configuration.channelCalibration);
     m_seenFrame.reset();
@@ -87,7 +62,7 @@ void CalculationWorker::configure(const CalculationConfiguration &configuration)
 }
 void CalculationWorker::setModel(const core::ModelData &model) {
     QString error;
-    if (!validateModel(model, m_algorithm.get(), m_probeDofs, &error)) {
+    if (!validateModel(model, &error)) {
         reportError(QStringLiteral("model"), error);
         return;
     }
@@ -130,15 +105,7 @@ void CalculationWorker::processFrame(const core::FrameSnapshotPtr &snapshot) {
         reportError(QStringLiteral("calibration"), m_calibration->lastError(), revision);
         return;
     }
-    QString error;
-    const NodeDofs dofs = m_algorithm->calculateDofs(strains, &error);
-    for (double value : dofs)
-        if (!std::isfinite(value))
-            error = QStringLiteral("IFE returned nonfinite DOFs");
-    if (dofs.empty() || !error.isEmpty()) {
-        reportError(QStringLiteral("solve"), error.isEmpty() ? QStringLiteral("IFE returned no DOFs") : error, revision);
-        return;
-    }
+    const NodeDofs dofs = m_algorithm->calculateDofs(strains);
     core::CalculationResult result;
     result.sourceFrame = snapshot;
     result.algorithmId = m_algorithm->IFEId();
@@ -150,11 +117,7 @@ void CalculationWorker::processFrame(const core::FrameSnapshotPtr &snapshot) {
         const auto &xyz = point.value();
         Point3D position;
         position.x = xyz[0]; position.y = xyz[1]; position.z = xyz[2];
-        const Displacement displacement = m_algorithm->calculateDisplacement(position, dofs, &error);
-        if (!error.isEmpty()) {
-            reportError(QStringLiteral("interpolation"), error, revision);
-            return;
-        }
+        const Displacement displacement = m_algorithm->calculateDisplacement(position, dofs);
         QVector<double> delta(3), deformed(3);
         for (int axis = 0; axis < 3; ++axis) {
             delta[axis] = displacement[size_t(axis)] * 1000.0;

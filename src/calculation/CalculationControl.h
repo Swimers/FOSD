@@ -11,24 +11,23 @@ namespace fosd{
 namespace Calculation{
 
 struct CalculationConfiguration {
-    CalibrationStrainData strainCalibration;
-    CalibrationChannelData channelCalibration;
-    std::vector<int> freeDofIndices; // HYY matrix rows -> global DOFs, 20 unique indices.
-    NodeDofs constrainedDofs;       // 22 entries, only unmapped entries are retained.
+    CalibrationStrainData strainCalibration; // 校准应变数据
+    CalibrationChannelData channelCalibration;  // 校准通道数据
 };
 struct CalculationError {
     QString operation;
     QString message;
     quint64 sourceRevision = 0;
 };
-using IFEFactory = std::function<std::unique_ptr<IFrameIFE>(const CalculationConfiguration &)>;
+using IFEFactory = std::function<std::unique_ptr<IFrameIFE>()>;
 
 namespace detail {
 class CalculationWorker final : public QObject {
     Q_OBJECT
 public:
     CalculationWorker(core::FrameRepositoryPtr input,
-                      std::shared_ptr<core::CalculationRepository> output, IFEFactory factory);
+                      std::shared_ptr<core::CalculationRepository> output,
+                      IFEFactory factory);
 public slots:
     void initialize();
     void configure(const fosd::Calculation::CalculationConfiguration &configuration);
@@ -50,7 +49,6 @@ private:
     StrainCalibration *m_calibration = nullptr;
     core::ModelDataPtr m_model;
     core::FrameSnapshotPtr m_seenFrame;
-    NodeDofs m_probeDofs;
     quint64 m_modelRevision = 0;
     quint64 m_configurationRevision = 0;
 };

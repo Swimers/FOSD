@@ -26,16 +26,11 @@ public:
 
     virtual QString IFEId() const = 0;
 
-    virtual bool initMatrix() = 0;
-    virtual NodeDofs calculateDofs(const Strain& strain, QString *error = nullptr) const = 0;
-    virtual Displacement calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs,
-                                               QString *error = nullptr) const = 0;
+    // Intermediate data is opaque to callers. Matrix setup and numerical
+    // details belong to each algorithm, not the orchestration interface.
+    virtual NodeDofs calculateDofs(const Strain& strain) const = 0;
+    virtual Displacement calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs) const = 0;
 
-protected:
-    Matrix m_matrix;  // 矩阵数据
-    int m_numRows = 0;  // 矩阵行数
-    int m_numCols = 0;  // 矩阵列数
-    int m_nodeDofs = 0;  // 节点自由度数
 };
 
 } 

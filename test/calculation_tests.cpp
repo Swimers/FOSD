@@ -1,5 +1,4 @@
 #include "calculation/CalculationControl.h"
-#include "calculation/HYYIFE.h"
 #include "protocol/ProtocolControl.h"
 #include "protocol/MPWavelengthParser.h"
 #include "communication/PacketDecoders.h"
@@ -30,10 +29,6 @@ CalculationConfiguration settings() {
         configuration.channelCalibration.channelIndices.push_back(index);
         configuration.channelCalibration.calibrationFactors.push_back(1.0);
     }
-    // Synthetic test boundary conditions, NOT the actual HYY boundary model.
-    for (int index = 2; index < 22; ++index)
-        configuration.freeDofIndices.push_back(index);
-    configuration.constrainedDofs.assign(22, 0.0);
     return configuration;
 }
 core::ModelData model() {
@@ -64,6 +59,7 @@ struct Trace {
     std::atomic<QThread *> solveThread{nullptr};
     std::atomic<QThread *> inputThread{nullptr};
     std::atomic<int> pointCalls{0};
+    std::atomic<int> solveCalls{0};
     std::atomic<bool> destroyedOnWorker{false};
 };
 class TranslationIFE final : public IFrameIFE {
@@ -75,28 +71,23 @@ public:
         m_trace->destroyedOnWorker.store(QThread::currentThread() == m_trace->factoryThread.load());
     }
     QString IFEId() const override { return QStringLiteral("test.translation"); }
-    bool initMatrix() override { return true; }
-    NodeDofs calculateDofs(const Strain &strain, QString *error) const override {
-        error->clear();
+    NodeDofs calculateDofs(const Strain &strain) const override {
         m_trace->solveThread.store(QThread::currentThread());
-        NodeDofs result(22, 0.0);
-        result[0] = strain.at(0);
-        return result;
+        m_trace->solveCalls.fetch_add(1);
+        return {strain.at(0)}; // The controller must not impose HYY's layout.
     }
-    Displacement calculateDisplacement(const Point3D &point, const NodeDofs &dofs, QString *error) const override {
-        error->clear();
+    Displacement calculateDisplacement(const Point3D &point, const NodeDofs &dofs) const override {
         m_trace->pointCalls.fetch_add(1);
         // Fail after earlier points succeeded, to exercise atomic publication.
         if (point.x >= 400.0 && dofs[0] >= 3.0) {
-            *error = QStringLiteral("synthetic point failure");
-            return {{0, 0, 0}};
+            return {{std::numeric_limits<double>::quiet_NaN(), 0, 0}};
         }
         return {{dofs[0] * 0.001, 0.002, 0.003}};
     }
 private:
     Trace *m_trace;
 };
-std::unique_ptr<IFrameIFE> translationFactory(Trace *trace, const CalculationConfiguration &) {
+std::unique_ptr<IFrameIFE> translationFactory(Trace *trace) {
     return std::unique_ptr<IFrameIFE>(new TranslationIFE(trace));
 }
 protocol::FrameParsers mpParsers() {
@@ -161,8 +152,7 @@ class CalculationTests : public QObject {
 private slots:
     void calibrationFormulaAndSelection();
     void calibrationRejectsInvalidInputs();
-    void hyyMatrixAndConstraints();
-    void hyyInterpolationAndBoundaries();
+    void opaqueAlgorithmData();
     void workerTraversesWholeModel();
     void failuresPreservePreviousResult();
     void defaultHyyPipeline();
@@ -225,69 +215,35 @@ void CalculationTests::calibrationRejectsInvalidInputs() {
     QVERIFY(!calibration.checkPara());
     QVERIFY(!errors.isEmpty());
 }
-void CalculationTests::hyyMatrixAndConstraints() {
-    auto config = settings();
-    config.constrainedDofs[0] = 0.1;
-    config.constrainedDofs[1] = 0.2;
-    HYYIFE algorithm(config.freeDofIndices, config.constrainedDofs);
-    Strain strains(12, 0.0);
-    strains[0] = 1;
-    QString error;
-    auto dofs = algorithm.calculateDofs(strains, &error);
-    QVERIFY(error.isEmpty());
-    QCOMPARE(dofs.size(), size_t(22));
-    QCOMPARE(dofs[0], 0.1); QCOMPARE(dofs[1], 0.2);
-    QCOMPARE(dofs[2], 0.2); QCOMPARE(dofs[4], -4.0); QCOMPARE(dofs[21], 20.0);
-    QVERIFY(algorithm.calculateDofs(Strain(11), &error).empty());
-    QVERIFY(!error.isEmpty());
-    QVERIFY(algorithm.calculateDofs(Strain(13), &error).empty());
-    strains[0] = std::numeric_limits<double>::quiet_NaN();
-    QVERIFY(algorithm.calculateDofs(strains, &error).empty());
-    for (int badIndex : {-1, 22, 3}) {
-        auto mapping = config.freeDofIndices;
-        mapping[0] = badIndex;
-        QVERIFY(HYYIFE(mapping, config.constrainedDofs).calculateDofs(Strain(12), &error).empty());
-    }
-    QVERIFY(HYYIFE().calculateDofs(Strain(12), &error).empty());
+void CalculationTests::opaqueAlgorithmData() {
+    Trace trace;
+    CalculationControl control(core::FrameRepositoryPtr(), nullptr,
+                               std::bind(translationFactory, &trace));
+    QSignalSpy configured(&control, &CalculationControl::configurationAccepted);
+    QSignalSpy results(&control, &CalculationControl::resultReady);
+    QSignalSpy errors(&control, &CalculationControl::errorOccurred);
+    auto configuration = settings();
+    configuration.channelCalibration.channelIndices = {0, 2, 1};
+    configuration.channelCalibration.calibrationFactors = {1, 1, 1};
+    control.setConfiguration(configuration);
+    control.setModel(model());
+    QTRY_COMPARE(configured.count(), 1);
+    QCOMPARE(trace.solveCalls.load(), 0); // Configuration does not trial-run the algorithm.
+    QCOMPARE(trace.pointCalls.load(), 0);
+    control.submitFrame(frame());
+    QTRY_COMPARE(results.count(), 1);
+    const auto result = control.dataModel()->latest();
+    QCOMPARE(result->strains.size(), 3);
+    QCOMPARE(result->nodeDofs.size(), 1); // Opaque algorithm-specific intermediate data.
+    QCOMPARE(result->deformedModel.rawPointMap.value(0)[0], 1.0);
+    QCOMPARE(trace.solveCalls.load(), 1);
+    QCOMPARE(errors.count(), 0);
 }
-void CalculationTests::hyyInterpolationAndBoundaries() {
-    HYYIFE algorithm;
-    NodeDofs dofs(22, 0.0);
-    for (int node : {0, 8, 16}) {
-        dofs[size_t(node)] = 0.001;
-        dofs[size_t(node + 1)] = 0.002;
-        dofs[size_t(node + 2)] = 0.003;
-    }
-    QString error;
-    for (double x : {0.0, 350.0, 700.0, 1050.0, 1400.0}) {
-        Point3D point; point.x = x;
-        const auto displacement = algorithm.calculateDisplacement(point, dofs, &error);
-        QVERIFY(error.isEmpty());
-        QVERIFY(std::abs(displacement[0] - 0.001) < 1e-12);
-        QVERIFY(std::abs(displacement[1] - 0.002) < 1e-12);
-        QVERIFY(std::abs(displacement[2] - 0.003) < 1e-12);
-    }
-    Point3D point;
-    point.x = -1;
-    algorithm.calculateDisplacement(point, dofs, &error); QVERIFY(!error.isEmpty());
-    point.x = 1401;
-    algorithm.calculateDisplacement(point, dofs, &error); QVERIFY(!error.isEmpty());
-    point.x = std::numeric_limits<double>::quiet_NaN();
-    algorithm.calculateDisplacement(point, dofs, &error); QVERIFY(!error.isEmpty());
-    point.x = 1;
-    algorithm.calculateDisplacement(point, NodeDofs(21), &error); QVERIFY(!error.isEmpty());
-    for (int index : {3, 11, 19})
-        dofs[size_t(index)] = 0.1;
-    point.x = 1050; point.y = 100; point.z = 200;
-    const auto rotated = algorithm.calculateDisplacement(point, dofs, &error);
-    QVERIFY(error.isEmpty());
-    QVERIFY(std::abs(rotated[1] + 0.018) < 1e-12);
-    QVERIFY(std::abs(rotated[2] - 0.013) < 1e-12);
-}
+
 void CalculationTests::workerTraversesWholeModel() {
     Trace trace;
     CalculationControl control(core::FrameRepositoryPtr(), nullptr,
-                               std::bind(translationFactory, &trace, std::placeholders::_1));
+                               std::bind(translationFactory, &trace));
     QSignalSpy accepted(&control, &CalculationControl::modelAccepted);
     QSignalSpy results(&control, &CalculationControl::resultReady);
     QSignalSpy errors(&control, &CalculationControl::errorOccurred);
@@ -298,10 +254,15 @@ void CalculationTests::workerTraversesWholeModel() {
     geometry.rawPointMap.clear(); // Detaches: queued geometry must remain valid.
     QTRY_COMPARE(accepted.count(), 1);
     const int previousCalls = trace.pointCalls.load();
+    QCOMPARE(previousCalls, 0); // Model validation must not invoke interpolation.
+    QCOMPARE(trace.solveCalls.load(), 0);
+
     const auto source = frame();
     control.submitFrame(source);
     QTRY_COMPARE(results.count(), 1);
     QCOMPARE(trace.pointCalls.load() - previousCalls, original.rawPointMap.size());
+    QCOMPARE(trace.solveCalls.load(), 1);
+
     QVERIFY(trace.factoryThread.load() != QThread::currentThread());
     QCOMPARE(trace.factoryThread.load(), trace.solveThread.load());
     const auto result = control.dataModel()->latest();
@@ -323,7 +284,7 @@ void CalculationTests::workerTraversesWholeModel() {
 void CalculationTests::failuresPreservePreviousResult() {
     Trace trace;
     CalculationControl control(core::FrameRepositoryPtr(), nullptr,
-                               std::bind(translationFactory, &trace, std::placeholders::_1));
+                               std::bind(translationFactory, &trace));
     QSignalSpy results(&control, &CalculationControl::resultReady);
     QSignalSpy errors(&control, &CalculationControl::errorOccurred);
     control.submitFrame(frame());
@@ -355,17 +316,26 @@ void CalculationTests::defaultHyyPipeline() {
     QVERIFY(control.dataModel()->latest()->deformedModel.rawPointMap == geometry.rawPointMap);
     control.submitFrame(frame(1001, 2));
     QTRY_COMPARE(results.count(), 2);
-    QCOMPARE(control.dataModel()->latest()->displacementMap.value(0)[2], 200.0);
-    auto invalid = geometry; invalid.rawPointMap[0] = {1401, 0, 0};
-    control.setModel(invalid);
-    QTRY_COMPARE(errors.count(), 1);
+    const auto result = control.dataModel()->latest();
+    QCOMPARE(result->displacementMap.size(), geometry.rawPointMap.size());
+    for (const auto &point : result->deformedModel.rawPointMap)
+        for (double value : point)
+            QVERIFY(std::isfinite(value));
+    // Geometry admission is based on the public coordinate contract, not an
+    // algorithm's internal element/domain assumptions.
+    geometry.rawPointMap[0] = {1401, 0, 0};
+    control.setModel(geometry);
+    control.submitFrame(frame(1001, 3));
+    QTRY_COMPARE(results.count(), 3);
+    QCOMPARE(control.dataModel()->latest()->modelRevision, quint64(2));
+    QCOMPARE(errors.count(), 0);
 }
 void CalculationTests::udpToResultWithoutMainDispatch() {
     Trace trace;
     protocol::ProtocolControl protocol(nullptr, mpParsers,
         std::bind(observedDecoder, &trace, std::placeholders::_1));
     CalculationControl control(protocol.dataModel(), nullptr,
-                               std::bind(translationFactory, &trace, std::placeholders::_1));
+                               std::bind(translationFactory, &trace));
     QSignalSpy models(&control, &CalculationControl::modelAccepted);
     QSignalSpy states(&protocol.communication(), &communication::ConnectControl::stateChanged);
     control.setConfiguration(settings()); control.setModel(model());
@@ -408,7 +378,7 @@ void CalculationTests::concurrentReadersAndShutdown() {
     Trace trace;
     {
         CalculationControl control(core::FrameRepositoryPtr(), nullptr,
-                                   std::bind(translationFactory, &trace, std::placeholders::_1));
+                                   std::bind(translationFactory, &trace));
         repository = control.dataModel();
         Readers readers(repository);
         QSignalSpy results(&control, &CalculationControl::resultReady);

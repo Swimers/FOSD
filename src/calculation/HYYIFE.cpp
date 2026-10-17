@@ -1,29 +1,24 @@
 #include "HYYIFE.h"
-#include <cmath>
-#include <utility>
 
-namespace fosd{
-namespace Calculation{
+namespace fosd {
+namespace Calculation {
+namespace {
+// Container adaptation is private to this implementation. It imposes no
+// dimension or constraint configuration on the caller and never reports errors.
+double component(const std::vector<double> &values, size_t index) {
+    return index < values.size() ? values[index] : 0.0;
+}
+}
 
-HYYIFE::HYYIFE(std::vector<int> freeDofIndices, NodeDofs constrainedDofs)
-    : m_freeDofIndices(std::move(freeDofIndices)), m_constrainedDofs(std::move(constrainedDofs))
-{
+HYYIFE::HYYIFE() {
     initMatrix();
 }
 
-QString HYYIFE::IFEId() const
-{
+QString HYYIFE::IFEId() const {
     return QStringLiteral("HYY.IFE");
 }
 
-bool HYYIFE::initMatrix()
-{
-    // Initialize the matrix with specific values for HYY IFE
-    // Please input the nodedofs size first
-    m_nodeDofs = 22;
-    // Please input the matrix size first
-    int rows = 20;  int cols = 12;
-    // Initialize the matrix 
+void HYYIFE::initMatrix() {
     m_matrix = {
         {0.2,0.0016321,9.97E-17,0.2,0.0016321,9.97E-17,8.11E-17,0.0011674,6.03E-16,8.11E-17,0.0011674,6.0321e-16},
         {1.5776e-17,-0.060485,2.00E-01,1.58E-17,-0.060485,2.00E-01,2.85E-17,-0.043262,6.69E-16,2.85E-17,-0.043262,6.692e-16},
@@ -46,198 +41,58 @@ bool HYYIFE::initMatrix()
         {-5.006e-15,-5.7463,-19.967,5.01E-15,5.7463,19.967,-1.17E-14,-4.11,0.034835,1.17E-14,4.11,-0.034835},
         {20.0,-0.14514,0.021933,-2.00E+01,0.14514,-0.021933,-6.63E-15,-0.10362,0.030061,6.63E-15,0.10362,-0.030061}
     };
-    m_numRows = m_matrix.size();
-    m_numCols = m_matrix.empty() ? 0 : m_matrix[0].size();
-
-    if (rows != m_numRows || cols != m_numCols) {
-        return false; // Invalid matrix
-    }
-    for (const auto &row : m_matrix)
-        if (row.size() != static_cast<size_t>(cols))
-            return false;
-
-    return true;
 }
 
-NodeDofs HYYIFE::calculateDofs(const Strain& strain, QString *error) const
-{
-    if (error)
-        error->clear();
-    QString message;
-    if (m_matrix.size() != 20 || strain.size() != 12)
-        message = QStringLiteral("HYY requires exactly 12 strain values and a 20x12 matrix");
-    else if (m_freeDofIndices.size() != 20 || m_constrainedDofs.size() != 22)
-        message = QStringLiteral("Configure 20 matrix-row DOF indices and 22 constraint values");
-    std::vector<bool> used(22, false);
-    if (message.isEmpty()) {
-        for (int index : m_freeDofIndices) {
-            if (index < 0 || index >= 22 || used[index]) {
-                message = QStringLiteral("Global DOF indices must be unique and in 0..21");
-                break;
-            }
-            used[index] = true;
-        }
-    }
-    if (message.isEmpty()) {
-        for (double value : strain)
-            if (!std::isfinite(value))
-                message = QStringLiteral("Strain values must be finite");
-        for (double value : m_constrainedDofs)
-            if (!std::isfinite(value))
-                message = QStringLiteral("Constraint values must be finite");
-    }
-    if (!message.isEmpty()) {
-        if (error)
-            *error = message;
-        return {};
-    }
-    NodeDofs dofs = m_constrainedDofs;
-    for (size_t row = 0; row < m_matrix.size(); ++row) {
-        if (m_matrix[row].size() != strain.size()) {
-            if (error)
-                *error = QStringLiteral("Invalid HYY matrix row length");
-            return {};
-        }
-        double value = 0.0;
-        for (size_t column = 0; column < strain.size(); ++column)
-            value += m_matrix[row][column] * strain[column];
-        if (!std::isfinite(value)) {
-            if (error)
-                *error = QStringLiteral("HYY matrix multiplication overflowed");
-            return {};
-        }
-        dofs[m_freeDofIndices[row]] = value;
-    }
+NodeDofs HYYIFE::calculateDofs(const Strain &strain) const {
+    NodeDofs dofs(m_matrix.size(), 0.0);
+    for (size_t row = 0; row < m_matrix.size(); ++row)
+        for (size_t column = 0; column < m_matrix[row].size(); ++column)
+            dofs[row] += m_matrix[row][column] * component(strain, column);
     return dofs;
 }
 
-Displacement HYYIFE::calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs,
-                                          QString *error) const
+Displacement HYYIFE::calculateDisplacement(const Point3D& point, const NodeDofs& nodeDofs) const
 {
-    Displacement displacement = {0.0, 0.0, 0.0};
-
-    if (error)
-        error->clear();
-    bool finiteDofs = true;
-    for (double value : nodeDofs)
-        finiteDofs = finiteDofs && std::isfinite(value);
-    if (nodeDofs.size() != 22 || !finiteDofs || !std::isfinite(point.x) ||
-        !std::isfinite(point.y) || !std::isfinite(point.z)) {
-        if (error)
-            *error = QStringLiteral("HYY interpolation requires 22 finite DOFs and finite coordinates");
-        return displacement;
-    }
-
+    // The real legacy display path calls ShapeFunction_New_ZB, not the
+    // similarly named, unused quadrilateral ShapeFunction_New_HYY.
+    // Match its two beam elements and its metres/radians convention.
+    if (point.x < 0.0 || point.x > 1400.0)
+        return {{0.0, 0.0, 0.0}};
     const double xPara = point.x / 1000.0;
     const double yPara = point.y / 1000.0;
     const double zPara = point.z / 1000.0;
+    const double elementLength = 0.7;
+    const bool firstElement = xPara <= elementLength;
+    const int left = firstElement ? 0 : 8;
+    const int middle = firstElement ? 6 : 14;
+    const int right = firstElement ? 8 : 16;
+    const double leftX = firstElement ? 0.0 : elementLength;
+    const double x = 2.0 * (xPara - leftX) / elementLength - 1.0;
+    const double xSquared = x * x;
+    const double leftWeight = 0.5 * (1.0 - x);
+    const double rightWeight = 0.5 * (1.0 + x);
+    const double quadraticLeft = 0.5 * x * (x - 1.0);
+    const double quadraticMiddle = 1.0 - xSquared;
+    const double quadraticRight = 0.5 * x * (x + 1.0);
+    const double cubicFactor = elementLength / 24.0 * (1.0 - xSquared);
+    const double cubicLeft = cubicFactor * (2.0 * x - 3.0);
+    const double cubicMiddle = cubicFactor * (-4.0 * x);
+    const double cubicRight = cubicFactor * (2.0 * x + 3.0);
 
-    const double totalLength = 1.4;
-    const double elementLength = totalLength / 2.0;
-
-    if (xPara < 0.0 || xPara > totalLength) {
-        if (error)
-            *error = QStringLiteral("HYY model X coordinate must be in 0..1400 mm");
-        return displacement;
-    }
-
-    double localDofs[14] = {};
-    double leftX = 0.0;
-
-    if (xPara <= elementLength) {
-        for (int i = 0; i < 14; ++i) {
-            localDofs[i] = nodeDofs[i];
-        }
-    } else {
-        leftX = elementLength;
-
-        for (int i = 0; i < 6; ++i) {
-            localDofs[i] = nodeDofs[i + 8];
-        }
-
-        localDofs[6] = nodeDofs[14];
-        localDofs[7] = nodeDofs[15];
-
-        for (int i = 0; i < 6; ++i) {
-            localDofs[i + 8] = nodeDofs[i + 16];
-        }
-    }
-
-    const double x =
-        2.0 * (xPara - leftX) / elementLength - 1.0;
-
-    const double linear[2] = {
-        0.5 * (1.0 - x),
-        0.5 * (1.0 + x)
-    };
-
-    const double quadratic[3] = {
-        0.5 * x * (x - 1.0),
-        1.0 - x * x,
-        0.5 * x * (x + 1.0)
-    };
-
-    const double cubic[3] = {
-        elementLength / 24.0
-            * (1.0 - x * x) * (2.0 * x - 3.0),
-
-        elementLength / 24.0
-            * (1.0 - x * x) * (-4.0 * x),
-
-        elementLength / 24.0
-            * (1.0 - x * x) * (2.0 * x + 3.0)
-    };
-
-    const double u =
-        linear[0] * localDofs[0]
-        + linear[1] * localDofs[8];
-
-    const double v =
-        linear[0] * localDofs[1]
-        - cubic[0] * localDofs[5]
-        - cubic[1] * localDofs[7]
-        + linear[1] * localDofs[9]
-        - cubic[2] * localDofs[13];
-
-    const double w =
-        linear[0] * localDofs[2]
-        + cubic[0] * localDofs[4]
-        + cubic[1] * localDofs[6]
-        + linear[1] * localDofs[10]
-        + cubic[2] * localDofs[12];
-
-    const double thetaX =
-        linear[0] * localDofs[3]
-        + linear[1] * localDofs[11];
-
-    const double thetaY =
-        quadratic[0] * localDofs[4]
-        + quadratic[1] * localDofs[6]
-        + quadratic[2] * localDofs[12];
-
-    const double thetaZ =
-        quadratic[0] * localDofs[5]
-        + quadratic[1] * localDofs[7]
-        + quadratic[2] * localDofs[13];
-
-    displacement[0] =
-        u + zPara * thetaY - yPara * thetaZ;
-
-    displacement[1] =
-        v - zPara * thetaX;
-
-    displacement[2] =
-        w + yPara * thetaX;
-
-    for (double value : displacement) {
-        if (!std::isfinite(value)) {
-            if (error)
-                *error = QStringLiteral("HYY interpolation overflowed");
-            return {{0.0, 0.0, 0.0}};
-        }
-    }
-    return displacement;
+    const double u = leftWeight * component(nodeDofs, left) + rightWeight * component(nodeDofs, right);
+    const double v = leftWeight * component(nodeDofs, left + 1) - cubicLeft * component(nodeDofs, left + 5)
+        - cubicMiddle * component(nodeDofs, middle + 1) + rightWeight * component(nodeDofs, right + 1)
+        - cubicRight * component(nodeDofs, right + 5);
+    const double w = leftWeight * component(nodeDofs, left + 2) + cubicLeft * component(nodeDofs, left + 4)
+        + cubicMiddle * component(nodeDofs, middle) + rightWeight * component(nodeDofs, right + 2)
+        + cubicRight * component(nodeDofs, right + 4);
+    const double thetaX = leftWeight * component(nodeDofs, left + 3) + rightWeight * component(nodeDofs, right + 3);
+    const double thetaY = quadraticLeft * component(nodeDofs, left + 4) + quadraticMiddle * component(nodeDofs, middle)
+        + quadraticRight * component(nodeDofs, right + 4);
+    const double thetaZ = quadraticLeft * component(nodeDofs, left + 5) + quadraticMiddle * component(nodeDofs, middle + 1)
+        + quadraticRight * component(nodeDofs, right + 5);
+    return {{u + zPara * thetaY - yPara * thetaZ, v - zPara * thetaX, w + yPara * thetaX}};
 }
 
-}
-} // namespace fosd::Calculation
+} // namespace Calculation
+} // namespace fosd

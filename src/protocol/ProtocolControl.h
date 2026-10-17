@@ -66,5 +66,7 @@ private:
     
     std::unique_ptr<communication::ConnectControl> m_communication;
 };
-} } // namespace fosd::protocol
-Q_DECLARE_METATYPE(fosd::protocol::ProtocolError)
+
+}
+} // namespace fosd::protocol
+Q_DECLARE_METATYPE(fosd::protocol::ProtocolError);

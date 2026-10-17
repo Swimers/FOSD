@@ -21,7 +21,8 @@ struct CalculationResult {
     quint64 modelRevision = 0;
     quint64 configurationRevision = 0;
     QVector<double> strains;
-    // Translations in metres; rotations in radians, in algorithm DOF order.
+    // Opaque algorithm intermediate data, retained for diagnostics only.
+    // The orchestration layer does not interpret its layout or validate it.
     QVector<double> nodeDofs;
     PointMap displacementMap; // {dx,dy,dz}, millimetres.
     ModelData deformedModel;  // Original coordinates + displacement, millimetres.
