@@ -40,13 +40,14 @@ struct WavelengthFrame final : FrameData {
 // Shared instances are constructed const. Readers cannot change the envelope
 // or payload; old snapshots remain valid after newer frames arrive.
 struct FrameSnapshot {
-    QString protocolId;
-    FrameSource source;
-    QDateTime receivedAtUtc;
-    quint64 revision = 0;
-    FrameDataPtr data;
+    QString protocolId; //协议编号
+    FrameSource source; //数据来源
+    QDateTime receivedAtUtc;    //接收时间
+    quint64 revision = 0;   //修订版本
+    FrameDataPtr data;  //帧数据
 };  //给协议数据增加协议编号、来源、时间和修订版本等上下文信息。
 using FrameSnapshotPtr = std::shared_ptr<const FrameSnapshot>;  //帧快照 指针
 
-} } // namespace fosd::core
+}
+} // namespace fosd::core
 Q_DECLARE_METATYPE(fosd::core::FrameSnapshotPtr)    //

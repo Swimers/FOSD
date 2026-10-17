@@ -139,10 +139,13 @@ void ConnectWorker::shutdown() {
 
 ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
     : ConnectControl(parent, std::move(decoderFactory), nullptr) {}
+    // 委托构造函数，独立线程模式
 
 ConnectControl::ConnectControl(QThread &hostThread, QObject *parent, DecoderFactory decoderFactory)
     : ConnectControl(parent, std::move(decoderFactory), &hostThread) {}
+    // 委托构造函数，托管线程模式
 
+    // Private constructor for both modes. If hostThread is null, creates and owns a thread.
 ConnectControl::ConnectControl(QObject *parent, 
                                DecoderFactory decoderFactory, 
                                QThread *hostThread)

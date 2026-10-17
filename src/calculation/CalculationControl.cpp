@@ -151,6 +151,7 @@ CalculationControl::CalculationControl(core::FrameRepositoryPtr input, QObject *
                  factory ? std::move(factory) : IFEFactory(createHYY))) {
     qRegisterMetaType<CalculationConfiguration>("fosd::Calculation::CalculationConfiguration");
     qRegisterMetaType<CalculationError>("fosd::Calculation::CalculationError");
+    qRegisterMetaType<core::PointMap>("fosd::core::PointMap");
     qRegisterMetaType<core::ModelData>("fosd::core::ModelData");
     qRegisterMetaType<core::FrameSnapshotPtr>("fosd::core::FrameSnapshotPtr");
     qRegisterMetaType<core::CalculationResultPtr>("fosd::core::CalculationResultPtr");
@@ -175,6 +176,11 @@ void CalculationControl::setConfiguration(const CalculationConfiguration &config
 }
 void CalculationControl::setModel(const core::ModelData &model) {
     emit requestSetModel(model);
+}
+void CalculationControl::setRawPointMap(const core::PointMap &rawPointMap) {
+    core::ModelData model;
+    model.rawPointMap = rawPointMap;
+    setModel(model);
 }
 void CalculationControl::submitFrame(const core::FrameSnapshotPtr &snapshot) {
     emit requestFrame(snapshot);

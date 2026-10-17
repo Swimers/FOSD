@@ -40,6 +40,8 @@ int markerSuffixSize(const QByteArray &bytes, const QVector<PacketRule> &rules) 
 
 } // namespace
 
+namespace Rule{
+
 PacketRule JCS_Data_PacketRule() {
     const int headerSize = 10;
     const int recordSize = 6;
@@ -92,6 +94,8 @@ PacketRule MP_PacketRule() {
         return headerSize + int(qFromLittleEndian<quint16>(data + 4)) * recordSize;
     };
     return rule;
+}
+
 }
 
 UdpPacketDecoder::UdpPacketDecoder(QVector<PacketRule> rules)

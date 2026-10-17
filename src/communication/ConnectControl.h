@@ -54,7 +54,8 @@ private slots:
 private:
     void wire(ITransport *transport);
     std::unique_ptr<IPacketDecoder> initializeDecoder(Channel channel);
-    void forward(fosd::communication::Channel channel, const QByteArray &bytes,
+    void forward(fosd::communication::Channel channel, 
+                 const QByteArray &bytes,
                  const fosd::communication::Endpoint &peer);
     IPacketDecoder *decoder(fosd::communication::Channel channel);
 

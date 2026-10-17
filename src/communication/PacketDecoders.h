@@ -19,21 +19,18 @@ struct PacketRule {
     int maxFrameSize = 1024 * 1024;
 };
 
-// Built-in record frames use a 10-byte header, uint16 count at offset 4,
-// followed by 6-byte records. No version restriction or checksum is specified.
-// MP uses little-endian 0xA55A; JCS rules use the markers named below.
-PacketRule JCS_Data_PacketRule();
-// FA ch FA ch, ch = 1..16. When both JCS rules are enabled, place the
-// fixed JCS_Data_PacketRule before this single-byte candidate marker rule.
-PacketRule JCS_Channel_PacketRule();
-PacketRule MP_PacketRule();
+namespace Rule {
+PacketRule JCS_Data_PacketRule();   //FAFBFAFB header
+PacketRule JCS_Channel_PacketRule();    //FAxxFAxx herder
+PacketRule MP_PacketRule(); //5AA5 header
+}
 
 // Suitable for ConnectControl's DecoderFactory; instances are channel-local.
 std::unique_ptr<IPacketDecoder> createPacketDecoder(Channel channel);
 
 class UdpPacketDecoder final : public IPacketDecoder {
 public:
-    explicit UdpPacketDecoder(QVector<PacketRule> rules = {MP_PacketRule(), JCS_Data_PacketRule()});
+    explicit UdpPacketDecoder(QVector<PacketRule> rules = {Rule::MP_PacketRule(), Rule::JCS_Data_PacketRule()});
     QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &peer) override;
 
 private:
@@ -43,7 +40,7 @@ private:
 
 class TcpPacketDecoder final : public IPacketDecoder {
 public:
-    explicit TcpPacketDecoder(QVector<PacketRule> rules = {MP_PacketRule(), JCS_Data_PacketRule()});
+    explicit TcpPacketDecoder(QVector<PacketRule> rules = {Rule::MP_PacketRule(), Rule::JCS_Data_PacketRule()});
     QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &peer) override;
     void reset() override;
 

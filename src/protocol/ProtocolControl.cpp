@@ -93,8 +93,11 @@ ProtocolControl::ProtocolControl(QObject *parent,
     // All started slots complete before the thread processes I/O events.
     m_communication.reset(new communication::ConnectControl(m_thread, nullptr, std::move(decoderFactory)));
 
-    connect(m_communication->m_worker.data(), &communication::detail::ConnectWorker::packetReceived,
-            m_worker, &detail::ProtocolWorker::parseFrame, Qt::DirectConnection);
+    connect(m_communication->m_worker.data(), 
+            &communication::detail::ConnectWorker::packetReceived,
+            m_worker, 
+            &detail::ProtocolWorker::parseFrame, 
+            Qt::DirectConnection);
 
     m_thread.start();
 }

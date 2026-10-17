@@ -250,7 +250,7 @@ void CalculationTests::workerTraversesWholeModel() {
     auto geometry = model();
     const auto original = geometry;
     control.setConfiguration(settings());
-    control.setModel(geometry);
+    control.setRawPointMap(geometry.rawPointMap);
     geometry.rawPointMap.clear(); // Detaches: queued geometry must remain valid.
     QTRY_COMPARE(accepted.count(), 1);
     const int previousCalls = trace.pointCalls.load();
@@ -296,7 +296,7 @@ void CalculationTests::failuresPreservePreviousResult() {
     control.submitFrame(frame(std::numeric_limits<float>::quiet_NaN(), 4));
     control.submitFrame(core::FrameSnapshotPtr());
     auto invalidModel = model(); invalidModel.rawPointMap[0] = {1, 2};
-    control.setModel(invalidModel);
+    control.setRawPointMap(invalidModel.rawPointMap);
     auto invalidSettings = settings(); invalidSettings.strainCalibration.A = 0;
     control.setConfiguration(invalidSettings);
     QTRY_COMPARE(errors.count(), 6);
@@ -363,7 +363,9 @@ void CalculationTests::udpToResultWithoutMainDispatch() {
     QVERIFY(control.dataModel()->latest() == result); // Do not solve an unchanged snapshot repeatedly.
     auto geometry = model();
     geometry.rawPointMap[0][0] = 20;
-    control.setModel(geometry);
+    // Importers/editors may submit via a queued Qt connection as well.
+    QVERIFY(QMetaObject::invokeMethod(&control, "setRawPointMap", Qt::QueuedConnection,
+                                     Q_ARG(fosd::core::PointMap, geometry.rawPointMap)));
     QTRY_COMPARE(control.dataModel()->latest()->modelRevision, quint64(2));
     QCOMPARE(control.dataModel()->latest()->deformedModel.rawPointMap.value(0)[0], 21.0);
     QVERIFY(control.dataModel()->latest()->sourceFrame == result->sourceFrame);

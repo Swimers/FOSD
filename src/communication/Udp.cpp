@@ -18,15 +18,20 @@ void Udp::handleReadyRead() {
                         static_cast<int>(m_socket.error()));
             break;
         }
+        
         QByteArray bytes(static_cast<int>(pending), Qt::Uninitialized);
         Endpoint peer;
-        const qint64 received = m_socket.readDatagram(bytes.data(), bytes.size(),
-                                                        &peer.address, &peer.port);
+        const qint64 received = m_socket.readDatagram(bytes.data(), 
+                                                      bytes.size(),
+                                                      &peer.address,
+                                                      &peer.port);
+
         if (received < 0) {
             reportError(QStringLiteral("receive"), m_socket.errorString(),
                         static_cast<int>(m_socket.error()));
             break;
         }
+
         bytes.resize(static_cast<int>(received));
         emit bytesReceived(bytes, peer);
     }

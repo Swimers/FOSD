@@ -9,7 +9,9 @@ namespace fosd { namespace core {
 using PointMap = QMap<vtkIdType, QVector<double>>;
 
 struct ModelData {
-    // Original coordinates in millimetres, exactly {x,y,z} per point.
+    // Empty by default. Filled by an importer/editor and submitted through
+    // CalculationControl::setRawPointMap() or setModel(). Coordinates are
+    // millimetres, exactly {x,y,z} per point.
     QMap<vtkIdType, QVector<double>> rawPointMap;
 };
 using ModelDataPtr = std::shared_ptr<const ModelData>;
@@ -30,5 +32,6 @@ struct CalculationResult {
 using CalculationResultPtr = std::shared_ptr<const CalculationResult>;
 
 } }
+Q_DECLARE_METATYPE(fosd::core::PointMap)
 Q_DECLARE_METATYPE(fosd::core::ModelData)
 Q_DECLARE_METATYPE(fosd::core::CalculationResultPtr)

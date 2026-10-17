@@ -69,6 +69,11 @@ public:
     // immutable snapshots only; do not combine replay with automatic polling.
     void submitFrame(const core::FrameSnapshotPtr &snapshot);
     core::CalculationRepositoryPtr dataModel() const { return m_output; }
+public slots:
+    // Import/replace the entire original point map. Re-submit edited points
+    // to replace the model. Accepted asynchronously via modelAccepted(revision);
+    // rejected input leaves the previous model intact and emits errorOccurred.
+    void setRawPointMap(const fosd::core::PointMap &rawPointMap);
 signals:
     void resultReady(const fosd::core::CalculationResultPtr &result);
     void errorOccurred(const fosd::Calculation::CalculationError &error);

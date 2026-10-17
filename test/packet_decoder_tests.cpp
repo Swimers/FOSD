@@ -106,12 +106,12 @@ void PacketDecoderTests::customRulesAndRecovery() {
     UdpPacketDecoder udp({rule});
     QCOMPARE(udp.feed(valid, Endpoint()), QVector<QByteArray>({valid}));
     QVERIFY(udp.feed(QByteArray("XY") + char(4) + '?', Endpoint()).isEmpty());
-    TcpPacketDecoder tcp({rule, MP_PacketRule()});
+    TcpPacketDecoder tcp({rule, Rule::MP_PacketRule()});
     const QByteArray invalid = QByteArray("XY") + char(9) + "XY" + char(4) + '?';
     QCOMPARE(tcp.feed(invalid + valid + frame(), Endpoint()),
              QVector<QByteArray>({valid, frame()}));
     rule.frameSize = incompleteFrameSize;
-    TcpPacketDecoder bounded({rule, MP_PacketRule()});
+    TcpPacketDecoder bounded({rule, Rule::MP_PacketRule()});
     QCOMPARE(bounded.feed(QByteArray("XY12345678") + frame(), Endpoint()),
              QVector<QByteArray>({frame()}));
 }
@@ -150,17 +150,17 @@ void PacketDecoderTests::serialCustomTerminator() {
 void PacketDecoderTests::invalidConfiguration() {
     QVector<QVector<PacketRule>> invalidRules;
     invalidRules.append(QVector<PacketRule>());
-    PacketRule emptyMarker = MP_PacketRule();
+    PacketRule emptyMarker = Rule::MP_PacketRule();
     emptyMarker.marker.clear();
     invalidRules.append({emptyMarker});
-    PacketRule missingSize = MP_PacketRule();
+    PacketRule missingSize = Rule::MP_PacketRule();
     missingSize.frameSize = {};
     invalidRules.append({missingSize});
-    PacketRule invalidLimit = MP_PacketRule();
+    PacketRule invalidLimit = Rule::MP_PacketRule();
     invalidLimit.maxFrameSize = invalidLimit.marker.size() - 1;
     invalidRules.append({invalidLimit});
     // Even when another rule is valid, reject the entire invalid configuration.
-    invalidRules.append({MP_PacketRule(), missingSize});
+    invalidRules.append({Rule::MP_PacketRule(), missingSize});
     for (const QVector<PacketRule> &rules : invalidRules) {
         UdpPacketDecoder udp(rules);
         TcpPacketDecoder tcp(rules);
@@ -247,7 +247,7 @@ void PacketDecoderTests::decoderErrorSignals() {
 }
 
 void PacketDecoderTests::jcsChannelPackets() {
-    const PacketRule rule = JCS_Channel_PacketRule();
+    const PacketRule rule = Rule::JCS_Channel_PacketRule();
     for (int channel = 1; channel <= 16; ++channel) {
         QByteArray packet = frame(2);
         packet[0] = packet[2] = char(0xFA);
@@ -283,7 +283,7 @@ void PacketDecoderTests::jcsChannelPackets() {
     dataPacket.replace(0, 4, QByteArray::fromHex("fafbfafb"));
     const QByteArray stream = dataPacket + channelPacket + dataPacket;
     for (int split = 0; split <= stream.size(); ++split) {
-        TcpPacketDecoder tcp({JCS_Data_PacketRule(), rule});
+        TcpPacketDecoder tcp({Rule::JCS_Data_PacketRule(), rule});
         QVector<QByteArray> packets = tcp.feed(stream.left(split), Endpoint());
         packets += tcp.feed(stream.mid(split), Endpoint());
         QCOMPARE(packets, QVector<QByteArray>({dataPacket, channelPacket, dataPacket}));

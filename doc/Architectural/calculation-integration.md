@@ -25,6 +25,10 @@
 - `strains`：校准并选择、重排后，实际送入 IFE 的应变数组。
 - `sourceFrame`：本次使用的完整输入快照；`modelRevision`、`configurationRevision` 标识所用配置。
 
+`ModelData` 默认构造时 `rawPointMap` 是空表，不会从 VTK、文件或计算参数自动获取点。当前主程序只创建控制器，还未接入实际模型导入器；测试通过构造坐标表提供模型。
+
+导入或编辑模块生成 `core::PointMap` 后，调用 `CalculationControl::setRawPointMap()`。该公开槽可直接调用，也可以从导入线程通过 `Qt::QueuedConnection` 连接。已有 `setModel(const ModelData &)` 继续可用。
+
 ```cpp
 #include "calculation/CalculationControl.h"
 #include "protocol/ProtocolControl.h"
@@ -32,10 +36,15 @@
 fosd::protocol::ProtocolControl protocol;
 fosd::Calculation::CalculationControl calculation(protocol.dataModel());
 
-fosd::core::ModelData model;
-model.rawPointMap.insert(vtkIdType(42), QVector<double>{350.0, 10.0, 0.0});
-calculation.setModel(model);
+fosd::core::PointMap rawPoints;
+// 后续由文件导入器或 VTK 模型遍历填充；这里仅示范一个点。
+rawPoints.insert(vtkIdType(42), QVector<double>{350.0, 10.0, 0.0});
+calculation.setRawPointMap(rawPoints);
 calculation.setConfiguration(configuration); // 仅提供波长标定及通道选择配置，见下节。
+
+// 修改原始模型后，重新提交完整坐标表。
+rawPoints[42] = QVector<double>{360.0, 10.0, 0.0};
+calculation.setRawPointMap(rawPoints);
 
 const auto repository = calculation.dataModel();
 // 在显示刷新或业务线程中调用：
@@ -45,6 +54,10 @@ if (result) {
     // 根据 points 更新显示模型；保留 result，不能仅保存局部引用。
 }
 ```
+
+该输入接口每次整体替换原始点表，不合并旧点；适用于导入新模型，或编辑后重新提交。数据经队列传到解算线程，校验非空、非负 ID、三维有限坐标后保存为只读模型快照。提交后修改调用方的坐标表不会改变已提交的模型。成功发送 `modelAccepted(revision)`，拒绝时发送 `errorOccurred`，旧模型仍有效。
+
+替换成功后模型版本递增，自动模式会用当前最新波长快照重新计算；回放模式需再调用 `submitFrame()`。显示或存储模块使用结果的 `modelRevision` 确认所用模型。`dataModel()->latest()` 读取的是计算结果，不能把其变形后的坐标当成原始模型编辑源；编辑模块应保留自己的原始坐标表。
 
 也可将 `CalculationControl::resultReady(const CalculationResultPtr &)` 通过队列连接交给接收线程处理。需保存异步任务时复制 shared_ptr。仅使用数据模型的模块链接 `fosd_core`；使用控制器则链接 `fosd_calculation`。
 
