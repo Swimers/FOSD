@@ -3,6 +3,7 @@
 #include "StrainCalibration.h"
 #include "core/Datamodel/CalculationRepository.h"
 #include "core/Datamodel/FrameRepository.h"
+#include "storage/StorageControl.h"
 #include <QObject>
 #include <QThread>
 #include <functional>
@@ -30,12 +31,14 @@ public:
                       IFEFactory factory);
 public slots:
     void initialize();
+    void shutdown();
     void configure(const fosd::Calculation::CalculationConfiguration &configuration);
     void setModel(const fosd::core::ModelData &model);
     void processFrame(const fosd::core::FrameSnapshotPtr &snapshot);
 private slots:
     void pollLatest();
 signals:
+    void calibratedReady(const fosd::core::CalibratedDataPtr &data);
     void resultReady(const fosd::core::CalculationResultPtr &result);
     void errorOccurred(const fosd::Calculation::CalculationError &error);
     void modelAccepted(quint64 revision);
@@ -51,6 +54,7 @@ private:
     core::FrameSnapshotPtr m_seenFrame;
     quint64 m_modelRevision = 0;
     quint64 m_configurationRevision = 0;
+    bool m_stopping = false;
 };
 }
 
@@ -61,7 +65,8 @@ public:
     // Polls the latest input every 10 ms on its own worker thread. Intermediate
     // frames may be skipped. Create/destroy the facade on the caller thread.
     CalculationControl(core::FrameRepositoryPtr input, QObject *parent = nullptr,
-                       IFEFactory factory = IFEFactory());
+                       IFEFactory factory = IFEFactory(),
+                       storage::WriterFactory writerFactory = storage::WriterFactory());
     ~CalculationControl() override;
     void setConfiguration(const CalculationConfiguration &configuration);
     void setModel(const core::ModelData &model);
@@ -69,6 +74,7 @@ public:
     // immutable snapshots only; do not combine replay with automatic polling.
     void submitFrame(const core::FrameSnapshotPtr &snapshot);
     core::CalculationRepositoryPtr dataModel() const { return m_output; }
+    storage::StorageControl &storage() const { return *m_storage; }
 public slots:
     // Import/replace the entire original point map. Re-submit edited points
     // to replace the model. Accepted asynchronously via modelAccepted(revision);
@@ -86,6 +92,7 @@ private:
     std::shared_ptr<core::CalculationRepository> m_output;
     QThread m_thread;
     detail::CalculationWorker *m_worker = nullptr;
+    std::unique_ptr<storage::StorageControl> m_storage;
 };
 
 } // namespace Calculation

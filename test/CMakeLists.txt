@@ -41,3 +41,10 @@ target_link_libraries(test_jcs_channel_parser PRIVATE fosd_protocol)
 
 fosd_add_test(test_calculation calculation_tests.cpp)
 target_link_libraries(test_calculation PRIVATE fosd_calculation fosd_protocol)
+
+fosd_add_test(test_storage storage_tests.cpp)
+target_link_libraries(test_storage PRIVATE fosd_calculation fosd_protocol)
+
+# Real loopback UDP/TCP -> decoder -> MP parser -> calibration/HYY -> storage.
+fosd_add_test(test_end_to_end end_to_end_tests.cpp)
+target_link_libraries(test_end_to_end PRIVATE fosd_calculation fosd_protocol)

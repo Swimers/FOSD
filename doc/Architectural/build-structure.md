@@ -44,7 +44,7 @@ FOSD-ReArc/
 └── build/                      # 生成目录（已 gitignore）
 ```
 
-`src/` 下的 `config/`、`logging/`、`storage/`、`visualization/` 尚未接入构建。`core` 和 `protocol` 已实现并加入聚合目标。后续业务对接见 [协议与共享数据对接](protocol-integration.md)。
+`src/` 下的 `config/`、`logging/`、`visualization/` 尚未接入构建。`core`、`protocol`、`calculation` 和 `storage` 已加入聚合目标。后续业务对接见 [协议与共享数据对接](protocol-integration.md) 和 [数据存储对接](storage-integration.md)。
 
 ---
 
@@ -55,6 +55,10 @@ FOSD-ReArc/
 | `fosd_communication` | 静态库 | [src/communication/CMakeLists.txt](../src/communication/CMakeLists.txt) | 通信模块，封装 TCP / UDP / 串口 |
 | `fosd_core` | 静态库 | [src/core/CMakeLists.txt](../src/core/CMakeLists.txt) | 共享数据类型和只读快照仓库 |
 | `fosd_protocol` | 静态库 | [src/protocol/CMakeLists.txt](../src/protocol/CMakeLists.txt) | 协议解析、数据发布和通知 |
+| `fosd_storage` | 静态库 | `src/storage/CMakeLists.txt` | CSV/SQLite 写入，PUBLIC 链接 fosd_core、Qt5::Core、Qt5::Sql |
+| `fosd_calculation` | 静态库 | `src/calculation/CMakeLists.txt` | 解算及存储线程管理，PUBLIC 链接 fosd_core、fosd_storage、Qt5::Core |
+| `test_storage` | 可执行程序 | `test/CMakeLists.txt` | 两种格式、数据筛选、事务、线程托管及解算到存储测试 |
+| `test_end_to_end` | 可执行程序 | `test/CMakeLists.txt` | 真实 UDP/TCP 分片收包到 CSV/SQLite 的全链路测试 |
 | `FOSD` | 可执行程序 (WIN32) | [apps/FOSD-Win/CMakeLists.txt](../apps/FOSD-Win/CMakeLists.txt) | Windows 桌面应用 |
 | `fosd_assistant_presenter` | 静态库（可选） | [ui/communication-assistant-QML/CMakeLists.txt](../ui/communication-assistant-QML/CMakeLists.txt) | QML 通信助手的 MVP Presenter |
 | `communication-assistant-QML` | 可执行程序（可选） | [apps/communication-assistant-QML/CMakeLists.txt](../apps/communication-assistant-QML/CMakeLists.txt) | 三合一原始通信助手，独立构建与部署见 [说明](communication-assistant-QML.md) |

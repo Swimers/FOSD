@@ -19,6 +19,7 @@ target_link_libraries(fosd_calculation
     PUBLIC
         Qt5::Core
         fosd_core
+        fosd_storage
 )
 
 target_compile_features(fosd_calculation PUBLIC cxx_std_11)

@@ -1,5 +1,6 @@
 add_library(fosd_core STATIC
     Datamodel/FrameData.h
+    Datamodel/CalibratedData.h
     Datamodel/FrameRepository.h
     Datamodel/FrameRepository.cpp
     Datamodel/ModelData.h

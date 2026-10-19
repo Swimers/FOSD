@@ -18,7 +18,7 @@ flowchart LR
 | `communication` / `fosd_communication` | I/O、传输状态、字节流拆帧、数据报验证 | Qt Core / Network / SerialPort |
 | `core` / `fosd_core` | 公共数据类型、只读快照、线程安全共享仓库 | Qt Core |
 | `protocol` / `fosd_protocol` | 协议分派、字段校验与解析、发布快照 | `fosd_core`、`fosd_communication`、Qt Core |
-| storage（待实现） | 从逐帧通知获取数据并持久化 | 数据类型需要 `fosd_core`；直接连接解析信号还需要 `fosd_protocol` |
+| `storage` / `fosd_storage` | 原始波长、硬件标定和点位移持久化，由解算线程托管 | `fosd_core`、Qt Core / Sql；应用连接协议逐帧通知 |
 | visualization（待实现） | 读取共享仓库并绘制数据 | 只使用仓库接口时需要 `fosd_core` |
 
 core 不包含通信对象、socket 类型或协议解析算法。仓库仅前向声明 protocol 的写入者，不形成反向链接依赖。
@@ -135,22 +135,18 @@ communication 仍能独立使用：`ConnectControl communication;` 会创建并�
 
 ### storage：接收每一帧
 
-连接 `ProtocolControl::frameParsed`，槽函数参数使用 `FrameSnapshotPtr`。下面的 `StorageWorker` 是未来模块需实现的类型，不是当前仓库已有类：
+连接 `ProtocolControl::frameParsed` 到 `CalculationControl::storage()` 的原始波长入口。主程序已完成该连接：
 
 ```cpp
-// StorageWorker 需要实现：
-// void enqueueFrame(const fosd::core::FrameSnapshotPtr &snapshot);
-
 QObject::connect(&protocol,
                  &fosd::protocol::ProtocolControl::frameParsed,
-                 storageWorker,
-                 &StorageWorker::enqueueFrame,
-                 Qt::QueuedConnection);
+                 &calculation.storage(),
+                 &fosd::storage::StorageControl::writeWavelengthFrame);
 ```
 
-`storageWorker` 应在拥有事件循环的存储线程中执行写入。异步暂存快照时复制 shared_ptr，不要保存槽函数参数引用。通知携带的是该次发布的快照，不能在槽中改用 `latest()` 代替，否则可能错过中间帧。
+`StorageControl` 将快照排队到解算线程内的 `StorageWorker` 执行 CSV/SQLite 写入。异步暂存快照时复制 shared_ptr，不要保存槽函数参数引用。通知携带的是该次发布的快照，不能在槽中改用 `latest()` 代替，否则可能错过中间帧。标定及位移数据从解算 Worker 直接转交，详见 [数据存储对接](storage-integration.md)。
 
-当前信号链路不是持久化消息队列，没有容量控制、落盘确认或自动重试。未来 storage 应明确排队容量、过载策略和关闭时的排空机制。当前 protocol 析构会退出工作线程，不保证尚在队列中的帧全部处理；需要无损关闭时，应在应用层停止接收并确认处理、存储完成后再析构。
+当前信号链路不是持久化消息队列，没有容量控制或自动重试。storage 通过 `batchWritten` 确认批写入，并在解算控制器析构前排空已提交任务；协议门面中尚未转发的帧不在其排空范围。当前 protocol 析构会退出工作线程，不保证尚在队列中的帧全部处理；需要无损关闭时，应在应用层停止接收并确认处理、存储完成后再析构。
 
 ### visualization：按刷新频率读取最新帧
 
@@ -177,7 +173,7 @@ for (const auto &record : wavelengths->records) {
 
 可保存上次绘制的 `revision`，跳过重复刷新。读取最新状态允许跳过中间帧；需要绘制完整历史曲线时应接收逐帧通知，并在 visualization 自己的缓存中组织历史数据。
 
-只使用仓库类型的模块可链接 `fosd_core`；若公共接口只包含 core 类型，可将依赖声明为 `PUBLIC`，按是否暴露头文件决定。直接引用 `ProtocolControl` 的模块还需链接 `fosd_protocol`。不要链接尚未创建的 `fosd_storage` 或 `fosd_visualization` 目标。
+只使用仓库类型的模块可链接 `fosd_core`；若公共接口只包含 core 类型，可将依赖声明为 `PUBLIC`，按是否暴露头文件决定。直接引用 `ProtocolControl` 的模块还需链接 `fosd_protocol`。存储写入器链接 `fosd_storage`，解算集成链接 `fosd_calculation`；`fosd_visualization` 尚未创建。
 
 ## 6. 新增协议
 

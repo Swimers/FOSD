@@ -41,6 +41,11 @@ void CalculationWorker::initialize() {
         timer->start();
     }
 }
+void CalculationWorker::shutdown() {
+    m_stopping = true;
+    const auto timers = findChildren<QTimer *>();
+    for (QTimer *timer : timers) timer->stop();
+}
 void CalculationWorker::configure(const CalculationConfiguration &configuration) {
     StrainCalibration validation;
     validation.setCalibrationStrainData(configuration.strainCalibration);
@@ -71,16 +76,17 @@ void CalculationWorker::setModel(const core::ModelData &model) {
     emit modelAccepted(++m_modelRevision);
 }
 void CalculationWorker::pollLatest() {
-    if (!m_model || !m_algorithm)
+    if (m_stopping || !m_algorithm)
         return;
     const auto snapshot = m_input->latest();
     if (snapshot && snapshot != m_seenFrame)
         processFrame(snapshot);
 }
 void CalculationWorker::processFrame(const core::FrameSnapshotPtr &snapshot) {
+    if (m_stopping) return;
     const quint64 revision = snapshot ? snapshot->revision : 0;
-    if (!m_model || !m_algorithm) {
-        reportError(QStringLiteral("solve"), QStringLiteral("Set a valid model and configuration first"), revision);
+    if (!m_algorithm) {
+        reportError(QStringLiteral("solve"), QStringLiteral("Set a valid configuration first"), revision);
         return;
     }
     m_seenFrame = snapshot;
@@ -105,6 +111,18 @@ void CalculationWorker::processFrame(const core::FrameSnapshotPtr &snapshot) {
         reportError(QStringLiteral("calibration"), m_calibration->lastError(), revision);
         return;
     }
+
+    core::CalibratedData hardware;
+    hardware.sourceFrame = snapshot;
+    hardware.configurationRevision = m_configurationRevision;
+    hardware.calibratedStrains = QVector<double>::fromStdVector(calibrated);
+    hardware.selectedStrains = QVector<double>::fromStdVector(strains);
+    hardware.sourceIndices = QVector<int>::fromStdVector(
+        m_calibration->getCalibrationChannelData().channelIndices);
+    emit calibratedReady(std::make_shared<const core::CalibratedData>(std::move(hardware)));
+
+    // Hardware calibration does not require an imported geometric model.
+    if (!m_model) return;
     const NodeDofs dofs = m_algorithm->calculateDofs(strains);
     core::CalculationResult result;
     result.sourceFrame = snapshot;
@@ -145,31 +163,54 @@ void CalculationWorker::reportError(const QString &operation, const QString &mes
 
 CalculationControl::CalculationControl(QObject *parent)
     : CalculationControl(core::FrameRepositoryPtr(), parent) {}
-CalculationControl::CalculationControl(core::FrameRepositoryPtr input, QObject *parent, IFEFactory factory)
-    : QObject(parent), m_output(std::make_shared<core::CalculationRepository>()),
-      m_worker(new detail::CalculationWorker(std::move(input), m_output,
-                 factory ? std::move(factory) : IFEFactory(createHYY))) {
+CalculationControl::CalculationControl(core::FrameRepositoryPtr input, 
+                                       QObject *parent, 
+                                       IFEFactory factory,
+                                       storage::WriterFactory writerFactory)
+    : QObject(parent), 
+      m_output(std::make_shared<core::CalculationRepository>()),
+      m_worker(new detail::CalculationWorker(std::move(input), m_output, factory ? std::move(factory) : IFEFactory(createHYY))) {
+
     qRegisterMetaType<CalculationConfiguration>("fosd::Calculation::CalculationConfiguration");
     qRegisterMetaType<CalculationError>("fosd::Calculation::CalculationError");
     qRegisterMetaType<core::PointMap>("fosd::core::PointMap");
     qRegisterMetaType<core::ModelData>("fosd::core::ModelData");
     qRegisterMetaType<core::FrameSnapshotPtr>("fosd::core::FrameSnapshotPtr");
     qRegisterMetaType<core::CalculationResultPtr>("fosd::core::CalculationResultPtr");
+
+    m_storage.reset(new storage::StorageControl(m_thread, std::move(writerFactory)));
     m_worker->moveToThread(&m_thread);
+
     connect(&m_thread, &QThread::started, m_worker, &detail::CalculationWorker::initialize);
     connect(&m_thread, &QThread::finished, m_worker, &QObject::deleteLater);
+
     connect(this, &CalculationControl::requestConfigure, m_worker, &detail::CalculationWorker::configure, Qt::QueuedConnection);
     connect(this, &CalculationControl::requestSetModel, m_worker, &detail::CalculationWorker::setModel, Qt::QueuedConnection);
     connect(this, &CalculationControl::requestFrame, m_worker, &detail::CalculationWorker::processFrame, Qt::QueuedConnection);
+
     connect(m_worker, &detail::CalculationWorker::resultReady, this, &CalculationControl::resultReady);
+
+    // Both receivers live on this same thread; no UI-thread relay or extra queue.
+    connect(m_worker, &detail::CalculationWorker::calibratedReady,
+            m_storage->m_worker.data(), &storage::detail::StorageWorker::writeCalibratedData, 
+            Qt::DirectConnection);
+    connect(m_worker, &detail::CalculationWorker::resultReady,
+            m_storage->m_worker.data(), &storage::detail::StorageWorker::writeResult, 
+            Qt::DirectConnection);
+
     connect(m_worker, &detail::CalculationWorker::errorOccurred, this, &CalculationControl::errorOccurred);
     connect(m_worker, &detail::CalculationWorker::modelAccepted, this, &CalculationControl::modelAccepted);
     connect(m_worker, &detail::CalculationWorker::configurationAccepted, this, &CalculationControl::configurationAccepted);
+    
     m_thread.start();
 }
 CalculationControl::~CalculationControl() {
+    // Drain previously submitted calculations before closing their writer.
+    QMetaObject::invokeMethod(m_worker, "shutdown", Qt::BlockingQueuedConnection);
+    m_storage->shutdown();
     m_thread.quit();
     m_thread.wait();
+    m_storage.reset();
 }
 void CalculationControl::setConfiguration(const CalculationConfiguration &configuration) {
     emit requestConfigure(configuration);
@@ -183,6 +224,7 @@ void CalculationControl::setRawPointMap(const core::PointMap &rawPointMap) {
     setModel(model);
 }
 void CalculationControl::submitFrame(const core::FrameSnapshotPtr &snapshot) {
+    m_storage->writeWavelengthFrame(snapshot);
     emit requestFrame(snapshot);
 }
 } }
