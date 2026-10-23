@@ -83,11 +83,14 @@ Backend 完成后发出 `completed(UiResponse)`，保留请求的 `id/panel`，�
 ## 构建及验证
 
 ```powershell
-cmake -S . -B build
-cmake --build build --config Debug --target FOSD test_workbench_widgets
-cmake --build build --config Release --target FOSD
+cmake --preset fosd-widgets
+cmake --build --preset fosd-widgets-debug
+ctest --preset fosd-widgets-debug
+# Release 可使用 fosd-widgets-release 构建/测试预设。
 $env:PATH = 'D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
-ctest --test-dir build -C Debug -R '^test_workbench_widgets$' --output-on-failure
+& ./build/fosd-widgets/bin/Debug/FOSDWidgets.exe
 ```
 
-CMake 会处理 20 个 `.ui` 的 AUTOUIC、Qt 元对象和 qrc，并将工作台库加入 FOSD。独立通信助手的构建选项不受影响。测试覆盖全部表单及资源、导航和 Dock、敏感字段隔离、请求响应匹配、跨线程适配器、断开后的反馈、表格/曲线及渲染宿主生命周期。测试在构建目录生成 `workbench-migration.png` 供布局检查。
+此预设通过 `FOSD_BUILD_WORKBENCH_APP` / `FOSD_WORKBENCH_BUILD_TESTS` 构建独立预览程序和测试，构建目录为 `build/fosd-widgets`，无需通信、解算、存储或 VTK。入口为 `apps/FOSDWidgets/main.cpp`，只组合 View 与 Presenter。主软件仍通过 `windows-msvc2017` 预设构建 `FOSD`，复用同一工作台库。完整预设说明见 [独立构建预设](../../doc/build-presets.md)。
+
+CMake 会处理 20 个 `.ui` 的 AUTOUIC、Qt 元对象和 qrc。测试覆盖全部表单及资源、导航和 Dock、敏感字段隔离、请求响应匹配、跨线程适配器、断开后的反馈、表格/曲线及渲染宿主生命周期。测试在其工作目录生成 `workbench-migration.png` 供布局检查。

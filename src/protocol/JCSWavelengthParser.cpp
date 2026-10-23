@@ -78,11 +78,5 @@ core::FrameDataPtr JCSWavelengthParser::parse(const QByteArray &packet, QString 
     return std::make_shared<const core::WavelengthFrame>(std::move(frame));
 }
 
-FrameParsers createFrameParsers() {
-    FrameParsers parsers;
-    parsers.emplace_back(new JCSWavelengthParser);
-    return parsers;
-}
-
 }
 } // namespace fosd::protocol

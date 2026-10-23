@@ -22,7 +22,8 @@ class KeyPointManager;
 class PointPicker;
 class ModelInteractorStyle;
 class SceneEnvironment;
-// GUI-thread facade. Business APIs are declarations only at this stage.
+// GUI-thread facade. Model loading and deformation display are implemented;
+// scene/scalar/selection APIs remain reserved for later development.
 
 class VisualizationControl final : public QObject {
     Q_OBJECT
@@ -31,6 +32,7 @@ public:
     ~VisualizationControl() override;
     bool attach(vtkRenderWindow *window);
     void detach();
+    vtkRenderWindow *renderWindow() const { return m_renderWindow; } // Borrowed, GUI thread only.
 
     bool loadModel(const QString &path);
     void unloadModel();
@@ -59,6 +61,9 @@ signals:
     void pointPicked(const fosd::visualization::PickedPointInfo &info);
     void errorOccurred(const QString &message);
 
+private slots:
+    void refreshResult();
+
 private:
     vtkRenderWindow *m_renderWindow = nullptr; // Borrowed; detach before host destroys it.
     vtkSmartPointer<vtkRenderer> m_renderer;
@@ -71,7 +76,7 @@ private:
     std::unique_ptr<SceneEnvironment> m_scene;
     core::CalculationRepositoryPtr m_repository;
 
-    QTimer *m_refreshTimer = nullptr;   // Reserved only; no timer is created yet.
+    QTimer *m_refreshTimer = nullptr;   // GUI polls the latest result at 30 Hz.
     quint64 m_expectedModelRevision = 0;
     quint64 m_lastResultRevision = 0;
 

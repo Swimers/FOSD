@@ -37,7 +37,7 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     }
     navigation->setExclusive(true);
     selectPage(0);
-    const QMap<int, QString> windowTitles{
+    const QMap<int, QString> titles{
         {int(PanelId::ConnectionDebug), tr("通信诊断")}, {int(PanelId::PlotSettings), tr("标定参数")},
         {int(PanelId::KeyPointEdit), tr("关键点编辑")}, {int(PanelId::KeyPointSelect), tr("关键点选择")},
         {int(PanelId::ColorPicker), tr("模型颜色")}, {int(PanelId::HardwareData), tr("硬件数据")},
@@ -45,13 +45,13 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
         {int(PanelId::Registration), tr("用户注册")}, {int(PanelId::Recovery), tr("找回密码")},
         {int(PanelId::Account), tr("账户管理")}
     };
-    for (auto title = windowTitles.constBegin(); title != windowTitles.constEnd(); ++title)
+    for (auto title = titles.constBegin(); title != titles.constEnd(); ++title)
         panelWidget(PanelId(title.key()))->setWindowTitle(title.value());
     auto *visualization = qobject_cast<QMainWindow *>(panelWidget(PanelId::Visualization));
     const QVector<PanelId> docks{PanelId::ModelPanel, PanelId::ScenePanel, PanelId::InfoPanel};
-    const QStringList titles{tr("模型配置"), tr("场景与相机"), tr("模型信息")};
+    const QStringList dockTitles{tr("模型配置"), tr("场景与相机"), tr("模型信息")};
     for (int index = 0; index < docks.size(); ++index) {
-        auto *dock = new QDockWidget(titles[index], visualization);
+        auto *dock = new QDockWidget(dockTitles[index], visualization);
         dock->setObjectName(QStringLiteral("fosdDock%1").arg(index));
         auto *page = panelWidget(docks[index]); page->setWindowFlags(Qt::Widget); dock->setWidget(page);
         visualization->addDockWidget(index == 2 ? Qt::RightDockWidgetArea : Qt::LeftDockWidgetArea, dock);

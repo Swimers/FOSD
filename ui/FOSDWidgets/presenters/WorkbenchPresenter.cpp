@@ -119,9 +119,6 @@ void WorkbenchPresenter::showStatus(const QString &message) {
     if (auto *view = m_view->panelView(PanelId::Main)) view->showStatus(message);
 }
 void WorkbenchPresenter::backendDestroyed() {
-    // A queued destroyed notification from a replaced adapter must not cancel
-    // the new adapter's requests. QPointer is null for the current destruction.
-    if (m_backend) return;
     for (auto *presenter : m_presenters) presenter->cancelPending();
     showStatus(tr("后端适配器已断开"));
 }

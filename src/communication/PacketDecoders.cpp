@@ -43,16 +43,19 @@ int markerSuffixSize(const QByteArray &bytes, const QVector<PacketRule> &rules) 
 namespace Rule{
 
 PacketRule JCS_Data_PacketRule() {
-    const int headerSize = 10;
-    const int recordSize = 6;
+    const int headerSize = 12;
+    const int recordSize = 4;
     PacketRule rule;
     rule.marker = QByteArray::fromHex("fafbfafb");
-    rule.maxFrameSize = headerSize + 65535 * recordSize;
+    rule.maxFrameSize = headerSize + 255 * recordSize;
     rule.frameSize = [headerSize, recordSize](const QByteArray &bytes) -> int {
         if (bytes.size() < headerSize)
             return 0;
         const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
-        return headerSize + int(qFromLittleEndian<quint16>(data + 4)) * recordSize;
+        int sensors = 0;
+        for (int channel = 0; channel < 7; ++channel) sensors += data[4 + channel];
+        if (sensors != data[11]) return -1;
+        return headerSize + int(data[11]) * recordSize;
     };
     return rule;
 }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VtkValidationWindow</class>
+ <widget class="QWidget" name="VtkValidationWindow">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>1180</width><height>850</height></rect></property>
+  <property name="windowTitle"><string>FOSD 全后端 / Qt-VTK 集成验证</string></property>
+  <layout class="QVBoxLayout" name="rootLayout">
+   <item><layout class="QHBoxLayout" name="connectionLayout">
+    <item><widget class="QComboBox" name="transport"><item><property name="text"><string>UDP 本地监听</string></property></item><item><property name="text"><string>TCP 客户端</string></property></item><item><property name="text"><string>串口指令</string></property></item></widget></item>
+    <item><widget class="QLineEdit" name="address"><property name="text"><string>127.0.0.1</string></property><property name="placeholderText"><string>UDP 绑定地址 / TCP 服务器地址</string></property></widget></item>
+    <item><widget class="QSpinBox" name="port"><property name="prefix"><string>端口 </string></property><property name="minimum"><number>1</number></property><property name="maximum"><number>65535</number></property><property name="value"><number>9000</number></property></widget></item>
+    <item><widget class="QLineEdit" name="serial"><property name="text"><string>COM1</string></property></widget></item>
+    <item><widget class="QSpinBox" name="baud"><property name="minimum"><number>1</number></property><property name="maximum"><number>4000000</number></property><property name="value"><number>115200</number></property></widget></item>
+    <item><widget class="QPushButton" name="openButton"><property name="text"><string>打开通信</string></property></widget></item>
+    <item><widget class="QPushButton" name="closeButton"><property name="text"><string>关闭通信</string></property></widget></item>
+   </layout></item>
+   <item><layout class="QHBoxLayout" name="calibrationLayout">
+    <item><widget class="QPushButton" name="modelButton"><property name="text"><string>导入 STL 模型</string></property></widget></item>
+    <item><widget class="QLabel" name="indicesLabel"><property name="text"><string>通道排列（记录下标）</string></property></widget></item>
+    <item><widget class="QLineEdit" name="indices"><property name="text"><string>0,1,2,3,4,5,6,7,8,9,10,11</string></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="factor"><property name="prefix"><string>标定系数 </string></property><property name="decimals"><number>8</number></property><property name="minimum"><double>0.00000001</double></property><property name="maximum"><double>1000000</double></property><property name="value"><double>0.00075</double></property></widget></item>
+    <item><widget class="QPushButton" name="baselineButton"><property name="text"><string>以最新波长设基线 / 开始解算</string></property></widget></item>
+   </layout></item>
+   <item><layout class="QHBoxLayout" name="parametersLayout">
+    <item><widget class="QDoubleSpinBox" name="calibrationA"><property name="prefix"><string>A </string></property><property name="decimals"><number>8</number></property><property name="minimum"><double>-1000000</double></property><property name="maximum"><double>1000000</double></property><property name="value"><double>1</double></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="calibrationB"><property name="prefix"><string>B </string></property><property name="decimals"><number>8</number></property><property name="minimum"><double>-1000000</double></property><property name="maximum"><double>1000000</double></property></widget></item>
+   </layout></item>
+   <item><layout class="QHBoxLayout" name="storageLayout">
+    <item><widget class="QComboBox" name="storageFormat"><item><property name="text"><string>CSV</string></property></item><item><property name="text"><string>SQLite</string></property></item></widget></item>
+    <item><widget class="QPushButton" name="storageStartButton"><property name="text"><string>选择文件 / 开始存储</string></property></widget></item>
+    <item><widget class="QPushButton" name="storageStopButton"><property name="text"><string>停止存储</string></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="scale"><property name="prefix"><string>显示倍率 </string></property><property name="minimum"><double>0</double></property><property name="maximum"><double>1000000</double></property><property name="value"><double>1</double></property></widget></item>
+    <item><widget class="QPushButton" name="scaleButton"><property name="text"><string>应用倍率</string></property></widget></item>
+    <item><widget class="QPushButton" name="resetDeformationButton"><property name="text"><string>恢复原始形状</string></property></widget></item>
+   </layout></item>
+   <item><layout class="QHBoxLayout" name="renderLayout">
+    <item><widget class="QPushButton" name="attachButton"><property name="text"><string>绑定窗口</string></property></widget></item>
+    <item><widget class="QPushButton" name="detachButton"><property name="text"><string>解绑窗口</string></property></widget></item>
+    <item><widget class="QPushButton" name="demoButton"><property name="text"><string>示例球体</string></property></widget></item>
+    <item><widget class="QPushButton" name="clearButton"><property name="text"><string>清除球体</string></property></widget></item>
+    <item><widget class="QPushButton" name="resetCameraButton"><property name="text"><string>重置相机</string></property></widget></item>
+    <item><widget class="QPushButton" name="renderButton"><property name="text"><string>刷新渲染</string></property></widget></item>
+   </layout></item>
+   <item><widget class="QLabel" name="bindingLabel"><property name="text"><string>等待绑定</string></property><property name="textInteractionFlags"><set>Qt::TextSelectableByMouse</set></property></widget></item>
+   <item><widget class="QVTKOpenGLNativeWidget" name="vtkOpenGLNativeWidget"><property name="minimumSize"><size><width>400</width><height>400</height></size></property></widget></item>
+   <item><widget class="QLabel" name="statusLabel"><property name="text"><string>先导入模型并打开通信，收到波长后设置基线；后续解算结果自动更新模型。</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+  </layout>
+ </widget>
+ <customwidgets><customwidget><class>QVTKOpenGLNativeWidget</class><extends>QWidget</extends><header>QVTKOpenGLNativeWidget.h</header></customwidget></customwidgets>
+ <resources/>
+ <connections/>
+</ui>

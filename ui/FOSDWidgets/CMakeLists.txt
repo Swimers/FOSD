@@ -50,7 +50,7 @@ target_compile_features(fosd_workbench_presenter PUBLIC cxx_std_11)
 target_compile_features(fosd_workbench_controls PUBLIC cxx_std_11)
 target_compile_features(fosd_workbench_widgets PUBLIC cxx_std_11)
 
-if(FOSD_BUILD_TESTS)
+if(FOSD_BUILD_TESTS OR FOSD_WORKBENCH_BUILD_TESTS)
     add_executable(test_workbench_widgets tests/WorkbenchTests.cpp)
     target_link_libraries(test_workbench_widgets PRIVATE fosd_workbench_widgets Qt5::Test)
     add_test(NAME test_workbench_widgets COMMAND test_workbench_widgets)

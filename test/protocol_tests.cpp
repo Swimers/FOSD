@@ -167,6 +167,13 @@ private:
 class ProtocolTests : public QObject {
     Q_OBJECT
 private slots:
+    void defaultParsers() {
+        auto parsers = protocol::createFrameParsers();
+        QStringList ids;
+        for (const auto &parser : parsers) ids.append(parser->protocolId());
+        QVERIFY(ids.contains("mp.wavelength"));
+        QVERIFY(ids.contains("jcs.wavelength"));
+    }
     void parseFieldsAndBoundaries();
     void rejectMalformedFrames();
     void dispatchAndThreadOwnership();

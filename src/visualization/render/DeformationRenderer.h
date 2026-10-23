@@ -18,6 +18,7 @@ public:
     vtkPolyDataMapper *mapper() const;
     vtkActor *actor() const;
 private:
+    vtkSmartPointer<vtkPolyData> m_originalMesh;
     vtkSmartPointer<vtkPolyData> m_displayMesh;
     vtkSmartPointer<vtkPolyDataMapper> m_mapper;
     vtkSmartPointer<vtkActor> m_actor;

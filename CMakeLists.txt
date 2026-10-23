@@ -9,10 +9,21 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # ---------------------------------------------------------------------------
 option(FOSD_BUILD_TESTS "Build the unit test suite" ON) 
 option(FOSD_BUILD_MAIN_APP "Build the main FOSD application" ON)
+option(FOSD_BUILD_WORKBENCH_APP "Build the standalone FOSDWidgets preview application" OFF)
+option(FOSD_WORKBENCH_BUILD_TESTS "Build the standalone FOSDWidgets tests" OFF)
+option(FOSD_BUILD_VTK_NATIVE_TEST_APP "Build the QVTKOpenGLNativeWidget validation application" OFF)
+option(FOSD_VTK_NATIVE_BUILD_TESTS "Build the native VTK validation presenter tests" OFF)
 option(FOSD_BUILD_COMMUNICATION_ASSISTANT_QML "Build the standalone QML communication assistant" ON)
 option(FOSD_ASSISTANT_QML_BUILD_TESTS "Build the QML communication assistant tests" ON)
 option(FOSD_BUILD_WIDGETS_ASSISTANT "Build the QWidgets communication assistant" OFF)
 option(FOSD_WIDGETS_ASSISTANT_BUILD_TESTS "Build QWidgets assistant tests" OFF)
+
+if(FOSD_WORKBENCH_BUILD_TESTS AND NOT (FOSD_BUILD_WORKBENCH_APP OR FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS))
+    message(FATAL_ERROR "Workbench tests require FOSD_BUILD_WORKBENCH_APP, FOSD_BUILD_MAIN_APP or FOSD_BUILD_TESTS=ON")
+endif()
+if(FOSD_VTK_NATIVE_BUILD_TESTS AND NOT FOSD_BUILD_VTK_NATIVE_TEST_APP)
+    message(FATAL_ERROR "Native VTK tests require FOSD_BUILD_VTK_NATIVE_TEST_APP=ON")
+endif()
 
 if(FOSD_WIDGETS_ASSISTANT_BUILD_TESTS AND NOT FOSD_BUILD_WIDGETS_ASSISTANT)
     message(FATAL_ERROR "Widgets assistant tests require FOSD_BUILD_WIDGETS_ASSISTANT=ON")
@@ -54,22 +65,22 @@ include(Windows)
 # ---------------------------------------------------------------------------
 # Dependencies
 # ---------------------------------------------------------------------------
-find_package(Qt5 5.12 REQUIRED COMPONENTS
-    Core
-    SerialPort
-    Network
-)
+find_package(Qt5 5.12 REQUIRED COMPONENTS Core)
+if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS OR FOSD_BUILD_VTK_NATIVE_TEST_APP OR FOSD_BUILD_COMMUNICATION_ASSISTANT_QML OR FOSD_BUILD_WIDGETS_ASSISTANT)
+    find_package(Qt5 5.12 REQUIRED COMPONENTS SerialPort Network)
+endif()
 
-if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_WIDGETS_ASSISTANT)
+if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_WORKBENCH_APP OR FOSD_BUILD_WIDGETS_ASSISTANT)
     find_package(Qt5 5.12 REQUIRED COMPONENTS Widgets)
 endif()
-if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS)
+if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS OR FOSD_BUILD_VTK_NATIVE_TEST_APP)
     find_package(Qt5 5.12 REQUIRED COMPONENTS Sql)
 endif()
 if(FOSD_BUILD_COMMUNICATION_ASSISTANT_QML)
     find_package(Qt5 5.12 REQUIRED COMPONENTS Qml Quick QuickControls2)
 endif()
-if(FOSD_BUILD_TESTS OR FOSD_ASSISTANT_QML_BUILD_TESTS OR FOSD_WIDGETS_ASSISTANT_BUILD_TESTS)
+if(FOSD_BUILD_TESTS OR FOSD_ASSISTANT_QML_BUILD_TESTS OR FOSD_WIDGETS_ASSISTANT_BUILD_TESTS
+        OR FOSD_WORKBENCH_BUILD_TESTS OR FOSD_VTK_NATIVE_BUILD_TESTS)
     find_package(Qt5 5.12 REQUIRED COMPONENTS Test)
     enable_testing()
 endif()
@@ -77,12 +88,22 @@ endif()
 # ---------------------------------------------------------------------------
 # Targets
 # ---------------------------------------------------------------------------
-add_subdirectory(src)
-if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS)
+if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS OR FOSD_BUILD_VTK_NATIVE_TEST_APP
+        OR FOSD_BUILD_COMMUNICATION_ASSISTANT_QML OR FOSD_BUILD_WIDGETS_ASSISTANT)
+    add_subdirectory(src)
+endif()
+if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS OR FOSD_BUILD_WORKBENCH_APP)
     add_subdirectory(ui/FOSDWidgets)
+endif()
+if(FOSD_BUILD_WORKBENCH_APP)
+    add_subdirectory(apps/FOSDWidgets)
 endif()
 if(FOSD_BUILD_MAIN_APP)
     add_subdirectory(apps/FOSD-Win)
+endif()
+if(FOSD_BUILD_VTK_NATIVE_TEST_APP)
+    add_subdirectory(ui/Test-VtkOpenGLNativeWidgets)
+    add_subdirectory(apps/Test-VtkOpenGLNativeWidgets)
 endif()
 if(FOSD_BUILD_COMMUNICATION_ASSISTANT_QML OR FOSD_BUILD_WIDGETS_ASSISTANT)
     add_subdirectory(ui/communication-assistant-QML)
