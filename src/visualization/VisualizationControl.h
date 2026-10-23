@@ -1,13 +1,20 @@
 #pragma once
+
 #include "VisualizationTypes.h"
 #include "core/Datamodel/CalculationRepository.h"
+
 #include <QObject>
 #include <memory>
+
 #include <vtkSmartPointer.h>
+#include <vtkRenderWindow.h>
+
 class QTimer;
 class vtkRenderer;
 class vtkRenderWindow;
-namespace fosd { namespace visualization {
+namespace fosd { 
+namespace visualization {
+
 class MeshManager;
 class DeformationRenderer;
 class ScalarColorMapper;
@@ -16,21 +23,25 @@ class PointPicker;
 class ModelInteractorStyle;
 class SceneEnvironment;
 // GUI-thread facade. Business APIs are declarations only at this stage.
+
 class VisualizationControl final : public QObject {
     Q_OBJECT
 public:
-    explicit VisualizationControl(QObject *parent = nullptr);
+    explicit VisualizationControl(QObject *parent = nullptr, vtkRenderWindow *renderWindowPtr = nullptr);
     ~VisualizationControl() override;
     bool attach(vtkRenderWindow *window);
     void detach();
+
     bool loadModel(const QString &path);
     void unloadModel();
     core::ModelDataPtr originalModel() const;
+
     void setResultRepository(core::CalculationRepositoryPtr repository);
     void applyResult(const core::CalculationResultPtr &result);
     void setExpectedModelRevision(quint64 revision);
     void setDeformationScale(double scale);
     void resetDeformation();
+
     void setScalarField(ScalarField field);
     void setColorRangeMode(ColorRangeMode mode);
     void setColorRange(double minimum, double maximum);
@@ -42,10 +53,12 @@ public:
     void setCameraPreset(CameraPreset preset);
     void setCameraLocked(bool locked);
     void resetCamera();
+
 signals:
     void modelLoaded(const fosd::core::ModelDataPtr &model);
     void pointPicked(const fosd::visualization::PickedPointInfo &info);
     void errorOccurred(const QString &message);
+
 private:
     vtkRenderWindow *m_renderWindow = nullptr; // Borrowed; detach before host destroys it.
     vtkSmartPointer<vtkRenderer> m_renderer;
@@ -57,8 +70,11 @@ private:
     vtkSmartPointer<ModelInteractorStyle> m_interactorStyle;
     std::unique_ptr<SceneEnvironment> m_scene;
     core::CalculationRepositoryPtr m_repository;
-    QTimer *m_refreshTimer = nullptr; // Reserved only; no timer is created yet.
+    QTimer *m_refreshTimer = nullptr;   // Reserved only; no timer is created yet.
     quint64 m_expectedModelRevision = 0;
     quint64 m_lastResultRevision = 0;
+
 };
-} }
+
+}
+}

@@ -2,6 +2,7 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [主工作台 Widgets 与 MVP](../ui/FOSDWidgets/README.md) | 旧版 20 个表单、资源、View/Presenter、后端请求及三维宿主对接 |
 | [解算与模型对接](Architectural/calculation-integration.md) | 波长快照、标定、模型输入、逐点插值与只读结果输出 |
 | [数据存储对接](Architectural/storage-integration.md) | 解算线程托管、CSV/SQLite、数据类型及点位选择、错误处理、扩展与测试 |
 | [模块构建结构](build-structure.md) | CMake 目标、依赖、构建命令与新增模块 |

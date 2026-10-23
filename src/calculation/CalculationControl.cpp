@@ -4,11 +4,14 @@
 #include <cmath>
 #include <utility>
 
-namespace fosd { namespace Calculation {
+namespace fosd { 
+namespace Calculation {
 namespace {
+
 std::unique_ptr<IFrameIFE> createHYY() {
     return std::unique_ptr<IFrameIFE>(new HYYIFE);
 }
+
 bool validateModel(const core::ModelData &model, QString *error) {
     if (model.isEmpty()) {
         *error = QStringLiteral("Model must contain at least one point");
@@ -28,8 +31,11 @@ bool validateModel(const core::ModelData &model, QString *error) {
 }
 namespace detail {
 CalculationWorker::CalculationWorker(core::FrameRepositoryPtr input,
-    std::shared_ptr<core::CalculationRepository> output, IFEFactory factory)
-    : m_input(std::move(input)), m_output(std::move(output)), m_factory(std::move(factory)) {}
+    std::shared_ptr<core::CalculationRepository> output, 
+    IFEFactory factory)
+    : m_input(std::move(input)), 
+      m_output(std::move(output)), 
+      m_factory(std::move(factory)) {}
 
 void CalculationWorker::initialize() {
     m_calibration = new StrainCalibration(this);

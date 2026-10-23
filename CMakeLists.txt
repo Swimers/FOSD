@@ -78,6 +78,9 @@ endif()
 # Targets
 # ---------------------------------------------------------------------------
 add_subdirectory(src)
+if(FOSD_BUILD_MAIN_APP OR FOSD_BUILD_TESTS)
+    add_subdirectory(ui/FOSDWidgets)
+endif()
 if(FOSD_BUILD_MAIN_APP)
     add_subdirectory(apps/FOSD-Win)
 endif()

@@ -8,6 +8,7 @@ add_executable(FOSD
 target_link_libraries(FOSD
     PRIVATE
         Qt5::Widgets
+        fosd_workbench_widgets
         fosd_communication
         fosd_protocol
         fosd_calculation
