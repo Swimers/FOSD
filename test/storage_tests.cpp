@@ -20,7 +20,7 @@ using namespace fosd;
 using namespace fosd::storage;
 using namespace fosd::Calculation;
 namespace {
-const vtkIdType pointId = std::numeric_limits<vtkIdType>::max() - 2;
+const core::PointId pointId = std::numeric_limits<core::PointId>::max() - 2;
 core::FrameSnapshotPtr frame(quint64 revision = 1) {
     core::WavelengthFrame data;
     data.recordCount = 3; data.sequence = 123;
@@ -50,8 +50,8 @@ CalculationConfiguration settings() {
 }
 core::ModelData model() {
     core::ModelData data;
-    data.rawPointMap.insert(7, {10, 20, 30});
-    data.rawPointMap.insert(pointId, {40, 50, 60});
+    data.insert(7, {10, 20, 30});
+    data.insert(pointId, {40, 50, 60});
     return data;
 }
 struct Trace {
@@ -242,13 +242,13 @@ void StorageTests::sqliteTransactionsAndSchema() {
     }
     QVERIFY(!writer.write(batch.records, &error)); QVERIFY(error.contains("injected"));
     { Database database(path); QCOMPARE(database.rows().size(), 0); QVERIFY(database.exec("DROP TRIGGER reject_second")); }
-    batch.records[0].values[PointId] = QVariant::fromValue(qlonglong(pointId));
+    batch.records[0].values[PointIdCol] = QVariant::fromValue(qlonglong(pointId));
     QVERIFY(writer.write(batch.records, &error)); writer.close();
     QVERIFY(writer.open(path, &error)); QVERIFY(writer.write(batch.records, &error)); writer.close();
     {
         Database database(path); const auto rows = database.rows();
         QCOMPARE(rows.size(), 6); QCOMPARE(rows[0][ProtocolId], frame()->protocolId);
-        QCOMPARE(rows[0][PointId], QString::number(qlonglong(pointId)));
+        QCOMPARE(rows[0][PointIdCol], QString::number(qlonglong(pointId)));
     }
     const QString incompatible = dir.filePath("foreign.sqlite");
     { Database database(incompatible); QVERIFY(database.exec("CREATE TABLE fosd_records (custom TEXT)")); }
@@ -330,7 +330,7 @@ void StorageTests::calculationToStorage() {
         QCOMPARE(rows[5][StrainValue].toDouble(), 6.0);
         QCOMPARE(rows[6][Stage], QStringLiteral("selected")); QCOMPARE(rows[6][SourceIndex].toInt(), 2);
         QCOMPARE(rows[6][StrainValue].toDouble(), 12.0); QCOMPARE(rows[7][SourceIndex].toInt(), 0);
-        QCOMPARE(rows[8][PointId], QString::number(qlonglong(pointId)));
+        QCOMPARE(rows[8][PointIdCol], QString::number(qlonglong(pointId)));
         QCOMPARE(rows[8][DxMm].toDouble(), 12.0); QCOMPARE(rows[8][DyMm].toDouble(), 2.0);
         QCOMPARE(rows[8][XMm].toDouble(), 52.0); QCOMPARE(rows[8][ModelRevision], QStringLiteral("1"));
         // Restart appends a new session, selecting only wavelengths.

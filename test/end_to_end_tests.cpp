@@ -25,7 +25,7 @@ namespace {
 const int recordCount = 12;
 const int frameCount = 3;
 const int rowsPerFrame = recordCount * 3 + 2;
-const vtkIdType largePointId = std::numeric_limits<vtkIdType>::max() - 2;
+const core::PointId largePointId = std::numeric_limits<core::PointId>::max() - 2;
 
 protocol::FrameParsers mpParsers() {
     protocol::FrameParsers parsers;
@@ -264,7 +264,7 @@ void EndToEndTests::communicationToStorage() {
         }
         QVERIFY(result->strains == QVector<double>::fromStdVector(selectedStrains(frame)));
         QCOMPARE(result->algorithmId, QStringLiteral("HYY.IFE"));
-        QCOMPARE(result->displacementMap.size(), 3); QCOMPARE(result->deformedModel.rawPointMap.size(), 3);
+        QCOMPARE(result->displacementMap.size(), 3); QCOMPARE(result->deformedModel.size(), 3);
         snapshots.append(snapshot); outputs.append(result);
     }
     QCOMPARE(receivedBytes(raw), sent);
@@ -290,8 +290,8 @@ void EndToEndTests::communicationToStorage() {
         QCOMPARE(row[DeviceSequence].toUInt(), uint(sequence(frame)));
         QString key = row[SourceRevision] + '/' + row[DataTypeName] + '/' + row[Stage] + '/';
         if (row[DataTypeName] == "point_displacement") {
-            key += row[PointId];
-            const auto id = vtkIdType(row[PointId].toLongLong());
+            key += row[PointIdCol];
+            const auto id = core::PointId(row[PointIdCol].toLongLong());
             QVERIFY(config.pointIds.contains(id)); QCOMPARE(row[Stage], QStringLiteral("calculated"));
             QCOMPARE(row[AlgorithmId], QStringLiteral("HYY.IFE"));
             QCOMPARE(row[CalculationRevision], QString::number(outputs[frame]->revision));
@@ -338,7 +338,7 @@ void EndToEndTests::communicationToStorage() {
             QVERIFY(keys.contains(prefix + "calibrated_hardware/calibrated/" + QString::number(index)));
             QVERIFY(keys.contains(prefix + "calibrated_hardware/selected/" + QString::number(index)));
         }
-        for (vtkIdType id : config.pointIds)
+        for (core::PointId id : config.pointIds)
             QVERIFY(keys.contains(prefix + "point_displacement/calculated/" + QString::number(qlonglong(id))));
     }
 }

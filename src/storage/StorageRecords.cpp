@@ -110,11 +110,11 @@ bool displacementRecords(const QString &session, const core::CalculationResultPt
     batch->type = DataType::PointDisplacement;
     batch->sourceRevision = result->sourceFrame->revision;
     batch->records.clear();
-    for (vtkIdType id : ids) {
+    for (PointId id : ids) {
         const auto delta = result->displacementMap.constFind(id);
-        const auto xyz = result->deformedModel.rawPointMap.constFind(id);
+        const auto xyz = result->deformedModel.constFind(id);
         if (delta == result->displacementMap.constEnd() ||
-            xyz == result->deformedModel.rawPointMap.constEnd() ||
+            xyz == result->deformedModel.constEnd() ||
             !validXyz(delta.value()) || !validXyz(xyz.value()))
             return fail(error, QStringLiteral("Missing or invalid displacement point %1").arg(qlonglong(id)));
         auto record = baseRecord(session, QStringLiteral("point_displacement"),
@@ -123,7 +123,7 @@ bool displacementRecords(const QString &session, const core::CalculationResultPt
         record.values[CalculationRevision] = QString::number(result->revision);
         record.values[ModelRevision] = QString::number(result->modelRevision);
         record.values[ConfigurationRevision] = QString::number(result->configurationRevision);
-        record.values[PointId] = QVariant::fromValue(qlonglong(id));
+        record.values[PointIdCol] = QVariant::fromValue(qlonglong(id));
         for (int axis = 0; axis < 3; ++axis) {
             record.values[DxMm + axis] = delta.value()[axis];
             record.values[XMm + axis] = xyz.value()[axis];

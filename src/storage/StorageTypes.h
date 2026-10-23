@@ -4,7 +4,11 @@
 #include <QFlags>
 #include <QVariant>
 
-namespace fosd { namespace storage {
+namespace fosd { 
+namespace storage {
+
+using PointId = core::PointId;
+
 enum class StorageFormat { 
     Csv, 
     SQLite 
@@ -19,7 +23,7 @@ struct StorageConfiguration {
     StorageFormat format = StorageFormat::Csv;  // 写入方式
     QString path; // A single append-only CSV or SQLite file.
     DataTypes dataTypes = DataType::Wavelength; // 写入数据类型
-    QVector<vtkIdType> pointIds;
+    QVector<PointId> pointIds;
     bool allPoints = false;
 };
 struct StorageError {
@@ -33,7 +37,7 @@ enum Column {
     SessionId, DataTypeName, Stage, ProtocolId, SourceRevision, ReceivedAtUtc,
     Transport, PeerAddress, PeerPort, DeviceSequence, AlgorithmId,
     CalculationRevision, ModelRevision, ConfigurationRevision,
-    SampleIndex, SourceIndex, Channel, Sensor, PointId, WavelengthValue, StrainValue,
+    SampleIndex, SourceIndex, Channel, Sensor, PointIdCol, WavelengthValue, StrainValue,
     DxMm, DyMm, DzMm, XMm, YMm, ZMm, ColumnCount
 };
 struct StorageColumn { QString name; QString sqlType; };

@@ -34,8 +34,8 @@ CalculationConfiguration settings() {
 core::ModelData model() {
     core::ModelData data;
     for (int index = 0; index < 30; ++index)
-        data.rawPointMap.insert(vtkIdType(index * 13), {double(index * 40), 10.0, -20.0});
-    data.rawPointMap.insert(std::numeric_limits<vtkIdType>::max() - 2, {1400.0, 20.0, 30.0});
+        data.insert(core::PointId(index * 13), {double(index * 40), 10.0, -20.0});
+    data.insert(std::numeric_limits<core::PointId>::max() - 2, {1400.0, 20.0, 30.0});
     return data;
 }
 core::FrameSnapshotPtr frame(float firstValue = 1001.0f, quint64 revision = 1) {
@@ -122,7 +122,7 @@ void readResults(core::CalculationRepositoryPtr repository, std::atomic<bool> *s
             std::this_thread::yield();
             continue;
         }
-        if (result->revision < previous || result->deformedModel.rawPointMap.size() != 31 ||
+        if (result->revision < previous || result->deformedModel.size() != 31 ||
             result->displacementMap.size() != 31 || !result->sourceFrame)
             invalid->store(true);
         previous = result->revision;
@@ -235,7 +235,7 @@ void CalculationTests::opaqueAlgorithmData() {
     const auto result = control.dataModel()->latest();
     QCOMPARE(result->strains.size(), 3);
     QCOMPARE(result->nodeDofs.size(), 1); // Opaque algorithm-specific intermediate data.
-    QCOMPARE(result->deformedModel.rawPointMap.value(0)[0], 1.0);
+    QCOMPARE(result->deformedModel.value(0)[0], 1.0);
     QCOMPARE(trace.solveCalls.load(), 1);
     QCOMPARE(errors.count(), 0);
 }
@@ -250,8 +250,8 @@ void CalculationTests::workerTraversesWholeModel() {
     auto geometry = model();
     const auto original = geometry;
     control.setConfiguration(settings());
-    control.setRawPointMap(geometry.rawPointMap);
-    geometry.rawPointMap.clear(); // Detaches: queued geometry must remain valid.
+    control.setRawPointMap(geometry);
+    geometry.clear(); // Detaches: queued geometry must remain valid.
     QTRY_COMPARE(accepted.count(), 1);
     const int previousCalls = trace.pointCalls.load();
     QCOMPARE(previousCalls, 0); // Model validation must not invoke interpolation.
@@ -260,25 +260,25 @@ void CalculationTests::workerTraversesWholeModel() {
     const auto source = frame();
     control.submitFrame(source);
     QTRY_COMPARE(results.count(), 1);
-    QCOMPARE(trace.pointCalls.load() - previousCalls, original.rawPointMap.size());
+    QCOMPARE(trace.pointCalls.load() - previousCalls, original.size());
     QCOMPARE(trace.solveCalls.load(), 1);
 
     QVERIFY(trace.factoryThread.load() != QThread::currentThread());
     QCOMPARE(trace.factoryThread.load(), trace.solveThread.load());
     const auto result = control.dataModel()->latest();
-    QCOMPARE(result->displacementMap.size(), original.rawPointMap.size());
+    QCOMPARE(result->displacementMap.size(), original.size());
     QVERIFY(result->sourceFrame == source);
-    for (auto point = original.rawPointMap.constBegin(); point != original.rawPointMap.constEnd(); ++point) {
+    for (auto point = original.constBegin(); point != original.constEnd(); ++point) {
         QVERIFY(result->displacementMap.value(point.key()) == QVector<double>({1, 2, 3}));
-        const auto updated = result->deformedModel.rawPointMap.value(point.key());
+        const auto updated = result->deformedModel.value(point.key());
         QCOMPARE(updated[0], point.value()[0] + 1);
         QCOMPARE(updated[1], point.value()[1] + 2);
         QCOMPARE(updated[2], point.value()[2] + 3);
     }
     control.submitFrame(frame(1002, 2));
     QTRY_COMPARE(results.count(), 2);
-    QCOMPARE(control.dataModel()->latest()->deformedModel.rawPointMap.value(0)[0], 2.0);
-    QCOMPARE(result->deformedModel.rawPointMap.value(0)[0], 1.0);
+    QCOMPARE(control.dataModel()->latest()->deformedModel.value(0)[0], 2.0);
+    QCOMPARE(result->deformedModel.value(0)[0], 1.0);
     QCOMPARE(errors.count(), 0);
 }
 void CalculationTests::failuresPreservePreviousResult() {
@@ -295,8 +295,8 @@ void CalculationTests::failuresPreservePreviousResult() {
     control.submitFrame(frame(1003, 3)); // Fails partway through traversal.
     control.submitFrame(frame(std::numeric_limits<float>::quiet_NaN(), 4));
     control.submitFrame(core::FrameSnapshotPtr());
-    auto invalidModel = model(); invalidModel.rawPointMap[0] = {1, 2};
-    control.setRawPointMap(invalidModel.rawPointMap);
+    auto invalidModel = model(); invalidModel[0] = {1, 2};
+    control.setRawPointMap(invalidModel);
     auto invalidSettings = settings(); invalidSettings.strainCalibration.A = 0;
     control.setConfiguration(invalidSettings);
     QTRY_COMPARE(errors.count(), 6);
@@ -313,17 +313,17 @@ void CalculationTests::defaultHyyPipeline() {
     auto geometry = model();
     control.setConfiguration(settings()); control.setModel(geometry); control.submitFrame(frame(1000));
     QTRY_COMPARE(results.count(), 1);
-    QVERIFY(control.dataModel()->latest()->deformedModel.rawPointMap == geometry.rawPointMap);
+    QVERIFY(control.dataModel()->latest()->deformedModel == geometry);
     control.submitFrame(frame(1001, 2));
     QTRY_COMPARE(results.count(), 2);
     const auto result = control.dataModel()->latest();
-    QCOMPARE(result->displacementMap.size(), geometry.rawPointMap.size());
-    for (const auto &point : result->deformedModel.rawPointMap)
+    QCOMPARE(result->displacementMap.size(), geometry.size());
+    for (const auto &point : result->deformedModel)
         for (double value : point)
             QVERIFY(std::isfinite(value));
     // Geometry admission is based on the public coordinate contract, not an
     // algorithm's internal element/domain assumptions.
-    geometry.rawPointMap[0] = {1401, 0, 0};
+    geometry[0] = {1401, 0, 0};
     control.setModel(geometry);
     control.submitFrame(frame(1001, 3));
     QTRY_COMPARE(results.count(), 3);
@@ -356,23 +356,23 @@ void CalculationTests::udpToResultWithoutMainDispatch() {
     QVERIFY(result);
     QCOMPARE(result->sourceFrame->source.port, peer.localPort());
     QCOMPARE(result->strains[0], 1.0);
-    QCOMPARE(result->deformedModel.rawPointMap.value(0)[0], 1.0);
+    QCOMPARE(result->deformedModel.value(0)[0], 1.0);
     QVERIFY(trace.solveThread.load() != QThread::currentThread());
     QVERIFY(trace.solveThread.load() != trace.inputThread.load());
     QTest::qWait(35);
     QVERIFY(control.dataModel()->latest() == result); // Do not solve an unchanged snapshot repeatedly.
     auto geometry = model();
-    geometry.rawPointMap[0][0] = 20;
+    geometry[0][0] = 20;
     // Importers/editors may submit via a queued Qt connection as well.
     QVERIFY(QMetaObject::invokeMethod(&control, "setRawPointMap", Qt::QueuedConnection,
-                                     Q_ARG(fosd::core::PointMap, geometry.rawPointMap)));
+                                     Q_ARG(fosd::core::PointMap, geometry)));
     QTRY_COMPARE(control.dataModel()->latest()->modelRevision, quint64(2));
-    QCOMPARE(control.dataModel()->latest()->deformedModel.rawPointMap.value(0)[0], 21.0);
+    QCOMPARE(control.dataModel()->latest()->deformedModel.value(0)[0], 21.0);
     QVERIFY(control.dataModel()->latest()->sourceFrame == result->sourceFrame);
     auto configuration = settings(); configuration.strainCalibration.A = 2;
     control.setConfiguration(configuration);
     QTRY_COMPARE(control.dataModel()->latest()->configurationRevision, quint64(2));
-    QCOMPARE(control.dataModel()->latest()->deformedModel.rawPointMap.value(0)[0], 20.5);
+    QCOMPARE(control.dataModel()->latest()->deformedModel.value(0)[0], 20.5);
 }
 void CalculationTests::concurrentReadersAndShutdown() {
     core::CalculationRepositoryPtr repository;

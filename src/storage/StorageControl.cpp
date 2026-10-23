@@ -24,8 +24,8 @@ bool validateConfiguration(const StorageConfiguration &config, QString *error) {
             *error = QStringLiteral("Select displacement pointIds or enable allPoints");
             return false;
         }
-        QSet<vtkIdType> unique;
-        for (vtkIdType id : config.pointIds) {
+        QSet<PointId> unique;
+        for (PointId id : config.pointIds) {
             if (id < 0 || unique.contains(id)) {
                 *error = QStringLiteral("Point IDs must be nonnegative and unique");
                 return false;
@@ -78,12 +78,15 @@ void StorageWorker::flush() {
     QString error;
     if (!m_writer->flush(&error)) {
         reportError(QStringLiteral("flush"), error);
-        m_writer->close(); m_writer.reset(); m_session.clear();
+        m_writer->close(); 
+        m_writer.reset(); 
+        m_session.clear();
         emit stopped();
     }
 }
 void StorageWorker::writeWavelengthFrame(const core::FrameSnapshotPtr &frame) {
-    if (!m_writer || !m_configuration.dataTypes.testFlag(DataType::Wavelength)) return;
+    if (!m_writer || !m_configuration.dataTypes.testFlag(DataType::Wavelength)) 
+        return;
     StorageBatch batch;
     QString error;
     if (!wavelengthRecords(m_session, frame, &batch, &error)) {

@@ -2,18 +2,14 @@
 
 #include "FrameData.h"
 #include <QMap>
-#include <vtkType.h>
 
-namespace fosd { namespace core {
+namespace fosd {
+namespace core {
 
-using PointMap = QMap<vtkIdType, QVector<double>>;
+using PointId = qint64;
 
-struct ModelData {
-    // Empty by default. Filled by an importer/editor and submitted through
-    // CalculationControl::setRawPointMap() or setModel(). Coordinates are
-    // millimetres, exactly {x,y,z} per point.
-    QMap<vtkIdType, QVector<double>> rawPointMap;
-};
+using PointMap = QMap<PointId, QVector<double>>;
+using ModelData = PointMap;
 using ModelDataPtr = std::shared_ptr<const ModelData>;
 
 struct CalculationResult {
@@ -31,7 +27,8 @@ struct CalculationResult {
 };
 using CalculationResultPtr = std::shared_ptr<const CalculationResult>;
 
-} }
+}
+}
+
 Q_DECLARE_METATYPE(fosd::core::PointMap)
-Q_DECLARE_METATYPE(fosd::core::ModelData)
 Q_DECLARE_METATYPE(fosd::core::CalculationResultPtr)

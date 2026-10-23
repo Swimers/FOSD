@@ -10,11 +10,11 @@ std::unique_ptr<IFrameIFE> createHYY() {
     return std::unique_ptr<IFrameIFE>(new HYYIFE);
 }
 bool validateModel(const core::ModelData &model, QString *error) {
-    if (model.rawPointMap.isEmpty()) {
+    if (model.isEmpty()) {
         *error = QStringLiteral("Model must contain at least one point");
         return false;
     }
-    for (auto point = model.rawPointMap.constBegin(); point != model.rawPointMap.constEnd(); ++point) {
+    for (auto point = model.constBegin(); point != model.constEnd(); ++point) {
         const auto &xyz = point.value();
         if (point.key() < 0 || xyz.size() != 3 || !std::isfinite(xyz[0]) ||
             !std::isfinite(xyz[1]) || !std::isfinite(xyz[2])) {
@@ -131,7 +131,8 @@ void CalculationWorker::processFrame(const core::FrameSnapshotPtr &snapshot) {
     result.configurationRevision = m_configurationRevision;
     result.strains = QVector<double>::fromStdVector(strains);
     result.nodeDofs = QVector<double>::fromStdVector(dofs);
-    for (auto point = m_model->rawPointMap.constBegin(); point != m_model->rawPointMap.constEnd(); ++point) {
+
+    for (auto point = m_model->constBegin(); point != m_model->constEnd(); ++point) {
         const auto &xyz = point.value();
         Point3D position;
         position.x = xyz[0]; position.y = xyz[1]; position.z = xyz[2];
@@ -146,7 +147,7 @@ void CalculationWorker::processFrame(const core::FrameSnapshotPtr &snapshot) {
             }
         }
         result.displacementMap.insert(point.key(), delta);
-        result.deformedModel.rawPointMap.insert(point.key(), deformed);
+        result.deformedModel.insert(point.key(), deformed);
     }
     // Publish only after every point succeeded. Never deform the previous result.
     const auto published = m_output->publish(std::move(result));
@@ -219,9 +220,7 @@ void CalculationControl::setModel(const core::ModelData &model) {
     emit requestSetModel(model);
 }
 void CalculationControl::setRawPointMap(const core::PointMap &rawPointMap) {
-    core::ModelData model;
-    model.rawPointMap = rawPointMap;
-    setModel(model);
+    setModel(rawPointMap);
 }
 void CalculationControl::submitFrame(const core::FrameSnapshotPtr &snapshot) {
     m_storage->writeWavelengthFrame(snapshot);
