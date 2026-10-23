@@ -21,6 +21,7 @@ FOSD::FOSD(QWidget* parent)
 FOSD::~FOSD()
 {
 }
+
 void FOSD::setUiBackend(fosd::widgets::IWorkbenchBackend *backend) {
     m_presenter->setBackend(backend);
 }

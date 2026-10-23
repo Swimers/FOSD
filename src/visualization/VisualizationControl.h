@@ -70,6 +70,7 @@ private:
     vtkSmartPointer<ModelInteractorStyle> m_interactorStyle;
     std::unique_ptr<SceneEnvironment> m_scene;
     core::CalculationRepositoryPtr m_repository;
+
     QTimer *m_refreshTimer = nullptr;   // Reserved only; no timer is created yet.
     quint64 m_expectedModelRevision = 0;
     quint64 m_lastResultRevision = 0;

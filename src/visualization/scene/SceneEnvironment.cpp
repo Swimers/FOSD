@@ -5,4 +5,10 @@
 namespace fosd { namespace visualization {
 SceneEnvironment::SceneEnvironment() = default;
 SceneEnvironment::~SceneEnvironment() = default;
+
+void SceneEnvironment::setRenderer(vtkRenderer *renderer)
+{
+    m_renderer = renderer;
+}
+
 } }
