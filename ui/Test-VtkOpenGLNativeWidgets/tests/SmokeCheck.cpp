@@ -1,7 +1,7 @@
 #include "SmokeCheck.h"
-#include "VtkValidationBackend.h"
-#include "Test-VtkOpenGLNativeWidgets/VtkValidationPresenter.h"
-#include "Test-VtkOpenGLNativeWidgets/VtkValidationWindow.h"
+#include "Test-VtkOpenGLNativeWidgets/backend/VtkValidationBackend.h"
+#include "Test-VtkOpenGLNativeWidgets/presenters/VtkValidationPresenter.h"
+#include "Test-VtkOpenGLNativeWidgets/views/VtkValidationWindow.h"
 #include <QCoreApplication>
 #include <QImage>
 #include <QTextStream>

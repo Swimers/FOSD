@@ -1,6 +1,6 @@
 # Qt/VTK 全后端集成验证前端
 
-本程序通过 `VtkValidationWindow.ui` 构建 `QVTKOpenGLNativeWidget`、通信参数、标定参数、存储选择及渲染按钮。C++ View 只执行 setupUi、收集字段、显示状态及管理控件持有的 RenderWindow。按钮和数据经 Presenter 调用应用适配器，View 不直接访问业务 Control。
+本程序通过 `views/VtkValidationWindow.ui` 构建 `QVTKOpenGLNativeWidget`、通信参数、标定参数、存储选择及渲染按钮。C++ View 只执行 setupUi、收集字段、显示状态及管理控件持有的 RenderWindow。按钮和数据经 Presenter 调用应用适配器，View 不直接访问业务 Control。
 
 ## View / Presenter 结构
 
@@ -14,10 +14,10 @@ VtkValidationWindow ──实现──> IVtkValidationView
         ↓                         │
 VtkValidationPresenter ──调用──> IVtkValidationBackend
                                       ↑
-                           apps 中的 VtkValidationBackend
+                           backend/VtkValidationBackend
 ```
 
-View 负责 Qt 控件、文件对话框、字段采集和界面状态，不直接包含通信、解算、存储或可视化业务逻辑。Presenter 负责检查绑定状态和 OpenGL 上下文、转发命令、处理成功或失败结果。Backend 接口代表应用能力，具体实现位于 `apps/Test-VtkOpenGLNativeWidgets`，因此 Presenter 可以通过 Fake View / Fake Backend 独立测试。
+View 负责 Qt 控件、文件对话框、字段采集和界面状态，不直接包含通信、解算、存储或可视化业务逻辑。Presenter 负责检查绑定状态和 OpenGL 上下文、转发命令、处理成功或失败结果。Backend 接口和实现统一位于 `backend`，Presenter 仍只依赖抽象接口，因此可以通过 Fake View / Fake Backend 独立测试。`apps/Test-VtkOpenGLNativeWidgets` 只保留程序入口和应用目标定义。
 
 `vtkRenderWindow*` 的所有权始终属于 View：`VtkValidationWindow` 创建 `vtkGenericOpenGLRenderWindow` 并交给 `QVTKOpenGLNativeWidget`，Presenter 读取同一裸指针并传给 Backend。Backend 和 `VisualizationControl` 只借用该指针，不创建替代窗口，也不负责释放它。Presenter 绑定后会比较前后端指针，防止错误窗口被接入。
 
@@ -25,15 +25,17 @@ View 负责 Qt 控件、文件对话框、字段采集和界面状态，不直�
 
 | 文件 | 主要功能 |
 | --- | --- |
-| `VtkValidationWindow.ui` | 定义验证窗口布局，包含 `QVTKOpenGLNativeWidget`、通信配置、标定参数、模型导入、存储配置、形变倍率以及绑定、示例球体、相机和刷新按钮。只描述界面，不包含业务代码。 |
-| `IVtkValidationView.h` | Presenter 面向的 View 抽象接口。提供文件选择、获取前端 `vtkRenderWindow*`、检查 OpenGL 上下文、显示绑定信息和状态文本等能力。 |
-| `VtkValidationWindow.h` | 声明实际 QWidget View。持有生成的 UI 对象和 `vtkGenericOpenGLRenderWindow`，实现 `IVtkValidationView`，并以 Qt 信号公开用户操作。 |
-| `VtkValidationWindow.cpp` | 初始化 `.ui` 和原生 VTK 窗口，将 RenderWindow 设置给 `QVTKOpenGLNativeWidget`；连接按钮；汇总输入字段为 `QVariantMap`；负责文件对话框、状态显示、按钮启用状态和前后端指针地址显示。析构时先释放原生控件，再释放 RenderWindow。 |
-| `IVtkValidationBackend.h` | Presenter 面向的应用后端端口。声明窗口绑定/解绑、查询已绑定窗口、示例球体、清除、相机重置、刷新以及通用命令执行接口；所有窗口指针均为同步借用指针。 |
-| `VtkValidationPresenter.h` | 声明 View 与 Backend 之间的协调器及其槽函数，不依赖具体 QWidget、通信或计算 Control。 |
-| `VtkValidationPresenter.cpp` | 实现窗口绑定与指针一致性校验、解绑、OpenGL 上下文门控、模型/存储文件选择、通用按钮参数转发、渲染命令调用和状态回显；析构时主动通知 Backend 解绑。 |
+| `views/VtkValidationWindow.ui` | 定义验证窗口布局，包含 `QVTKOpenGLNativeWidget`、通信配置、标定参数、模型导入、存储配置、形变倍率以及绑定、示例球体、相机和刷新按钮。只描述界面，不包含业务代码。 |
+| `views/IVtkValidationView.h` | Presenter 面向的 View 抽象接口。提供文件选择、获取前端 `vtkRenderWindow*`、检查 OpenGL 上下文、显示绑定信息和状态文本等能力。 |
+| `views/VtkValidationWindow.h` | 声明实际 QWidget View。持有生成的 UI 对象和 `vtkGenericOpenGLRenderWindow`，实现 `IVtkValidationView`，并以 Qt 信号公开用户操作。 |
+| `views/VtkValidationWindow.cpp` | 初始化 `.ui` 和原生 VTK 窗口，将 RenderWindow 设置给 `QVTKOpenGLNativeWidget`；连接按钮；汇总输入字段为 `QVariantMap`；负责文件对话框、状态显示、按钮启用状态和前后端指针地址显示。析构时先释放原生控件，再释放 RenderWindow。 |
+| `backend/IVtkValidationBackend.h` | Presenter 面向的应用后端端口。声明窗口绑定/解绑、查询已绑定窗口、示例球体、清除、相机重置、刷新以及通用命令执行接口；所有窗口指针均为同步借用指针。 |
+| `backend/VtkValidationBackend.h/.cpp` | 实现验证应用后端，组合通信、协议、解算、存储和可视化 Control，负责命令转换、状态汇总、Repository衔接以及 RenderWindow 的借用绑定。 |
+| `presenters/VtkValidationPresenter.h` | 声明 View 与 Backend 之间的协调器及其槽函数，不依赖具体 QWidget、通信或计算 Control。 |
+| `presenters/VtkValidationPresenter.cpp` | 实现窗口绑定与指针一致性校验、解绑、OpenGL 上下文门控、模型/存储文件选择、通用按钮参数转发、渲染命令调用和状态回显；析构时主动通知 Backend 解绑。 |
 | `tests/PresenterTests.cpp` | 使用 Fake View 和 Fake Backend 验证 Presenter，不创建真实 OpenGL 窗口。覆盖参数透传、文件选择取消、窗口指针传递、上下文未就绪、重复命令、绑定失败和析构解绑。 |
-| `CMakeLists.txt` | 定义 Presenter 静态库、QVTK/Qt 依赖接口库和实际 Widgets 静态库；查找匹配 Debug/Release 的 `vtkGUISupportQt`，并在启用测试时注册 Presenter 单元测试。 |
+| `tests/SmokeCheck.h/.cpp` | 实现可见窗口冒烟检查，验证真实 OpenGL、RenderWindow 指针、UDP到解算/存储/VTK形变的完整链路以及可选截图。 |
+| `CMakeLists.txt` | 分别定义 Presenter、Widgets、Backend 和 SmokeCheck 静态库；查找匹配 Debug/Release 的 `vtkGUISupportQt`，并在启用测试时注册 Presenter 单元测试。 |
 | `README.md` | 记录模块结构、数据链路、操作流程、构建运行方法和自动验证范围。 |
 
 主要交互分为两类：

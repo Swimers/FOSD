@@ -1,6 +1,6 @@
 #pragma once
-#include "IVtkValidationView.h"
-#include "IVtkValidationBackend.h"
+#include "Test-VtkOpenGLNativeWidgets/views/IVtkValidationView.h"
+#include "Test-VtkOpenGLNativeWidgets/backend/IVtkValidationBackend.h"
 #include <QObject>
 namespace fosd { namespace vtk_test {
 class VtkValidationPresenter final : public QObject {

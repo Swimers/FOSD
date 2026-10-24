@@ -1,7 +1,9 @@
-add_executable(Test-VtkOpenGLNativeWidgets WIN32
-    main.cpp VtkValidationBackend.h VtkValidationBackend.cpp SmokeCheck.h SmokeCheck.cpp)
-target_link_libraries(Test-VtkOpenGLNativeWidgets PRIVATE fosd_vtk_validation_widgets
-    fosd_communication fosd_protocol fosd_calculation fosd_storage fosd_visualization)
+add_executable(Test-VtkOpenGLNativeWidgets WIN32 main.cpp)
+target_link_libraries(Test-VtkOpenGLNativeWidgets
+    PRIVATE
+        fosd_vtk_validation_widgets
+        fosd_vtk_validation_backend
+        fosd_vtk_validation_smoke)
 target_compile_features(Test-VtkOpenGLNativeWidgets PRIVATE cxx_std_11)
 set(FOSD_VTK_NATIVE_RUNTIME_DIR "" CACHE PATH "Directory containing matching VTK runtime DLLs for the native validation app")
 if(WIN32)

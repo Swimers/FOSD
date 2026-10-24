@@ -1,4 +1,4 @@
-#include "../VtkValidationPresenter.h"
+#include "../presenters/VtkValidationPresenter.h"
 #include <QtTest>
 using namespace fosd::vtk_test;
 class FakeView final : public IVtkValidationView {

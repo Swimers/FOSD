@@ -1,7 +1,10 @@
 find_package(Qt5 5.12 REQUIRED COMPONENTS Widgets OpenGL)
 
 add_library(fosd_vtk_validation_presenter STATIC
-    IVtkValidationView.h IVtkValidationBackend.h VtkValidationPresenter.h VtkValidationPresenter.cpp)
+    views/IVtkValidationView.h
+    backend/IVtkValidationBackend.h
+    presenters/VtkValidationPresenter.h
+    presenters/VtkValidationPresenter.cpp)
 target_include_directories(fosd_vtk_validation_presenter PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_link_libraries(fosd_vtk_validation_presenter PUBLIC Qt5::Core)
 
@@ -21,9 +24,35 @@ if(WIN32 AND (NOT FOSD_vtkGUISupportQt_LIBRARY_DEBUG OR NOT FOSD_vtkGUISupportQt
 endif()
 target_link_libraries(fosd_vtk_validation_qt INTERFACE ${FOSD_vtkGUISupportQt_LIBRARY})
 
-add_library(fosd_vtk_validation_widgets STATIC VtkValidationWindow.h VtkValidationWindow.cpp VtkValidationWindow.ui)
+add_library(fosd_vtk_validation_widgets STATIC
+    views/VtkValidationWindow.h
+    views/VtkValidationWindow.cpp
+    views/VtkValidationWindow.ui)
 target_link_libraries(fosd_vtk_validation_widgets PUBLIC fosd_vtk_validation_presenter fosd_vtk_validation_qt)
 target_compile_features(fosd_vtk_validation_widgets PUBLIC cxx_std_11)
+
+add_library(fosd_vtk_validation_backend STATIC
+    backend/VtkValidationBackend.h
+    backend/VtkValidationBackend.cpp)
+target_link_libraries(fosd_vtk_validation_backend
+    PUBLIC
+        fosd_vtk_validation_presenter
+        fosd_communication
+        fosd_protocol
+        fosd_calculation
+        fosd_storage
+        fosd_visualization)
+target_compile_features(fosd_vtk_validation_backend PUBLIC cxx_std_11)
+
+add_library(fosd_vtk_validation_smoke STATIC
+    tests/SmokeCheck.h
+    tests/SmokeCheck.cpp)
+target_link_libraries(fosd_vtk_validation_smoke
+    PUBLIC
+        fosd_vtk_validation_widgets
+        fosd_vtk_validation_backend)
+target_compile_features(fosd_vtk_validation_smoke PUBLIC cxx_std_11)
+
 if(FOSD_BUILD_TESTS OR FOSD_VTK_NATIVE_BUILD_TESTS)
     add_executable(test_vtk_validation_presenter tests/PresenterTests.cpp)
     target_link_libraries(test_vtk_validation_presenter PRIVATE fosd_vtk_validation_presenter Qt5::Test)

@@ -1,5 +1,5 @@
 #pragma once
-#include "Test-VtkOpenGLNativeWidgets/IVtkValidationBackend.h"
+#include "IVtkValidationBackend.h"
 #include <memory>
 #include <vtkSmartPointer.h>
 #include "protocol/ProtocolControl.h"
