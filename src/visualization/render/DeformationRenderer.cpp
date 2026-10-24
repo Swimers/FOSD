@@ -32,12 +32,34 @@ void DeformationRenderer::applyResult(const core::CalculationResultPtr &result) 
     }
     m_displayMesh->SetPoints(points); m_displayMesh->Modified();
 }
-void DeformationRenderer::setDeformationScale(double scale) { m_scale = scale; applyResult(m_result); }
-void DeformationRenderer::resetDeformation() { applyResult(core::CalculationResultPtr()); }
-void DeformationRenderer::clear() {
-    m_result.reset(); m_actor = nullptr; m_mapper = nullptr; m_displayMesh = nullptr; m_originalMesh = nullptr;
+void DeformationRenderer::setDeformationScale(double scale) { 
+    m_scale = scale; 
+    applyResult(m_result); 
 }
-vtkPolyData *DeformationRenderer::displayMesh() const { return m_displayMesh; }
-vtkPolyDataMapper *DeformationRenderer::mapper() const { return m_mapper; }
-vtkActor *DeformationRenderer::actor() const { return m_actor; }
-} }
+
+void DeformationRenderer::resetDeformation() { 
+    applyResult(core::CalculationResultPtr()); 
+}
+
+void DeformationRenderer::clear() {
+    m_result.reset(); 
+    m_actor = nullptr; 
+    m_mapper = nullptr; 
+    m_displayMesh = nullptr; 
+    m_originalMesh = nullptr;
+}
+
+vtkPolyData *DeformationRenderer::displayMesh() const {
+    return m_displayMesh; 
+}
+
+vtkPolyDataMapper *DeformationRenderer::mapper() const { 
+    return m_mapper; 
+}
+
+vtkActor *DeformationRenderer::actor() const { 
+    return m_actor; 
+}
+
+}
+}

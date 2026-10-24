@@ -39,7 +39,8 @@ void VtkValidationWindow::showBinding(bool bound, vtkRenderWindow *backendWindow
 }
 void VtkValidationWindow::showStatus(const QString &message) { m_ui->statusLabel->setText(message); }
 QString VtkValidationWindow::chooseFile(bool save) {
-    if (!save) return QFileDialog::getOpenFileName(this, tr("导入 STL 模型（坐标单位 mm）"), {}, "STL (*.stl)");
+    if (!save) 
+        return QFileDialog::getOpenFileName(this, tr("导入 STL 模型（坐标单位 mm）"), {}, "STL (*.stl)");
     return QFileDialog::getSaveFileName(this, tr("存储所有数据"), {},
         m_ui->storageFormat->currentIndex() == 0 ? "CSV (*.csv)" : "SQLite (*.sqlite)");
 }

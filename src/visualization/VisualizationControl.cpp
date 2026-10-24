@@ -139,14 +139,21 @@ void VisualizationControl::applyResult(const core::CalculationResultPtr &result)
     if (m_renderWindow) m_renderWindow->Render();
 }
 void VisualizationControl::setDeformationScale(double scale) {
-    if (!std::isfinite(scale)) return;
-    m_deformation->setDeformationScale(scale); if (m_renderWindow) m_renderWindow->Render();
+    if (!std::isfinite(scale)) 
+        return;
+    m_deformation->setDeformationScale(scale); 
+    if (m_renderWindow) 
+        m_renderWindow->Render();
 }
 void VisualizationControl::resetDeformation() {
-    m_deformation->resetDeformation(); if (m_renderWindow) m_renderWindow->Render();
+    m_deformation->resetDeformation(); 
+    if (m_renderWindow) 
+        m_renderWindow->Render();
 }
 void VisualizationControl::resetCamera() {
-    m_renderer->ResetCamera(); if (m_renderWindow) m_renderWindow->Render();
+    m_renderer->ResetCamera(); 
+    if (m_renderWindow) 
+        m_renderWindow->Render();
 }
 
 
