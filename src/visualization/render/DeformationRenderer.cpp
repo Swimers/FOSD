@@ -1,11 +1,16 @@
 #include "DeformationRenderer.h"
+
 #include <vtkActor.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPoints.h>
-namespace fosd { namespace visualization {
+
+namespace fosd {
+namespace visualization {
+
 DeformationRenderer::DeformationRenderer() = default;
 DeformationRenderer::~DeformationRenderer() = default;
+
 void DeformationRenderer::setOriginalMesh(const vtkPolyData *mesh) {
     clear();
     if (!mesh) return;
@@ -16,10 +21,15 @@ void DeformationRenderer::setOriginalMesh(const vtkPolyData *mesh) {
     m_mapper->ScalarVisibilityOff();
     m_actor = vtkSmartPointer<vtkActor>::New(); m_actor->SetMapper(m_mapper);
 }
+
 void DeformationRenderer::applyResult(const core::CalculationResultPtr &result) {
     m_result = result;
-    if (!m_originalMesh) return;
-    auto points = vtkSmartPointer<vtkPoints>::New(); points->SetDataTypeToDouble();
+
+    if (!m_originalMesh)
+        return;
+
+    auto points = vtkSmartPointer<vtkPoints>::New(); 
+    points->SetDataTypeToDouble();
     points->SetNumberOfPoints(m_originalMesh->GetNumberOfPoints());
     for (vtkIdType id = 0; id < m_originalMesh->GetNumberOfPoints(); ++id) {
         double xyz[3]; m_originalMesh->GetPoint(id, xyz);
@@ -32,6 +42,7 @@ void DeformationRenderer::applyResult(const core::CalculationResultPtr &result) 
     }
     m_displayMesh->SetPoints(points); m_displayMesh->Modified();
 }
+
 void DeformationRenderer::setDeformationScale(double scale) { 
     m_scale = scale; 
     applyResult(m_result); 

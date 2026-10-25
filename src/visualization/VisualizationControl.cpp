@@ -31,16 +31,19 @@ VisualizationControl::VisualizationControl(
       m_interactorStyle(vtkSmartPointer<ModelInteractorStyle>::New()),
       m_scene(new SceneEnvironment)
 {
+    // 子模块初始化
     m_picker->setRenderer(m_renderer.GetPointer());
     m_interactorStyle->setPointPicker(m_picker.get());
     m_scene->setRenderer(m_renderer.GetPointer());
 
+    // 刷新
     connect(m_picker.get(), &PointPicker::pointPicked,
             this, &VisualizationControl::pointPicked);
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(33);
     connect(m_refreshTimer, &QTimer::timeout, this, &VisualizationControl::refreshResult);
 
+    // 功能绑定
     if (renderWindowPtr)
         attach(renderWindowPtr);
 }
@@ -69,12 +72,13 @@ bool VisualizationControl::attach(vtkRenderWindow *window)
     m_renderWindow = window;
     m_renderWindow->AddRenderer(m_renderer);
 
+    // 绑定交互器
     vtkRenderWindowInteractor *interactor = m_renderWindow->GetInteractor();
     if(interactor)
         interactor->SetInteractorStyle(m_interactorStyle.GetPointer());
 
     return true;
-
+    
 }
 
 void VisualizationControl::detach()
@@ -104,31 +108,55 @@ bool VisualizationControl::loadModel(const QString &path) {
     m_deformation->actor()->GetProperty()->SetColor(0.5, 0.65, 0.15);
     m_renderer->AddActor(m_deformation->actor());
     m_expectedModelRevision = 0; m_lastResultRevision = 0;
-    resetCamera(); emit modelLoaded(originalModel());
+    resetCamera(); 
+    emit modelLoaded(originalModel());
     return true;
 }
+
 void VisualizationControl::unloadModel() {
-    if (m_deformation->actor()) m_renderer->RemoveActor(m_deformation->actor());
-    m_deformation->clear(); m_mesh->clear(); m_expectedModelRevision = 0; m_lastResultRevision = 0;
-    if (m_renderWindow) m_renderWindow->Render();
+    if (m_deformation->actor()) 
+        m_renderer->RemoveActor(m_deformation->actor());
+    m_deformation->clear(); 
+    m_mesh->clear(); 
+    m_expectedModelRevision = 0; 
+    m_lastResultRevision = 0;
+
+    if (m_renderWindow) 
+        m_renderWindow->Render();
 }
-core::ModelDataPtr VisualizationControl::originalModel() const { return m_mesh->originalModel(); }
+
+core::ModelDataPtr VisualizationControl::originalModel() const { 
+    return m_mesh->originalModel();
+}
+
 void VisualizationControl::setResultRepository(core::CalculationRepositoryPtr repository) {
     m_repository = std::move(repository);
     if (m_repository) m_refreshTimer->start(); else m_refreshTimer->stop();
 }
+
 void VisualizationControl::refreshResult() {
-    if (m_renderWindow && m_repository) applyResult(m_repository->latest());
+    if (m_renderWindow && m_repository) 
+        applyResult(m_repository->latest());
 }
+
 void VisualizationControl::setExpectedModelRevision(quint64 revision) {
-    m_expectedModelRevision = revision; m_lastResultRevision = 0;
+    m_expectedModelRevision = revision;
+    m_lastResultRevision = 0;
 }
+
 void VisualizationControl::applyResult(const core::CalculationResultPtr &result) {
-    if (!result || !originalModel() || !m_expectedModelRevision ||
-        result->modelRevision != m_expectedModelRevision || result->revision <= m_lastResultRevision) return;
+    if (!result || 
+        !originalModel() || 
+        !m_expectedModelRevision ||
+        result->modelRevision != m_expectedModelRevision || 
+        result->revision <= m_lastResultRevision)
+        return;
+
     if (result->displacementMap.size() != originalModel()->size()) {
-        emit errorOccurred(QStringLiteral("Result point count does not match the model")); return;
+        emit errorOccurred(QStringLiteral("Result point count does not match the model")); 
+        return;
     }
+
     for (auto point = originalModel()->constBegin(); point != originalModel()->constEnd(); ++point) {
         const auto delta = result->displacementMap.value(point.key());
         if (delta.size() != 3 || !std::isfinite(delta[0]) || !std::isfinite(delta[1]) || !std::isfinite(delta[2])) {
@@ -138,6 +166,7 @@ void VisualizationControl::applyResult(const core::CalculationResultPtr &result)
     m_deformation->applyResult(result); m_lastResultRevision = result->revision;
     if (m_renderWindow) m_renderWindow->Render();
 }
+
 void VisualizationControl::setDeformationScale(double scale) {
     if (!std::isfinite(scale)) 
         return;
@@ -145,20 +174,28 @@ void VisualizationControl::setDeformationScale(double scale) {
     if (m_renderWindow) 
         m_renderWindow->Render();
 }
+
 void VisualizationControl::resetDeformation() {
     m_deformation->resetDeformation(); 
     if (m_renderWindow) 
         m_renderWindow->Render();
 }
-void VisualizationControl::resetCamera() {
-    m_renderer->ResetCamera(); 
+
+void VisualizationControl::setfreshFPS(int Interval)
+{
+    m_refreshTimer->stop();
+    m_refreshTimer->setInterval(Interval);
+    m_refreshTimer->start();
     if (m_renderWindow) 
         m_renderWindow->Render();
 }
 
-
-
-
+void VisualizationControl::resetCamera()
+{
+    m_renderer->ResetCamera(); 
+    if (m_renderWindow) 
+        m_renderWindow->Render();
+}
 
 } 
 }

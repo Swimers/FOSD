@@ -43,6 +43,7 @@ public:
     void setExpectedModelRevision(quint64 revision);
     void setDeformationScale(double scale);
     void resetDeformation();
+    void setfreshFPS(int Interval);
 
     void setScalarField(ScalarField field);
     void setColorRangeMode(ColorRangeMode mode);

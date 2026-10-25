@@ -6,10 +6,29 @@
 
 #include <vtkType.h>
 
-namespace fosd { namespace visualization {
-enum class ScalarField { DisplacementX, DisplacementY, DisplacementZ, Magnitude };
-enum class ColorRangeMode { Automatic, Manual };
-enum class CameraPreset { Isometric, Front, Back, Left, Right, Top, Bottom };
+namespace fosd { 
+namespace visualization {
+
+enum class ScalarField { 
+    DisplacementX, 
+    DisplacementY, 
+    DisplacementZ, 
+    Magnitude 
+};
+enum class ColorRangeMode { 
+    Automatic, 
+    Manual 
+};
+enum class CameraPreset { 
+    Isometric, 
+    Front, 
+    Back, 
+    Left, 
+    Right, 
+    Top, 
+    Bottom 
+};
+
 struct KeyPointDefinition {
     vtkIdType pointId = -1;
     QString label;
@@ -20,7 +39,10 @@ struct PickedPointInfo {
     std::array<double, 3> displayPositionMm{{0.0, 0.0, 0.0}};
     bool valid = false;
 };
-} }
+
+}
+}
+
 Q_DECLARE_METATYPE(fosd::core::ModelDataPtr)
 Q_DECLARE_METATYPE(fosd::visualization::ScalarField)
 Q_DECLARE_METATYPE(fosd::visualization::ColorRangeMode)

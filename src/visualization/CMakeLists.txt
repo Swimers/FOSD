@@ -2,13 +2,20 @@ add_library(fosd_visualization STATIC
     VisualizationControl.h
     VisualizationControl.cpp
     VisualizationTypes.h
-    mesh/MeshManager.h mesh/MeshManager.cpp
-    render/DeformationRenderer.h render/DeformationRenderer.cpp
-    render/ScalarColorMapper.h render/ScalarColorMapper.cpp
-    marker/KeyPointManager.h marker/KeyPointManager.cpp
-    interaction/ModelInteractorStyle.h interaction/ModelInteractorStyle.cpp
-    interaction/PointPicker.h interaction/PointPicker.cpp
-    scene/SceneEnvironment.h scene/SceneEnvironment.cpp
+    mesh/MeshManager.h 
+    mesh/MeshManager.cpp
+    render/DeformationRenderer.h 
+    render/DeformationRenderer.cpp
+    render/ScalarColorMapper.h 
+    render/ScalarColorMapper.cpp
+    marker/KeyPointManager.h 
+    marker/KeyPointManager.cpp
+    interaction/ModelInteractorStyle.h 
+    interaction/ModelInteractorStyle.cpp
+    interaction/PointPicker.h 
+    interaction/PointPicker.cpp
+    scene/SceneEnvironment.h 
+    scene/SceneEnvironment.cpp
 )
 
 # Public includes use visualization/..., with src/ as their root.
