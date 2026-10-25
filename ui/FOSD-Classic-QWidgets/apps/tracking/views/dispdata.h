@@ -2,8 +2,13 @@
 #include <QDialog>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class dispdata; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class dispdata;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for dispdata.ui; emits intent, never calls business Controls.
 class HardwareDataView : public QDialog, public IView {
@@ -21,8 +26,11 @@ signals:
     void checkBoxRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::dispdata> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

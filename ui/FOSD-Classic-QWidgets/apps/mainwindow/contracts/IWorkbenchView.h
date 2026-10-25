@@ -1,7 +1,9 @@
 #pragma once
 #include "../../../common/IView.h"
 #include "../../../common/UiTypes.h"
-namespace fosd { namespace ui { namespace classic {
+namespace fosd {
+namespace ui {
+namespace classic {
 class IWorkbenchView {
 public:
     virtual ~IWorkbenchView() = default;
@@ -13,4 +15,6 @@ public:
     virtual void applyTheme(bool dark) = 0;
     virtual QString chooseFile(bool save, const QString &title, const QString &filter) = 0;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

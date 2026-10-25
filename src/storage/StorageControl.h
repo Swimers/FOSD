@@ -5,7 +5,10 @@
 #include <QThread>
 
 namespace fosd {
-namespace Calculation { class CalculationControl; }
+namespace Calculation {
+class CalculationControl;
+}
+
 namespace storage {
 namespace detail {
 class StorageWorker final : public QObject {
@@ -24,6 +27,7 @@ signals:
     void stopped();
     void batchWritten(fosd::storage::DataType type, quint64 sourceRevision, int rows);
     void errorOccurred(const fosd::storage::StorageError &error);
+
 private:
     void writeBatch(const StorageBatch &batch);
     void reportError(const QString &operation, const QString &message, quint64 revision = 0);
@@ -33,14 +37,15 @@ private:
     StorageConfiguration m_configuration;
     QString m_session;
 };
-}
+} // namespace detail
 
 // Hosts its worker on the supplied CalculationControl thread; never creates a
 // thread itself. Commands are asynchronous and serialized with calculations.
 class StorageControl final : public QObject {
     Q_OBJECT
 public:
-    StorageControl(QThread &host, WriterFactory factory = WriterFactory(), QObject *parent = nullptr);
+    StorageControl(QThread &host, WriterFactory factory = WriterFactory(),
+                   QObject *parent = nullptr);
     ~StorageControl() override;
 public slots:
     void start(const fosd::storage::StorageConfiguration &configuration);
@@ -57,10 +62,11 @@ signals:
     void requestStop();
     void requestFlush();
     void requestWavelength(const fosd::core::FrameSnapshotPtr &frame);
-    
+
 private:
     friend class fosd::Calculation::CalculationControl;
     void shutdown();
     QPointer<detail::StorageWorker> m_worker;
 };
-} }
+} // namespace storage
+} // namespace fosd

@@ -2,12 +2,29 @@
 #include <QMetaType>
 #include <QVariantMap>
 
-namespace fosd { namespace ui { namespace classic {
+namespace fosd {
+namespace ui {
+namespace classic {
 enum class PanelId {
-    Main, Connection, ConnectionDebug, Plot, PlotSettings,
-    Visualization, ModelPanel, ScenePanel, InfoPanel, KeyPointEdit, KeyPointSelect,
-    ColorPicker, HardwareData, TrackingManager, TrackingData,
-    Login, Registration, Recovery, Account
+    Main,
+    Connection,
+    ConnectionDebug,
+    Plot,
+    PlotSettings,
+    Visualization,
+    ModelPanel,
+    ScenePanel,
+    InfoPanel,
+    KeyPointEdit,
+    KeyPointSelect,
+    ColorPicker,
+    HardwareData,
+    TrackingManager,
+    TrackingData,
+    Login,
+    Registration,
+    Recovery,
+    Account
 };
 enum class FeatureId { MainWindow, Connection, Plot, Visualization, Model, Tracking, Account };
 FeatureId featureForPanel(PanelId panel);
@@ -28,7 +45,9 @@ struct UiResponse {
     QString message;
     QVariantMap fields;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd
 Q_DECLARE_METATYPE(fosd::ui::classic::PanelId)
 Q_DECLARE_METATYPE(fosd::ui::classic::FeatureId)
 Q_DECLARE_METATYPE(fosd::ui::classic::UiRequest)

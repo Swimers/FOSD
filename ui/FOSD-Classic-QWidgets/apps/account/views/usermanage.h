@@ -2,8 +2,13 @@
 #include <QWidget>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class UserManage; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class UserManage;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for usermanage.ui; emits intent, never calls business Controls.
 class AccountView : public QWidget, public IView {
@@ -22,8 +27,11 @@ signals:
     void pbtn_UserSetRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::UserManage> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

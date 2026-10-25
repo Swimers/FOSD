@@ -6,8 +6,12 @@
 #include <memory>
 class QVTKOpenGLNativeWidget;
 class vtkGenericOpenGLRenderWindow;
-namespace Ui { class VtkValidationWindow; }
-namespace fosd { namespace vtk_test {
+namespace Ui {
+class VtkValidationWindow;
+}
+
+namespace fosd {
+namespace vtk_test {
 class VtkValidationWindow final : public QWidget, public IVtkValidationView {
     Q_OBJECT
 public:
@@ -29,8 +33,10 @@ signals:
     void actionRequested(const QString &action, const QVariantMap &parameters);
 private slots:
     void requestAction();
+
 private:
     std::unique_ptr<Ui::VtkValidationWindow> m_ui;
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_window;
 };
-} }
+} // namespace vtk_test
+} // namespace fosd

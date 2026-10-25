@@ -2,7 +2,9 @@
 #include "../backends/WorkbenchBackend.h"
 #include "../contracts/IWorkbenchView.h"
 #include <QMap>
-namespace fosd { namespace ui { namespace classic {
+namespace fosd {
+namespace ui {
+namespace classic {
 class PanelPresenter;
 // Binds feature presenters to views/adapters; no control-name business switch.
 class WorkbenchPresenter final : public QObject {
@@ -18,9 +20,12 @@ private slots:
     void refreshBackend(fosd::ui::classic::FeatureId feature);
     void registryDestroyed();
     void showStatus(const QString &message);
+
 private:
     IWorkbenchView *m_view;
     QMap<int, PanelPresenter *> m_presenters;
     QPointer<WorkbenchBackend> m_backends;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

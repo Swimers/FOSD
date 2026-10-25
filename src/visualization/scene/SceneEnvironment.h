@@ -5,7 +5,8 @@ class vtkRenderer;
 class vtkAxesActor;
 class vtkActor;
 class vtkCamera;
-namespace fosd { namespace visualization {
+namespace fosd {
+namespace visualization {
 class SceneEnvironment final {
 public:
     SceneEnvironment();
@@ -18,10 +19,12 @@ public:
     void setCameraLocked(bool locked);
     void resetCamera();
     void clear();
+
 private:
     vtkRenderer *m_renderer = nullptr; // Borrowed from Control.
     vtkSmartPointer<vtkAxesActor> m_axes;
     vtkSmartPointer<vtkActor> m_grid;
     vtkSmartPointer<vtkCamera> m_camera;
 };
-} }
+} // namespace visualization
+} // namespace fosd

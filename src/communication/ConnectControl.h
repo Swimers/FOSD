@@ -10,9 +10,11 @@
 #include <memory>
 
 namespace fosd {
-namespace protocol { class ProtocolControl; }
-namespace communication {
+namespace protocol {
+class ProtocolControl;
+}
 
+namespace communication {
 class ITransport;
 class Udp;
 class Tcp;
@@ -21,7 +23,6 @@ class Serialport;
 using DecoderFactory = std::function<std::unique_ptr<IPacketDecoder>(Channel)>;
 
 namespace detail {
-
 class ConnectWorker final : public QObject {
     Q_OBJECT
 public:
@@ -54,8 +55,7 @@ private slots:
 private:
     void wire(ITransport *transport);
     std::unique_ptr<IPacketDecoder> initializeDecoder(Channel channel);
-    void forward(fosd::communication::Channel channel, 
-                 const QByteArray &bytes,
+    void forward(fosd::communication::Channel channel, const QByteArray &bytes,
                  const fosd::communication::Endpoint &peer);
     IPacketDecoder *decoder(fosd::communication::Channel channel);
 
@@ -80,8 +80,7 @@ class ConnectControl final : public QObject {
 public:
     explicit ConnectControl(QObject *parent = nullptr,
                             DecoderFactory decoderFactory = DecoderFactory());
-    explicit ConnectControl(QThread &hostThread, 
-                            QObject *parent = nullptr,
+    explicit ConnectControl(QThread &hostThread, QObject *parent = nullptr,
                             DecoderFactory decoderFactory = DecoderFactory());
     ~ConnectControl() override;
 
@@ -89,8 +88,7 @@ public:
     void openUdp(const UdpConfig &config);
     void openTcp(const TcpConfig &config);
     void close(Channel channel);
-    void send(Channel channel, const QByteArray &bytes,
-              const Endpoint &peer = Endpoint());
+    void send(Channel channel, const QByteArray &bytes, const Endpoint &peer = Endpoint());
 
 signals:
     void rawDataReceived(fosd::communication::Channel channel, const QByteArray &bytes,
@@ -111,10 +109,10 @@ signals:
 
 private:
     friend class fosd::protocol::ProtocolControl;
-    
+
     ConnectControl(QObject *parent, DecoderFactory decoderFactory, QThread *hostThread);
     void shutdown();
-    
+
     std::unique_ptr<QThread> m_ownedThread;
 
     QThread *m_thread = nullptr;
@@ -123,4 +121,3 @@ private:
 
 } // namespace communication
 } // namespace fosd
-

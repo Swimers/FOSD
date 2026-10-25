@@ -4,8 +4,7 @@
 #include <QWidget>
 #include <QTimer>
 
-class SwitchControl : public QWidget
-{
+class SwitchControl : public QWidget {
     Q_OBJECT
 
 public:
@@ -52,17 +51,17 @@ private slots:
     void onTimeout();
 
 private:
-    bool m_bChecked;         // 是否选中
-    QColor m_background;     // 背景颜色
-    QColor m_checkedColor;   // 选中颜色
-    QColor m_disabledColor;  // 不可用颜色
-    QColor m_thumbColor;     // 拇指颜色
-    qreal m_radius;          // 圆角
-    qreal m_nX;              // x点坐标
-    qreal m_nY;              // y点坐标
-    qint16 m_nHeight;        // 高度
-    qint16 m_nMargin;        // 外边距
-    QTimer m_timer;          // 定时器
+    bool m_bChecked;        // 是否选中
+    QColor m_background;    // 背景颜色
+    QColor m_checkedColor;  // 选中颜色
+    QColor m_disabledColor; // 不可用颜色
+    QColor m_thumbColor;    // 拇指颜色
+    qreal m_radius;         // 圆角
+    qreal m_nX;             // x点坐标
+    qreal m_nY;             // y点坐标
+    qint16 m_nHeight;       // 高度
+    qint16 m_nMargin;       // 外边距
+    QTimer m_timer;         // 定时器
 };
 
 #endif // SWITCHCONTROL_H

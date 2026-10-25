@@ -2,12 +2,10 @@
 
 namespace fosd {
 namespace communication {
-
-Udp::Udp(QObject *parent)
-    : ITransport(Channel::Udp, parent) {
+Udp::Udp(QObject *parent) : ITransport(Channel::Udp, parent) {
     connect(&m_socket, &QUdpSocket::readyRead, this, &Udp::handleReadyRead);
-    connect(&m_socket, QOverload<QAbstractSocket::SocketError>::of(&QUdpSocket::error),
-            this, &Udp::handleSocketError);
+    connect(&m_socket, QOverload<QAbstractSocket::SocketError>::of(&QUdpSocket::error), this,
+            &Udp::handleSocketError);
 }
 
 void Udp::handleReadyRead() {
@@ -18,13 +16,11 @@ void Udp::handleReadyRead() {
                         static_cast<int>(m_socket.error()));
             break;
         }
-        
+
         QByteArray bytes(static_cast<int>(pending), Qt::Uninitialized);
         Endpoint peer;
-        const qint64 received = m_socket.readDatagram(bytes.data(), 
-                                                      bytes.size(),
-                                                      &peer.address,
-                                                      &peer.port);
+        const qint64 received =
+            m_socket.readDatagram(bytes.data(), bytes.size(), &peer.address, &peer.port);
 
         if (received < 0) {
             reportError(QStringLiteral("receive"), m_socket.errorString(),
@@ -89,4 +85,3 @@ quint16 Udp::localPort() const {
 
 } // namespace communication
 } // namespace fosd
-

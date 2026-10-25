@@ -6,14 +6,12 @@
 namespace fosd {
 namespace communication {
 namespace {
-
 QString checkRules(const QVector<PacketRule> &rules) {
     if (rules.isEmpty())
         return QStringLiteral("At least one packet rule is required");
     for (int index = 0; index < rules.size(); ++index) {
         const PacketRule &rule = rules.at(index);
-        if (rule.marker.isEmpty() || !rule.frameSize ||
-            rule.maxFrameSize < rule.marker.size())
+        if (rule.marker.isEmpty() || !rule.frameSize || rule.maxFrameSize < rule.marker.size())
             return QStringLiteral("Invalid packet framing rule at index %1").arg(index);
     }
     return {};
@@ -40,8 +38,7 @@ int markerSuffixSize(const QByteArray &bytes, const QVector<PacketRule> &rules) 
 
 } // namespace
 
-namespace Rule{
-
+namespace Rule {
 PacketRule JCS_Data_PacketRule() {
     const int headerSize = 12;
     const int recordSize = 4;
@@ -53,8 +50,10 @@ PacketRule JCS_Data_PacketRule() {
             return 0;
         const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
         int sensors = 0;
-        for (int channel = 0; channel < 7; ++channel) sensors += data[4 + channel];
-        if (sensors != data[11]) return -1;
+        for (int channel = 0; channel < 7; ++channel)
+            sensors += data[4 + channel];
+        if (sensors != data[11])
+            return -1;
         return headerSize + int(data[11]) * recordSize;
     };
     return rule;
@@ -73,8 +72,8 @@ PacketRule JCS_Channel_PacketRule() {
 
         const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
         const uchar channel = data[1];
-        if (data[0] != 0xFA || data[2] != 0xFA ||
-            channel < 1 || channel > maxChannel || data[3] != channel)
+        if (data[0] != 0xFA || data[2] != 0xFA || channel < 1 || channel > maxChannel ||
+            data[3] != channel)
             return -1;
 
         if (bytes.size() < headerSize)
@@ -99,10 +98,11 @@ PacketRule MP_PacketRule() {
     return rule;
 }
 
-}
+} // namespace Rule
 
 UdpPacketDecoder::UdpPacketDecoder(QVector<PacketRule> rules)
-    : IPacketDecoder(Channel::Udp), m_rules(std::move(rules)) {}
+    : IPacketDecoder(Channel::Udp), m_rules(std::move(rules)) {
+}
 
 QString UdpPacketDecoder::validateConfiguration() const {
     return checkRules(m_rules);
@@ -126,7 +126,8 @@ QVector<QByteArray> UdpPacketDecoder::feed(const QByteArray &bytes, const Endpoi
 }
 
 TcpPacketDecoder::TcpPacketDecoder(QVector<PacketRule> rules)
-    : IPacketDecoder(Channel::Tcp), m_rules(std::move(rules)) {}
+    : IPacketDecoder(Channel::Tcp), m_rules(std::move(rules)) {
+}
 
 QString TcpPacketDecoder::validateConfiguration() const {
     return checkRules(m_rules);
@@ -152,12 +153,14 @@ QVector<QByteArray> TcpPacketDecoder::feed(const QByteArray &bytes, const Endpoi
         if (!matched) {
             const int keep = markerSuffixSize(m_buffer, m_rules);
             if (m_buffer.size() > keep)
-                reportError(QStringLiteral("decode"), QStringLiteral("Discarded bytes without a TCP packet header"));
+                reportError(QStringLiteral("decode"),
+                            QStringLiteral("Discarded bytes without a TCP packet header"));
             m_buffer = m_buffer.right(keep);
             break;
         }
         if (start > 0) {
-            reportError(QStringLiteral("decode"), QStringLiteral("Discarded bytes before TCP packet header"));
+            reportError(QStringLiteral("decode"),
+                        QStringLiteral("Discarded bytes before TCP packet header"));
             m_buffer.remove(0, start);
         }
         const int size = matched->frameSize(m_buffer);
@@ -188,7 +191,8 @@ void TcpPacketDecoder::reset() {
 
 SerialPacketDecoder::SerialPacketDecoder(QByteArray terminator, int maxFrameSize)
     : IPacketDecoder(Channel::Serial), m_terminator(std::move(terminator)),
-      m_maxFrameSize(maxFrameSize) {}
+      m_maxFrameSize(maxFrameSize) {
+}
 
 QString SerialPacketDecoder::validateConfiguration() const {
     if (m_terminator.isEmpty() || m_maxFrameSize < m_terminator.size())
@@ -206,7 +210,8 @@ QVector<QByteArray> SerialPacketDecoder::feed(const QByteArray &bytes, const End
         const int pos = m_buffer.indexOf(m_terminator);
         if (pos < 0) {
             if (!m_discarding && m_buffer.size() > m_maxFrameSize) {
-                reportError(QStringLiteral("decode"), QStringLiteral("Serial command exceeds maximum frame size"));
+                reportError(QStringLiteral("decode"),
+                            QStringLiteral("Serial command exceeds maximum frame size"));
                 m_discarding = true;
             }
             if (m_discarding)
@@ -217,7 +222,8 @@ QVector<QByteArray> SerialPacketDecoder::feed(const QByteArray &bytes, const End
         if (!m_discarding && size <= m_maxFrameSize)
             packets.append(m_buffer.left(size));
         else if (!m_discarding)
-            reportError(QStringLiteral("decode"), QStringLiteral("Serial command exceeds maximum frame size"));
+            reportError(QStringLiteral("decode"),
+                        QStringLiteral("Serial command exceeds maximum frame size"));
         m_buffer.remove(0, size);
         m_discarding = false;
     }
@@ -231,9 +237,12 @@ void SerialPacketDecoder::reset() {
 
 std::unique_ptr<IPacketDecoder> createPacketDecoder(Channel channel) {
     switch (channel) {
-    case Channel::Udp: return std::unique_ptr<IPacketDecoder>(new UdpPacketDecoder);
-    case Channel::Tcp: return std::unique_ptr<IPacketDecoder>(new TcpPacketDecoder);
-    case Channel::Serial: return std::unique_ptr<IPacketDecoder>(new SerialPacketDecoder);
+        case Channel::Udp:
+            return std::unique_ptr<IPacketDecoder>(new UdpPacketDecoder);
+        case Channel::Tcp:
+            return std::unique_ptr<IPacketDecoder>(new TcpPacketDecoder);
+        case Channel::Serial:
+            return std::unique_ptr<IPacketDecoder>(new SerialPacketDecoder);
     }
     return nullptr;
 }

@@ -8,12 +8,11 @@
 #include <QThread>
 #include <functional>
 
-namespace fosd{
-namespace Calculation{
-
+namespace fosd {
+namespace Calculation {
 struct CalculationConfiguration {
-    CalibrationStrainData strainCalibration; // 校准应变数据
-    CalibrationChannelData channelCalibration;  // 校准通道数据
+    CalibrationStrainData strainCalibration;   // 校准应变数据
+    CalibrationChannelData channelCalibration; // 校准通道数据
 };
 struct CalculationError {
     QString operation;
@@ -27,8 +26,7 @@ class CalculationWorker final : public QObject {
     Q_OBJECT
 public:
     CalculationWorker(core::FrameRepositoryPtr input,
-                      std::shared_ptr<core::CalculationRepository> output,
-                      IFEFactory factory);
+                      std::shared_ptr<core::CalculationRepository> output, IFEFactory factory);
 public slots:
     void initialize();
     void shutdown();
@@ -43,6 +41,7 @@ signals:
     void errorOccurred(const fosd::Calculation::CalculationError &error);
     void modelAccepted(quint64 revision);
     void configurationAccepted(quint64 revision);
+
 private:
     void reportError(const QString &operation, const QString &message, quint64 revision = 0);
     core::FrameRepositoryPtr m_input;
@@ -56,9 +55,9 @@ private:
     quint64 m_configurationRevision = 0;
     bool m_stopping = false;
 };
-}
+} // namespace detail
 
-class CalculationControl final : public QObject{
+class CalculationControl final : public QObject {
     Q_OBJECT
 public:
     explicit CalculationControl(QObject *parent = nullptr);
@@ -73,8 +72,12 @@ public:
     // Replay/manual input when constructed without a repository. Complete,
     // immutable snapshots only; do not combine replay with automatic polling.
     void submitFrame(const core::FrameSnapshotPtr &snapshot);
-    core::CalculationRepositoryPtr dataModel() const { return m_output; }
-    storage::StorageControl &storage() const { return *m_storage; }
+    core::CalculationRepositoryPtr dataModel() const {
+        return m_output;
+    }
+    storage::StorageControl &storage() const {
+        return *m_storage;
+    }
 public slots:
     // Import/replace the entire original point map. Re-submit edited points
     // to replace the model. Accepted asynchronously via modelAccepted(revision);
@@ -88,6 +91,7 @@ signals:
     void requestConfigure(const fosd::Calculation::CalculationConfiguration &configuration);
     void requestSetModel(const fosd::core::ModelData &model);
     void requestFrame(const fosd::core::FrameSnapshotPtr &snapshot);
+
 private:
     std::shared_ptr<core::CalculationRepository> m_output;
     QThread m_thread;

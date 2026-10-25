@@ -2,7 +2,8 @@
 #include <QString>
 #include <QVariantMap>
 class vtkRenderWindow;
-namespace fosd { namespace vtk_test {
+namespace fosd {
+namespace vtk_test {
 // Synchronous GUI-thread validation port. Pointers are borrowed, never queued.
 class IVtkValidationBackend {
 public:
@@ -15,8 +16,10 @@ public:
     virtual bool resetCamera(QString *error) = 0;
     virtual bool render(QString *error) = 0;
     virtual bool execute(const QString &, const QVariantMap &, QString *error) {
-        if (error) *error = QStringLiteral("Unsupported integration action");
+        if (error)
+            *error = QStringLiteral("Unsupported integration action");
         return false;
     }
 };
-} }
+} // namespace vtk_test
+} // namespace fosd

@@ -15,30 +15,21 @@
 #include <QTimer>
 #include <cmath>
 
-namespace fosd { 
+namespace fosd {
 namespace visualization {
-
-VisualizationControl::VisualizationControl(
-    QObject *parent,
-    vtkRenderWindow *renderWindowPtr)
-    : QObject(parent),
-      m_renderer(vtkSmartPointer<vtkRenderer>::New()),
-      m_mesh(new MeshManager),
-      m_deformation(new DeformationRenderer),
-      m_colors(new ScalarColorMapper),
-      m_keyPoints(new KeyPointManager),
-      m_picker(new PointPicker),
+VisualizationControl::VisualizationControl(QObject *parent, vtkRenderWindow *renderWindowPtr)
+    : QObject(parent), m_renderer(vtkSmartPointer<vtkRenderer>::New()), m_mesh(new MeshManager),
+      m_deformation(new DeformationRenderer), m_colors(new ScalarColorMapper),
+      m_keyPoints(new KeyPointManager), m_picker(new PointPicker),
       m_interactorStyle(vtkSmartPointer<ModelInteractorStyle>::New()),
-      m_scene(new SceneEnvironment)
-{
+      m_scene(new SceneEnvironment) {
     // 子模块初始化
     m_picker->setRenderer(m_renderer.GetPointer());
     m_interactorStyle->setPointPicker(m_picker.get());
     m_scene->setRenderer(m_renderer.GetPointer());
 
     // 刷新
-    connect(m_picker.get(), &PointPicker::pointPicked,
-            this, &VisualizationControl::pointPicked);
+    connect(m_picker.get(), &PointPicker::pointPicked, this, &VisualizationControl::pointPicked);
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(33);
     connect(m_refreshTimer, &QTimer::timeout, this, &VisualizationControl::refreshResult);
@@ -48,25 +39,23 @@ VisualizationControl::VisualizationControl(
         attach(renderWindowPtr);
 }
 
-VisualizationControl::~VisualizationControl()
-{
+VisualizationControl::~VisualizationControl() {
     detach();
 }
 
-bool VisualizationControl::attach(vtkRenderWindow *window)
-{
-    if(!window){
+bool VisualizationControl::attach(vtkRenderWindow *window) {
+    if (!window) {
         emit errorOccurred(QStringLiteral("No rendering window is provided"));
         return false;
     }
 
-    if(m_renderWindow == window) {
+    if (m_renderWindow == window) {
         vtkRenderWindowInteractor *interactor = window->GetInteractor();
-        if(interactor)
+        if (interactor)
             interactor->SetInteractorStyle(m_interactorStyle.GetPointer());
         return true;
     }
-    
+
     detach();
 
     m_renderWindow = window;
@@ -74,18 +63,16 @@ bool VisualizationControl::attach(vtkRenderWindow *window)
 
     // 绑定交互器
     vtkRenderWindowInteractor *interactor = m_renderWindow->GetInteractor();
-    if(interactor)
+    if (interactor)
         interactor->SetInteractorStyle(m_interactorStyle.GetPointer());
 
     return true;
-    
 }
 
-void VisualizationControl::detach()
-{
-    if(m_renderWindow) {
+void VisualizationControl::detach() {
+    if (m_renderWindow) {
         vtkRenderWindowInteractor *interactor = m_renderWindow->GetInteractor();
-        if(interactor && interactor->GetInteractorStyle() == m_interactorStyle.GetPointer())
+        if (interactor && interactor->GetInteractorStyle() == m_interactorStyle.GetPointer())
             interactor->SetInteractorStyle(nullptr);
 
         m_renderWindow->RemoveRenderer(m_renderer);
@@ -96,46 +83,50 @@ void VisualizationControl::detach()
 
 bool VisualizationControl::loadModel(const QString &path) {
     QString error;
-    if (!m_mesh->loadModel(path, &error)) { 
-        emit errorOccurred(error); 
-        return false; 
+    if (!m_mesh->loadModel(path, &error)) {
+        emit errorOccurred(error);
+        return false;
     }
 
-    if (m_deformation->actor()) 
+    if (m_deformation->actor())
         m_renderer->RemoveActor(m_deformation->actor());
 
     m_deformation->setOriginalMesh(m_mesh->originalMesh());
     m_deformation->actor()->GetProperty()->SetColor(0.5, 0.65, 0.15);
     m_renderer->AddActor(m_deformation->actor());
-    m_expectedModelRevision = 0; m_lastResultRevision = 0;
-    resetCamera(); 
+    m_expectedModelRevision = 0;
+    m_lastResultRevision = 0;
+    resetCamera();
     emit modelLoaded(originalModel());
     return true;
 }
 
 void VisualizationControl::unloadModel() {
-    if (m_deformation->actor()) 
+    if (m_deformation->actor())
         m_renderer->RemoveActor(m_deformation->actor());
-    m_deformation->clear(); 
-    m_mesh->clear(); 
-    m_expectedModelRevision = 0; 
+    m_deformation->clear();
+    m_mesh->clear();
+    m_expectedModelRevision = 0;
     m_lastResultRevision = 0;
 
-    if (m_renderWindow) 
+    if (m_renderWindow)
         m_renderWindow->Render();
 }
 
-core::ModelDataPtr VisualizationControl::originalModel() const { 
+core::ModelDataPtr VisualizationControl::originalModel() const {
     return m_mesh->originalModel();
 }
 
 void VisualizationControl::setResultRepository(core::CalculationRepositoryPtr repository) {
     m_repository = std::move(repository);
-    if (m_repository) m_refreshTimer->start(); else m_refreshTimer->stop();
+    if (m_repository)
+        m_refreshTimer->start();
+    else
+        m_refreshTimer->stop();
 }
 
 void VisualizationControl::refreshResult() {
-    if (m_renderWindow && m_repository) 
+    if (m_renderWindow && m_repository)
         applyResult(m_repository->latest());
 }
 
@@ -145,57 +136,58 @@ void VisualizationControl::setExpectedModelRevision(quint64 revision) {
 }
 
 void VisualizationControl::applyResult(const core::CalculationResultPtr &result) {
-    if (!result || 
-        !originalModel() || 
-        !m_expectedModelRevision ||
-        result->modelRevision != m_expectedModelRevision || 
+    if (!result || !originalModel() || !m_expectedModelRevision ||
+        result->modelRevision != m_expectedModelRevision ||
         result->revision <= m_lastResultRevision)
         return;
 
     if (result->displacementMap.size() != originalModel()->size()) {
-        emit errorOccurred(QStringLiteral("Result point count does not match the model")); 
+        emit errorOccurred(QStringLiteral("Result point count does not match the model"));
         return;
     }
 
-    for (auto point = originalModel()->constBegin(); point != originalModel()->constEnd(); ++point) {
+    for (auto point = originalModel()->constBegin(); point != originalModel()->constEnd();
+         ++point) {
         const auto delta = result->displacementMap.value(point.key());
-        if (delta.size() != 3 || !std::isfinite(delta[0]) || !std::isfinite(delta[1]) || !std::isfinite(delta[2])) {
-            emit errorOccurred(QStringLiteral("Invalid model displacement")); return;
+        if (delta.size() != 3 || !std::isfinite(delta[0]) || !std::isfinite(delta[1]) ||
+            !std::isfinite(delta[2])) {
+            emit errorOccurred(QStringLiteral("Invalid model displacement"));
+            return;
         }
     }
-    m_deformation->applyResult(result); m_lastResultRevision = result->revision;
-    if (m_renderWindow) m_renderWindow->Render();
+    m_deformation->applyResult(result);
+    m_lastResultRevision = result->revision;
+    if (m_renderWindow)
+        m_renderWindow->Render();
 }
 
 void VisualizationControl::setDeformationScale(double scale) {
-    if (!std::isfinite(scale)) 
+    if (!std::isfinite(scale))
         return;
-    m_deformation->setDeformationScale(scale); 
-    if (m_renderWindow) 
+    m_deformation->setDeformationScale(scale);
+    if (m_renderWindow)
         m_renderWindow->Render();
 }
 
 void VisualizationControl::resetDeformation() {
-    m_deformation->resetDeformation(); 
-    if (m_renderWindow) 
+    m_deformation->resetDeformation();
+    if (m_renderWindow)
         m_renderWindow->Render();
 }
 
-void VisualizationControl::setfreshFPS(int Interval)
-{
+void VisualizationControl::setfreshFPS(int Interval) {
     m_refreshTimer->stop();
     m_refreshTimer->setInterval(Interval);
     m_refreshTimer->start();
-    if (m_renderWindow) 
+    if (m_renderWindow)
         m_renderWindow->Render();
 }
 
-void VisualizationControl::resetCamera()
-{
-    m_renderer->ResetCamera(); 
-    if (m_renderWindow) 
+void VisualizationControl::resetCamera() {
+    m_renderer->ResetCamera();
+    if (m_renderWindow)
         m_renderWindow->Render();
 }
 
-} 
-}
+} // namespace visualization
+} // namespace fosd

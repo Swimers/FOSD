@@ -11,10 +11,10 @@
 namespace fosd {
 namespace communication {
 namespace detail {
-
 ConnectWorker::ConnectWorker(DecoderFactory decoderFactory)
     : m_decoderFactory(decoderFactory ? std::move(decoderFactory)
-                                     : DecoderFactory(createPacketDecoder)) {}
+                                      : DecoderFactory(createPacketDecoder)) {
+}
 
 void ConnectWorker::initialize() {
     m_udp = new Udp(this);
@@ -33,20 +33,18 @@ void ConnectWorker::initialize() {
 std::unique_ptr<IPacketDecoder> ConnectWorker::initializeDecoder(Channel channel) {
     std::unique_ptr<IPacketDecoder> parser = m_decoderFactory(channel);
     if (parser) {
-        connect(parser.get(), &IPacketDecoder::errorOccurred,
-                this, &ConnectWorker::decoderErrorOccurred);
+        connect(parser.get(), &IPacketDecoder::errorOccurred, this,
+                &ConnectWorker::decoderErrorOccurred);
         parser->initialize();
     }
     return parser;
 }
 
 void ConnectWorker::wire(ITransport *transport) {
-    connect(transport, &ITransport::bytesReceived,
-            this, &ConnectWorker::handleBytesReceived);
-    connect(transport, &ITransport::stateChanged,
-            this, &ConnectWorker::handleTransportStateChanged);
-    connect(transport, &ITransport::errorOccurred,
-            this, &ConnectWorker::errorOccurred);
+    connect(transport, &ITransport::bytesReceived, this, &ConnectWorker::handleBytesReceived);
+    connect(transport, &ITransport::stateChanged, this,
+            &ConnectWorker::handleTransportStateChanged);
+    connect(transport, &ITransport::errorOccurred, this, &ConnectWorker::errorOccurred);
 }
 
 void ConnectWorker::handleBytesReceived(const QByteArray &bytes, const Endpoint &peer) {
@@ -82,9 +80,12 @@ void ConnectWorker::forward(Channel channel, const QByteArray &bytes, const Endp
 
 IPacketDecoder *ConnectWorker::decoder(Channel channel) {
     switch (channel) {
-    case Channel::Serial: return m_serialportDecoder.get();
-    case Channel::Udp: return m_udpDecoder.get();
-    case Channel::Tcp: return m_tcpDecoder.get();
+        case Channel::Serial:
+            return m_serialportDecoder.get();
+        case Channel::Udp:
+            return m_udpDecoder.get();
+        case Channel::Tcp:
+            return m_tcpDecoder.get();
     }
     return nullptr;
 }
@@ -112,17 +113,29 @@ void ConnectWorker::close(Channel channel) {
     if (parser)
         parser->reset();
     switch (channel) {
-    case Channel::Serial: m_serialport->close(); break;
-    case Channel::Udp: m_udp->close(); break;
-    case Channel::Tcp: m_tcp->close(); break;
+        case Channel::Serial:
+            m_serialport->close();
+            break;
+        case Channel::Udp:
+            m_udp->close();
+            break;
+        case Channel::Tcp:
+            m_tcp->close();
+            break;
     }
 }
 
 void ConnectWorker::send(Channel channel, const QByteArray &bytes, const Endpoint &peer) {
     switch (channel) {
-    case Channel::Serial: m_serialport->send(bytes, peer); break;
-    case Channel::Udp: m_udp->send(bytes, peer); break;
-    case Channel::Tcp: m_tcp->send(bytes, peer); break;
+        case Channel::Serial:
+            m_serialport->send(bytes, peer);
+            break;
+        case Channel::Udp:
+            m_udp->send(bytes, peer);
+            break;
+        case Channel::Tcp:
+            m_tcp->send(bytes, peer);
+            break;
     }
 }
 
@@ -138,22 +151,22 @@ void ConnectWorker::shutdown() {
 } // namespace detail
 
 ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory)
-    : ConnectControl(parent, std::move(decoderFactory), nullptr) {}
-    // 委托构造函数，独立线程模式
+    : ConnectControl(parent, std::move(decoderFactory), nullptr) {
+}
+
+// 委托构造函数，独立线程模式
 
 ConnectControl::ConnectControl(QThread &hostThread, QObject *parent, DecoderFactory decoderFactory)
-    : ConnectControl(parent, std::move(decoderFactory), &hostThread) {}
-    // 委托构造函数，托管线程模式
+    : ConnectControl(parent, std::move(decoderFactory), &hostThread) {
+}
 
-    // Private constructor for both modes. If hostThread is null, creates and owns a thread.
-ConnectControl::ConnectControl(QObject *parent, 
-                               DecoderFactory decoderFactory, 
-                               QThread *hostThread)
-    : QObject(parent), 
-      m_ownedThread(hostThread ? nullptr : new QThread),
+// 委托构造函数，托管线程模式
+
+// Private constructor for both modes. If hostThread is null, creates and owns a thread.
+ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory, QThread *hostThread)
+    : QObject(parent), m_ownedThread(hostThread ? nullptr : new QThread),
       m_thread(hostThread ? hostThread : m_ownedThread.get()),
       m_worker(new detail::ConnectWorker(std::move(decoderFactory))) {
-        
     Q_ASSERT(!m_thread->isRunning());
 
     qRegisterMetaType<Channel>("fosd::communication::Channel");
@@ -169,27 +182,25 @@ ConnectControl::ConnectControl(QObject *parent,
     connect(m_thread, &QThread::started, m_worker.data(), &detail::ConnectWorker::initialize);
     connect(m_thread, &QThread::finished, m_worker.data(), &QObject::deleteLater);
 
-    connect(this, &ConnectControl::requestOpenSerial,
-            m_worker, &detail::ConnectWorker::openSerial, Qt::QueuedConnection);
-    connect(this, &ConnectControl::requestOpenUdp,
-            m_worker, &detail::ConnectWorker::openUdp, Qt::QueuedConnection);
-    connect(this, &ConnectControl::requestOpenTcp,
-            m_worker, &detail::ConnectWorker::openTcp, Qt::QueuedConnection);
-    connect(this, &ConnectControl::requestClose,
-            m_worker, &detail::ConnectWorker::close, Qt::QueuedConnection);
-    connect(this, &ConnectControl::requestSend,
-            m_worker, &detail::ConnectWorker::send, Qt::QueuedConnection);
+    connect(this, &ConnectControl::requestOpenSerial, m_worker, &detail::ConnectWorker::openSerial,
+            Qt::QueuedConnection);
+    connect(this, &ConnectControl::requestOpenUdp, m_worker, &detail::ConnectWorker::openUdp,
+            Qt::QueuedConnection);
+    connect(this, &ConnectControl::requestOpenTcp, m_worker, &detail::ConnectWorker::openTcp,
+            Qt::QueuedConnection);
+    connect(this, &ConnectControl::requestClose, m_worker, &detail::ConnectWorker::close,
+            Qt::QueuedConnection);
+    connect(this, &ConnectControl::requestSend, m_worker, &detail::ConnectWorker::send,
+            Qt::QueuedConnection);
 
-    connect(m_worker, &detail::ConnectWorker::rawDataReceived,
-            this, &ConnectControl::rawDataReceived);
-    connect(m_worker, &detail::ConnectWorker::packetReceived,
-            this, &ConnectControl::packetReceived);
-    connect(m_worker, &detail::ConnectWorker::stateChanged,
-            this, &ConnectControl::stateChanged);
-    connect(m_worker, &detail::ConnectWorker::errorOccurred,
-            this, &ConnectControl::errorOccurred);
-    connect(m_worker, &detail::ConnectWorker::decoderErrorOccurred,
-            this, &ConnectControl::decoderErrorOccurred);
+    connect(m_worker, &detail::ConnectWorker::rawDataReceived, this,
+            &ConnectControl::rawDataReceived);
+    connect(m_worker, &detail::ConnectWorker::packetReceived, this,
+            &ConnectControl::packetReceived);
+    connect(m_worker, &detail::ConnectWorker::stateChanged, this, &ConnectControl::stateChanged);
+    connect(m_worker, &detail::ConnectWorker::errorOccurred, this, &ConnectControl::errorOccurred);
+    connect(m_worker, &detail::ConnectWorker::decoderErrorOccurred, this,
+            &ConnectControl::decoderErrorOccurred);
 
     if (m_ownedThread)
         m_thread->start();
@@ -209,7 +220,8 @@ ConnectControl::~ConnectControl() {
 void ConnectControl::shutdown() {
     if (m_worker && m_thread->isRunning()) {
         const Qt::ConnectionType type = QThread::currentThread() == m_thread
-            ? Qt::DirectConnection : Qt::BlockingQueuedConnection;
+                                            ? Qt::DirectConnection
+                                            : Qt::BlockingQueuedConnection;
         QMetaObject::invokeMethod(m_worker.data(), "shutdown", type);
     }
 }
@@ -236,4 +248,3 @@ void ConnectControl::send(Channel channel, const QByteArray &bytes, const Endpoi
 
 } // namespace communication
 } // namespace fosd
-

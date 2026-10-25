@@ -2,8 +2,13 @@
 #include <QWidget>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class disp3dkeypointselect; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class disp3dkeypointselect;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for disp3dkeypointselect.ui; emits intent, never calls business Controls.
 class KeyPointSelectView : public QWidget, public IView {
@@ -28,8 +33,11 @@ signals:
     void radioButton_3Requested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::disp3dkeypointselect> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

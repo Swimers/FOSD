@@ -2,8 +2,13 @@
 #include <QDialog>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class Disp3DColorPicker; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class Disp3DColorPicker;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for disp3dcolorpicker.ui; emits intent, never calls business Controls.
 class ColorPickerView : public QDialog, public IView {
@@ -29,8 +34,11 @@ signals:
     void rejectedRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::Disp3DColorPicker> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

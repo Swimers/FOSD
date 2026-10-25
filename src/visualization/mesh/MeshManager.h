@@ -3,9 +3,8 @@
 #include <QString>
 #include <vtkSmartPointer.h>
 class vtkPolyData;
-namespace fosd { 
+namespace fosd {
 namespace visualization {
-
 class MeshManager final {
 public:
     MeshManager();
@@ -14,7 +13,7 @@ public:
     bool optimize(QString *error = nullptr);
     bool exportModel(const QString &path, QString *error = nullptr) const;
     void clear();
-    
+
     core::ModelDataPtr originalModel() const;
     const vtkPolyData *originalMesh() const; // Borrowed, immutable original mesh.
 private:
@@ -22,5 +21,5 @@ private:
     core::ModelDataPtr m_originalModel;
 };
 
-}
-}
+} // namespace visualization
+} // namespace fosd

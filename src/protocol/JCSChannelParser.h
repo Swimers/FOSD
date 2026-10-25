@@ -4,7 +4,6 @@
 
 namespace fosd {
 namespace protocol {
-
 // Legacy FA kk FA kk curve packets (kk=0..5, as dispatched by the old code).
 // Retired protocol: even a valid packet returns no payload. An empty error
 // means decoding succeeded and the samples were discarded. Not registered in

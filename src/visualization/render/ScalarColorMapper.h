@@ -5,7 +5,8 @@ class vtkDoubleArray;
 class vtkLookupTable;
 class vtkPolyData;
 class vtkPolyDataMapper;
-namespace fosd { namespace visualization {
+namespace fosd {
+namespace visualization {
 class ScalarColorMapper final {
 public:
     ScalarColorMapper();
@@ -13,9 +14,10 @@ public:
     void setScalarField(ScalarField field);
     void setColorRangeMode(ColorRangeMode mode);
     void setColorRange(double minimum, double maximum);
-    void applyResult(const core::CalculationResultPtr &result,
-                     vtkPolyData *displayMesh, vtkPolyDataMapper *mapper);
+    void applyResult(const core::CalculationResultPtr &result, vtkPolyData *displayMesh,
+                     vtkPolyDataMapper *mapper);
     void clear();
+
 private:
     vtkSmartPointer<vtkDoubleArray> m_scalars;
     vtkSmartPointer<vtkLookupTable> m_lookupTable;
@@ -24,4 +26,5 @@ private:
     double m_minimum = 0.0;
     double m_maximum = 1.0;
 };
-} }
+} // namespace visualization
+} // namespace fosd

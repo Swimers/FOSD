@@ -4,7 +4,8 @@
 #include <QTimer>
 #include <QTemporaryDir>
 #include <QUdpSocket>
-namespace fosd { namespace vtk_test {
+namespace fosd {
+namespace vtk_test {
 class VtkValidationWindow;
 class VtkValidationPresenter;
 class VtkValidationBackend;
@@ -17,6 +18,7 @@ public:
     void start();
 private slots:
     void check();
+
 private:
     void finish(bool success, const QString &message);
     void checkIntegration();
@@ -31,4 +33,5 @@ private:
     QTimer m_timer;
     QElapsedTimer m_elapsed;
 };
-} }
+} // namespace vtk_test
+} // namespace fosd

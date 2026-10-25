@@ -1,0 +1,38 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+# Four-space indentation and vertically expanded scopes make nested Qt/VTK
+# code easier to scan.
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+AccessModifierOffset: -4
+IndentCaseLabels: true
+NamespaceIndentation: None
+
+# Keep opening braces on the same line as the declaration or statement.
+BreakBeforeBraces: Attach
+
+# Do not collapse implementation details onto one line.
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+ColumnLimit: 100
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+PointerAlignment: Right
+DerivePointerAlignment: false
+SpaceBeforeParens: ControlStatements
+Cpp11BracedListStyle: true
+Standard: Cpp11
+
+# Include order can affect old projects, so formatting must not reorder it.
+SortIncludes: false
+ReflowComments: false
+FixNamespaceComments: true
+...

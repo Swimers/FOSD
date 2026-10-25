@@ -6,9 +6,8 @@
 class vtkActor;
 class vtkBillboardTextActor3D;
 
-namespace fosd { 
+namespace fosd {
 namespace visualization {
-
 class KeyPointManager final {
 public:
     KeyPointManager();
@@ -21,6 +20,7 @@ public:
     void setVisible(bool visible);
     void clearSelection();
     void clear();
+
 private:
     vtkRenderer *m_renderer = nullptr;
 
@@ -30,5 +30,5 @@ private:
     bool m_visible = true;
 };
 
-}
-}
+} // namespace visualization
+} // namespace fosd

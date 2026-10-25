@@ -1,44 +1,35 @@
 #include "StrainCalibration.h"
 #include <cmath>
 
-namespace fosd{
-namespace Calculation{
-
-StrainCalibration::StrainCalibration(QObject *parent)
-    : QObject(parent)
-{
+namespace fosd {
+namespace Calculation {
+StrainCalibration::StrainCalibration(QObject *parent) : QObject(parent) {
     initializeCalibration();
 }
 
-void StrainCalibration::initializeCalibration()
-{
+void StrainCalibration::initializeCalibration() {
     m_calibrationChannelData = CalibrationChannelData();
     m_calibrationStrainData = CalibrationStrainData();
     m_lastError.clear();
 }
 
-void StrainCalibration::setCalibrationChannelData(const CalibrationChannelData& channelData)
-{
+void StrainCalibration::setCalibrationChannelData(const CalibrationChannelData &channelData) {
     m_calibrationChannelData = channelData;
 }
 
-void StrainCalibration::setCalibrationStrainData(const CalibrationStrainData& strainData)
-{
+void StrainCalibration::setCalibrationStrainData(const CalibrationStrainData &strainData) {
     m_calibrationStrainData = strainData;
 }
 
-CalibrationChannelData StrainCalibration::getCalibrationChannelData() const
-{
+CalibrationChannelData StrainCalibration::getCalibrationChannelData() const {
     return m_calibrationChannelData;
 }
 
-CalibrationStrainData StrainCalibration::getCalibrationStrainData() const
-{
+CalibrationStrainData StrainCalibration::getCalibrationStrainData() const {
     return m_calibrationStrainData;
 }
 
-bool StrainCalibration::checkPara()
-{
+bool StrainCalibration::checkPara() {
     m_lastError.clear();
     const auto &parameters = m_calibrationStrainData;
     const auto &channels = m_calibrationChannelData;
@@ -48,7 +39,8 @@ bool StrainCalibration::checkPara()
         return fail(QStringLiteral("Channel indices and calibration factors size mismatch"));
     if (!std::isfinite(parameters.A) || parameters.A == 0.0 || !std::isfinite(parameters.B) ||
         !std::isfinite(parameters.calibrationFactor) || parameters.calibrationFactor <= 0.0)
-        return fail(QStringLiteral("Calibration requires finite A/B, nonzero A and a positive finite factor"));
+        return fail(QStringLiteral(
+            "Calibration requires finite A/B, nonzero A and a positive finite factor"));
     for (double value : parameters.originalWavelength)
         if (!std::isfinite(value) || value <= 0.0)
             return fail(QStringLiteral("Original wavelengths must be positive and finite"));
@@ -69,8 +61,7 @@ bool StrainCalibration::fail(const QString &message) {
     return false;
 }
 
-Strain StrainCalibration::applyCalibration(const Wavelength& inputWavelength)
-{
+Strain StrainCalibration::applyCalibration(const Wavelength &inputWavelength) {
     if (!checkPara())
         return {};
 
@@ -79,16 +70,16 @@ Strain StrainCalibration::applyCalibration(const Wavelength& inputWavelength)
         return {};
     }
     Strain calibratedStrain(inputWavelength.size());
-    for (size_t i = 0 ; i < inputWavelength.size(); ++i)
-    {
+    for (size_t i = 0; i < inputWavelength.size(); ++i) {
         if (!std::isfinite(inputWavelength[i]) || inputWavelength[i] <= 0.0) {
             fail(QStringLiteral("Input wavelengths must be positive and finite"));
             return {};
         }
-        calibratedStrain[i]   =(m_calibrationStrainData.calibrationFactor
-                                *(inputWavelength[i]-m_calibrationStrainData.originalWavelength[i]))
-                                /m_calibrationStrainData.A
-                                +m_calibrationStrainData.B;   //计算得到应变
+        calibratedStrain[i] =
+            (m_calibrationStrainData.calibrationFactor *
+             (inputWavelength[i] - m_calibrationStrainData.originalWavelength[i])) /
+                m_calibrationStrainData.A +
+            m_calibrationStrainData.B; //计算得到应变
         if (!std::isfinite(calibratedStrain[i])) {
             fail(QStringLiteral("Wavelength calibration overflowed"));
             return {};
@@ -97,8 +88,7 @@ Strain StrainCalibration::applyCalibration(const Wavelength& inputWavelength)
     return calibratedStrain;
 }
 
-Strain StrainCalibration::rearrangeCalibration(const Strain& calibratedStrain)
-{
+Strain StrainCalibration::rearrangeCalibration(const Strain &calibratedStrain) {
     if (!checkPara())
         return {};
 
@@ -112,10 +102,10 @@ Strain StrainCalibration::rearrangeCalibration(const Strain& calibratedStrain)
             return {};
         }
     Strain rearrangedStrain(m_calibrationChannelData.channelIndices.size());
-    for (size_t i = 0; i < rearrangedStrain.size(); ++i)
-    {
-        rearrangedStrain[i] = calibratedStrain[m_calibrationChannelData.channelIndices[i]] 
-                                * m_calibrationChannelData.calibrationFactors[i];  //根据通道索引和校准因子重新排列应变
+    for (size_t i = 0; i < rearrangedStrain.size(); ++i) {
+        rearrangedStrain[i] =
+            calibratedStrain[m_calibrationChannelData.channelIndices[i]] *
+            m_calibrationChannelData.calibrationFactors[i]; //根据通道索引和校准因子重新排列应变
         if (!std::isfinite(rearrangedStrain[i])) {
             fail(QStringLiteral("Channel calibration overflowed"));
             return {};
@@ -124,5 +114,5 @@ Strain StrainCalibration::rearrangeCalibration(const Strain& calibratedStrain)
     return rearrangedStrain;
 }
 
-}
-}
+} // namespace Calculation
+} // namespace fosd

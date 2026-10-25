@@ -20,9 +20,11 @@ using communication::Channel;
 using communication::Endpoint;
 using protocol::ProtocolControl;
 
-static_assert(std::is_const<core::FrameSnapshotPtr::element_type>::value, "Snapshots must be read-only");
+static_assert(std::is_const<core::FrameSnapshotPtr::element_type>::value,
+              "Snapshots must be read-only");
 static_assert(std::is_const<core::FrameDataPtr::element_type>::value, "Payloads must be read-only");
-static_assert(std::is_const<core::FrameRepositoryPtr::element_type>::value, "Repositories must be read-only");
+static_assert(std::is_const<core::FrameRepositoryPtr::element_type>::value,
+              "Repositories must be read-only");
 
 namespace {
 // Independently specified wire bytes: version 3, type 7, count 2, sequence
@@ -30,43 +32,56 @@ namespace {
 QByteArray goldenPacket() {
     return QByteArray::fromHex("5aa5030702007856341201020000c03f10ff000010c0");
 }
+
 QByteArray sequencePacket(quint32 sequence) {
     QByteArray bytes = goldenPacket();
     qToLittleEndian<quint32>(sequence, reinterpret_cast<uchar *>(bytes.data() + 6));
     return bytes;
 }
+
 core::FrameSnapshotPtr snapshotAt(const QSignalSpy &spy, int index) {
     return qvariant_cast<core::FrameSnapshotPtr>(spy.at(index).at(0));
 }
 
 struct TestFrame final : core::FrameData {
-    explicit TestFrame(QString value) : text(std::move(value)) {}
+    explicit TestFrame(QString value) : text(std::move(value)) {
+    }
     QString text;
 };
 class TestParser final : public protocol::IFrameParser {
 public:
-    QString protocolId() const override { return QStringLiteral("test.text"); }
-    bool matches(const QByteArray &bytes) const override { return bytes.startsWith("TEST:"); }
+    QString protocolId() const override {
+        return QStringLiteral("test.text");
+    }
+    bool matches(const QByteArray &bytes) const override {
+        return bytes.startsWith("TEST:");
+    }
     core::FrameDataPtr parse(const QByteArray &bytes, QString *) const override {
         return std::make_shared<const TestFrame>(QString::fromUtf8(bytes.mid(5)));
     }
 };
 class ObservedParser final : public protocol::IFrameParser {
 public:
-    ObservedParser(std::atomic<bool> *flag, QThread *caller) : m_flag(flag), m_caller(caller) {}
-    QString protocolId() const override { return m_parser.protocolId(); }
-    bool matches(const QByteArray &bytes) const override { return m_parser.matches(bytes); }
+    ObservedParser(std::atomic<bool> *flag, QThread *caller) : m_flag(flag), m_caller(caller) {
+    }
+    QString protocolId() const override {
+        return m_parser.protocolId();
+    }
+    bool matches(const QByteArray &bytes) const override {
+        return m_parser.matches(bytes);
+    }
     core::FrameDataPtr parse(const QByteArray &bytes, QString *error) const override {
         m_flag->store(QThread::currentThread() != m_caller);
         return m_parser.parse(bytes, error);
     }
+
 private:
     std::atomic<bool> *m_flag;
     QThread *m_caller;
     protocol::MPWavelengthParser m_parser;
 };
-protocol::FrameParsers testParsers(std::atomic<bool> *factoryFlag,
-                                  std::atomic<bool> *parseFlag, QThread *caller) {
+protocol::FrameParsers testParsers(std::atomic<bool> *factoryFlag, std::atomic<bool> *parseFlag,
+                                   QThread *caller) {
     factoryFlag->store(QThread::currentThread() != caller);
     protocol::FrameParsers parsers;
     parsers.emplace_back(new TestParser);
@@ -95,7 +110,10 @@ public:
     QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &peer) override {
         return m_decoder->feed(bytes, peer);
     }
-    void reset() override { m_decoder->reset(); }
+    void reset() override {
+        m_decoder->reset();
+    }
+
 private:
     ThreadTrace *m_trace;
     std::unique_ptr<communication::IPacketDecoder> m_decoder;
@@ -103,20 +121,27 @@ private:
 std::unique_ptr<communication::IPacketDecoder> trackedDecoder(ThreadTrace *trace, Channel channel) {
     return std::unique_ptr<communication::IPacketDecoder>(new TrackedDecoder(channel, trace));
 }
+
 class TrackedParser final : public protocol::IFrameParser {
 public:
     explicit TrackedParser(ThreadTrace *trace) : m_trace(trace) {
         m_trace->parserThread.store(QThread::currentThread());
     }
     ~TrackedParser() override {
-        m_trace->parserDestroyedOnWorker.store(QThread::currentThread() == m_trace->parserThread.load());
+        m_trace->parserDestroyedOnWorker.store(QThread::currentThread() ==
+                                               m_trace->parserThread.load());
     }
-    QString protocolId() const override { return m_parser.protocolId(); }
-    bool matches(const QByteArray &bytes) const override { return m_parser.matches(bytes); }
+    QString protocolId() const override {
+        return m_parser.protocolId();
+    }
+    bool matches(const QByteArray &bytes) const override {
+        return m_parser.matches(bytes);
+    }
     core::FrameDataPtr parse(const QByteArray &bytes, QString *error) const override {
         m_trace->parseThread.store(QThread::currentThread());
         return m_parser.parse(bytes, error);
     }
+
 private:
     ThreadTrace *m_trace;
     protocol::MPWavelengthParser m_parser;
@@ -144,6 +169,7 @@ void readSnapshots(core::FrameRepositoryPtr repository, std::atomic<bool> *stop,
         reads->fetch_add(1);
     }
 }
+
 // Joining in the destructor also handles early QtTest assertion returns safely.
 class Readers {
 public:
@@ -159,10 +185,11 @@ public:
     std::atomic<bool> stop{false};
     std::atomic<bool> invalid{false};
     std::atomic<int> reads{0};
+
 private:
     std::vector<std::thread> m_threads;
 };
-}
+} // namespace
 
 class ProtocolTests : public QObject {
     Q_OBJECT
@@ -170,7 +197,8 @@ private slots:
     void defaultParsers() {
         auto parsers = protocol::createFrameParsers();
         QStringList ids;
-        for (const auto &parser : parsers) ids.append(parser->protocolId());
+        for (const auto &parser : parsers)
+            ids.append(parser->protocolId());
         QVERIFY(ids.contains("mp.wavelength"));
         QVERIFY(ids.contains("jcs.wavelength"));
     }
@@ -188,7 +216,8 @@ private slots:
 void ProtocolTests::parseFieldsAndBoundaries() {
     protocol::MPWavelengthParser parser;
     QString error = QStringLiteral("old error");
-    const auto frame = std::dynamic_pointer_cast<const core::WavelengthFrame>(parser.parse(goldenPacket(), &error));
+    const auto frame = std::dynamic_pointer_cast<const core::WavelengthFrame>(
+        parser.parse(goldenPacket(), &error));
     QVERIFY(frame);
     QVERIFY(error.isEmpty());
     QCOMPARE(frame->version, quint8(3));
@@ -210,13 +239,15 @@ void ProtocolTests::parseFieldsAndBoundaries() {
 
     QByteArray maximum(10 + 65535 * 6, '\0');
     maximum.replace(0, 10, QByteArray::fromHex("5aa50101ffff00000000"));
-    const auto maxFrame = std::dynamic_pointer_cast<const core::WavelengthFrame>(parser.parse(maximum));
+    const auto maxFrame =
+        std::dynamic_pointer_cast<const core::WavelengthFrame>(parser.parse(maximum));
     QVERIFY(maxFrame);
     QCOMPARE(maxFrame->records.size(), 65535);
     QByteArray special = goldenPacket();
     special.replace(12, 4, QByteArray::fromHex("0000807f"));
     special.replace(18, 4, QByteArray::fromHex("0000c07f"));
-    const auto specialFrame = std::dynamic_pointer_cast<const core::WavelengthFrame>(parser.parse(special));
+    const auto specialFrame =
+        std::dynamic_pointer_cast<const core::WavelengthFrame>(parser.parse(special));
     QVERIFY(specialFrame);
     QVERIFY(std::isinf(specialFrame->records.at(0).wavelength));
     QVERIFY(std::isnan(specialFrame->records.at(1).wavelength));
@@ -224,7 +255,8 @@ void ProtocolTests::parseFieldsAndBoundaries() {
 
 void ProtocolTests::rejectMalformedFrames() {
     protocol::MPWavelengthParser parser;
-    QVector<QByteArray> invalid = {{}, goldenPacket().left(9), goldenPacket().left(21), goldenPacket() + 'x'};
+    QVector<QByteArray> invalid = {
+        {}, goldenPacket().left(9), goldenPacket().left(21), goldenPacket() + 'x'};
     QByteArray wrongMagic = goldenPacket();
     wrongMagic[0] = 0;
     invalid.append(wrongMagic);
@@ -242,7 +274,7 @@ void ProtocolTests::rejectMalformedFrames() {
 void ProtocolTests::dispatchAndThreadOwnership() {
     std::atomic<bool> factoryOnWorker(false), parseOnWorker(false);
     ProtocolControl control(nullptr, std::bind(testParsers, &factoryOnWorker, &parseOnWorker,
-                                                       QCoreApplication::instance()->thread()));
+                                               QCoreApplication::instance()->thread()));
     QSignalSpy frames(&control, &ProtocolControl::frameParsed);
     QSignalSpy errors(&control, &ProtocolControl::errorOccurred);
     control.parseFrame(Channel::Serial, "TEST:hello");
@@ -251,7 +283,8 @@ void ProtocolTests::dispatchAndThreadOwnership() {
     QVERIFY(factoryOnWorker.load());
     QVERIFY(parseOnWorker.load());
     QCOMPARE(snapshotAt(frames, 0)->protocolId, QStringLiteral("test.text"));
-    QCOMPARE(std::dynamic_pointer_cast<const TestFrame>(snapshotAt(frames, 0)->data)->text, QStringLiteral("hello"));
+    QCOMPARE(std::dynamic_pointer_cast<const TestFrame>(snapshotAt(frames, 0)->data)->text,
+             QStringLiteral("hello"));
     QCOMPARE(snapshotAt(frames, 1)->protocolId, QStringLiteral("mp.wavelength"));
     QCOMPARE(errors.count(), 0);
 }
@@ -297,7 +330,8 @@ void ProtocolTests::concurrentReadersAndLifetime() {
         QTRY_VERIFY(readers.reads.load() > 0);
         QVERIFY(!readers.invalid.load());
         QCOMPARE(repository->latest()->revision, quint64(200));
-        QCOMPARE(std::dynamic_pointer_cast<const core::WavelengthFrame>(first->data)->sequence, quint32(1));
+        QCOMPARE(std::dynamic_pointer_cast<const core::WavelengthFrame>(first->data)->sequence,
+                 quint32(1));
         for (int index = 0; index < frames.count(); ++index)
             QCOMPARE(snapshotAt(frames, index)->revision, quint64(index + 1));
     }
@@ -335,7 +369,8 @@ void ProtocolTests::udpEndToEnd() {
     QCOMPARE(snapshot->source.port, peer.localPort());
     QCOMPARE(snapshot->source.address, QStringLiteral("127.0.0.1"));
     QVERIFY(snapshot->receivedAtUtc.isValid());
-    QCOMPARE(std::dynamic_pointer_cast<const core::WavelengthFrame>(snapshot->data)->sequence, quint32(1));
+    QCOMPARE(std::dynamic_pointer_cast<const core::WavelengthFrame>(snapshot->data)->sequence,
+             quint32(1));
     QCOMPARE(protocol.dataModel()->latest()->revision, quint64(2));
 }
 
@@ -363,7 +398,9 @@ void ProtocolTests::tcpFragmentsEndToEnd() {
     QCOMPARE(errors.count(), 0);
     QCOMPARE(snapshotAt(frames, 0)->source.transport, core::TransportKind::Tcp);
     QCOMPARE(snapshotAt(frames, 0)->source.port, server.serverPort());
-    QCOMPARE(std::dynamic_pointer_cast<const core::WavelengthFrame>(snapshotAt(frames, 1)->data)->sequence, quint32(2));
+    QCOMPARE(std::dynamic_pointer_cast<const core::WavelengthFrame>(snapshotAt(frames, 1)->data)
+                 ->sequence,
+             quint32(2));
 }
 
 void ProtocolTests::sharedThreadWithoutMainDispatchAndShutdown() {

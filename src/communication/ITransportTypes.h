@@ -7,7 +7,6 @@
 
 namespace fosd {
 namespace communication {
-
 enum class Channel { Serial, Udp, Tcp };
 enum class ConnectionState { Closed, Opening, Ready, Listening, Connected };
 enum class TcpRole { Client, Server };
@@ -16,7 +15,9 @@ struct Endpoint {
     QHostAddress address;
     quint16 port = 0;
 
-    bool isValid() const { return !address.isNull() && port != 0; }
+    bool isValid() const {
+        return !address.isNull() && port != 0;
+    }
 };
 
 struct SerialConfig {
@@ -66,4 +67,3 @@ Q_DECLARE_METATYPE(fosd::communication::UdpConfig)
 Q_DECLARE_METATYPE(fosd::communication::TcpConfig)
 Q_DECLARE_METATYPE(fosd::communication::CommunicationError)
 Q_DECLARE_METATYPE(fosd::communication::DecoderError)
-

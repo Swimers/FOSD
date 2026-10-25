@@ -1,6 +1,10 @@
 #pragma once
 #include "UiTypes.h"
 class QWidget;
-namespace fosd { namespace ui { namespace classic {
+namespace fosd {
+namespace ui {
+namespace classic {
 QWidget *createPanelView(PanelId panel, QWidget *parent = nullptr);
-} } }
+}
+} // namespace ui
+} // namespace fosd

@@ -5,42 +5,49 @@
 #include <vtkPoints.h>
 #include <QFile>
 #include <cmath>
-namespace fosd { namespace visualization {
+namespace fosd {
+namespace visualization {
 MeshManager::MeshManager() = default;
 MeshManager::~MeshManager() = default;
 bool MeshManager::loadModel(const QString &path, QString *error) {
     auto reader = vtkSmartPointer<vtkSTLReader>::New();
-    reader->SetFileName(QFile::encodeName(path).constData()); reader->Update();
+    reader->SetFileName(QFile::encodeName(path).constData());
+    reader->Update();
     auto *mesh = reader->GetOutput();
     if (!mesh || !mesh->GetNumberOfPoints() || !mesh->GetNumberOfCells()) {
-        if (error) *error = QStringLiteral("Cannot read a nonempty STL mesh: %1").arg(path);
+        if (error)
+            *error = QStringLiteral("Cannot read a nonempty STL mesh: %1").arg(path);
         return false;
     }
     core::ModelData points;
     for (vtkIdType id = 0; id < mesh->GetNumberOfPoints(); ++id) {
-        double xyz[3]; mesh->GetPoint(id, xyz);
+        double xyz[3];
+        mesh->GetPoint(id, xyz);
         if (!std::isfinite(xyz[0]) || !std::isfinite(xyz[1]) || !std::isfinite(xyz[2])) {
-            if (error) *error = QStringLiteral("Model contains nonfinite coordinates");
+            if (error)
+                *error = QStringLiteral("Model contains nonfinite coordinates");
             return false;
         }
         points.insert(id, {xyz[0], xyz[1], xyz[2]});
     }
-    m_originalMesh = vtkSmartPointer<vtkPolyData>::New(); m_originalMesh->DeepCopy(mesh);
+    m_originalMesh = vtkSmartPointer<vtkPolyData>::New();
+    m_originalMesh->DeepCopy(mesh);
     m_originalModel = std::make_shared<const core::ModelData>(std::move(points));
     return true;
 }
 
-void MeshManager::clear() { 
-    m_originalMesh = nullptr; m_originalModel.reset(); 
+void MeshManager::clear() {
+    m_originalMesh = nullptr;
+    m_originalModel.reset();
 }
 
-core::ModelDataPtr MeshManager::originalModel() const { 
-    return m_originalModel; 
+core::ModelDataPtr MeshManager::originalModel() const {
+    return m_originalModel;
 }
 
-const vtkPolyData *MeshManager::originalMesh() const { 
-    return m_originalMesh; 
+const vtkPolyData *MeshManager::originalMesh() const {
+    return m_originalMesh;
 }
 
-}
-}
+} // namespace visualization
+} // namespace fosd

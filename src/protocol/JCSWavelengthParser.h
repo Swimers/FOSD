@@ -6,16 +6,14 @@
 
 namespace fosd {
 namespace protocol {
-
-class JCSWavelengthParser final : public IFrameParser{
-
+class JCSWavelengthParser final : public IFrameParser {
 public:
     QString protocolId() const override;
     bool matches(const QByteArray &packet) const override;
     core::FrameDataPtr parse(const QByteArray &packet, QString *error = nullptr) const override;
 };
 
-}
-} // namespace fosd::protocol
+} // namespace protocol
+} // namespace fosd
 
-#endif 
+#endif

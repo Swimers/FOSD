@@ -2,9 +2,7 @@
 
 namespace fosd {
 namespace communication {
-
-Tcp::Tcp(QObject *parent)
-    : ITransport(Channel::Tcp, parent) {
+Tcp::Tcp(QObject *parent) : ITransport(Channel::Tcp, parent) {
     connect(&m_server, &QTcpServer::newConnection, this, &Tcp::handleNewConnection);
     connect(&m_server, &QTcpServer::acceptError, this, &Tcp::handleAcceptError);
 }
@@ -87,8 +85,8 @@ void Tcp::attachSocket(QTcpSocket *socket) {
     connect(socket, &QTcpSocket::connected, this, &Tcp::handleSocketConnected);
     connect(socket, &QTcpSocket::readyRead, this, &Tcp::handleSocketReadyRead);
     connect(socket, &QTcpSocket::disconnected, this, &Tcp::handleSocketDisconnected);
-    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error),
-            this, &Tcp::handleSocketError);
+    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error), this,
+            &Tcp::handleSocketError);
 }
 
 void Tcp::handleSocketConnected() {
@@ -143,4 +141,3 @@ void Tcp::setState(ConnectionState state) {
 
 } // namespace communication
 } // namespace fosd
-

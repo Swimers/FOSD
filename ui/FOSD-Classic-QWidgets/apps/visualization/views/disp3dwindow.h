@@ -2,8 +2,13 @@
 #include <QMainWindow>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class disp3dwindow; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class disp3dwindow;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for disp3dwindow.ui; emits intent, never calls business Controls.
 class VisualizationView : public QMainWindow, public IView {
@@ -30,8 +35,11 @@ signals:
     void actionViewDockRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::disp3dwindow> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

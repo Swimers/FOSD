@@ -7,7 +7,10 @@
 #include <functional>
 
 namespace fosd {
-namespace communication { class ConnectControl; }
+namespace communication {
+class ConnectControl;
+}
+
 namespace protocol {
 struct ProtocolError {
     communication::Channel channel = communication::Channel::Serial;
@@ -30,12 +33,13 @@ public slots:
 signals:
     void frameParsed(const fosd::core::FrameSnapshotPtr &snapshot);
     void errorOccurred(const fosd::protocol::ProtocolError &error);
+
 private:
     ParserFactory m_factory;
     FrameParsers m_parsers;
     std::shared_ptr<core::FrameRepository> m_repository;
 };
-}
+} // namespace detail
 
 // Create/destroy on the caller thread. Owns communication and the shared worker
 // thread. Both factories, I/O, decoding, parsing and publishing run on m_thread.
@@ -43,30 +47,34 @@ private:
 class ProtocolControl final : public QObject {
     Q_OBJECT
 public:
-    explicit ProtocolControl(QObject *parent = nullptr, 
-                             ParserFactory factory = ParserFactory(),
-                             communication::DecoderFactory decoderFactory = communication::DecoderFactory());
+    explicit ProtocolControl(
+        QObject *parent = nullptr, ParserFactory factory = ParserFactory(),
+        communication::DecoderFactory decoderFactory = communication::DecoderFactory());
     ~ProtocolControl() override;
 
-    core::FrameRepositoryPtr dataModel() const { return m_repository; }
-    communication::ConnectControl &communication() const { return *m_communication; }
+    core::FrameRepositoryPtr dataModel() const {
+        return m_repository;
+    }
+    communication::ConnectControl &communication() const {
+        return *m_communication;
+    }
 
     void parseFrame(communication::Channel channel, const QByteArray &packet,
                     const communication::Endpoint &peer = communication::Endpoint());
 signals:
     void frameParsed(const fosd::core::FrameSnapshotPtr &snapshot);
     void errorOccurred(const fosd::protocol::ProtocolError &error);
-    void requestParse(fosd::communication::Channel channel, 
-                      const QByteArray &packet,
+    void requestParse(fosd::communication::Channel channel, const QByteArray &packet,
                       const fosd::communication::Endpoint &peer);
+
 private:
     std::shared_ptr<core::FrameRepository> m_repository;
     QThread m_thread;
     detail::ProtocolWorker *m_worker = nullptr;
-    
+
     std::unique_ptr<communication::ConnectControl> m_communication;
 };
 
-}
-} // namespace fosd::protocol
+} // namespace protocol
+} // namespace fosd
 Q_DECLARE_METATYPE(fosd::protocol::ProtocolError);

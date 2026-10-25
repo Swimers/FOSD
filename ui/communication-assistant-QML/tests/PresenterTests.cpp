@@ -25,18 +25,21 @@ quint16 availableTcpPort() {
         return 0;
     return reservation.serverPort();
 }
+
 quint16 availableUdpPort() {
     QUdpSocket reservation;
     if (!reservation.bind(QHostAddress(QHostAddress::LocalHost), 0))
         return 0;
     return reservation.localPort();
 }
+
 QVariantMap udpSettings(quint16 port) {
     QVariantMap settings;
     settings.insert(QStringLiteral("bindAddress"), QStringLiteral("127.0.0.1"));
     settings.insert(QStringLiteral("localPort"), QString::number(port));
     return settings;
 }
+
 QVariantMap tcpSettings(quint16 port, bool server) {
     QVariantMap settings;
     settings.insert(QStringLiteral("host"), QStringLiteral("127.0.0.1"));
@@ -44,7 +47,7 @@ QVariantMap tcpSettings(quint16 port, bool server) {
     settings.insert(QStringLiteral("tcpRole"), server ? 1 : 0);
     return settings;
 }
-}
+} // namespace
 
 void PresenterTests::validation() {
     CommunicationPresenter presenter;

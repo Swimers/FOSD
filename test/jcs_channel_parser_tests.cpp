@@ -12,7 +12,7 @@ QByteArray channelPacket(quint16 points, quint8 channel = 1) {
     qToLittleEndian<quint16>(points, reinterpret_cast<uchar *>(packet.data() + 6));
     return packet;
 }
-}
+} // namespace
 
 class JCSChannelParserTests : public QObject {
     Q_OBJECT
@@ -37,8 +37,8 @@ void JCSChannelParserTests::recognizesLegacyChannels() {
 void JCSChannelParserTests::decodesAndDiscards() {
     JCSChannelParser parser;
     QByteArray packet = channelPacket(3);
-    packet.replace(4, 2, QByteArray::fromHex("abcd")); // Unknown header bytes.
-    packet.replace(8, 6, QByteArray::fromHex("6400c8002c01")); // X: 100,200,300.
+    packet.replace(4, 2, QByteArray::fromHex("abcd"));           // Unknown header bytes.
+    packet.replace(8, 6, QByteArray::fromHex("6400c8002c01"));   // X: 100,200,300.
     packet.replace(708, 6, QByteArray::fromHex("0a0014001e00")); // Y: 10,20,30.
     QString error = QStringLiteral("stale");
     QVERIFY(!parser.parse(packet, &error));

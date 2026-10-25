@@ -3,11 +3,11 @@
 #include <QReadWriteLock>
 
 namespace fosd {
-namespace Calculation { 
-namespace detail { 
-    class CalculationWorker;
-} 
+namespace Calculation {
+namespace detail {
+class CalculationWorker;
 }
+} // namespace Calculation
 
 namespace core {
 class CalculationRepository final {
@@ -20,9 +20,8 @@ private:
     mutable QReadWriteLock m_lock;
     CalculationResultPtr m_latest;
     quint64 m_revision = 0;
-    
 };
 using CalculationRepositoryPtr = std::shared_ptr<const CalculationRepository>;
 
-} 
-}
+} // namespace core
+} // namespace fosd

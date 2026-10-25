@@ -2,8 +2,13 @@
 #include <QMainWindow>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class OldMainWindow; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class OldMainWindow;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for oldmainwindow.ui; emits intent, never calls business Controls.
 class MainWindowView : public QMainWindow, public IView {
@@ -28,8 +33,11 @@ signals:
     void switch_StyleRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::OldMainWindow> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

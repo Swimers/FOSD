@@ -1,9 +1,8 @@
 #include "CalculationRepository.h"
 #include <utility>
 
-namespace fosd { 
+namespace fosd {
 namespace core {
-    
 CalculationResultPtr CalculationRepository::latest() const {
     QReadLocker lock(&m_lock);
     return m_latest;
@@ -16,5 +15,5 @@ CalculationResultPtr CalculationRepository::publish(CalculationResult result) {
     return m_latest;
 }
 
-}
-}
+} // namespace core
+} // namespace fosd

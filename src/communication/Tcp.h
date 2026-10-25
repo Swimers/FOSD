@@ -7,7 +7,6 @@
 
 namespace fosd {
 namespace communication {
-
 class Tcp final : public ITransport {
     Q_OBJECT
 public:
@@ -38,4 +37,3 @@ private:
 
 } // namespace communication
 } // namespace fosd
-

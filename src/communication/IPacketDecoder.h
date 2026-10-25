@@ -8,7 +8,6 @@
 
 namespace fosd {
 namespace communication {
-
 // One instance is created for each channel on the communication thread.
 // For TCP and serial, feed() may receive arbitrary fragments and should buffer
 // incomplete frames. For UDP, each feed() call contains one whole datagram.
@@ -16,10 +15,12 @@ class IPacketDecoder : public QObject {
     Q_OBJECT
 public:
     explicit IPacketDecoder(Channel channel, QObject *parent = nullptr)
-        : QObject(parent), m_channel(channel) {}
+        : QObject(parent), m_channel(channel) {
+    }
     ~IPacketDecoder() override = default;
     virtual QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &peer) = 0;
-    virtual void reset() {}
+    virtual void reset() {
+    }
 
     // Call after connecting errorOccurred so configuration failures are observed.
     // feed() also calls this for standalone use. Validation runs only once;
@@ -35,13 +36,17 @@ public:
         return m_valid;
     }
 
-    Channel channel() const { return m_channel; }
+    Channel channel() const {
+        return m_channel;
+    }
 
 signals:
     void errorOccurred(const fosd::communication::DecoderError &error);
 
 protected:
-    virtual QString validateConfiguration() const { return {}; }
+    virtual QString validateConfiguration() const {
+        return {};
+    }
 
     void reportError(const QString &operation, const QString &message, int code = 0) {
         DecoderError error;
@@ -60,4 +65,3 @@ private:
 
 } // namespace communication
 } // namespace fosd
-

@@ -7,18 +7,20 @@
 
 namespace fosd {
 namespace communication {
-
 class ITransport : public QObject {
     Q_OBJECT
 public:
     explicit ITransport(Channel channel, QObject *parent = nullptr)
-        : QObject(parent), m_channel(channel) {}
+        : QObject(parent), m_channel(channel) {
+    }
     ~ITransport() override = default;
 
     virtual void close() = 0;
     virtual void send(const QByteArray &bytes, const Endpoint &peer = Endpoint()) = 0;
 
-    Channel channel() const { return m_channel; }
+    Channel channel() const {
+        return m_channel;
+    }
 
 signals:
     void bytesReceived(const QByteArray &bytes, const Endpoint &peer);
@@ -41,4 +43,3 @@ private:
 
 } // namespace communication
 } // namespace fosd
-

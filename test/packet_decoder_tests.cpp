@@ -26,7 +26,7 @@ QByteArray frame(quint16 count = 1) {
     qToLittleEndian<quint16>(count, reinterpret_cast<uchar *>(bytes.data() + 4));
     return bytes;
 }
-}
+} // namespace
 
 class PacketDecoderTests : public QObject {
     Q_OBJECT
@@ -269,8 +269,7 @@ void PacketDecoderTests::jcsChannelPackets() {
     UdpPacketDecoder udp({rule});
     const QVector<QByteArray> badHeaders = {
         QByteArray::fromHex("fa00fa00"), QByteArray::fromHex("fa11fa11"),
-        QByteArray::fromHex("fa01fa02"), QByteArray::fromHex("fa010001")
-    };
+        QByteArray::fromHex("fa01fa02"), QByteArray::fromHex("fa010001")};
     for (const QByteArray &header : badHeaders) {
         QByteArray bad = channelPacket;
         bad.replace(0, 4, header);
@@ -279,7 +278,8 @@ void PacketDecoderTests::jcsChannelPackets() {
     }
 
     // A fixed FA FB FA FB header takes priority over the FA candidate marker.
-    const QByteArray dataPacket = QByteArray::fromHex("fafbfafb020100000000000300c0c14400d0c14400b8c144");
+    const QByteArray dataPacket =
+        QByteArray::fromHex("fafbfafb020100000000000300c0c14400d0c14400b8c144");
     UdpPacketDecoder dataUdp;
     QCOMPARE(dataUdp.feed(dataPacket, Endpoint()), QVector<QByteArray>({dataPacket}));
     const QByteArray stream = dataPacket + channelPacket + dataPacket;

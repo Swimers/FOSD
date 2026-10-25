@@ -4,7 +4,8 @@
 class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkActor;
-namespace fosd { namespace visualization {
+namespace fosd {
+namespace visualization {
 class DeformationRenderer final {
 public:
     DeformationRenderer();
@@ -17,6 +18,7 @@ public:
     vtkPolyData *displayMesh() const; // Non-owning component accessors.
     vtkPolyDataMapper *mapper() const;
     vtkActor *actor() const;
+
 private:
     vtkSmartPointer<vtkPolyData> m_originalMesh;
     vtkSmartPointer<vtkPolyData> m_displayMesh;
@@ -25,4 +27,5 @@ private:
     core::CalculationResultPtr m_result;
     double m_scale = 1.0;
 };
-} }
+} // namespace visualization
+} // namespace fosd

@@ -1,9 +1,8 @@
 #pragma once
 #include "FrameData.h"
 
-namespace fosd { 
+namespace fosd {
 namespace core {
-
 struct CalibratedData {
     FrameSnapshotPtr sourceFrame;
     quint64 configurationRevision = 0;
@@ -14,6 +13,6 @@ struct CalibratedData {
 
 using CalibratedDataPtr = std::shared_ptr<const CalibratedData>;
 
-}
-}
+} // namespace core
+} // namespace fosd
 Q_DECLARE_METATYPE(fosd::core::CalibratedDataPtr)

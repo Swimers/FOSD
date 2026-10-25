@@ -9,11 +9,13 @@ QByteArray examplePacket() {
     // Protocol document example: CH1=2, CH2=1, N=3.
     return QByteArray::fromHex("fafbfafb020100000000000300c0c14400d0c14400b8c144");
 }
-std::shared_ptr<const core::WavelengthFrame> decode(const QByteArray &packet, QString *error = nullptr) {
+
+std::shared_ptr<const core::WavelengthFrame> decode(const QByteArray &packet,
+                                                    QString *error = nullptr) {
     return std::dynamic_pointer_cast<const core::WavelengthFrame>(
         protocol::JCSWavelengthParser().parse(packet, error));
 }
-}
+} // namespace
 
 class JCSParserTests : public QObject {
     Q_OBJECT

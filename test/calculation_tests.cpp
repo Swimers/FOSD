@@ -16,8 +16,10 @@
 
 using namespace fosd;
 using namespace fosd::Calculation;
-static_assert(std::is_const<core::CalculationResultPtr::element_type>::value, "Results must be immutable");
-static_assert(std::is_const<core::CalculationRepositoryPtr::element_type>::value, "Consumers cannot publish");
+static_assert(std::is_const<core::CalculationResultPtr::element_type>::value,
+              "Results must be immutable");
+static_assert(std::is_const<core::CalculationRepositoryPtr::element_type>::value,
+              "Consumers cannot publish");
 
 namespace {
 CalculationConfiguration settings() {
@@ -31,6 +33,7 @@ CalculationConfiguration settings() {
     }
     return configuration;
 }
+
 core::ModelData model() {
     core::ModelData data;
     for (int index = 0; index < 30; ++index)
@@ -38,6 +41,7 @@ core::ModelData model() {
     data.insert(std::numeric_limits<core::PointId>::max() - 2, {1400.0, 20.0, 30.0});
     return data;
 }
+
 core::FrameSnapshotPtr frame(float firstValue = 1001.0f, quint64 revision = 1) {
     core::WavelengthFrame values;
     values.recordCount = 12;
@@ -54,6 +58,7 @@ core::FrameSnapshotPtr frame(float firstValue = 1001.0f, quint64 revision = 1) {
     snapshot.data = std::make_shared<const core::WavelengthFrame>(std::move(values));
     return std::make_shared<const core::FrameSnapshot>(std::move(snapshot));
 }
+
 struct Trace {
     std::atomic<QThread *> factoryThread{nullptr};
     std::atomic<QThread *> solveThread{nullptr};
@@ -70,7 +75,9 @@ public:
     ~TranslationIFE() override {
         m_trace->destroyedOnWorker.store(QThread::currentThread() == m_trace->factoryThread.load());
     }
-    QString IFEId() const override { return QStringLiteral("test.translation"); }
+    QString IFEId() const override {
+        return QStringLiteral("test.translation");
+    }
     NodeDofs calculateDofs(const Strain &strain) const override {
         m_trace->solveThread.store(QThread::currentThread());
         m_trace->solveCalls.fetch_add(1);
@@ -84,21 +91,26 @@ public:
         }
         return {{dofs[0] * 0.001, 0.002, 0.003}};
     }
+
 private:
     Trace *m_trace;
 };
 std::unique_ptr<IFrameIFE> translationFactory(Trace *trace) {
     return std::unique_ptr<IFrameIFE>(new TranslationIFE(trace));
 }
+
 protocol::FrameParsers mpParsers() {
     protocol::FrameParsers parsers;
     parsers.emplace_back(new protocol::MPWavelengthParser);
     return parsers;
 }
-std::unique_ptr<communication::IPacketDecoder> observedDecoder(Trace *trace, communication::Channel channel) {
+
+std::unique_ptr<communication::IPacketDecoder> observedDecoder(Trace *trace,
+                                                               communication::Channel channel) {
     trace->inputThread.store(QThread::currentThread());
     return communication::createPacketDecoder(channel);
 }
+
 QByteArray wirePacket() {
     QByteArray packet = QByteArray::fromHex("5aa501010c0001000000");
     for (int index = 0; index < 12; ++index) {
@@ -113,6 +125,7 @@ QByteArray wirePacket() {
     }
     return packet;
 }
+
 void readResults(core::CalculationRepositoryPtr repository, std::atomic<bool> *stop,
                  std::atomic<bool> *invalid, std::atomic<int> *reads) {
     quint64 previous = 0;
@@ -129,6 +142,7 @@ void readResults(core::CalculationRepositoryPtr repository, std::atomic<bool> *s
         reads->fetch_add(1);
     }
 }
+
 class Readers {
 public:
     explicit Readers(core::CalculationRepositoryPtr repository) {
@@ -142,10 +156,11 @@ public:
     }
     std::atomic<bool> stop{false}, invalid{false};
     std::atomic<int> reads{0};
+
 private:
     std::vector<std::thread> threads;
 };
-}
+} // namespace
 
 class CalculationTests : public QObject {
     Q_OBJECT
@@ -167,7 +182,8 @@ void CalculationTests::calibrationFormulaAndSelection() {
     CalibrationStrainData parameters;
     parameters.originalWavelength = {1000.0, 2000.0, 3000.0};
     parameters.calibrationFactor = 2.0;
-    parameters.A = 4.0; parameters.B = 3.0;
+    parameters.A = 4.0;
+    parameters.B = 3.0;
     CalibrationChannelData channels;
     channels.channelIndices = {2, 0};
     channels.calibrationFactors = {2.0, 3.0};
@@ -182,6 +198,7 @@ void CalculationTests::calibrationFormulaAndSelection() {
     QCOMPARE(calibration->getCalibrationStrainData().calibrationFactor, 0.00075);
     QCOMPARE(calibration->getCalibrationStrainData().A, 0.0);
 }
+
 void CalculationTests::calibrationRejectsInvalidInputs() {
     StrainCalibration calibration;
     QSignalSpy errors(&calibration, &StrainCalibration::errorOccurred);
@@ -203,7 +220,8 @@ void CalculationTests::calibrationRejectsInvalidInputs() {
         QVERIFY(!calibration.checkPara());
     }
     calibration.setCalibrationChannelData(config.channelCalibration);
-    for (double value : {0.0, std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {
+    for (double value :
+         {0.0, std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {
         auto bad = config.strainCalibration;
         bad.A = value;
         calibration.setCalibrationStrainData(bad);
@@ -215,6 +233,7 @@ void CalculationTests::calibrationRejectsInvalidInputs() {
     QVERIFY(!calibration.checkPara());
     QVERIFY(!errors.isEmpty());
 }
+
 void CalculationTests::opaqueAlgorithmData() {
     Trace trace;
     CalculationControl control(core::FrameRepositoryPtr(), nullptr,
@@ -281,6 +300,7 @@ void CalculationTests::workerTraversesWholeModel() {
     QCOMPARE(result->deformedModel.value(0)[0], 1.0);
     QCOMPARE(errors.count(), 0);
 }
+
 void CalculationTests::failuresPreservePreviousResult() {
     Trace trace;
     CalculationControl control(core::FrameRepositoryPtr(), nullptr,
@@ -289,15 +309,19 @@ void CalculationTests::failuresPreservePreviousResult() {
     QSignalSpy errors(&control, &CalculationControl::errorOccurred);
     control.submitFrame(frame());
     QTRY_COMPARE(errors.count(), 1);
-    control.setConfiguration(settings()); control.setModel(model()); control.submitFrame(frame());
+    control.setConfiguration(settings());
+    control.setModel(model());
+    control.submitFrame(frame());
     QTRY_COMPARE(results.count(), 1);
     const auto previous = control.dataModel()->latest();
     control.submitFrame(frame(1003, 3)); // Fails partway through traversal.
     control.submitFrame(frame(std::numeric_limits<float>::quiet_NaN(), 4));
     control.submitFrame(core::FrameSnapshotPtr());
-    auto invalidModel = model(); invalidModel[0] = {1, 2};
+    auto invalidModel = model();
+    invalidModel[0] = {1, 2};
     control.setRawPointMap(invalidModel);
-    auto invalidSettings = settings(); invalidSettings.strainCalibration.A = 0;
+    auto invalidSettings = settings();
+    invalidSettings.strainCalibration.A = 0;
     control.setConfiguration(invalidSettings);
     QTRY_COMPARE(errors.count(), 6);
     QVERIFY(control.dataModel()->latest() == previous);
@@ -306,12 +330,15 @@ void CalculationTests::failuresPreservePreviousResult() {
     QCOMPARE(control.dataModel()->latest()->modelRevision, quint64(1));
     QCOMPARE(control.dataModel()->latest()->configurationRevision, quint64(1));
 }
+
 void CalculationTests::defaultHyyPipeline() {
     CalculationControl control;
     QSignalSpy results(&control, &CalculationControl::resultReady);
     QSignalSpy errors(&control, &CalculationControl::errorOccurred);
     auto geometry = model();
-    control.setConfiguration(settings()); control.setModel(geometry); control.submitFrame(frame(1000));
+    control.setConfiguration(settings());
+    control.setModel(geometry);
+    control.submitFrame(frame(1000));
     QTRY_COMPARE(results.count(), 1);
     QVERIFY(control.dataModel()->latest()->deformedModel == geometry);
     control.submitFrame(frame(1001, 2));
@@ -330,26 +357,32 @@ void CalculationTests::defaultHyyPipeline() {
     QCOMPARE(control.dataModel()->latest()->modelRevision, quint64(2));
     QCOMPARE(errors.count(), 0);
 }
+
 void CalculationTests::udpToResultWithoutMainDispatch() {
     Trace trace;
     protocol::ProtocolControl protocol(nullptr, mpParsers,
-        std::bind(observedDecoder, &trace, std::placeholders::_1));
+                                       std::bind(observedDecoder, &trace, std::placeholders::_1));
     CalculationControl control(protocol.dataModel(), nullptr,
                                std::bind(translationFactory, &trace));
     QSignalSpy models(&control, &CalculationControl::modelAccepted);
     QSignalSpy states(&protocol.communication(), &communication::ConnectControl::stateChanged);
-    control.setConfiguration(settings()); control.setModel(model());
+    control.setConfiguration(settings());
+    control.setModel(model());
     QTRY_COMPARE(models.count(), 1);
     QUdpSocket probe;
     QVERIFY(probe.bind(QHostAddress(QHostAddress::LocalHost), quint16(0)));
-    const quint16 port = probe.localPort(); probe.close();
-    communication::UdpConfig config; config.bindAddress = QHostAddress::LocalHost; config.localPort = port;
+    const quint16 port = probe.localPort();
+    probe.close();
+    communication::UdpConfig config;
+    config.bindAddress = QHostAddress::LocalHost;
+    config.localPort = port;
     protocol.communication().openUdp(config);
     QTRY_VERIFY(!states.isEmpty());
     QUdpSocket peer;
     const auto packet = wirePacket();
     QCOMPARE(peer.writeDatagram(packet, QHostAddress::LocalHost, port), qint64(packet.size()));
-    QElapsedTimer deadline; deadline.start();
+    QElapsedTimer deadline;
+    deadline.start();
     while (!control.dataModel()->latest() && deadline.elapsed() < 3000)
         QThread::msleep(1); // No UI events: all three processing stages must run independently.
     const auto result = control.dataModel()->latest();
@@ -360,20 +393,23 @@ void CalculationTests::udpToResultWithoutMainDispatch() {
     QVERIFY(trace.solveThread.load() != QThread::currentThread());
     QVERIFY(trace.solveThread.load() != trace.inputThread.load());
     QTest::qWait(35);
-    QVERIFY(control.dataModel()->latest() == result); // Do not solve an unchanged snapshot repeatedly.
+    QVERIFY(control.dataModel()->latest() ==
+            result); // Do not solve an unchanged snapshot repeatedly.
     auto geometry = model();
     geometry[0][0] = 20;
     // Importers/editors may submit via a queued Qt connection as well.
     QVERIFY(QMetaObject::invokeMethod(&control, "setRawPointMap", Qt::QueuedConnection,
-                                     Q_ARG(fosd::core::PointMap, geometry)));
+                                      Q_ARG(fosd::core::PointMap, geometry)));
     QTRY_COMPARE(control.dataModel()->latest()->modelRevision, quint64(2));
     QCOMPARE(control.dataModel()->latest()->deformedModel.value(0)[0], 21.0);
     QVERIFY(control.dataModel()->latest()->sourceFrame == result->sourceFrame);
-    auto configuration = settings(); configuration.strainCalibration.A = 2;
+    auto configuration = settings();
+    configuration.strainCalibration.A = 2;
     control.setConfiguration(configuration);
     QTRY_COMPARE(control.dataModel()->latest()->configurationRevision, quint64(2));
     QCOMPARE(control.dataModel()->latest()->deformedModel.value(0)[0], 20.5);
 }
+
 void CalculationTests::concurrentReadersAndShutdown() {
     core::CalculationRepositoryPtr repository;
     core::CalculationResultPtr first;
@@ -384,7 +420,9 @@ void CalculationTests::concurrentReadersAndShutdown() {
         repository = control.dataModel();
         Readers readers(repository);
         QSignalSpy results(&control, &CalculationControl::resultReady);
-        control.setConfiguration(settings()); control.setModel(model()); control.submitFrame(frame());
+        control.setConfiguration(settings());
+        control.setModel(model());
+        control.submitFrame(frame());
         QTRY_COMPARE(results.count(), 1);
         first = repository->latest();
         for (quint64 index = 2; index <= 40; ++index)

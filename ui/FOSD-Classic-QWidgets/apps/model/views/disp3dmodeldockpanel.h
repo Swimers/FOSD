@@ -2,8 +2,13 @@
 #include <QWidget>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class Disp3DModelDockPanel; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class Disp3DModelDockPanel;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for disp3dmodeldockpanel.ui; emits intent, never calls business Controls.
 class ModelPanelView : public QWidget, public IView {
@@ -32,8 +37,11 @@ signals:
     void pbtn_SelectColorRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::Disp3DModelDockPanel> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

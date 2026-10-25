@@ -8,10 +8,8 @@ namespace visualization {
 KeyPointManager::KeyPointManager() = default;
 KeyPointManager::~KeyPointManager() = default;
 
-void KeyPointManager::setRenderer(vtkRenderer *renderer)
-{
-    
+void KeyPointManager::setRenderer(vtkRenderer *renderer) {
 }
 
-}
-}
+} // namespace visualization
+} // namespace fosd

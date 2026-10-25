@@ -2,12 +2,10 @@
 
 namespace fosd {
 namespace communication {
-
-Usart::Usart(QObject *parent)
-    : ITransport(Channel::Serial, parent) {
+Usart::Usart(QObject *parent) : ITransport(Channel::Serial, parent) {
     connect(&m_port, &QSerialPort::readyRead, this, &Usart::handleReadyRead);
-    connect(&m_port, QOverload<QSerialPort::SerialPortError>::of(&QSerialPort::error),
-            this, &Usart::handlePortError);
+    connect(&m_port, QOverload<QSerialPort::SerialPortError>::of(&QSerialPort::error), this,
+            &Usart::handlePortError);
 }
 
 void Usart::handleReadyRead() {
@@ -29,7 +27,8 @@ void Usart::handlePortError(QSerialPort::SerialPortError error) {
 void Usart::open(const SerialConfig &config) {
     close();
     if (config.portName.trimmed().isEmpty() || config.baudRate <= 0) {
-        reportError(QStringLiteral("open"), QStringLiteral("Invalid serial port name or baud rate"));
+        reportError(QStringLiteral("open"),
+                    QStringLiteral("Invalid serial port name or baud rate"));
         return;
     }
 
@@ -69,4 +68,3 @@ void Usart::send(const QByteArray &bytes, const Endpoint &peer) {
 
 } // namespace communication
 } // namespace fosd
-

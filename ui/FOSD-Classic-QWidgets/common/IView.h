@@ -2,7 +2,9 @@
 #include <QVariantMap>
 #include "ViewEvents.h"
 
-namespace fosd { namespace ui { namespace classic {
+namespace fosd {
+namespace ui {
+namespace classic {
 class IView {
 public:
     virtual ~IView() = default;
@@ -13,4 +15,6 @@ public:
     virtual void clearInputs() = 0;
     virtual void showStatus(const QString &message) = 0;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

@@ -76,8 +76,10 @@ void WidgetsTests::udpViewRoundTrip() {
     QVERIFY(localPort->isEnabled());
     channel->setCurrentIndex(0);
     QTest::qWait(100);
-    QVERIFY(window.grab().save(QCoreApplication::applicationDirPath() + "/assistant-widgets-preview.png"));
+    QVERIFY(window.grab().save(QCoreApplication::applicationDirPath() +
+                               "/assistant-widgets-preview.png"));
 }
+
 void WidgetsTests::tcpViewServer() {
     CommunicationPresenter presenter;
     CommunicationWindow window(presenter);
@@ -109,6 +111,7 @@ void WidgetsTests::tcpViewServer() {
     connection->click();
     QVERIFY(!presenter.isOpen());
 }
+
 void WidgetsTests::serialFailureAndValidation() {
     CommunicationPresenter presenter;
     CommunicationWindow window(presenter);
@@ -127,5 +130,6 @@ void WidgetsTests::serialFailureAndValidation() {
     QVERIFY(port->isEnabled());
     QCOMPARE(error->text(), presenter.lastError());
 }
+
 QTEST_MAIN(WidgetsTests)
 #include "WidgetsTests.moc"

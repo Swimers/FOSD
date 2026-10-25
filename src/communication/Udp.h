@@ -6,7 +6,6 @@
 
 namespace fosd {
 namespace communication {
-
 class Udp final : public ITransport {
     Q_OBJECT
 public:
@@ -29,4 +28,3 @@ private:
 
 } // namespace communication
 } // namespace fosd
-

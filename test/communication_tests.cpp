@@ -15,28 +15,28 @@ using namespace fosd::communication;
 
 class PassthroughDecoder final : public IPacketDecoder {
 public:
-    PassthroughDecoder() : IPacketDecoder(Channel::Udp) {}
+    PassthroughDecoder() : IPacketDecoder(Channel::Udp) {
+    }
     QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &) override {
         return QVector<QByteArray>() << bytes;
     }
 };
 
 namespace {
-
 std::unique_ptr<IPacketDecoder> createInvalidDecoder(Channel channel) {
     switch (channel) {
-    case Channel::Serial:
-        return std::unique_ptr<IPacketDecoder>(new SerialPacketDecoder(QByteArray(), 1));
-    case Channel::Udp:
-        return std::unique_ptr<IPacketDecoder>(new UdpPacketDecoder(QVector<PacketRule>()));
-    case Channel::Tcp:
-        return std::unique_ptr<IPacketDecoder>(new TcpPacketDecoder({PacketRule()}));
+        case Channel::Serial:
+            return std::unique_ptr<IPacketDecoder>(new SerialPacketDecoder(QByteArray(), 1));
+        case Channel::Udp:
+            return std::unique_ptr<IPacketDecoder>(new UdpPacketDecoder(QVector<PacketRule>()));
+        case Channel::Tcp:
+            return std::unique_ptr<IPacketDecoder>(new TcpPacketDecoder({PacketRule()}));
     }
     return nullptr;
 }
 
-std::unique_ptr<IPacketDecoder> createPassthroughDecoder(
-    Channel channel, std::atomic<bool> *factoryOnWorker, QThread *mainThread) {
+std::unique_ptr<IPacketDecoder>
+createPassthroughDecoder(Channel channel, std::atomic<bool> *factoryOnWorker, QThread *mainThread) {
     factoryOnWorker->store(QThread::currentThread() != mainThread);
     if (channel == Channel::Udp)
         return std::unique_ptr<IPacketDecoder>(new PassthroughDecoder);
@@ -139,7 +139,8 @@ void CommunicationTests::tcpDefaultDecoderAndReconnect() {
     QTcpSocket peer;
     peer.connectToHost(QHostAddress::LocalHost, port);
     QVERIFY(peer.waitForConnected(3000));
-    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) == ConnectionState::Connected);
+    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) ==
+                ConnectionState::Connected);
     const QByteArray packet = QByteArray::fromHex("5aa50100000001000000");
     QCOMPARE(peer.write(packet.left(1)), qint64(1));
     QTRY_COMPARE(rawSpy.count(), 1);
@@ -152,10 +153,12 @@ void CommunicationTests::tcpDefaultDecoderAndReconnect() {
     QCOMPARE(peer.write(packet.left(8)), qint64(8));
     QTRY_VERIFY(rawSpy.count() > received);
     peer.disconnectFromHost();
-    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) == ConnectionState::Listening);
+    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) ==
+                ConnectionState::Listening);
     peer.connectToHost(QHostAddress::LocalHost, port);
     QVERIFY(peer.waitForConnected(3000));
-    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) == ConnectionState::Connected);
+    QTRY_VERIFY(qvariant_cast<ConnectionState>(stateSpy.last().at(1)) ==
+                ConnectionState::Connected);
     QCOMPARE(peer.write(packet), qint64(packet.size()));
     QTRY_COMPARE(packetSpy.count(), 3);
     QCOMPARE(packetSpy.last().at(1).toByteArray(), packet);
@@ -172,9 +175,8 @@ void CommunicationTests::udpRoundTripAndDecoder() {
 
     std::atomic<bool> factoryOnWorker(false);
     QThread *mainThread = QCoreApplication::instance()->thread();
-    ConnectControl control(nullptr, std::bind(createPassthroughDecoder,
-                                             std::placeholders::_1,
-                                             &factoryOnWorker, mainThread));
+    ConnectControl control(nullptr, std::bind(createPassthroughDecoder, std::placeholders::_1,
+                                              &factoryOnWorker, mainThread));
     QSignalSpy stateSpy(&control, &ConnectControl::stateChanged);
     QSignalSpy dataSpy(&control, &ConnectControl::rawDataReceived);
     QSignalSpy packetSpy(&control, &ConnectControl::packetReceived);
@@ -281,8 +283,7 @@ void CommunicationTests::invalidSerialConfiguration() {
     QSignalSpy errorSpy(&control, &ConnectControl::errorOccurred);
     control.openSerial(SerialConfig());
     QTRY_VERIFY(errorSpy.count() > 0);
-    const CommunicationError error =
-        qvariant_cast<CommunicationError>(errorSpy.last().at(0));
+    const CommunicationError error = qvariant_cast<CommunicationError>(errorSpy.last().at(0));
     QCOMPARE(error.channel, Channel::Serial);
     QCOMPARE(error.operation, QStringLiteral("open"));
 }
@@ -293,8 +294,7 @@ void CommunicationTests::sendOnClosedSerialReportsError() {
     QSignalSpy errorSpy(&control, &ConnectControl::errorOccurred);
     control.send(Channel::Serial, QByteArray("ping"));
     QTRY_VERIFY(errorSpy.count() > 0);
-    const CommunicationError error =
-        qvariant_cast<CommunicationError>(errorSpy.last().at(0));
+    const CommunicationError error = qvariant_cast<CommunicationError>(errorSpy.last().at(0));
     QCOMPARE(error.channel, Channel::Serial);
     QCOMPARE(error.operation, QStringLiteral("send"));
     QCOMPARE(dataSpy.count(), 0);
@@ -302,4 +302,3 @@ void CommunicationTests::sendOnClosedSerialReportsError() {
 
 QTEST_MAIN(CommunicationTests)
 #include "communication_tests.moc"
-

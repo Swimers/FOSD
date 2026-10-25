@@ -7,12 +7,12 @@
 
 namespace fosd {
 namespace assistant {
-
 // Lives on the UI thread. ConnectControl owns the existing I/O worker thread.
 // Channel indices exposed to Views: 0 = serial, 1 = UDP, 2 = TCP.
 class CommunicationPresenter final : public QObject {
     Q_OBJECT
-    Q_PROPERTY(int selectedChannel READ selectedChannel WRITE setSelectedChannel NOTIFY selectionChanged)
+    Q_PROPERTY(
+        int selectedChannel READ selectedChannel WRITE setSelectedChannel NOTIFY selectionChanged)
     Q_PROPERTY(QStringList serialPorts READ serialPorts NOTIFY serialPortsChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY connectionChanged)
     Q_PROPERTY(bool isOpen READ isOpen NOTIFY connectionChanged)
@@ -24,18 +24,30 @@ class CommunicationPresenter final : public QObject {
     Q_PROPERTY(qulonglong submittedBytes READ submittedBytes NOTIFY countersChanged)
 public:
     explicit CommunicationPresenter(QObject *parent = nullptr);
-    int selectedChannel() const { return m_selectedChannel; }
+    int selectedChannel() const {
+        return m_selectedChannel;
+    }
     void setSelectedChannel(int channel);
-    QStringList serialPorts() const { return m_serialPorts; }
+    QStringList serialPorts() const {
+        return m_serialPorts;
+    }
     QString statusText() const;
     bool isOpen() const;
     bool canSend() const;
     QString activityLog() const;
-    QString lastError() const { return m_lastError; }
-    bool hexDisplay() const { return m_hexDisplay; }
+    QString lastError() const {
+        return m_lastError;
+    }
+    bool hexDisplay() const {
+        return m_hexDisplay;
+    }
     void setHexDisplay(bool value);
-    qulonglong receivedBytes() const { return m_receivedBytes; }
-    qulonglong submittedBytes() const { return m_submittedBytes; }
+    qulonglong receivedBytes() const {
+        return m_receivedBytes;
+    }
+    qulonglong submittedBytes() const {
+        return m_submittedBytes;
+    }
 
     Q_INVOKABLE void refreshSerialPorts();
     Q_INVOKABLE bool openConnection(const QVariantMap &settings);
@@ -70,8 +82,8 @@ private:
     };
     bool fail(const QString &operation, const QString &message);
     bool parsePort(const QString &text, quint16 &port);
-    void record(fosd::communication::Channel channel, const QString &kind,
-                const QByteArray &bytes, const QString &message = QString());
+    void record(fosd::communication::Channel channel, const QString &kind, const QByteArray &bytes,
+                const QString &message = QString());
     fosd::communication::Channel channel() const;
     fosd::communication::ConnectControl m_control;
     fosd::communication::ConnectionState m_states[3];

@@ -2,8 +2,13 @@
 #include <QWidget>
 #include <memory>
 #include "../../../../common/IView.h"
-namespace Ui { class Disp3DInfoDockPanel; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class Disp3DInfoDockPanel;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for disp3dinfodockpanel.ui; emits intent, never calls business Controls.
 class InfoPanelView : public QWidget, public IView {
@@ -25,8 +30,11 @@ signals:
     void radioButton_4Requested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::Disp3DInfoDockPanel> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

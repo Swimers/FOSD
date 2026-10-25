@@ -9,7 +9,6 @@
 
 namespace fosd {
 namespace communication {
-
 class Serialport final : public ITransport {
     Q_OBJECT
 public:

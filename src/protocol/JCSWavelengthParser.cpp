@@ -4,19 +4,18 @@
 #include <limits>
 #include <utility>
 
-namespace fosd { 
+namespace fosd {
 namespace protocol {
-
 namespace {
 core::FrameDataPtr fail(QString *error, const QString &message) {
     if (error)
         *error = message;
     return {};
 }
-}
+} // namespace
 
-QString JCSWavelengthParser::protocolId() const { 
-    return QStringLiteral("jcs.wavelength"); 
+QString JCSWavelengthParser::protocolId() const {
+    return QStringLiteral("jcs.wavelength");
 }
 
 bool JCSWavelengthParser::matches(const QByteArray &packet) const {
@@ -48,14 +47,16 @@ core::FrameDataPtr JCSWavelengthParser::parse(const QByteArray &packet, QString 
         channelSensors += data[4 + channel];
     if (channelSensors != totalSensors)
         return fail(error, QStringLiteral("JCS sensor count mismatch: channels=%1, total=%2")
-                    .arg(channelSensors).arg(totalSensors));
+                               .arg(channelSensors)
+                               .arg(totalSensors));
 
     const int requiredSize = headerSize + totalSensors * recordSize;
     // The old parser checks a minimum length; trailing bytes have no decoded
     // meaning here and are retained as compatible padding, not extra records.
     if (packet.size() < requiredSize)
         return fail(error, QStringLiteral("Invalid JCS frame length: actual=%1, minimum=%2")
-                    .arg(packet.size()).arg(requiredSize));
+                               .arg(packet.size())
+                               .arg(requiredSize));
 
     core::WavelengthFrame frame;
     frame.recordCount = static_cast<quint16>(totalSensors);
@@ -78,5 +79,5 @@ core::FrameDataPtr JCSWavelengthParser::parse(const QByteArray &packet, QString 
     return std::make_shared<const core::WavelengthFrame>(std::move(frame));
 }
 
-}
-} // namespace fosd::protocol
+} // namespace protocol
+} // namespace fosd

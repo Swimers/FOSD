@@ -1,8 +1,7 @@
 #include "FrameRepository.h"
 #include <utility>
-namespace fosd { 
+namespace fosd {
 namespace core {
-
 FrameSnapshotPtr FrameRepository::latest() const {
     QReadLocker locker(&m_lock);
     return m_latest;
@@ -15,5 +14,5 @@ FrameSnapshotPtr FrameRepository::publish(FrameSnapshot snapshot) {
     return m_latest;
 }
 
-} 
-} // namespace fosd::core
+} // namespace core
+} // namespace fosd

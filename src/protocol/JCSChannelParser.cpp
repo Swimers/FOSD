@@ -11,7 +11,7 @@ core::FrameDataPtr fail(QString *error, const QString &message) {
         *error = message;
     return {};
 }
-}
+} // namespace
 
 QString JCSChannelParser::protocolId() const {
     return QStringLiteral("jcs.channel");
@@ -34,7 +34,8 @@ core::FrameDataPtr JCSChannelParser::parse(const QByteArray &packet, QString *er
     if (packet.size() < headerSize)
         return fail(error, QStringLiteral("JCS channel frame is shorter than the 8-byte header"));
     if (!matches(packet))
-        return fail(error, QStringLiteral("Invalid JCS channel frame magic or channel (expected 0..5)"));
+        return fail(error,
+                    QStringLiteral("Invalid JCS channel frame magic or channel (expected 0..5)"));
 
     const uchar *data = reinterpret_cast<const uchar *>(packet.constData());
     // Offsets 4..5 are unknown; the legacy source does not interpret them.
@@ -42,7 +43,8 @@ core::FrameDataPtr JCSChannelParser::parse(const QByteArray &packet, QString *er
     const int requiredSize = yOffset + int(pointCount) * sampleSize;
     if (packet.size() < requiredSize)
         return fail(error, QStringLiteral("Invalid JCS channel frame length: actual=%1, minimum=%2")
-                    .arg(packet.size()).arg(requiredSize));
+                               .arg(packet.size())
+                               .arg(requiredSize));
 
     // Reproduce the legacy X/Y offsets, assuming unsigned little-endian 16-bit
     // samples. FLOATA and MAX_POINTS definitions were not supplied. Do not

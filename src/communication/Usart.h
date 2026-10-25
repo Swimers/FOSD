@@ -6,7 +6,6 @@
 
 namespace fosd {
 namespace communication {
-
 class Usart final : public ITransport {
     Q_OBJECT
 public:
@@ -26,4 +25,3 @@ private:
 
 } // namespace communication
 } // namespace fosd
-

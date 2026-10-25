@@ -4,17 +4,18 @@
 #include <limits>
 #include <utility>
 
-namespace fosd { namespace protocol {
+namespace fosd {
+namespace protocol {
 namespace {
 core::FrameDataPtr fail(QString *error, const QString &message) {
     if (error)
         *error = message;
     return {};
 }
-}
+} // namespace
 
-QString MPWavelengthParser::protocolId() const { 
-    return QStringLiteral("mp.wavelength"); 
+QString MPWavelengthParser::protocolId() const {
+    return QStringLiteral("mp.wavelength");
 }
 
 bool MPWavelengthParser::matches(const QByteArray &packet) const {
@@ -26,7 +27,7 @@ core::FrameDataPtr MPWavelengthParser::parse(const QByteArray &packet, QString *
                   "The wire format requires IEEE 754 binary32 floats");
     if (error)
         error->clear();
-        
+
     const int headerSize = 10;
     const int recordSize = 6;
 
@@ -43,7 +44,8 @@ core::FrameDataPtr MPWavelengthParser::parse(const QByteArray &packet, QString *
     const int expected = headerSize + int(frame.recordCount) * recordSize;
     if (packet.size() != expected)
         return fail(error, QStringLiteral("Invalid frame length: actual=%1, expected=%2")
-                    .arg(packet.size()).arg(expected));
+                               .arg(packet.size())
+                               .arg(expected));
     // The supplied protocol imposes no version/type/channel/sensor restrictions.
     frame.records.reserve(frame.recordCount);
     for (int index = 0; index < frame.recordCount; ++index) {
@@ -58,5 +60,5 @@ core::FrameDataPtr MPWavelengthParser::parse(const QByteArray &packet, QString *
     return std::make_shared<const core::WavelengthFrame>(std::move(frame));
 }
 
-}
-} // namespace fosd::protocol
+} // namespace protocol
+} // namespace fosd

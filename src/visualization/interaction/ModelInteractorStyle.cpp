@@ -1,102 +1,83 @@
 #include "ModelInteractorStyle.h"
 #include "PointPicker.h"
 #include <vtkObjectFactory.h>
-namespace fosd { 
+namespace fosd {
 namespace visualization {
-
 vtkStandardNewMacro(ModelInteractorStyle);
 ModelInteractorStyle::ModelInteractorStyle() = default;
 ModelInteractorStyle::~ModelInteractorStyle() = default;
 
-void ModelInteractorStyle::setPointPicker(PointPicker *picker)
-{
+void ModelInteractorStyle::setPointPicker(PointPicker *picker) {
     m_picker = picker;
 }
 
-void ModelInteractorStyle::setCameraLocked(bool locked)
-{
+void ModelInteractorStyle::setCameraLocked(bool locked) {
     m_cameraLocked = locked;
 }
 
-void ModelInteractorStyle::OnMouseMove()
-{
+void ModelInteractorStyle::OnMouseMove() {
     vtkInteractorStyleTrackballCamera::OnMouseMove();
 }
 
-void ModelInteractorStyle::OnLeftButtonDown()
-{
+void ModelInteractorStyle::OnLeftButtonDown() {
     vtkInteractorStyleTrackballCamera::OnLeftButtonDown();
 }
 
-void ModelInteractorStyle::OnLeftButtonUp()
-{
+void ModelInteractorStyle::OnLeftButtonUp() {
     vtkInteractorStyleTrackballCamera::OnLeftButtonUp();
 }
 
-void ModelInteractorStyle::OnMiddleButtonDown()
-{
+void ModelInteractorStyle::OnMiddleButtonDown() {
     vtkInteractorStyleTrackballCamera::OnMiddleButtonDown();
 }
 
-void ModelInteractorStyle::OnMiddleButtonUp()
-{
+void ModelInteractorStyle::OnMiddleButtonUp() {
     vtkInteractorStyleTrackballCamera::OnMiddleButtonUp();
 }
 
-void ModelInteractorStyle::OnRightButtonDown()
-{
+void ModelInteractorStyle::OnRightButtonDown() {
     vtkInteractorStyleTrackballCamera::OnRightButtonDown();
 }
 
-void ModelInteractorStyle::OnRightButtonUp()
-{
+void ModelInteractorStyle::OnRightButtonUp() {
     vtkInteractorStyleTrackballCamera::OnRightButtonUp();
 }
 
-void ModelInteractorStyle::OnMouseWheelForward()
-{
+void ModelInteractorStyle::OnMouseWheelForward() {
     vtkInteractorStyleTrackballCamera::OnMouseWheelForward();
 }
 
-void ModelInteractorStyle::OnMouseWheelBackward()
-{
+void ModelInteractorStyle::OnMouseWheelBackward() {
     vtkInteractorStyleTrackballCamera::OnMouseWheelBackward();
 }
 
-void ModelInteractorStyle::OnKeyDown()
-{
+void ModelInteractorStyle::OnKeyDown() {
     vtkInteractorStyleTrackballCamera::OnKeyDown();
 }
 
-void ModelInteractorStyle::OnKeyUp()
-{
+void ModelInteractorStyle::OnKeyUp() {
     vtkInteractorStyleTrackballCamera::OnKeyUp();
 }
 
-void ModelInteractorStyle::OnChar()
-{
+void ModelInteractorStyle::OnChar() {
     vtkInteractorStyleTrackballCamera::OnChar();
 }
 
-void ModelInteractorStyle::Rotate()
-{
+void ModelInteractorStyle::Rotate() {
     vtkInteractorStyleTrackballCamera::Rotate();
 }
 
-void ModelInteractorStyle::Spin()
-{
+void ModelInteractorStyle::Spin() {
     vtkInteractorStyleTrackballCamera::Spin();
 }
 
-void ModelInteractorStyle::Pan()
-{
+void ModelInteractorStyle::Pan() {
     vtkInteractorStyleTrackballCamera::Pan();
 }
 
-void ModelInteractorStyle::Dolly()
-{
+void ModelInteractorStyle::Dolly() {
     vtkInteractorStyleTrackballCamera::Dolly();
 }
 
-}
-}
+} // namespace visualization
+} // namespace fosd

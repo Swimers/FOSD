@@ -20,7 +20,7 @@ private slots:
 
 void QmlTests::viewLoadsAndSwitchesChannels() {
     QQuickStyle::setStyle(QStringLiteral("Material"));
-    qRegisterMetaType<QList<QQmlError> >();
+    qRegisterMetaType<QList<QQmlError>>();
     QQuickRenderControl renderControl;
     QQuickWindow renderWindow(&renderControl);
     fosd::assistant::CommunicationPresenter presenter;
@@ -89,8 +89,8 @@ void QmlTests::viewLoadsAndSwitchesChannels() {
     renderControl.render();
     const QImage image = renderControl.grab();
     QVERIFY(!image.isNull());
-    QVERIFY(image.save(QCoreApplication::applicationDirPath()
-                       + QStringLiteral("/assistant-QML-preview.png")));
+    QVERIFY(image.save(QCoreApplication::applicationDirPath() +
+                       QStringLiteral("/assistant-QML-preview.png")));
     renderControl.invalidate();
     QCOMPARE(warnings.count(), 0);
 }

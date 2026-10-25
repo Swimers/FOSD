@@ -8,7 +8,10 @@
 class vtkActor;
 class vtkRenderer;
 namespace fosd {
-namespace visualization { class VisualizationControl; }
+namespace visualization {
+class VisualizationControl;
+}
+
 namespace vtk_test {
 // App-layer validation adapter, not part of the production visualization API.
 class VtkValidationBackend final : public QObject, public IVtkValidationBackend {
@@ -24,9 +27,15 @@ public:
     bool resetCamera(QString *error) override;
     bool render(QString *error) override;
     bool execute(const QString &action, const QVariantMap &parameters, QString *error) override;
-    visualization::VisualizationControl *visualization() const { return m_control.get(); }
-    core::FrameSnapshotPtr latestFrame() const { return m_protocol->dataModel()->latest(); }
-    core::CalculationResultPtr latestResult() const { return m_calculation->dataModel()->latest(); }
+    visualization::VisualizationControl *visualization() const {
+        return m_control.get();
+    }
+    core::FrameSnapshotPtr latestFrame() const {
+        return m_protocol->dataModel()->latest();
+    }
+    core::CalculationResultPtr latestResult() const {
+        return m_calculation->dataModel()->latest();
+    }
 signals:
     void statusChanged(const QString &message);
 private slots:
@@ -39,8 +48,10 @@ private slots:
     void storageError(const fosd::storage::StorageError &error);
     void storageStarted(const QString &session);
     void storageStopped();
-    void connectionState(fosd::communication::Channel channel, fosd::communication::ConnectionState state);
+    void connectionState(fosd::communication::Channel channel,
+                         fosd::communication::ConnectionState state);
     void updateStatistics();
+
 private:
     void status(const QString &message);
     vtkRenderer *renderer(QString *error) const;
@@ -52,4 +63,5 @@ private:
     QString m_status;
     bool m_modelPending = false;
 };
-} }
+} // namespace vtk_test
+} // namespace fosd

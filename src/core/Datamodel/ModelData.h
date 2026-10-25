@@ -5,7 +5,6 @@
 
 namespace fosd {
 namespace core {
-
 using PointId = qint64;
 
 using PointMap = QMap<PointId, QVector<double>>;
@@ -27,8 +26,8 @@ struct CalculationResult {
 };
 using CalculationResultPtr = std::shared_ptr<const CalculationResult>;
 
-}
-}
+} // namespace core
+} // namespace fosd
 
 Q_DECLARE_METATYPE(fosd::core::PointMap)
 Q_DECLARE_METATYPE(fosd::core::CalculationResultPtr)

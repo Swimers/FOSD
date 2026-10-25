@@ -18,29 +18,52 @@
 #include "../apps/account/views/userforget.h"
 #include "../apps/account/views/usermanage.h"
 #include "../apps/mainwindow/views/oldmainwindow.h"
-namespace fosd { namespace ui { namespace classic {
+namespace fosd {
+namespace ui {
+namespace classic {
 QWidget *createPanelView(PanelId panel, QWidget *parent) {
     switch (panel) {
-    case PanelId::Connection: return new ConnectionView(parent);
-    case PanelId::ConnectionDebug: return new ConnectionDebugView(parent);
-    case PanelId::Plot: return new PlotView(parent);
-    case PanelId::PlotSettings: return new PlotSettingsView(parent);
-    case PanelId::Visualization: return new VisualizationView(parent);
-    case PanelId::InfoPanel: return new InfoPanelView(parent);
-    case PanelId::ScenePanel: return new ScenePanelView(parent);
-    case PanelId::ModelPanel: return new ModelPanelView(parent);
-    case PanelId::KeyPointEdit: return new KeyPointEditView(parent);
-    case PanelId::KeyPointSelect: return new KeyPointSelectView(parent);
-    case PanelId::ColorPicker: return new ColorPickerView(parent);
-    case PanelId::HardwareData: return new HardwareDataView(parent);
-    case PanelId::TrackingManager: return new TrackingManagerView(parent);
-    case PanelId::TrackingData: return new TrackingDataView(parent);
-    case PanelId::Login: return new LoginView(parent);
-    case PanelId::Registration: return new RegistrationView(parent);
-    case PanelId::Recovery: return new RecoveryView(parent);
-    case PanelId::Account: return new AccountView(parent);
-    case PanelId::Main: return new MainWindowView(parent);
+        case PanelId::Connection:
+            return new ConnectionView(parent);
+        case PanelId::ConnectionDebug:
+            return new ConnectionDebugView(parent);
+        case PanelId::Plot:
+            return new PlotView(parent);
+        case PanelId::PlotSettings:
+            return new PlotSettingsView(parent);
+        case PanelId::Visualization:
+            return new VisualizationView(parent);
+        case PanelId::InfoPanel:
+            return new InfoPanelView(parent);
+        case PanelId::ScenePanel:
+            return new ScenePanelView(parent);
+        case PanelId::ModelPanel:
+            return new ModelPanelView(parent);
+        case PanelId::KeyPointEdit:
+            return new KeyPointEditView(parent);
+        case PanelId::KeyPointSelect:
+            return new KeyPointSelectView(parent);
+        case PanelId::ColorPicker:
+            return new ColorPickerView(parent);
+        case PanelId::HardwareData:
+            return new HardwareDataView(parent);
+        case PanelId::TrackingManager:
+            return new TrackingManagerView(parent);
+        case PanelId::TrackingData:
+            return new TrackingDataView(parent);
+        case PanelId::Login:
+            return new LoginView(parent);
+        case PanelId::Registration:
+            return new RegistrationView(parent);
+        case PanelId::Recovery:
+            return new RecoveryView(parent);
+        case PanelId::Account:
+            return new AccountView(parent);
+        case PanelId::Main:
+            return new MainWindowView(parent);
     }
     return nullptr;
 }
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd

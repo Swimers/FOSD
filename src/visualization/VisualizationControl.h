@@ -12,9 +12,8 @@
 class QTimer;
 class vtkRenderer;
 class vtkRenderWindow;
-namespace fosd { 
+namespace fosd {
 namespace visualization {
-
 class MeshManager;
 class DeformationRenderer;
 class ScalarColorMapper;
@@ -28,11 +27,14 @@ class SceneEnvironment;
 class VisualizationControl final : public QObject {
     Q_OBJECT
 public:
-    explicit VisualizationControl(QObject *parent = nullptr, vtkRenderWindow *renderWindowPtr = nullptr);
+    explicit VisualizationControl(QObject *parent = nullptr,
+                                  vtkRenderWindow *renderWindowPtr = nullptr);
     ~VisualizationControl() override;
     bool attach(vtkRenderWindow *window);
     void detach();
-    vtkRenderWindow *renderWindow() const { return m_renderWindow; } // Borrowed, GUI thread only.
+    vtkRenderWindow *renderWindow() const {
+        return m_renderWindow;
+    } // Borrowed, GUI thread only.
 
     bool loadModel(const QString &path);
     void unloadModel();
@@ -77,11 +79,10 @@ private:
     std::unique_ptr<SceneEnvironment> m_scene;
     core::CalculationRepositoryPtr m_repository;
 
-    QTimer *m_refreshTimer = nullptr;   // GUI polls the latest result at 30 Hz.
+    QTimer *m_refreshTimer = nullptr; // GUI polls the latest result at 30 Hz.
     quint64 m_expectedModelRevision = 0;
     quint64 m_lastResultRevision = 0;
-
 };
 
-}
-}
+} // namespace visualization
+} // namespace fosd

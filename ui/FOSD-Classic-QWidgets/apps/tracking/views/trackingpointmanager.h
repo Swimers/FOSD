@@ -2,8 +2,13 @@
 #include <QWidget>
 #include <memory>
 #include "../../../common/IView.h"
-namespace Ui { class trackingpointmanager; }
-namespace fosd { namespace ui { namespace classic {
+namespace Ui {
+class trackingpointmanager;
+}
+
+namespace fosd {
+namespace ui {
+namespace classic {
 class FormBinding;
 // UI-only wrapper for trackingpointmanager.ui; emits intent, never calls business Controls.
 class TrackingManagerView : public QWidget, public IView {
@@ -27,8 +32,11 @@ signals:
     void rejectedRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
+
 private:
     std::unique_ptr<Ui::trackingpointmanager> m_ui;
     FormBinding *m_binding = nullptr;
 };
-} } }
+} // namespace classic
+} // namespace ui
+} // namespace fosd
