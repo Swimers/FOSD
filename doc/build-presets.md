@@ -5,12 +5,12 @@
 | configure 预设 | 构建目录 | 应用目标及范围 |
 | --- | --- | --- |
 | `windows-msvc2017` | `build/` | `FOSD` 主程序、业务模块、全项目测试；关闭独立预览、VTK 验证程序及通信助手 |
-| `fosd-widgets` | `build/fosd-widgets/` | `FOSDWidgets` UI 预览、工作台库及 UI 测试；只依赖 Qt Core/Widgets/PrintSupport/Test |
+| `fosd-widgets` | `build/fosd-widgets/` | `FOSD-Classic-QWidgets` UI 预览、工作台库及 UI 测试；只依赖 Qt Core/Widgets/PrintSupport/Test |
 | `vtk-native-widgets` | `build/vtk-native-widgets/` | `Test-VtkOpenGLNativeWidgets`、全部现有后端、原生 Qt/VTK 界面及全项目测试 |
 | `communication-assistant-QML` | `build/communication-assistant-QML/` | 独立 QML 通信助手及其测试 |
 | `communication-assistant-widgets` | `build/communication-assistant-widgets/` | 独立 Widgets 通信助手及其测试 |
 
-`FOSDWidgets` 原先只有 UI 库，并随主程序或全项目测试启用。现在新增 `apps/FOSDWidgets/main.cpp` 作为纯 UI 预览入口，组合 WorkbenchView 与 WorkbenchPresenter，保留现有后端接口。主程序 `FOSD` 继续链接同一工作台库，并由 `apps/FOSD-Win` 组合通信、解算等业务模块。
+`FOSD-Classic-QWidgets` 原先只有 UI 库，并随主程序或全项目测试启用。现在新增 `apps/FOSD-Classic-QWidgets/main.cpp` 作为纯 UI 预览入口，组合 WorkbenchView 与 WorkbenchPresenter，保留现有后端接口。主程序 `FOSD` 继续链接同一工作台库，并由 `apps/FOSD-Win` 组合通信、解算等业务模块。
 
 ## 配置、构建与测试
 
@@ -37,7 +37,7 @@ ctest --preset vtk-native-widgets-release
 
 ```powershell
 $env:PATH = 'D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
-& ./build/fosd-widgets/bin/Debug/FOSDWidgets.exe
+& ./build/fosd-widgets/bin/Debug/FOSD-Classic-QWidgets.exe
 
 # VTK 验证程序还需要与构建配置匹配的 VTK DLL。
 $env:PATH = 'D:/VTK/VTK-release/bin;' + $env:PATH
@@ -48,7 +48,7 @@ $env:PATH = 'D:/VTK/VTK-release/bin;' + $env:PATH
 
 | 开关 | 默认值 | 作用 |
 | --- | --- | --- |
-| `FOSD_BUILD_WORKBENCH_APP` | OFF | 构建独立 `FOSDWidgets` 预览程序 |
+| `FOSD_BUILD_WORKBENCH_APP` | OFF | 构建独立 `FOSD-Classic-QWidgets` 预览程序 |
 | `FOSD_WORKBENCH_BUILD_TESTS` | OFF | 单独开启工作台 UI 测试 |
 | `FOSD_BUILD_VTK_NATIVE_TEST_APP` | OFF | 构建独立原生 Qt/VTK 验证程序 |
 | `FOSD_VTK_NATIVE_BUILD_TESTS` | OFF | 单独开启 VTK Presenter 测试，要求验证程序开关开启 |
@@ -56,4 +56,3 @@ $env:PATH = 'D:/VTK/VTK-release/bin;' + $env:PATH
 两个新预设均关闭 `FOSD_BUILD_MAIN_APP` 和通信助手。工作台预览关闭全项目测试，仅开启其 UI 测试；VTK 集成验证开启 `FOSD_BUILD_TESTS`，构建全部后端并运行全项目测试。全项目测试仍包含工作台 UI 测试；手动同时开启 VTK 验证程序时，全项目测试也包含其 Presenter 测试。预设显式声明应用开关，重新配置已有目录时会覆盖此前手动缓存的应用开关。
 
 只执行 `cmake -S . -B build` 会使用 CMakeLists 中的默认值或已有缓存；若要使用这里定义的隔离配置，请执行 `cmake --preset <名称>`。切换预设无需删除其他构建目录。
-

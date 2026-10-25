@@ -1,24 +1,20 @@
 #pragma once
-#include "FOSDWidgets/views/WorkbenchView.h"
+#include "FOSD-Classic-QWidgets/apps/mainwindow/views/WorkbenchView.h"
 #include <memory>
-
 namespace fosd {
 namespace protocol { class ProtocolControl; }
 namespace Calculation { class CalculationControl; }
-namespace widgets { class WorkbenchPresenter; class IWorkbenchBackend; }
+namespace ui { namespace classic { class WorkbenchPresenter; class WorkbenchBackend; class IBackend; } }
 }
-
-class FOSD : public fosd::widgets::WorkbenchView {
+class FOSD : public fosd::ui::classic::WorkbenchView {
     Q_OBJECT
-
 public:
-    FOSD(QWidget* parent = nullptr);
-    ~FOSD();
-    void setUiBackend(fosd::widgets::IWorkbenchBackend *backend);
-
+    explicit FOSD(QWidget *parent = nullptr);
+    ~FOSD() override;
+    void setUiBackend(fosd::ui::classic::FeatureId feature, fosd::ui::classic::IBackend *backend);
 private:
-    // ProtocolControl owns communication and its shared worker thread.
     std::unique_ptr<fosd::protocol::ProtocolControl> m_protocol;
     std::unique_ptr<fosd::Calculation::CalculationControl> m_calculation;
-    std::unique_ptr<fosd::widgets::WorkbenchPresenter> m_presenter;
+    std::unique_ptr<fosd::ui::classic::WorkbenchBackend> m_backends;
+    std::unique_ptr<fosd::ui::classic::WorkbenchPresenter> m_presenter;
 };

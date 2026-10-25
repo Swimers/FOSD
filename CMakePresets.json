@@ -29,8 +29,8 @@
     },
     {
       "name": "fosd-widgets",
-      "displayName": "FOSDWidgets 独立 UI 预览 (MSVC 2017 x64)",
-      "description": "仅构建工作台 View、Presenter、控件资源、预览程序和 UI 测试，不启动后端。",
+      "displayName": "FOSD-Classic-QWidgets 独立 UI 预览 (MSVC 2017 x64)",
+      "description": "构建经典界面、分功能 MVP、控件资源、预览程序和 UI 测试，业务适配接口预留。",
       "inherits": "windows-msvc2017",
       "binaryDir": "${sourceDir}/build/fosd-widgets",
       "cacheVariables": {

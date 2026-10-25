@@ -1,0 +1,12 @@
+#pragma once
+#include "../../../common/FeatureBackend.h"
+namespace fosd { namespace ui { namespace classic {
+// Backend extension point for Visualization, ScenePanel, InfoPanel only.
+class VisualizationBackend : public FeatureBackend {
+    Q_OBJECT
+public:
+    explicit VisualizationBackend(QObject *parent = nullptr);
+protected:
+    void handleRequest(const UiRequest &request) override;
+};
+} } }

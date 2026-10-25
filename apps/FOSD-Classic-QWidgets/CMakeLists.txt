@@ -1,0 +1,5 @@
+add_executable(FOSD-Classic-QWidgets WIN32 main.cpp)
+target_link_libraries(FOSD-Classic-QWidgets PRIVATE fosd_classic_widgets)
+if(WIN32)
+    set_target_properties(FOSD-Classic-QWidgets PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=${FOSD_QT_ROOT}/bin;%PATH%")
+endif()

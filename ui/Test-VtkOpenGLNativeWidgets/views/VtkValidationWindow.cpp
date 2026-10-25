@@ -3,7 +3,9 @@
 #include <QVTKOpenGLNativeWidget.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <QFileDialog>
-namespace fosd { namespace vtk_test {
+namespace fosd { 
+namespace vtk_test {
+
 VtkValidationWindow::VtkValidationWindow(QWidget *parent)
     : QWidget(parent), m_ui(new Ui::VtkValidationWindow),
       m_window(vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New()) {

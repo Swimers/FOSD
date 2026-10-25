@@ -1,27 +1,19 @@
 #include "FOSD.h"
 #include "protocol/ProtocolControl.h"
 #include "calculation/CalculationControl.h"
-#include "FOSDWidgets/presenters/WorkbenchPresenter.h"
+#include "FOSD-Classic-QWidgets/apps/mainwindow/presenters/WorkbenchPresenter.h"
 
-FOSD::FOSD(QWidget* parent)
-    : fosd::widgets::WorkbenchView(parent),
+FOSD::FOSD(QWidget *parent)
+    : fosd::ui::classic::WorkbenchView(parent),
       m_protocol(new fosd::protocol::ProtocolControl),
       m_calculation(new fosd::Calculation::CalculationControl(m_protocol->dataModel())),
-      m_presenter(new fosd::widgets::WorkbenchPresenter(this))
-{
-    connect(this, &fosd::widgets::WorkbenchView::actionTriggered,
-            m_presenter.get(), &fosd::widgets::WorkbenchPresenter::execute);
-    // A later application adapter can connect these UI requests to Controls
-    // through WorkbenchPresenter::setBackend(). No legacy backend is created.
-    // Save every parsed wavelength frame, independently of latest-frame polling.
+      m_backends(new fosd::ui::classic::WorkbenchBackend),
+      m_presenter(new fosd::ui::classic::WorkbenchPresenter(this)) {
+    m_presenter->setBackends(m_backends.get());
     connect(m_protocol.get(), &fosd::protocol::ProtocolControl::frameParsed,
             &m_calculation->storage(), &fosd::storage::StorageControl::writeWavelengthFrame);
 }
-
-FOSD::~FOSD()
-{
-}
-
-void FOSD::setUiBackend(fosd::widgets::IWorkbenchBackend *backend) {
-    m_presenter->setBackend(backend);
+FOSD::~FOSD() = default;
+void FOSD::setUiBackend(fosd::ui::classic::FeatureId feature, fosd::ui::classic::IBackend *backend) {
+    m_backends->setBackend(feature, backend);
 }

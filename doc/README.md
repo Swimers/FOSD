@@ -2,9 +2,9 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
-| [独立构建预设](build-presets.md) | 主程序、FOSDWidgets 预览、原生 Qt/VTK 验证及通信助手的配置、构建、测试与运行 |
+| [独立构建预设](build-presets.md) | 主程序、FOSD-Classic-QWidgets 预览、原生 Qt/VTK 验证及通信助手的配置、构建、测试与运行 |
 | [原生 Qt/VTK 验证前端](../ui/Test-VtkOpenGLNativeWidgets/README.md) | Designer UI、Presenter、全部后端连接、窗口指针传递及收包到变形显示验证 |
-| [主工作台 Widgets 与 MVP](../ui/FOSDWidgets/README.md) | 旧版 20 个表单、资源、View/Presenter、后端请求及三维宿主对接 |
+| [主工作台 Widgets 与 MVP](../ui/FOSD-Classic-QWidgets/README.md) | 旧版 19 个表单、资源、View/Presenter、后端请求及三维宿主对接 |
 | [解算与模型对接](Architectural/calculation-integration.md) | 波长快照、标定、模型输入、逐点插值与只读结果输出 |
 | [数据存储对接](Architectural/storage-integration.md) | 解算线程托管、CSV/SQLite、数据类型及点位选择、错误处理、扩展与测试 |
 | [模块构建结构](build-structure.md) | CMake 目标、依赖、构建命令与新增模块 |
