@@ -2,6 +2,7 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [板模型与 UDP 仿真](../tools/plate-simulation/README.md) | 板 STL、默认标定、示例 IFE、固定频率发送器、一键显示及数值/渲染验证 |
 | [可视化迁移与标量映射](Architectural/visualization-integration.md) | 分步迁移安排、X/Y/Z/总位移着色、归一化与物理值、通用点标量入口及测试 |
 | [独立构建预设](build-presets.md) | 主程序、FOSD-Classic-QWidgets 预览、原生 Qt/VTK 验证及通信助手的配置、构建、测试与运行 |
 | [原生 Qt/VTK 验证前端](../ui/Test-VtkOpenGLNativeWidgets/README.md) | Designer UI、Presenter、全部后端连接、窗口指针传递及收包到变形显示验证 |

@@ -18,6 +18,7 @@ namespace classic {
 WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     setWindowTitle(tr("FOSD Monitor"));
     setWindowIcon(QIcon(":/icon/icon/favicon.ico"));
+
     // Capture/bind each form before nesting other forms in it. Values are also
     // filtered at runtime by fosdPanelRoot, so sibling fields never leak.
     for (int index = int(PanelId::Main); index <= int(PanelId::Account); ++index) {
@@ -29,12 +30,14 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
         }
         m_panels.insert(index, widget);
     }
+
     m_pages = findChild<QStackedWidget *>("stackedWidget");
     for (auto panel : {PanelId::Connection, PanelId::Plot, PanelId::Visualization}) {
         auto *page = panelWidget(panel);
         page->setWindowFlags(Qt::Widget);
         m_pages->addWidget(page);
     }
+
     auto *navigation = new QButtonGroup(this);
     for (const auto &name : {"pbtn_JieTiaoYi", "pbtn_2DPlot", "pbtn_3DPlot"}) {
         auto *button = findChild<QPushButton *>(name);
@@ -54,8 +57,10 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
                                     {int(PanelId::Registration), tr("用户注册")},
                                     {int(PanelId::Recovery), tr("找回密码")},
                                     {int(PanelId::Account), tr("账户管理")}};
+
     for (auto title = titles.constBegin(); title != titles.constEnd(); ++title)
         panelWidget(PanelId(title.key()))->setWindowTitle(title.value());
+
     auto *visualization = qobject_cast<QMainWindow *>(panelWidget(PanelId::Visualization));
     const QVector<PanelId> docks{PanelId::ModelPanel, PanelId::ScenePanel, PanelId::InfoPanel};
     const QStringList dockTitles{tr("模型配置"), tr("场景与相机"), tr("模型信息")};
@@ -69,6 +74,7 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
                                      dock);
         m_docks.insert(int(docks[index]), dock);
     }
+    
     for (auto *table : findChildren<QTableWidget *>()) {
         table->setEditTriggers(QAbstractItemView::NoEditTriggers);
         table->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -94,7 +100,7 @@ IView *WorkbenchView::panelView(PanelId panel) const {
     return dynamic_cast<IView *>(panelWidget(panel));
 }
 
-QWidget *WorkbenchView::panelWidget(PanelId panel) const {
+QWidget *WorkbenchView::panelWidget(PanelId panel) const {  //
     return m_panels.value(int(panel), nullptr);
 }
 

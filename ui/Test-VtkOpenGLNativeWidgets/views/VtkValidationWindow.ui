@@ -5,6 +5,15 @@
   <property name="geometry"><rect><x>0</x><y>0</y><width>1180</width><height>850</height></rect></property>
   <property name="windowTitle"><string>FOSD 全后端 / Qt-VTK 集成验证</string></property>
   <layout class="QVBoxLayout" name="rootLayout">
+   <item><layout class="QHBoxLayout" name="plateSimulationLayout">
+    <item><widget class="QDoubleSpinBox" name="plateRate"><property name="prefix"><string>采样 Hz </string></property><property name="minimum"><double>1</double></property><property name="maximum"><double>200</double></property><property name="value"><double>50</double></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="plateFrequency"><property name="prefix"><string>运动 Hz </string></property><property name="minimum"><double>0</double></property><property name="maximum"><double>10</double></property><property name="value"><double>0.35</double></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="plateAmplitude"><property name="prefix"><string>幅值 mm </string></property><property name="minimum"><double>0</double></property><property name="maximum"><double>100</double></property><property name="value"><double>15</double></property></widget></item>
+    <item><widget class="QPushButton" name="plateStartButton"><property name="text"><string>一键启动板仿真</string></property></widget></item>
+    <item><widget class="QPushButton" name="plateSetupButton"><property name="text"><string>加载板 / 等待外部发送器</string></property></widget></item>
+    <item><widget class="QPushButton" name="plateStopButton"><property name="text"><string>停止板仿真</string></property></widget></item>
+    <item><widget class="QPushButton" name="plateExitButton"><property name="text"><string>返回 HYY</string></property></widget></item>
+   </layout></item>
    <item><layout class="QHBoxLayout" name="connectionLayout">
     <item><widget class="QComboBox" name="transport"><item><property name="text"><string>UDP 本地监听</string></property></item><item><property name="text"><string>TCP 客户端</string></property></item><item><property name="text"><string>串口指令</string></property></item></widget></item>
     <item><widget class="QLineEdit" name="address"><property name="text"><string>127.0.0.1</string></property><property name="placeholderText"><string>UDP 绑定地址 / TCP 服务器地址</string></property></widget></item>

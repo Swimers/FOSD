@@ -5,6 +5,14 @@ target_link_libraries(Test-VtkOpenGLNativeWidgets
         fosd_vtk_validation_backend
         fosd_vtk_validation_smoke)
 target_compile_features(Test-VtkOpenGLNativeWidgets PRIVATE cxx_std_11)
+add_custom_target(fosd_plate_model_assets
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/tools/plate-simulation/models"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${PROJECT_SOURCE_DIR}/tools/plate-simulation/models/plate.stl"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/tools/plate-simulation/models/plate.stl"
+    VERBATIM)
+add_dependencies(Test-VtkOpenGLNativeWidgets fosd_plate_model_assets)
 set(FOSD_VTK_NATIVE_RUNTIME_DIR "" CACHE PATH "Directory containing matching VTK runtime DLLs for the native validation app")
 if(WIN32)
     set_target_properties(Test-VtkOpenGLNativeWidgets PROPERTIES

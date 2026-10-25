@@ -5,6 +5,7 @@
 #include "protocol/ProtocolControl.h"
 #include "calculation/CalculationControl.h"
 #include <QTimer>
+#include "plate-simulation/PlateUdpSender.h"
 class vtkActor;
 class vtkRenderer;
 namespace fosd {
@@ -41,6 +42,8 @@ signals:
 private slots:
     void modelLoaded(const fosd::core::ModelDataPtr &model);
     void modelAccepted(quint64 revision);
+    void configurationAccepted(quint64 revision);
+    void processPlateFrame(const fosd::core::FrameSnapshotPtr &frame);
     void communicationError(const fosd::communication::CommunicationError &error);
     void decoderError(const fosd::communication::DecoderError &error);
     void protocolError(const fosd::protocol::ProtocolError &error);
@@ -53,6 +56,10 @@ private slots:
     void updateStatistics();
 
 private:
+    void createCalculation(bool plate);
+    bool setupPlate(const QVariantMap &parameters, bool send, QString *error);
+    void startPlateSenderWhenReady();
+    void stopPlate();
     void status(const QString &message);
     vtkRenderer *renderer(QString *error) const;
     std::unique_ptr<visualization::VisualizationControl> m_control;
@@ -62,6 +69,14 @@ private:
     QTimer m_statistics;
     QString m_status;
     bool m_modelPending = false;
+    bool m_plateMode = false;
+    bool m_platePending = false;
+    bool m_plateSendingRequested = false;
+    bool m_plateUdpReady = false;
+    bool m_plateConfigurationReady = false;
+    simulation::PlateSenderSettings m_plateSettings;
+    simulation::PlateUdpSender m_plateSender;
+    QMetaObject::Connection m_plateFrameConnection;
 };
 } // namespace vtk_test
 } // namespace fosd

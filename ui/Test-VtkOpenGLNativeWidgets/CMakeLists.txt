@@ -41,12 +41,14 @@ target_link_libraries(fosd_vtk_validation_backend
         fosd_protocol
         fosd_calculation
         fosd_storage
-        fosd_visualization)
+        fosd_visualization
+        fosd_plate_simulation)
 target_compile_features(fosd_vtk_validation_backend PUBLIC cxx_std_11)
 
 add_library(fosd_vtk_validation_smoke STATIC
     tests/SmokeCheck.h
-    tests/SmokeCheck.cpp)
+    tests/SmokeCheck.cpp
+    tests/PlateSmokeCheck.h tests/PlateSmokeCheck.cpp)
 target_link_libraries(fosd_vtk_validation_smoke
     PUBLIC
         fosd_vtk_validation_widgets

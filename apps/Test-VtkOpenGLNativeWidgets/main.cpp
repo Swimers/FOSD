@@ -2,6 +2,7 @@
 #include "Test-VtkOpenGLNativeWidgets/presenters/VtkValidationPresenter.h"
 #include "Test-VtkOpenGLNativeWidgets/backend/VtkValidationBackend.h"
 #include "Test-VtkOpenGLNativeWidgets/tests/SmokeCheck.h"
+#include "Test-VtkOpenGLNativeWidgets/tests/PlateSmokeCheck.h"
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QSurfaceFormat>
@@ -22,8 +23,12 @@ int main(int argc, char **argv) {
     QCommandLineParser parser;
     parser.addHelpOption();
     parser.addOption({"smoke-test", "Validate real OpenGL rendering and exit automatically."});
+    parser.addOption({"plate-smoke-test",
+                      "Validate plate UDP, inverse calculation and OpenGL display, then exit."});
     parser.addOption({"screenshot", "Save the smoke-test framebuffer as a PNG.", "path"});
     parser.process(app);
+    if (parser.isSet("smoke-test") && parser.isSet("plate-smoke-test"))
+        parser.showHelp(1);
     using namespace fosd::vtk_test;
     // Destruction order is essential: Presenter detaches, Backend destroys
     // VisualizationControl, then View releases its native widget/window.
@@ -51,5 +56,8 @@ int main(int argc, char **argv) {
     SmokeCheck smoke(&view, &presenter, &backend, parser.value("screenshot"));
     if (parser.isSet("smoke-test"))
         smoke.start();
+    PlateSmokeCheck plateSmoke(&view, &presenter, &backend, parser.value("screenshot"));
+    if (parser.isSet("plate-smoke-test"))
+        plateSmoke.start();
     return app.exec();
 }

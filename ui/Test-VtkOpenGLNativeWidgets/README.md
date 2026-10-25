@@ -2,7 +2,15 @@
 
 本程序通过 `views/VtkValidationWindow.ui` 构建 `QVTKOpenGLNativeWidget`、通信参数、标定参数、存储选择及渲染按钮。C++ View 只执行 setupUi、收集字段、显示状态及管理控件持有的 RenderWindow。按钮和数据经 Presenter 调用应用适配器，View 不直接访问业务 Control。
 
+## 板模型一键仿真
+
+窗口顶部“一键启动板仿真”会加载 1000×400×4 mm 板、切换示例 PlateIFE、设置默认标定并启动 50 Hz 本地 UDP 发送。可修改采样频率、运动频率与幅值，使用现有颜色和倍率控件观察位移；“停止板仿真”冻结最后结果，“返回 HYY”清理板并恢复原算法。切换会关闭原存储会话，需录制时请在仿真启动后开始 CSV / SQLite 写入。
+
+选择“加载板 / 等待外部发送器”可配合独立 `plate-udp-sender` 运行。模型、生成器、示例算法、发送器、默认标定及详细操作均位于 [tools/plate-simulation](../../tools/plate-simulation/README.md)。板算法通过现有 IFrameIFE 工厂注入，仅用于该验证项目。
+
 ## View / Presenter 结构
+
+在 VS Code 中选择 `vtk-native-widgets` 预设后，IntelliSense 应由 CMake Tools 提供。工作区 `.vscode/settings.json` 设置 `"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"`，并启用 `"cmake.configureOnOpen": true`；Qt、VTK、AUTOUIC 生成目录会从活动目标同步，无需手填 includePath。切换预设后若仍显示旧诊断，执行 `CMake: Configure` 刷新配置。
 
 该目录采用被动 View + Presenter 结构，并通过两个抽象接口与应用层解耦：
 
@@ -35,6 +43,7 @@ View 负责 Qt 控件、文件对话框、字段采集和界面状态，不直�
 | `presenters/VtkValidationPresenter.cpp` | 实现窗口绑定与指针一致性校验、解绑、OpenGL 上下文门控、模型/存储文件选择、通用按钮参数转发、渲染命令调用和状态回显；析构时主动通知 Backend 解绑。 |
 | `tests/PresenterTests.cpp` | 使用 Fake View 和 Fake Backend 验证 Presenter，不创建真实 OpenGL 窗口。覆盖参数透传、文件选择取消、窗口指针传递、上下文未就绪、重复命令、绑定失败和析构解绑。 |
 | `tests/SmokeCheck.h/.cpp` | 实现可见窗口冒烟检查，验证真实 OpenGL、RenderWindow 指针、UDP到解算/存储/VTK形变的完整链路以及可选截图。 |
+| `tests/PlateSmokeCheck.h/.cpp` | `--plate-smoke-test` 验证真实 UDP、板 IFE、1394 个板网格点与颜色、固定边界及返回 HYY 的清理。 |
 | `CMakeLists.txt` | 分别定义 Presenter、Widgets、Backend 和 SmokeCheck 静态库；查找匹配 Debug/Release 的 `vtkGUISupportQt`，并在启用测试时注册 Presenter 单元测试。 |
 | `README.md` | 记录模块结构、数据链路、操作流程、构建运行方法和自动验证范围。 |
 

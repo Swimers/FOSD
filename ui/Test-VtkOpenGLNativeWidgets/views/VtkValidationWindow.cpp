@@ -18,9 +18,11 @@ VtkValidationWindow::VtkValidationWindow(QWidget *parent)
     connect(m_ui->resetCameraButton, &QPushButton::clicked, this,
             &VtkValidationWindow::resetCameraRequested);
     connect(m_ui->renderButton, &QPushButton::clicked, this, &VtkValidationWindow::renderRequested);
-    for (auto *button : {m_ui->openButton, m_ui->closeButton, m_ui->modelButton,
-                         m_ui->baselineButton, m_ui->storageStartButton, m_ui->storageStopButton,
-                         m_ui->scaleButton, m_ui->resetDeformationButton, m_ui->scalarApplyButton})
+    for (auto *button :
+         {m_ui->openButton, m_ui->closeButton, m_ui->modelButton, m_ui->baselineButton,
+          m_ui->storageStartButton, m_ui->storageStopButton, m_ui->scaleButton,
+          m_ui->resetDeformationButton, m_ui->scalarApplyButton, m_ui->plateStartButton,
+          m_ui->plateSetupButton, m_ui->plateStopButton, m_ui->plateExitButton})
         connect(button, &QPushButton::clicked, this, &VtkValidationWindow::requestAction);
     showBinding(false, nullptr);
 }
@@ -49,7 +51,8 @@ void VtkValidationWindow::showBinding(bool bound, vtkRenderWindow *backendWindow
                                     .arg(bound ? tr("已绑定") : tr("未绑定")));
     for (auto *button : {m_ui->detachButton, m_ui->demoButton, m_ui->clearButton,
                          m_ui->resetCameraButton, m_ui->renderButton, m_ui->modelButton,
-                         m_ui->scaleButton, m_ui->resetDeformationButton, m_ui->scalarApplyButton})
+                         m_ui->scaleButton, m_ui->resetDeformationButton, m_ui->scalarApplyButton,
+                         m_ui->plateStartButton, m_ui->plateSetupButton, m_ui->plateExitButton})
         button->setEnabled(bound);
 }
 
@@ -67,6 +70,21 @@ QString VtkValidationWindow::chooseFile(bool save) {
 }
 
 void VtkValidationWindow::requestAction() {
+    const QString action = sender()->objectName();
+    if (action == "plateStartButton" || action == "plateSetupButton") {
+        m_ui->transport->setCurrentIndex(0);
+        m_ui->address->setText("127.0.0.1");
+        m_ui->factor->setValue(1250);
+        m_ui->calibrationA->setValue(1);
+        m_ui->calibrationB->setValue(0);
+        m_ui->indices->setText("0,1,2,3,4,5,6,7,8,9,10,11");
+        m_ui->scale->setValue(1);
+        m_ui->scalarEnabled->setChecked(true);
+        m_ui->scalarField->setCurrentIndex(3);
+        m_ui->scalarMapping->setCurrentIndex(0);
+        m_ui->scalarRangeMode->setCurrentIndex(0);
+        m_ui->scalarAbsolute->setChecked(false);
+    }
     QVariantMap values;
     values["transport"] = m_ui->transport->currentIndex();
     values["address"] = m_ui->address->text();
@@ -86,7 +104,10 @@ void VtkValidationWindow::requestAction() {
     values["scalarRangeMode"] = m_ui->scalarRangeMode->currentIndex();
     values["scalarMinimum"] = m_ui->scalarMinimum->value();
     values["scalarMaximum"] = m_ui->scalarMaximum->value();
-    emit actionRequested(sender()->objectName(), values);
+    values["plateRate"] = m_ui->plateRate->value();
+    values["plateFrequency"] = m_ui->plateFrequency->value();
+    values["plateAmplitude"] = m_ui->plateAmplitude->value();
+    emit actionRequested(action, values);
 }
 } // namespace vtk_test
 } // namespace fosd
