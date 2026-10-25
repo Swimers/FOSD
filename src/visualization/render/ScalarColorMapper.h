@@ -14,17 +14,25 @@ public:
     void setScalarField(ScalarField field);
     void setColorRangeMode(ColorRangeMode mode);
     void setColorRange(double minimum, double maximum);
-    void applyResult(const core::CalculationResultPtr &result, vtkPolyData *displayMesh,
-                     vtkPolyDataMapper *mapper);
-    void clear();
+    bool setSettings(const ScalarColorSettings &settings, QString *error = nullptr);
+    ScalarColorSettings settings() const {
+        return m_settings;
+    }
+    ScalarColorRange range() const {
+        return m_range;
+    }
+    bool applyResult(const core::CalculationResultPtr &result, vtkPolyData *displayMesh,
+                     vtkPolyDataMapper *mapper, QString *error = nullptr);
+    bool applyField(const PointScalarField &field, vtkPolyData *displayMesh,
+                    vtkPolyDataMapper *mapper, QString *error = nullptr);
+    void clear(vtkPolyData *mesh = nullptr, vtkPolyDataMapper *mapper = nullptr);
 
 private:
     vtkSmartPointer<vtkDoubleArray> m_scalars;
+    vtkSmartPointer<vtkDoubleArray> m_rawScalars;
     vtkSmartPointer<vtkLookupTable> m_lookupTable;
-    ScalarField m_field = ScalarField::Magnitude;
-    ColorRangeMode m_rangeMode = ColorRangeMode::Automatic;
-    double m_minimum = 0.0;
-    double m_maximum = 1.0;
+    ScalarColorSettings m_settings;
+    ScalarColorRange m_range;
 };
 } // namespace visualization
 } // namespace fosd

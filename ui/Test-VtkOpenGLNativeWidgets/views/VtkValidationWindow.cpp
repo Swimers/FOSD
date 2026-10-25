@@ -20,7 +20,7 @@ VtkValidationWindow::VtkValidationWindow(QWidget *parent)
     connect(m_ui->renderButton, &QPushButton::clicked, this, &VtkValidationWindow::renderRequested);
     for (auto *button : {m_ui->openButton, m_ui->closeButton, m_ui->modelButton,
                          m_ui->baselineButton, m_ui->storageStartButton, m_ui->storageStopButton,
-                         m_ui->scaleButton, m_ui->resetDeformationButton})
+                         m_ui->scaleButton, m_ui->resetDeformationButton, m_ui->scalarApplyButton})
         connect(button, &QPushButton::clicked, this, &VtkValidationWindow::requestAction);
     showBinding(false, nullptr);
 }
@@ -47,9 +47,9 @@ void VtkValidationWindow::showBinding(bool bound, vtkRenderWindow *backendWindow
                                     .arg(quintptr(renderWindow()), 0, 16)
                                     .arg(quintptr(backendWindow), 0, 16)
                                     .arg(bound ? tr("已绑定") : tr("未绑定")));
-    for (auto *button :
-         {m_ui->detachButton, m_ui->demoButton, m_ui->clearButton, m_ui->resetCameraButton,
-          m_ui->renderButton, m_ui->modelButton, m_ui->scaleButton, m_ui->resetDeformationButton})
+    for (auto *button : {m_ui->detachButton, m_ui->demoButton, m_ui->clearButton,
+                         m_ui->resetCameraButton, m_ui->renderButton, m_ui->modelButton,
+                         m_ui->scaleButton, m_ui->resetDeformationButton, m_ui->scalarApplyButton})
         button->setEnabled(bound);
 }
 
@@ -79,6 +79,13 @@ void VtkValidationWindow::requestAction() {
     values["B"] = m_ui->calibrationB->value();
     values["format"] = m_ui->storageFormat->currentIndex();
     values["scale"] = m_ui->scale->value();
+    values["scalarEnabled"] = m_ui->scalarEnabled->isChecked();
+    values["scalarField"] = m_ui->scalarField->currentIndex();
+    values["scalarMapping"] = m_ui->scalarMapping->currentIndex();
+    values["scalarAbsolute"] = m_ui->scalarAbsolute->isChecked();
+    values["scalarRangeMode"] = m_ui->scalarRangeMode->currentIndex();
+    values["scalarMinimum"] = m_ui->scalarMinimum->value();
+    values["scalarMaximum"] = m_ui->scalarMaximum->value();
     emit actionRequested(sender()->objectName(), values);
 }
 } // namespace vtk_test

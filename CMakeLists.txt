@@ -8,6 +8,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Build options
 # ---------------------------------------------------------------------------
 option(FOSD_BUILD_TESTS "Build the unit test suite" ON) 
+option(FOSD_BUILD_VISUALIZATION_TESTS "Build VTK runtime tests (requires matching runtime DLLs)" OFF)
+if(FOSD_BUILD_VISUALIZATION_TESTS AND NOT FOSD_BUILD_TESTS)
+    message(FATAL_ERROR "Visualization runtime tests require FOSD_BUILD_TESTS=ON")
+endif()
 option(FOSD_BUILD_MAIN_APP "Build the main FOSD application" ON)
 option(FOSD_BUILD_WORKBENCH_APP "Build the standalone FOSD-Classic-QWidgets preview application" OFF)
 option(FOSD_WORKBENCH_BUILD_TESTS "Build the standalone FOSD-Classic-QWidgets tests" OFF)

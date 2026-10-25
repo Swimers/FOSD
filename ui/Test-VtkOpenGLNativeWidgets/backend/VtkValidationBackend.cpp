@@ -232,6 +232,27 @@ bool VtkValidationBackend::execute(const QString &action, const QVariantMap &p, 
             config.baudRate = p.value("baud").toInt();
             connection.openSerial(config);
         }
+    } else if (action == "scalarApplyButton") {
+        if (!m_control || !boundWindow()) {
+            if (error)
+                *error = tr("请先绑定渲染窗口");
+            return false;
+        }
+        auto settings = m_control->scalarColorSettings();
+        settings.enabled = p.value("scalarEnabled").toBool();
+        settings.field = visualization::ScalarField(p.value("scalarField").toInt());
+        settings.mappingMode = visualization::ScalarMappingMode(p.value("scalarMapping").toInt());
+        settings.valueMode = p.value("scalarAbsolute").toBool()
+                                 ? visualization::ScalarValueMode::Absolute
+                                 : visualization::ScalarValueMode::Signed;
+        settings.rangeMode = visualization::ColorRangeMode(p.value("scalarRangeMode").toInt());
+        settings.minimum = p.value("scalarMinimum").toDouble();
+        settings.maximum = p.value("scalarMaximum").toDouble();
+        if (!m_control->setScalarColorSettings(settings)) {
+            if (error)
+                *error = m_status;
+            return false;
+        }
     } else if (action == "closeButton")
         connection.close(channel);
     else if (action == "modelButton") {

@@ -13,6 +13,8 @@
 #include <vtkActor.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyData.h>
+#include <vtkPointData.h>
+#include <vtkDataArray.h>
 #include <QtEndian>
 #include <QFile>
 #include <QLabel>
@@ -205,6 +207,33 @@ void SmokeCheck::checkIntegration() {
             finish(false, "Calculation produced no displacement");
             return;
         }
+        QVariantMap colorSettings{{"scalarEnabled", true},
+                                  {"scalarMapping", 0},
+                                  {"scalarRangeMode", 0},
+                                  {"scalarMinimum", -1.0},
+                                  {"scalarMaximum", 1.0}};
+        for (int field = 0; field < 4; ++field) {
+            colorSettings["scalarField"] = field;
+            m_presenter->execute("scalarApplyButton", colorSettings);
+            auto *values = mesh->GetPointData()->GetArray("FOSD.ColorScalars");
+            if (!mapper->GetScalarVisibility() || !values ||
+                values->GetNumberOfTuples() != mesh->GetNumberOfPoints()) {
+                finish(false, "Displacement scalar mapping was not applied");
+                return;
+            }
+            for (vtkIdType id = 0; id < values->GetNumberOfTuples(); ++id)
+                if (values->GetTuple1(id) < 0 || values->GetTuple1(id) > 1) {
+                    finish(false, "Normalized scalar outside [0,1]");
+                    return;
+                }
+        }
+        colorSettings["scalarMapping"] = 1;
+        colorSettings["scalarRangeMode"] = 1;
+        m_presenter->execute("scalarApplyButton", colorSettings);
+        if (mapper->GetScalarRange()[0] != -1 || mapper->GetScalarRange()[1] != 1) {
+            finish(false, "Manual physical color range was not applied");
+            return;
+        }
         m_presenter->execute("scaleButton", {{"scale", 2.0}});
         for (auto point = result->deformedModel.constBegin();
              point != result->deformedModel.constEnd(); ++point) {
@@ -218,6 +247,10 @@ void SmokeCheck::checkIntegration() {
                 }
         }
         m_presenter->execute("resetDeformationButton", {});
+        if (mapper->GetScalarVisibility() || mesh->GetPointData()->GetArray("FOSD.ColorScalars")) {
+            finish(false, "Reset retained stale colors");
+            return;
+        }
         for (auto point = result->deformedModel.constBegin();
              point != result->deformedModel.constEnd(); ++point) {
             double xyz[3];

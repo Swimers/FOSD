@@ -22,7 +22,7 @@ class PointPicker;
 class ModelInteractorStyle;
 class SceneEnvironment;
 // GUI-thread facade. Model loading and deformation display are implemented;
-// scene/scalar/selection APIs remain reserved for later development.
+// scene/selection APIs remain reserved for later development.
 
 class VisualizationControl final : public QObject {
     Q_OBJECT
@@ -50,6 +50,15 @@ public:
     void setScalarField(ScalarField field);
     void setColorRangeMode(ColorRangeMode mode);
     void setColorRange(double minimum, double maximum);
+    bool setScalarColorSettings(const ScalarColorSettings &settings);
+    ScalarColorSettings scalarColorSettings() const;
+    ScalarColorRange scalarColorRange() const;
+    void setScalarColoringEnabled(bool enabled);
+    void setScalarMappingMode(ScalarMappingMode mode);
+    void setScalarValueMode(ScalarValueMode mode);
+    // For future nodal strain/temperature/etc. Hardware strain arrays must be
+    // interpolated to model point IDs before passing through this generic port.
+    bool setPointScalarField(const PointScalarField &field);
     void setKeyPoints(const QVector<KeyPointDefinition> &points);
     void showKeyPoints(bool visible);
     void clearSelection();
@@ -63,11 +72,13 @@ signals:
     void modelLoaded(const fosd::core::ModelDataPtr &model);
     void pointPicked(const fosd::visualization::PickedPointInfo &info);
     void errorOccurred(const QString &message);
+    void scalarColorSettingsChanged(const fosd::visualization::ScalarColorSettings &settings);
 
 private slots:
     void refreshResult();
 
 private:
+    void updateScalarColors();
     vtkRenderWindow *m_renderWindow = nullptr; // Borrowed; detach before host destroys it.
     vtkSmartPointer<vtkRenderer> m_renderer;
     std::unique_ptr<MeshManager> m_mesh;
@@ -78,6 +89,8 @@ private:
     vtkSmartPointer<ModelInteractorStyle> m_interactorStyle;
     std::unique_ptr<SceneEnvironment> m_scene;
     core::CalculationRepositoryPtr m_repository;
+    core::CalculationResultPtr m_colorResult;
+    PointScalarField m_customField;
 
     QTimer *m_refreshTimer = nullptr; // GUI polls the latest result at 30 Hz.
     quint64 m_expectedModelRevision = 0;

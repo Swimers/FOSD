@@ -48,3 +48,10 @@ target_link_libraries(test_storage PRIVATE fosd_calculation fosd_protocol)
 # Real loopback UDP/TCP -> decoder -> MP parser -> calibration/HYY -> storage.
 fosd_add_test(test_end_to_end end_to_end_tests.cpp)
 target_link_libraries(test_end_to_end PRIVATE fosd_calculation fosd_protocol)
+
+# Opt-in because the trimmed SDK has no runtime DLLs; no OpenGL context is
+# needed, but a full matching VTK runtime must be provided on PATH.
+if(FOSD_BUILD_VISUALIZATION_TESTS)
+    fosd_add_test(test_visualization visualization_tests.cpp)
+    target_link_libraries(test_visualization PRIVATE fosd_visualization)
+endif()

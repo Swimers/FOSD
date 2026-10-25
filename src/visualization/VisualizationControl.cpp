@@ -23,6 +23,7 @@ VisualizationControl::VisualizationControl(QObject *parent, vtkRenderWindow *ren
       m_keyPoints(new KeyPointManager), m_picker(new PointPicker),
       m_interactorStyle(vtkSmartPointer<ModelInteractorStyle>::New()),
       m_scene(new SceneEnvironment) {
+    qRegisterMetaType<ScalarColorSettings>("fosd::visualization::ScalarColorSettings");
     // 子模块初始化
     m_picker->setRenderer(m_renderer.GetPointer());
     m_interactorStyle->setPointPicker(m_picker.get());
@@ -91,6 +92,9 @@ bool VisualizationControl::loadModel(const QString &path) {
     if (m_deformation->actor())
         m_renderer->RemoveActor(m_deformation->actor());
 
+    m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
+    m_colorResult.reset();
+    m_customField = PointScalarField();
     m_deformation->setOriginalMesh(m_mesh->originalMesh());
     m_deformation->actor()->GetProperty()->SetColor(0.5, 0.65, 0.15);
     m_renderer->AddActor(m_deformation->actor());
@@ -104,6 +108,9 @@ bool VisualizationControl::loadModel(const QString &path) {
 void VisualizationControl::unloadModel() {
     if (m_deformation->actor())
         m_renderer->RemoveActor(m_deformation->actor());
+    m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
+    m_colorResult.reset();
+    m_customField = PointScalarField();
     m_deformation->clear();
     m_mesh->clear();
     m_expectedModelRevision = 0;
@@ -131,6 +138,11 @@ void VisualizationControl::refreshResult() {
 }
 
 void VisualizationControl::setExpectedModelRevision(quint64 revision) {
+    if (revision != m_expectedModelRevision) {
+        m_colorResult.reset();
+        m_customField = PointScalarField();
+        m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
+    }
     m_expectedModelRevision = revision;
     m_lastResultRevision = 0;
 }
@@ -156,6 +168,8 @@ void VisualizationControl::applyResult(const core::CalculationResultPtr &result)
         }
     }
     m_deformation->applyResult(result);
+    m_colorResult = result;
+    updateScalarColors();
     m_lastResultRevision = result->revision;
     if (m_renderWindow)
         m_renderWindow->Render();
@@ -171,6 +185,9 @@ void VisualizationControl::setDeformationScale(double scale) {
 
 void VisualizationControl::resetDeformation() {
     m_deformation->resetDeformation();
+    m_colorResult.reset();
+    m_customField = PointScalarField();
+    m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
     if (m_renderWindow)
         m_renderWindow->Render();
 }
@@ -187,6 +204,104 @@ void VisualizationControl::resetCamera() {
     m_renderer->ResetCamera();
     if (m_renderWindow)
         m_renderWindow->Render();
+}
+
+ScalarColorSettings VisualizationControl::scalarColorSettings() const {
+    return m_colors->settings();
+}
+
+ScalarColorRange VisualizationControl::scalarColorRange() const {
+    return m_colors->range();
+}
+
+bool VisualizationControl::setScalarColorSettings(const ScalarColorSettings &settings) {
+    QString error;
+    if (!m_colors->setSettings(settings, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    updateScalarColors();
+    emit scalarColorSettingsChanged(settings);
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+void VisualizationControl::setScalarField(ScalarField field) {
+    auto settings = scalarColorSettings();
+    settings.field = field;
+    setScalarColorSettings(settings);
+}
+
+void VisualizationControl::setColorRangeMode(ColorRangeMode mode) {
+    auto settings = scalarColorSettings();
+    settings.rangeMode = mode;
+    setScalarColorSettings(settings);
+}
+
+void VisualizationControl::setColorRange(double minimum, double maximum) {
+    auto settings = scalarColorSettings();
+    settings.minimum = minimum;
+    settings.maximum = maximum;
+    setScalarColorSettings(settings);
+}
+
+void VisualizationControl::setScalarColoringEnabled(bool enabled) {
+    auto settings = scalarColorSettings();
+    settings.enabled = enabled;
+    setScalarColorSettings(settings);
+}
+
+void VisualizationControl::setScalarMappingMode(ScalarMappingMode mode) {
+    auto settings = scalarColorSettings();
+    settings.mappingMode = mode;
+    setScalarColorSettings(settings);
+}
+
+void VisualizationControl::setScalarValueMode(ScalarValueMode mode) {
+    auto settings = scalarColorSettings();
+    settings.valueMode = mode;
+    setScalarColorSettings(settings);
+}
+
+bool VisualizationControl::setPointScalarField(const PointScalarField &field) {
+    const auto model = originalModel();
+    if (!model || !m_expectedModelRevision || field.modelRevision != m_expectedModelRevision ||
+        field.id.isEmpty() || field.values.size() != model->size()) {
+        emit errorOccurred(
+            QStringLiteral("Point scalar field does not match the current model revision"));
+        return false;
+    }
+    for (auto point = model->constBegin(); point != model->constEnd(); ++point) {
+        const auto value = field.values.constFind(point.key());
+        if (value == field.values.constEnd() || !std::isfinite(value.value())) {
+            emit errorOccurred(QStringLiteral("Every model point requires a finite scalar"));
+            return false;
+        }
+    }
+    m_customField = field;
+    auto settings = scalarColorSettings();
+    settings.field = ScalarField::Custom;
+    return setScalarColorSettings(settings);
+}
+
+void VisualizationControl::updateScalarColors() {
+    auto *mesh = m_deformation->displayMesh();
+    auto *mapper = m_deformation->mapper();
+    if (!mesh || !mapper)
+        return;
+    const auto settings = m_colors->settings();
+    if (!settings.enabled || (settings.field != ScalarField::Custom && !m_colorResult) ||
+        (settings.field == ScalarField::Custom && m_customField.id.isEmpty())) {
+        m_colors->clear(mesh, mapper);
+        return;
+    }
+    QString error;
+    const bool ok = settings.field == ScalarField::Custom
+                        ? m_colors->applyField(m_customField, mesh, mapper, &error)
+                        : m_colors->applyResult(m_colorResult, mesh, mapper, &error);
+    if (!ok)
+        emit errorOccurred(error);
 }
 
 } // namespace visualization

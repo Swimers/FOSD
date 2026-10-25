@@ -24,7 +24,9 @@ void VtkValidationPresenter::execute(const QString &action, const QVariantMap &p
             return;
         values["path"] = path;
     }
-    if ((action == "scaleButton" || action == "resetDeformationButton") && !ready())
+    if ((action == "scaleButton" || action == "resetDeformationButton" ||
+         action == "scalarApplyButton") &&
+        !ready())
         return;
     QString error;
     report(m_backend->execute(action, values, &error), error, tr("请求已提交，等待后端状态"));

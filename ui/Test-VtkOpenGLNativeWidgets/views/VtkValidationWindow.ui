@@ -33,6 +33,16 @@
     <item><widget class="QPushButton" name="scaleButton"><property name="text"><string>应用倍率</string></property></widget></item>
     <item><widget class="QPushButton" name="resetDeformationButton"><property name="text"><string>恢复原始形状</string></property></widget></item>
    </layout></item>
+   <item><layout class="QHBoxLayout" name="scalarLayout">
+    <item><widget class="QCheckBox" name="scalarEnabled"><property name="text"><string>位移场着色</string></property></widget></item>
+    <item><widget class="QComboBox" name="scalarField"><item><property name="text"><string>X 位移</string></property></item><item><property name="text"><string>Y 位移</string></property></item><item><property name="text"><string>Z 位移</string></property></item><item><property name="text"><string>总位移</string></property></item></widget></item>
+    <item><widget class="QComboBox" name="scalarMapping"><item><property name="text"><string>归一化 0～1</string></property></item><item><property name="text"><string>物理值 mm</string></property></item></widget></item>
+    <item><widget class="QCheckBox" name="scalarAbsolute"><property name="text"><string>取绝对值</string></property></widget></item>
+    <item><widget class="QComboBox" name="scalarRangeMode"><item><property name="text"><string>自动范围</string></property></item><item><property name="text"><string>手动范围</string></property></item></widget></item>
+    <item><widget class="QDoubleSpinBox" name="scalarMinimum"><property name="prefix"><string>最小 </string></property><property name="decimals"><number>6</number></property><property name="minimum"><double>-1000000000</double></property><property name="maximum"><double>1000000000</double></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="scalarMaximum"><property name="prefix"><string>最大 </string></property><property name="decimals"><number>6</number></property><property name="minimum"><double>-1000000000</double></property><property name="maximum"><double>1000000000</double></property><property name="value"><double>50</double></property></widget></item>
+    <item><widget class="QPushButton" name="scalarApplyButton"><property name="text"><string>应用颜色映射</string></property></widget></item>
+   </layout></item>
    <item><layout class="QHBoxLayout" name="renderLayout">
     <item><widget class="QPushButton" name="attachButton"><property name="text"><string>绑定窗口</string></property></widget></item>
     <item><widget class="QPushButton" name="detachButton"><property name="text"><string>解绑窗口</string></property></widget></item>
