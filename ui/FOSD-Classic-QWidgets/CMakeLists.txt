@@ -8,7 +8,7 @@ target_link_libraries(fosd_classic_contracts PUBLIC Qt5::Core)
 
 add_library(fosd_classic_backends STATIC
     common/FeatureBackend.h common/FeatureBackend.cpp
-    apps/mainwindow/backends/WorkbenchBackend.h apps/mainwindow/backends/WorkbenchBackend.cpp
+    apps/WorkbenchBackend.h apps/WorkbenchBackend.cpp
     apps/mainwindow/backends/MainWindowBackend.h apps/mainwindow/backends/MainWindowBackend.cpp
     apps/connection/backends/ConnectionBackend.h apps/connection/backends/ConnectionBackend.cpp
     apps/plot/backends/PlotBackend.h apps/plot/backends/PlotBackend.cpp
@@ -21,7 +21,7 @@ target_link_libraries(fosd_classic_backends PUBLIC fosd_classic_contracts)
 
 add_library(fosd_classic_presenters STATIC
     common/PanelPresenter.h common/PanelPresenter.cpp
-    apps/mainwindow/contracts/IWorkbenchView.h apps/mainwindow/presenters/WorkbenchPresenter.h apps/mainwindow/presenters/WorkbenchPresenter.cpp
+    apps/IWorkbenchView.h apps/WorkbenchPresenter.h apps/WorkbenchPresenter.cpp
     apps/mainwindow/presenters/MainWindowPresenter.h apps/mainwindow/presenters/MainWindowPresenter.cpp
     apps/connection/presenters/ConnectionPresenter.h apps/connection/presenters/ConnectionPresenter.cpp
     apps/plot/presenters/PlotPresenter.h apps/plot/presenters/PlotPresenter.cpp
@@ -42,7 +42,7 @@ target_link_libraries(fosd_classic_controls PUBLIC Qt5::Widgets Qt5::PrintSuppor
 
 add_library(fosd_classic_widgets STATIC
     common/FormBinding.h common/FormBinding.cpp common/ViewFactory.h common/ViewFactory.cpp
-    apps/mainwindow/views/WorkbenchView.h apps/mainwindow/views/WorkbenchView.cpp
+    apps/WorkbenchView.h apps/WorkbenchView.cpp
     resources/UiResources.h resources/UiResources.cpp resources/legacy_ui.qrc
     apps/connection/views/connectwindow.h
     apps/connection/views/connectwindow.cpp

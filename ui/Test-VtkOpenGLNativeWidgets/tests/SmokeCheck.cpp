@@ -291,6 +291,59 @@ void SmokeCheck::checkIntegration() {
         picking.onlyKeyPoints = false;
         control->setPickingSettings(picking);
         control->setCameraLocked(false);
+        control->resetCamera();
+        const auto cameraBeforeEnvironment = control->cameraPose();
+        m_presenter->execute("sceneApplyButton", {{"axesVisible", true},
+                                                  {"axesLength", 100.0},
+                                                  {"gridXZ", true},
+                                                  {"gridXY", true},
+                                                  {"gridYZ", true},
+                                                  {"gridExtent", 1500.0},
+                                                  {"gridDivisions", 10},
+                                                  {"gradientBackground", true},
+                                                  {"backgroundBottom", "0.08,0.12,0.18"},
+                                                  {"backgroundTop", "0.3,0.45,0.7"}});
+        control->resetCamera();
+        const auto cameraAfterEnvironment = control->cameraPose();
+        if (!control->axesSettings().visible || !control->gridSettings().visible[2] ||
+            !renderer->GetGradientBackground()) {
+            finish(false, "Scene parameters were not forwarded through Presenter");
+            return;
+        }
+        for (int axis = 0; axis < 3; ++axis)
+            if (std::abs(cameraBeforeEnvironment.positionMm[axis] -
+                         cameraAfterEnvironment.positionMm[axis]) > 1e-7) {
+                finish(false, "Environment props changed model camera fitting");
+                return;
+            }
+        m_presenter->execute("cameraViewButton", {{"cameraView", 5}}); // Top (+Z).
+        m_presenter->execute("cameraApplyButton", {{"cameraProjection", 1},
+                                                   {"cameraAngle", 45.0},
+                                                   {"cameraScale", 700.0},
+                                                   {"cameraLocked", false}});
+        visualization::WorldSettings environment;
+        environment.skyVisible = true;
+        if (!control->setWorldSettings(environment) ||
+            !renderer->GetActiveCamera()->GetParallelProjection()) {
+            finish(false, "Scene world or orthographic camera failed");
+            return;
+        }
+        mesh->GetPoint(0, world);
+        renderer->SetWorldPoint(world[0], world[1], world[2], 1);
+        renderer->WorldToDisplay();
+        screen = renderer->GetDisplayPoint();
+        interactor->SetEventInformation(int(std::round(screen[0])), int(std::round(screen[1])), 0,
+                                        0);
+        style->OnLeftButtonDown();
+        style->OnLeftButtonUp();
+        if (!control->selectedPoint().valid || control->selectedPoint().pointId != 0) {
+            finish(false, "Scene props intercepted model picking");
+            return;
+        }
+        environment.skyVisible = false;
+        control->setWorldSettings(environment);
+        control->showAxes(false);
+        control->showGrid(false);
         control->selectPoint(1);
         QVariantMap colorSettings{{"scalarEnabled", true},
                                   {"scalarMapping", 0},
@@ -371,7 +424,7 @@ void SmokeCheck::checkIntegration() {
             !data.contains("calibrated_hardware"))
             return;
         finish(true,
-               "UDP -> HYY -> storage -> VTK deformation/colors + key points/mouse picking passed");
+               "UDP -> HYY -> storage -> VTK colors/picking + axes/grid/background/camera passed");
     }
 }
 } // namespace vtk_test

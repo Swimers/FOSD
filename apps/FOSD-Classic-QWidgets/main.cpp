@@ -1,5 +1,5 @@
-#include "FOSD-Classic-QWidgets/apps/mainwindow/views/WorkbenchView.h"
-#include "FOSD-Classic-QWidgets/apps/mainwindow/presenters/WorkbenchPresenter.h"
+#include "FOSD-Classic-QWidgets/apps/WorkbenchPresenter.h"
+#include "FOSD-Classic-QWidgets/apps/WorkbenchView.h"
 #include <QApplication>
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);

@@ -12,6 +12,26 @@
 #include <limits>
 namespace fosd {
 namespace vtk_test {
+namespace {
+bool sceneColor(const QString &text, std::array<double, 3> *color, QString *error) {
+    const auto parts = text.split(',');
+    if (parts.size() != 3) {
+        if (error)
+            *error = QStringLiteral("RGB 需要三个逗号分隔的 0～1 数值");
+        return false;
+    }
+    for (int i = 0; i < 3; ++i) {
+        bool ok = false;
+        (*color)[i] = parts[i].trimmed().toDouble(&ok);
+        if (!ok || !std::isfinite((*color)[i]) || (*color)[i] < 0 || (*color)[i] > 1) {
+            if (error)
+                *error = QStringLiteral("RGB 分量必须为 0～1 的有限数值");
+            return false;
+        }
+    }
+    return true;
+}
+} // namespace
 VtkValidationBackend::VtkValidationBackend() : m_protocol(new protocol::ProtocolControl) {
     createCalculation(false);
     auto &connection = m_protocol->communication();
@@ -107,8 +127,8 @@ bool VtkValidationBackend::showDemo(QString *error) {
         m_demo->GetProperty()->SetColor(0.95, 0.65, 0.15);
         scene->AddActor(m_demo);
     }
-    scene->SetBackground(0.08, 0.12, 0.18);
-    scene->ResetCamera();
+    m_control->setBackground(0.08, 0.12, 0.18);
+    m_control->resetCamera();
     return render(error);
 }
 
@@ -316,11 +336,12 @@ bool VtkValidationBackend::setupPlate(const QVariantMap &p, bool send, QString *
     colors.valueMode = visualization::ScalarValueMode::Signed;
     m_control->setScalarColorSettings(colors);
     m_control->setDeformationScale(1.0);
-    auto *scene = renderer(nullptr);
-    scene->SetBackground(0.08, 0.12, 0.18);
-    scene->GetActiveCamera()->SetPosition(1600, -900, 1000);
-    scene->GetActiveCamera()->SetFocalPoint(500, 0, 0);
-    scene->GetActiveCamera()->SetViewUp(0, 0, 1);
+    m_control->setBackground(0.08, 0.12, 0.18);
+    visualization::CameraPose pose;
+    pose.positionMm = {{1600, -900, 1000}};
+    pose.focalPointMm = {{500, 0, 0}};
+    pose.viewUp = {{0, 0, 1}};
+    m_control->setCameraPose(pose);
     m_control->resetCamera();
     communication::UdpConfig config;
     config.bindAddress = QHostAddress::LocalHost;
@@ -396,6 +417,47 @@ bool VtkValidationBackend::execute(const QString &action, const QVariantMap &p, 
             config.portName = p.value("serial").toString();
             config.baudRate = p.value("baud").toInt();
             connection.openSerial(config);
+        }
+    } else if (action == "sceneApplyButton") {
+        if (!m_control || !boundWindow())
+            return false;
+        auto background = m_control->backgroundSettings();
+        background.gradient = p.value("gradientBackground").toBool();
+        if (!sceneColor(p.value("backgroundBottom").toString(), &background.bottomColor, error) ||
+            !sceneColor(p.value("backgroundTop").toString(), &background.topColor, error))
+            return false;
+        auto axes = m_control->axesSettings();
+        axes.visible = p.value("axesVisible").toBool();
+        axes.lengthMm = p.value("axesLength").toDouble();
+        auto grid = m_control->gridSettings();
+        grid.visible = {
+            {p.value("gridXZ").toBool(), p.value("gridXY").toBool(), p.value("gridYZ").toBool()}};
+        grid.halfExtentMm = p.value("gridExtent").toDouble();
+        grid.divisions = p.value("gridDivisions").toInt();
+        if (!m_control->setAxesSettings(axes) || !m_control->setGridSettings(grid) ||
+            !m_control->setBackgroundSettings(background)) {
+            if (error)
+                *error = m_status;
+            return false;
+        }
+    } else if (action == "cameraViewButton" && m_control) {
+        const int view = p.value("cameraView").toInt();
+        if (view < 0 || view > 6) {
+            if (error)
+                *error = tr("相机视图索引无效");
+            return false;
+        }
+        m_control->setCameraPreset(visualization::CameraPreset(view));
+    } else if (action == "cameraApplyButton" && m_control) {
+        auto settings = m_control->cameraSettings();
+        settings.projection = visualization::CameraProjection(p.value("cameraProjection").toInt());
+        settings.viewAngleDegrees = p.value("cameraAngle").toDouble();
+        settings.parallelScaleMm = p.value("cameraScale").toDouble();
+        settings.locked = p.value("cameraLocked").toBool();
+        if (!m_control->setCameraSettings(settings)) {
+            if (error)
+                *error = m_status;
+            return false;
         }
     } else if (action == "keyPointsApplyButton") {
         if (!m_control || !boundWindow()) {

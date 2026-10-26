@@ -1,6 +1,6 @@
 #include "WorkbenchView.h"
-#include "../../../common/ViewFactory.h"
-#include "../../../controls/renderhostwidget.h"
+#include "../common/ViewFactory.h"
+#include "../controls/renderhostwidget.h"
 #include <QButtonGroup>
 #include <QDockWidget>
 #include <QFile>

@@ -31,7 +31,9 @@ void VtkValidationPresenter::execute(const QString &action, const QVariantMap &p
     if ((action == "scaleButton" || action == "resetDeformationButton" ||
          action == "scalarApplyButton" || action == "plateStartButton" ||
          action == "plateSetupButton" || action == "plateExitButton" ||
-         action == "keyPointsApplyButton" || action == "clearSelectionButton") &&
+         action == "keyPointsApplyButton" || action == "clearSelectionButton" ||
+         action == "sceneApplyButton" || action == "cameraViewButton" ||
+         action == "cameraApplyButton") &&
         !ready())
         return;
     QString error;

@@ -7,7 +7,7 @@
 | 1. 位移/通用标量颜色映射 | ScalarColorMapper：数值选择、变换、色表；VisualizationControl：配置、结果和模型版本组织 | 已实现 |
 | 2. 点击选点交互 | PointPicker / ModelInteractorStyle：模型专用拾取、原始/显示坐标与实际位移、鼠标门控及相机锁 | 已实现 |
 | 3. 关键点配置渲染 | KeyPointCreator / KeyPointManager：统一球体和 Label 创建、样式、批量显隐及变形随动 | 已实现 |
-| 4. 背景和场景环境 | SceneEnvironment：背景、网格、坐标轴与相机；沿用 showGrid / showAxes 等接口 | 后续迁移 |
+| 4. 背景和场景环境 | SceneEnvironment：坐标轴、三平面网格、背景/纹理世界、相机视图与镜头配置 | 已实现 |
 | 5. 模型外观 | 统一模型颜色、边线、透明度及材质设置；新增独立外观配置结构和 Control 设置入口 | 后续迁移 |
 
 颜色映射与材质颜色相互独立：关闭标量着色时使用 Actor 原有材质颜色，不改写它。后续阶段仍应保持 GUI 线程操作 VTK、Presenter 传递界面请求、应用适配器组合各 Control 的结构。

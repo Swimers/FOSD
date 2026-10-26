@@ -1,6 +1,6 @@
 #pragma once
-#include "../../../common/IView.h"
-#include "../../../common/UiTypes.h"
+#include "../common/IView.h"
+#include "../common/UiTypes.h"
 namespace fosd {
 namespace ui {
 namespace classic {

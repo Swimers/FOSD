@@ -1,5 +1,5 @@
 #pragma once
-#include "FOSD-Classic-QWidgets/apps/mainwindow/views/WorkbenchView.h"
+#include "FOSD-Classic-QWidgets/apps/WorkbenchView.h"
 #include <memory>
 namespace fosd {
 namespace protocol {

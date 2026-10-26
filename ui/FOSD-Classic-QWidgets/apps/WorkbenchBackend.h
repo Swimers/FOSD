@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../common/IBackend.h"
+#include "../common/IBackend.h"
 #include <QMap>
 #include <QPointer>
 namespace fosd {

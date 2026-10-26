@@ -1,11 +1,11 @@
 #include "WorkbenchPresenter.h"
-#include "MainWindowPresenter.h"
-#include "../../connection/presenters/ConnectionPresenter.h"
-#include "../../plot/presenters/PlotPresenter.h"
-#include "../../visualization/presenters/VisualizationPresenter.h"
-#include "../../model/presenters/ModelPresenter.h"
-#include "../../tracking/presenters/TrackingPresenter.h"
-#include "../../account/presenters/AccountPresenter.h"
+#include "account/presenters/AccountPresenter.h"
+#include "connection/presenters/ConnectionPresenter.h"
+#include "mainwindow/presenters/MainWindowPresenter.h"
+#include "model/presenters/ModelPresenter.h"
+#include "plot/presenters/PlotPresenter.h"
+#include "tracking/presenters/TrackingPresenter.h"
+#include "visualization/presenters/VisualizationPresenter.h"
 namespace fosd {
 namespace ui {
 namespace classic {
@@ -53,6 +53,7 @@ void WorkbenchPresenter::setBackends(WorkbenchBackend *backends) {
         return;
     if (m_backends)
         disconnect(m_backends, nullptr, this, nullptr);
+        
     m_backends = backends;
     if (backends) {
         connect(backends, &WorkbenchBackend::backendChanged, this,

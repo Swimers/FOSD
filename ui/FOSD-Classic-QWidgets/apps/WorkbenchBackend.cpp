@@ -1,11 +1,11 @@
 #include "WorkbenchBackend.h"
-#include "MainWindowBackend.h"
-#include "../../connection/backends/ConnectionBackend.h"
-#include "../../plot/backends/PlotBackend.h"
-#include "../../visualization/backends/VisualizationBackend.h"
-#include "../../model/backends/ModelBackend.h"
-#include "../../tracking/backends/TrackingBackend.h"
-#include "../../account/backends/AccountBackend.h"
+#include "account/backends/AccountBackend.h"
+#include "connection/backends/ConnectionBackend.h"
+#include "mainwindow/backends/MainWindowBackend.h"
+#include "model/backends/ModelBackend.h"
+#include "plot/backends/PlotBackend.h"
+#include "tracking/backends/TrackingBackend.h"
+#include "visualization/backends/VisualizationBackend.h"
 namespace fosd {
 namespace ui {
 namespace classic {

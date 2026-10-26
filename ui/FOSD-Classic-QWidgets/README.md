@@ -4,20 +4,23 @@
 
 ## 文件结构
 
-各功能界面统一位于 `apps/`。每个功能目录按 `views/`、`presenters/`、`backends/` 划分；每个保留的 `.ui` 旁都有同名 `.h/.cpp`。例如 `apps/connection/views/connectwindow.ui/.h/.cpp` 定义 ConnectionView，`apps/account/views/login.ui/.h/.cpp` 定义 LoginView。头文件声明 Ui 包装、IView 接口与控件意图 signals；源文件只执行 setupUi、字段读写和信号转发。
+各功能界面统一位于 `apps/`。Workbench 是跨功能组合层，相关 View、Presenter、Backend 和接口直接位于 `apps/` 根目录；每个具体功能目录仍按 `views/`、`presenters/`、`backends/` 划分。每个保留的 `.ui` 旁都有同名 `.h/.cpp`。例如 `apps/connection/views/connectwindow.ui/.h/.cpp` 定义 ConnectionView，`apps/account/views/login.ui/.h/.cpp` 定义 LoginView。头文件声明 Ui 包装、IView 接口与控件意图 signals；源文件只执行 setupUi、字段读写和信号转发。
 
 ```text
 FOSD-Classic-QWidgets/
 ├─ apps/
+│  ├─ WorkbenchView.h/.cpp       # 组合页面、Dock 和主窗口布局
+│  ├─ WorkbenchPresenter.h/.cpp  # 组装各功能 Presenter
+│  ├─ WorkbenchBackend.h/.cpp    # 注册各功能 Backend
+│  ├─ IWorkbenchView.h           # Workbench View 接口
 │  ├─ connection/
 │  │  ├─ views/       # connectwindow、connectdebug 的 .ui/.h/.cpp
 │  │  ├─ presenters/  # ConnectionPresenter
 │  │  └─ backends/    # ConnectionBackend
 │  ├─ mainwindow/
-│  │  ├─ views/       # oldmainwindow、WorkbenchView
-│  │  ├─ presenters/  # MainWindowPresenter、WorkbenchPresenter
-│  │  ├─ backends/    # MainWindowBackend、WorkbenchBackend
-│  │  └─ contracts/   # IWorkbenchView
+│  │  ├─ views/       # oldmainwindow
+│  │  ├─ presenters/  # MainWindowPresenter
+│  │  └─ backends/    # MainWindowBackend
 │  └─ plot、visualization、model、tracking、account/  # 同样分层
 ├─ common/
 ├─ controls/
@@ -27,7 +30,8 @@ FOSD-Classic-QWidgets/
 
 | 目录 | 表单 / 职责 | Presenter / Backend |
 | --- | --- | --- |
-| `apps/mainwindow/` | views/ 中的 oldmainwindow、WorkbenchView 组合页面和 Dock；presenters/ 组合功能 Presenter；backends/ 注册功能适配器 | MainWindowPresenter / MainWindowBackend |
+| `apps/` 根目录 | WorkbenchView 组合页面和 Dock，WorkbenchPresenter 组装功能 Presenter，WorkbenchBackend 注册功能适配器 | WorkbenchPresenter / WorkbenchBackend |
+| `apps/mainwindow/` | views/ 中的 oldmainwindow 及其主页面行为 | MainWindowPresenter / MainWindowBackend |
 | `apps/connection/` | views/ 中的 connectwindow、connectdebug | ConnectionPresenter / ConnectionBackend |
 | `apps/plot/` | views/ 中的 disp2dwindow、disp2dpara | PlotPresenter / PlotBackend |
 | `apps/visualization/` | views/ 中的 disp3dwindow；views/docks/ 下的 disp3dviewdockpanel、disp3dinfodockpanel | VisualizationPresenter / VisualizationBackend |

@@ -1,5 +1,5 @@
 #include "ModelPresenter.h"
-#include "../../mainwindow/contracts/IWorkbenchView.h"
+#include "../../IWorkbenchView.h"
 #include <QMap>
 namespace fosd {
 namespace ui {

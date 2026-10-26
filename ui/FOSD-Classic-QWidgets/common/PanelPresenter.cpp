@@ -1,5 +1,5 @@
 #include "PanelPresenter.h"
-#include "../apps/mainwindow/contracts/IWorkbenchView.h"
+#include "../apps/IWorkbenchView.h"
 #include <atomic>
 namespace fosd {
 namespace ui {

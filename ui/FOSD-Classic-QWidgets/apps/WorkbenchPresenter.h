@@ -1,6 +1,6 @@
 #pragma once
-#include "../backends/WorkbenchBackend.h"
-#include "../contracts/IWorkbenchView.h"
+#include "IWorkbenchView.h"
+#include "WorkbenchBackend.h"
 #include <QMap>
 namespace fosd {
 namespace ui {

@@ -64,6 +64,30 @@
     <item><widget class="QDoubleSpinBox" name="scalarMaximum"><property name="prefix"><string>最大 </string></property><property name="decimals"><number>6</number></property><property name="minimum"><double>-1000000000</double></property><property name="maximum"><double>1000000000</double></property><property name="value"><double>50</double></property></widget></item>
     <item><widget class="QPushButton" name="scalarApplyButton"><property name="text"><string>应用颜色映射</string></property></widget></item>
    </layout></item>
+   <item><layout class="QHBoxLayout" name="sceneLayout">
+    <item><widget class="QCheckBox" name="axesVisible"><property name="text"><string>坐标轴</string></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="axesLength"><property name="prefix"><string>轴长 mm </string></property><property name="minimum"><double>0.01</double></property><property name="maximum"><double>1000000</double></property><property name="value"><double>100</double></property></widget></item>
+    <item><widget class="QCheckBox" name="gridXZ"><property name="text"><string>XZ 网格</string></property></widget></item>
+    <item><widget class="QCheckBox" name="gridXY"><property name="text"><string>XY 网格</string></property></widget></item>
+    <item><widget class="QCheckBox" name="gridYZ"><property name="text"><string>YZ 网格</string></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="gridExtent"><property name="prefix"><string>半宽 mm </string></property><property name="minimum"><double>0.01</double></property><property name="maximum"><double>1000000</double></property><property name="value"><double>1500</double></property></widget></item>
+    <item><widget class="QSpinBox" name="gridDivisions"><property name="prefix"><string>半边分格 </string></property><property name="minimum"><number>1</number></property><property name="maximum"><number>500</number></property><property name="value"><number>50</number></property></widget></item>
+    <item><widget class="QPushButton" name="sceneApplyButton"><property name="text"><string>应用轴/网格/背景</string></property></widget></item>
+   </layout></item>
+   <item><layout class="QHBoxLayout" name="backgroundLayout">
+    <item><widget class="QLabel" name="backgroundBottomLabel"><property name="text"><string>背景 RGB（0～1）</string></property></widget></item>
+    <item><widget class="QLineEdit" name="backgroundBottom"><property name="text"><string>0.08,0.12,0.18</string></property></widget></item>
+    <item><widget class="QCheckBox" name="gradientBackground"><property name="text"><string>渐变至</string></property></widget></item>
+    <item><widget class="QLineEdit" name="backgroundTop"><property name="text"><string>0.3,0.45,0.7</string></property></widget></item>
+   </layout></item>
+   <item><layout class="QHBoxLayout" name="cameraLayout">
+    <item><widget class="QComboBox" name="cameraView"><item><property name="text"><string>等距视图</string></property></item><item><property name="text"><string>前视图</string></property></item><item><property name="text"><string>后视图</string></property></item><item><property name="text"><string>左视图</string></property></item><item><property name="text"><string>右视图</string></property></item><item><property name="text"><string>顶视图</string></property></item><item><property name="text"><string>底视图</string></property></item></widget></item>
+    <item><widget class="QPushButton" name="cameraViewButton"><property name="text"><string>切换视图并适配</string></property></widget></item>
+    <item><widget class="QComboBox" name="cameraProjection"><item><property name="text"><string>透视投影</string></property></item><item><property name="text"><string>正交投影</string></property></item></widget></item>
+    <item><widget class="QDoubleSpinBox" name="cameraAngle"><property name="prefix"><string>视角 ° </string></property><property name="minimum"><double>1</double></property><property name="maximum"><double>170</double></property><property name="value"><double>30</double></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="cameraScale"><property name="prefix"><string>正交半高 mm </string></property><property name="minimum"><double>0.01</double></property><property name="maximum"><double>1000000000</double></property><property name="value"><double>1000</double></property></widget></item>
+    <item><widget class="QPushButton" name="cameraApplyButton"><property name="text"><string>应用镜头参数</string></property></widget></item>
+   </layout></item>
    <item><layout class="QHBoxLayout" name="renderLayout">
     <item><widget class="QPushButton" name="attachButton"><property name="text"><string>绑定窗口</string></property></widget></item>
     <item><widget class="QPushButton" name="detachButton"><property name="text"><string>解绑窗口</string></property></widget></item>

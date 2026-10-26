@@ -22,7 +22,7 @@ class PointPicker;
 class ModelInteractorStyle;
 class SceneEnvironment;
 // GUI-thread facade. Model loading and deformation display are implemented;
-// Scene environment APIs remain reserved for later development.
+// Scene environment and interaction stay on the GUI thread.
 
 class VisualizationControl final : public QObject {
     Q_OBJECT
@@ -74,6 +74,20 @@ public:
     void clearSelection();
     void showAxes(bool visible);
     void showGrid(bool visible);
+    bool showGrid(GridPlane plane, bool visible);
+    bool setAxesSettings(const AxesSettings &settings);
+    bool setGridSettings(const GridSettings &settings);
+    bool setBackgroundSettings(const BackgroundSettings &settings);
+    bool setWorldSettings(const WorldSettings &settings);
+    bool setCameraSettings(const CameraSettings &settings);
+    bool setCameraPose(const CameraPose &pose);
+    AxesSettings axesSettings() const;
+    GridSettings gridSettings() const;
+    BackgroundSettings backgroundSettings() const;
+    WorldSettings worldSettings() const;
+    CameraSettings cameraSettings() const;
+    CameraPose cameraPose() const;
+    bool setBackground(double red, double green, double blue);
     void setCameraPreset(CameraPreset preset);
     void setCameraLocked(bool locked);
     void resetCamera();

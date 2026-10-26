@@ -44,6 +44,52 @@ struct ScalarColorRange {
     double lookupMaximum = 1.0;
 };
 enum class CameraPreset { Isometric, Front, Back, Left, Right, Top, Bottom };
+enum class GridPlane { XZ, XY, YZ };
+enum class CameraProjection { Perspective, Parallel };
+struct AxesSettings {
+    bool visible = false;
+    bool labelsVisible = true;
+    double lengthMm = 100.0;
+    std::array<double, 3> originMm{{0, 0, 0}};
+    int fontSize = 10;
+};
+struct GridSettings {
+    std::array<bool, 3> visible{{false, false, false}}; // XZ, XY, YZ.
+    double halfExtentMm = 1500.0;
+    int divisions = 50; // Intervals from the origin to each edge.
+    std::array<double, 3> originMm{{0, 0, 0}};
+    std::array<double, 3> color{{0.7, 0.7, 0.7}};
+    double opacity = 0.1;
+    double lineWidth = 1.0;
+};
+struct BackgroundSettings {
+    bool gradient = false;
+    std::array<double, 3> bottomColor{{0, 0, 0}};
+    std::array<double, 3> topColor{{0.2, 0.3, 0.5}};
+};
+struct CameraSettings {
+    CameraProjection projection = CameraProjection::Perspective;
+    double viewAngleDegrees = 30.0;
+    double parallelScaleMm = 1000.0; // Half the visible vertical extent.
+    bool locked = false;             // Mouse camera lock; explicit API changes remain allowed.
+};
+struct CameraPose {
+    std::array<double, 3> positionMm{{0, 0, 1}};
+    std::array<double, 3> focalPointMm{{0, 0, 0}};
+    std::array<double, 3> viewUp{{0, 1, 0}};
+};
+struct WorldSettings {
+    bool groundVisible = false;
+    bool skyVisible = false;
+    double groundHalfExtentMm = 10000.0;
+    double groundYmm = -100.0; // Legacy ground lies in XZ (Y is constant).
+    double skyRadiusMm = 20000.0;
+    std::array<double, 3> centerMm{{0, 0, 0}};
+    std::array<double, 3> groundColor{{0.3, 0.6, 0.3}};
+    std::array<double, 3> skyColor{{0.6, 0.85, 1.0}};
+    QString groundTexturePath; // Empty = solid color; file or Qt resource path.
+    QString skyTexturePath;
+};
 
 struct KeyPointDefinition {
     vtkIdType pointId = -1;

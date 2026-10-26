@@ -108,6 +108,7 @@ bool VisualizationControl::loadModel(const QString &path) {
     m_deformation->actor()->GetProperty()->SetColor(0.5, 0.65, 0.15);
     m_renderer->AddActor(m_deformation->actor());
     m_keyPoints->setModel(originalModel(), m_deformation->displayMesh());
+    m_scene->setModelActor(m_deformation->actor());
     m_picker->setMesh(m_deformation->displayMesh(), originalModel(), m_deformation->actor());
     m_expectedModelRevision = 0;
     m_lastResultRevision = 0;
@@ -117,6 +118,7 @@ bool VisualizationControl::loadModel(const QString &path) {
 }
 
 void VisualizationControl::unloadModel() {
+    m_scene->setModelActor(nullptr);
     m_picker->setMesh(nullptr, {});
     m_keyPoints->setModel({}, nullptr);
     if (m_deformation->actor())
@@ -224,7 +226,7 @@ void VisualizationControl::setfreshFPS(int Interval) {
 }
 
 void VisualizationControl::resetCamera() {
-    m_renderer->ResetCamera();
+    m_scene->resetCamera();
     if (m_renderWindow)
         m_renderWindow->Render();
 }
@@ -411,6 +413,7 @@ void VisualizationControl::clearSelection() {
 }
 
 void VisualizationControl::setCameraLocked(bool locked) {
+    m_scene->setCameraLocked(locked);
     m_interactorStyle->setCameraLocked(locked);
 }
 
@@ -418,6 +421,137 @@ void VisualizationControl::handlePointPicked(const PickedPointInfo &info) {
     emit pointPicked(info);
     if (m_renderWindow)
         m_renderWindow->Render();
+}
+
+AxesSettings VisualizationControl::axesSettings() const {
+    return m_scene->axesSettings();
+}
+
+GridSettings VisualizationControl::gridSettings() const {
+    return m_scene->gridSettings();
+}
+
+BackgroundSettings VisualizationControl::backgroundSettings() const {
+    return m_scene->backgroundSettings();
+}
+
+WorldSettings VisualizationControl::worldSettings() const {
+    return m_scene->worldSettings();
+}
+
+CameraSettings VisualizationControl::cameraSettings() const {
+    return m_scene->cameraSettings();
+}
+
+CameraPose VisualizationControl::cameraPose() const {
+    return m_scene->cameraPose();
+}
+
+bool VisualizationControl::setAxesSettings(const AxesSettings &settings) {
+    QString error;
+    if (!m_scene->setAxesSettings(settings, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+bool VisualizationControl::setGridSettings(const GridSettings &settings) {
+    QString error;
+    if (!m_scene->setGridSettings(settings, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+bool VisualizationControl::setBackgroundSettings(const BackgroundSettings &settings) {
+    QString error;
+    if (!m_scene->setBackgroundSettings(settings, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+bool VisualizationControl::setWorldSettings(const WorldSettings &settings) {
+    QString error;
+    if (!m_scene->setWorldSettings(settings, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+bool VisualizationControl::setCameraSettings(const CameraSettings &settings) {
+    QString error;
+    if (!m_scene->setCameraSettings(settings, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    m_interactorStyle->setCameraLocked(settings.locked);
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+bool VisualizationControl::setCameraPose(const CameraPose &pose) {
+    QString error;
+    if (!m_scene->setCameraPose(pose, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+void VisualizationControl::setCameraPreset(CameraPreset preset) {
+    QString error;
+    if (!m_scene->setCameraPreset(preset, &error)) {
+        emit errorOccurred(error);
+        return;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+}
+
+void VisualizationControl::showAxes(bool visible) {
+    auto settings = axesSettings();
+    settings.visible = visible;
+    setAxesSettings(settings);
+}
+
+void VisualizationControl::showGrid(bool visible) {
+    auto settings = gridSettings();
+    settings.visible = {{visible, visible, visible}};
+    setGridSettings(settings);
+}
+
+bool VisualizationControl::showGrid(GridPlane plane, bool visible) {
+    QString error;
+    if (!m_scene->showGrid(plane, visible, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+bool VisualizationControl::setBackground(double r, double g, double b) {
+    auto settings = backgroundSettings();
+    settings.gradient = false;
+    settings.bottomColor = {{r, g, b}};
+    return setBackgroundSettings(settings);
 }
 
 } // namespace visualization

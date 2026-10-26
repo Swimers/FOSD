@@ -2,6 +2,7 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [场景环境与相机](Architectural/scene-environment-integration.md) | 坐标轴、三平面网格、背景与纹理世界、相机视图/投影及验证 |
 | [关键点与选点交互](Architectural/keypoint-picking-integration.md) | 球体/Label 统一创建、批量标记、左键选点、鼠标交互、变形随动与 Control 接口 |
 | [板模型与 UDP 仿真](../tools/plate-simulation/README.md) | 板 STL、默认标定、示例 IFE、固定频率发送器、一键显示及数值/渲染验证 |
 | [可视化迁移与标量映射](Architectural/visualization-integration.md) | 分步迁移安排、X/Y/Z/总位移着色、归一化与物理值、通用点标量入口及测试 |

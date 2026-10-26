@@ -76,6 +76,22 @@ public:
 class PresenterTests final : public QObject {
     Q_OBJECT
 private slots:
+    void sceneActionsRequireContextAndForwardValues() {
+        FakeView view;
+        FakeBackend backend;
+        VtkValidationPresenter presenter(&view, &backend);
+        presenter.execute("sceneApplyButton", {});
+        QVERIFY(backend.action.isEmpty());
+        presenter.attach();
+        presenter.execute("sceneApplyButton", {{"gridExtent", 1500.0}, {"axesVisible", true}});
+        QCOMPARE(backend.action, QStringLiteral("sceneApplyButton"));
+        QCOMPARE(backend.parameters["gridExtent"].toDouble(), 1500.0);
+        presenter.execute("cameraViewButton", {{"cameraView", 5}});
+        QCOMPARE(backend.parameters["cameraView"].toInt(), 5);
+        view.validContext = false;
+        presenter.execute("cameraApplyButton", {});
+        QCOMPARE(backend.action, QStringLiteral("cameraViewButton"));
+    }
     void keyPointActionsAndPresentation() {
         FakeView view;
         FakeBackend backend;

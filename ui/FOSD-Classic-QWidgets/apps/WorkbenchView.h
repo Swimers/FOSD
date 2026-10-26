@@ -1,6 +1,6 @@
 #pragma once
-#include "oldmainwindow.h"
-#include "../contracts/IWorkbenchView.h"
+#include "IWorkbenchView.h"
+#include "mainwindow/views/oldmainwindow.h"
 #include <QMap>
 class QDockWidget;
 class QStackedWidget;

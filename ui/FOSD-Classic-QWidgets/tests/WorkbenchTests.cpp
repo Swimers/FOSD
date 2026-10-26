@@ -1,6 +1,6 @@
-#include "../apps/mainwindow/views/WorkbenchView.h"
+#include "../apps/WorkbenchView.h"
 #include "../common/ViewFactory.h"
-#include "../apps/mainwindow/presenters/WorkbenchPresenter.h"
+#include "../apps/WorkbenchPresenter.h"
 #include "../apps/account/presenters/AccountPresenter.h"
 #include "../apps/connection/views/connectwindow.h"
 #include "../apps/account/views/login.h"

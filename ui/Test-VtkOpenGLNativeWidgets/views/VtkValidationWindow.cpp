@@ -23,7 +23,8 @@ VtkValidationWindow::VtkValidationWindow(QWidget *parent)
           m_ui->storageStartButton, m_ui->storageStopButton, m_ui->scaleButton,
           m_ui->resetDeformationButton, m_ui->scalarApplyButton, m_ui->plateStartButton,
           m_ui->plateSetupButton, m_ui->plateStopButton, m_ui->plateExitButton,
-          m_ui->keyPointsApplyButton, m_ui->clearSelectionButton})
+          m_ui->keyPointsApplyButton, m_ui->clearSelectionButton, m_ui->sceneApplyButton,
+          m_ui->cameraViewButton, m_ui->cameraApplyButton})
         connect(button, &QPushButton::clicked, this, &VtkValidationWindow::requestAction);
     showBinding(false, nullptr);
 }
@@ -54,7 +55,8 @@ void VtkValidationWindow::showBinding(bool bound, vtkRenderWindow *backendWindow
          {m_ui->detachButton, m_ui->demoButton, m_ui->clearButton, m_ui->resetCameraButton,
           m_ui->renderButton, m_ui->modelButton, m_ui->scaleButton, m_ui->resetDeformationButton,
           m_ui->scalarApplyButton, m_ui->plateStartButton, m_ui->plateSetupButton,
-          m_ui->plateExitButton, m_ui->keyPointsApplyButton, m_ui->clearSelectionButton})
+          m_ui->plateExitButton, m_ui->keyPointsApplyButton, m_ui->clearSelectionButton,
+          m_ui->sceneApplyButton, m_ui->cameraViewButton, m_ui->cameraApplyButton})
         button->setEnabled(bound);
 }
 
@@ -110,6 +112,20 @@ void VtkValidationWindow::requestAction() {
     values["pickingEnabled"] = m_ui->pickingEnabled->isChecked();
     values["pickOnlyKeyPoints"] = m_ui->pickOnlyKeyPoints->isChecked();
     values["cameraLocked"] = m_ui->cameraLocked->isChecked();
+    values["axesVisible"] = m_ui->axesVisible->isChecked();
+    values["axesLength"] = m_ui->axesLength->value();
+    values["gridXZ"] = m_ui->gridXZ->isChecked();
+    values["gridXY"] = m_ui->gridXY->isChecked();
+    values["gridYZ"] = m_ui->gridYZ->isChecked();
+    values["gridExtent"] = m_ui->gridExtent->value();
+    values["gridDivisions"] = m_ui->gridDivisions->value();
+    values["backgroundBottom"] = m_ui->backgroundBottom->text();
+    values["backgroundTop"] = m_ui->backgroundTop->text();
+    values["gradientBackground"] = m_ui->gradientBackground->isChecked();
+    values["cameraView"] = m_ui->cameraView->currentIndex();
+    values["cameraProjection"] = m_ui->cameraProjection->currentIndex();
+    values["cameraAngle"] = m_ui->cameraAngle->value();
+    values["cameraScale"] = m_ui->cameraScale->value();
     values["scalarEnabled"] = m_ui->scalarEnabled->isChecked();
     values["scalarField"] = m_ui->scalarField->currentIndex();
     values["scalarMapping"] = m_ui->scalarMapping->currentIndex();
