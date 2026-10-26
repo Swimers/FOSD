@@ -4,9 +4,13 @@
 #include <vtkRenderWindowInteractor.h>
 namespace fosd {
 namespace visualization {
+
+// 定义头文件中声明的静态工厂方法 New()：优先通过 VTK 对象工厂创建实例，
+// 否则直接 new ModelInteractorStyle，返回的裸指针由调用方（通常 vtkSmartPointer）持有。
 vtkStandardNewMacro(ModelInteractorStyle);
 ModelInteractorStyle::ModelInteractorStyle() = default;
 ModelInteractorStyle::~ModelInteractorStyle() = default;
+
 void ModelInteractorStyle::setPointPicker(PointPicker *picker) {
     m_picker = picker;
 }

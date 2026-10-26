@@ -4,7 +4,12 @@
 #include <QString>
 #include <array>
 
+#include <vtkSmartPointer.h>
 #include <vtkType.h>
+
+class vtkActor;
+class vtkBillboardTextActor3D;
+class vtkSphereSource;
 
 namespace fosd {
 namespace visualization {
@@ -43,6 +48,7 @@ struct ScalarColorRange {
     double lookupMinimum = 0.0;
     double lookupMaximum = 1.0;
 };
+
 enum class CameraPreset { Isometric, Front, Back, Left, Right, Top, Bottom };
 enum class GridPlane { XZ, XY, YZ };
 enum class CameraProjection { Perspective, Parallel };
@@ -91,6 +97,7 @@ struct WorldSettings {
     QString skyTexturePath;
 };
 
+// 关键点相关
 struct KeyPointDefinition {
     vtkIdType pointId = -1;
     QString label;
@@ -104,6 +111,14 @@ struct KeyPointStyle {
     int sphereResolution = 16;
     bool labelsVisible = true;
 };
+struct KeyPointActors {
+    vtkIdType pointId = -1;
+    vtkSmartPointer<vtkSphereSource> source;
+    vtkSmartPointer<vtkActor> sphere;
+    vtkSmartPointer<vtkBillboardTextActor3D> label;
+};
+
+// 拾取点相关
 struct PickingSettings {
     bool enabled = true;
     bool onlyKeyPoints = false;

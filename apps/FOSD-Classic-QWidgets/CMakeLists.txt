@@ -13,7 +13,10 @@ add_executable(FOSD-Classic-QWidgets WIN32 main.cpp ClassicWorkbench.h ClassicWo
 target_link_libraries(FOSD-Classic-QWidgets PRIVATE fosd_classic_widgets
     fosd_classic_runtime fosd_visualization_qt)
 if(WIN32)
-    set_target_properties(FOSD-Classic-QWidgets PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=${FOSD_QT_ROOT}/bin;%PATH%")
+    fosd_deploy_vtk_runtime(FOSD-Classic-QWidgets)
+    set_target_properties(FOSD-Classic-QWidgets PROPERTIES
+        VS_DEBUGGER_ENVIRONMENT
+            "PATH=${FOSD_VISUALIZATION_VTK_RUNTIME_DIR};${FOSD_QT_ROOT}/bin;%PATH%")
 endif()
 
 if(FOSD_BUILD_TESTS OR FOSD_WORKBENCH_BUILD_TESTS)

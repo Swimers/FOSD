@@ -18,9 +18,13 @@
 namespace fosd {
 namespace visualization {
 VisualizationControl::VisualizationControl(QObject *parent, vtkRenderWindow *renderWindowPtr)
-    : QObject(parent), m_renderer(vtkSmartPointer<vtkRenderer>::New()), m_mesh(new MeshManager),
-      m_deformation(new DeformationRenderer), m_colors(new ScalarColorMapper),
-      m_keyPoints(new KeyPointManager), m_picker(new PointPicker),
+    : QObject(parent), 
+      m_renderer(vtkSmartPointer<vtkRenderer>::New()), 
+      m_mesh(new MeshManager),
+      m_deformation(new DeformationRenderer), 
+      m_colors(new ScalarColorMapper),
+      m_keyPoints(new KeyPointManager), 
+      m_picker(new PointPicker),
       m_interactorStyle(vtkSmartPointer<ModelInteractorStyle>::New()),
       m_scene(new SceneEnvironment) {
     qRegisterMetaType<ScalarColorSettings>("fosd::visualization::ScalarColorSettings");

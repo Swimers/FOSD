@@ -30,11 +30,10 @@ public:
     explicit VisualizationControl(QObject *parent = nullptr,
                                   vtkRenderWindow *renderWindowPtr = nullptr);
     ~VisualizationControl() override;
+
     bool attach(vtkRenderWindow *window);
     void detach();
-    vtkRenderWindow *renderWindow() const {
-        return m_renderWindow;
-    } // Borrowed, GUI thread only.
+    vtkRenderWindow *renderWindow() const { return m_renderWindow; } // Borrowed, GUI thread only.
 
     bool loadModel(const QString &path);
     void unloadModel();
@@ -72,6 +71,7 @@ public:
     PickedPointInfo selectPoint(vtkIdType pointId);
     PickedPointInfo selectedPoint() const;
     QVector<vtkIdType> nearbyPoints(const std::array<double, 3> &positionMm, double radiusMm) const;
+    
     void clearSelection();
     void showAxes(bool visible);
     void showGrid(bool visible);

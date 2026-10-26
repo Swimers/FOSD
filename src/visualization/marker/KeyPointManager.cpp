@@ -1,4 +1,5 @@
 #include "KeyPointManager.h"
+#include "KeyPointCreator.h"
 #include <vtkActor.h>
 #include <vtkBillboardTextActor3D.h>
 #include <vtkPolyData.h>
@@ -7,6 +8,7 @@
 namespace fosd {
 namespace visualization {
 KeyPointManager::KeyPointManager() {
+    // 初始化默认参数
     m_selectionStyle.radiusMm = 7;
     m_selectionStyle.color = {{0.0, 1.0, 1.0}};
     m_selectionStyle.labelColor = {{0.0, 1.0, 1.0}};
@@ -19,6 +21,7 @@ KeyPointManager::~KeyPointManager() {
 void KeyPointManager::add(const KeyPointActors &actors) {
     if (!m_renderer || !actors.sphere)
         return;
+        
     m_renderer->AddViewProp(actors.sphere);
     m_renderer->AddViewProp(actors.label);
 }
@@ -33,9 +36,11 @@ void KeyPointManager::remove(const KeyPointActors &actors) {
 void KeyPointManager::setRenderer(vtkRenderer *renderer) {
     if (m_renderer == renderer)
         return;
+        
     for (const auto &actors : m_points)
         remove(actors);
     remove(m_selection);
+
     m_renderer = renderer;
     for (const auto &actors : m_points)
         add(actors);
@@ -58,6 +63,7 @@ std::array<double, 3> KeyPointManager::position(vtkIdType id) const {
 bool KeyPointManager::setKeyPoints(const QVector<KeyPointDefinition> &points, QString *error) {
     if (error)
         error->clear();
+        
     QSet<vtkIdType> ids;
     for (const auto &point : points) {
         if (!m_model || !m_displayMesh || point.pointId < 0 ||
@@ -151,11 +157,7 @@ void KeyPointManager::clearSelection() {
 }
 
 void KeyPointManager::clear() {
-    clearSelection();
-    for (const auto &actors : m_points)
-        remove(actors);
-    m_points.clear();
-    m_definitions.clear();
+
 }
 } // namespace visualization
 } // namespace fosd

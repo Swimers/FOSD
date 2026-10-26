@@ -24,6 +24,7 @@ public:
     bool setWorldSettings(const WorldSettings &settings, QString *error = nullptr);
     bool setCameraSettings(const CameraSettings &settings, QString *error = nullptr);
     bool setCameraPose(const CameraPose &pose, QString *error = nullptr);
+    
     AxesSettings axesSettings() const {
         return m_axesSettings;
     }

@@ -160,6 +160,7 @@ QVector<vtkIdType> PointPicker::nearbyPoints(const std::array<double, 3> &positi
 void PointPicker::clearSelection() {
     const bool changed = m_selectedId >= 0;
     m_selectedId = -1;
+    
     if (m_keyPoints)
         m_keyPoints->clearSelection();
     if (changed)

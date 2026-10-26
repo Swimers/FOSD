@@ -9,7 +9,9 @@ namespace fosd {
 namespace visualization {
 MeshManager::MeshManager() = default;
 MeshManager::~MeshManager() = default;
+
 bool MeshManager::loadModel(const QString &path, QString *error) {
+    // 读取STL模型
     auto reader = vtkSmartPointer<vtkSTLReader>::New();
     reader->SetFileName(QFile::encodeName(path).constData());
     reader->Update();
@@ -19,6 +21,8 @@ bool MeshManager::loadModel(const QString &path, QString *error) {
             *error = QStringLiteral("Cannot read a nonempty STL mesh: %1").arg(path);
         return false;
     }
+
+    // 模型映射到 QMap
     core::ModelData points;
     for (vtkIdType id = 0; id < mesh->GetNumberOfPoints(); ++id) {
         double xyz[3];
@@ -30,9 +34,12 @@ bool MeshManager::loadModel(const QString &path, QString *error) {
         }
         points.insert(id, {xyz[0], xyz[1], xyz[2]});
     }
+
+    // 保留原始模型 vtkPolyData/QMap
     m_originalMesh = vtkSmartPointer<vtkPolyData>::New();
     m_originalMesh->DeepCopy(mesh);
     m_originalModel = std::make_shared<const core::ModelData>(std::move(points));
+    
     return true;
 }
 

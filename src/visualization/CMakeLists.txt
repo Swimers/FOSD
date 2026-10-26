@@ -32,6 +32,30 @@ target_include_directories(fosd_visualization
 get_filename_component(_vtk_include_parent "${FOSD_VTK_TYPES_INCLUDE_DIR}" DIRECTORY)
 get_filename_component(_vtk_sdk_default "${_vtk_include_parent}" DIRECTORY)
 set(FOSD_VISUALIZATION_VTK_ROOT "${_vtk_sdk_default}" CACHE PATH "VTK 8.2 SDK for visualization (matching core's VTK headers)")
+if(WIN32)
+    set(FOSD_VISUALIZATION_VTK_RUNTIME_DIR
+        "${FOSD_VISUALIZATION_VTK_ROOT}/bin"
+        CACHE PATH "Directory containing the matching VTK runtime DLLs")
+
+    function(fosd_deploy_vtk_runtime target)
+        if(NOT IS_DIRECTORY "${FOSD_VISUALIZATION_VTK_RUNTIME_DIR}")
+            message(FATAL_ERROR
+                "VTK runtime directory does not exist: ${FOSD_VISUALIZATION_VTK_RUNTIME_DIR}")
+        endif()
+        file(GLOB _fosd_vtk_runtime_dlls
+            "${FOSD_VISUALIZATION_VTK_RUNTIME_DIR}/*.dll")
+        if(NOT _fosd_vtk_runtime_dlls)
+            message(FATAL_ERROR
+                "No VTK runtime DLLs found in: ${FOSD_VISUALIZATION_VTK_RUNTIME_DIR}")
+        endif()
+        add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${FOSD_VISUALIZATION_VTK_RUNTIME_DIR}"
+                "$<TARGET_FILE_DIR:${target}>"
+            COMMENT "Deploying VTK runtime DLLs for ${target}"
+            VERBATIM)
+    endfunction()
+endif()
 find_package(Qt5 5.12 REQUIRED COMPONENTS Widgets)
 
 add_library(fosd_visualization_vtk INTERFACE)
