@@ -24,6 +24,7 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     for (int index = int(PanelId::Main); index <= int(PanelId::Account); ++index) {
         const auto panel = PanelId(index);
         QWidget *widget = panel == PanelId::Main ? this : createPanelView(panel, this);
+
         if (widget != this) {
             widget->setWindowFlag(Qt::Window, true);
             widget->hide();
@@ -46,6 +47,7 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     }
     navigation->setExclusive(true);
     selectPage(0);
+
     const QMap<int, QString> titles{{int(PanelId::ConnectionDebug), tr("通信诊断")},
                                     {int(PanelId::PlotSettings), tr("标定参数")},
                                     {int(PanelId::KeyPointEdit), tr("关键点编辑")},
@@ -57,11 +59,11 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
                                     {int(PanelId::Registration), tr("用户注册")},
                                     {int(PanelId::Recovery), tr("找回密码")},
                                     {int(PanelId::Account), tr("账户管理")}};
-
     for (auto title = titles.constBegin(); title != titles.constEnd(); ++title)
         panelWidget(PanelId(title.key()))->setWindowTitle(title.value());
 
-    auto *visualization = qobject_cast<QMainWindow *>(panelWidget(PanelId::Visualization));
+    auto *visualization = qobject_cast<QMainWindow *>(
+        panelWidget(PanelId::Visualization)); // Visualization 转化为 QMainWindow
     const QVector<PanelId> docks{PanelId::ModelPanel, PanelId::ScenePanel, PanelId::InfoPanel};
     const QStringList dockTitles{tr("模型配置"), tr("场景与相机"), tr("模型信息")};
     for (int index = 0; index < docks.size(); ++index) {
@@ -74,15 +76,15 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
                                      dock);
         m_docks.insert(int(docks[index]), dock);
     }
-    
+
     for (auto *table : findChildren<QTableWidget *>()) {
         table->setEditTriggers(QAbstractItemView::NoEditTriggers);
         table->setSelectionBehavior(QAbstractItemView::SelectRows);
         table->horizontalHeader()->setStretchLastSection(true);
     }
     auto *data = panelWidget(PanelId::HardwareData)->findChild<QTableWidget *>("tableWidget");
-    data->setColumnCount(4);
-    data->setHorizontalHeaderLabels({tr("编号"), tr("应变"), tr("温度"), tr("自由度")});
+    data->setColumnCount(3);
+    data->setHorizontalHeaderLabels({tr("IFE 输入"), tr("波长源序号"), tr("标定应变")});
     auto *tracking =
         panelWidget(PanelId::TrackingManager)->findChild<QTableWidget *>("tab_pointtable");
     tracking->setColumnCount(7);
@@ -100,7 +102,7 @@ IView *WorkbenchView::panelView(PanelId panel) const {
     return dynamic_cast<IView *>(panelWidget(panel));
 }
 
-QWidget *WorkbenchView::panelWidget(PanelId panel) const {  //
+QWidget *WorkbenchView::panelWidget(PanelId panel) const { //
     return m_panels.value(int(panel), nullptr);
 }
 

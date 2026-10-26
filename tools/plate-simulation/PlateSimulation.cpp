@@ -7,12 +7,8 @@
 #include <cstring>
 namespace fosd {
 namespace simulation {
-constexpr double PlateSpec::lengthMm;
-constexpr double PlateSpec::widthMm;
-constexpr double PlateSpec::thicknessMm;
-constexpr int PlateSpec::sensors;
 double sensorEta(int index) {
-    return -0.9 + 1.8 * index / (PlateSpec::sensors - 1);
+    return Calculation::plateSensorEta(index);
 }
 
 double referenceWavelength(int index) {
@@ -40,6 +36,7 @@ Calculation::Strain sensorStrains(const PlateModes &modes) {
 
 Calculation::CalculationConfiguration defaultCalibration() {
     Calculation::CalculationConfiguration config;
+    config.algorithm = Calculation::CalculationAlgorithm::Plate;
     // Existing pipeline: strain = factor * (lambda-lambda0) / A + B.
     config.strainCalibration.calibrationFactor = 1250.0; // microstrain/nm
     config.strainCalibration.A = 1.0;

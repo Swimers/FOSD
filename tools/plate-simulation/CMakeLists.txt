@@ -1,5 +1,5 @@
 add_library(fosd_plate_simulation STATIC
-    PlateSimulation.h PlateSimulation.cpp PlateIFE.h PlateIFE.cpp
+    PlateSimulation.h PlateSimulation.cpp PlateIFE.h
     PlateUdpSender.h PlateUdpSender.cpp)
 target_include_directories(fosd_plate_simulation PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_compile_definitions(fosd_plate_simulation PRIVATE

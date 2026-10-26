@@ -10,6 +10,7 @@ public:
                         QObject *parent = nullptr);
 
 protected:
+    bool prepareRequest(UiRequest &request) override;
     bool localAction(const UiRequest &request) override;
 };
 } // namespace classic

@@ -7,7 +7,8 @@ VisualizationBackend::VisualizationBackend(QObject *parent)
 }
 
 void VisualizationBackend::handleRequest(const UiRequest &request) {
-    reportUnavailable(request);
+    if (!dispatch(request))
+        reportUnavailable(request);
 }
 } // namespace classic
 } // namespace ui

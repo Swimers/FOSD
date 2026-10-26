@@ -20,8 +20,7 @@ bool ModelPresenter::localAction(const UiRequest &request) {
 }
 
 bool ModelPresenter::prepareRequest(UiRequest &request) {
-    if (!m_host || !((request.action == "pbtn_ModelLoad" || request.action == "pbtn_ModelMerge" ||
-                      request.action == "pbtn_ModelExport")))
+    if (!m_host || request.action != "pbtn_ModelLoad")
         return true;
     const bool save = request.action == "pbtn_ModelExport";
     const QString path =

@@ -6,7 +6,8 @@ MainWindowBackend::MainWindowBackend(QObject *parent) : FeatureBackend({PanelId:
 }
 
 void MainWindowBackend::handleRequest(const UiRequest &request) {
-    reportUnavailable(request);
+    if (!dispatch(request))
+        reportUnavailable(request);
 }
 } // namespace classic
 } // namespace ui

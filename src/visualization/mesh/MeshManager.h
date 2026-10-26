@@ -15,6 +15,7 @@ public:
     void clear();
 
     core::ModelDataPtr originalModel() const;
+    qint64 polygonCount() const;
     const vtkPolyData *originalMesh() const; // Borrowed, immutable original mesh.
 private:
     vtkSmartPointer<vtkPolyData> m_originalMesh;

@@ -1,16 +1,12 @@
 #pragma once
 #include "calculation/CalculationControl.h"
+#include "calculation/PlateIFE.h"
 #include <QByteArray>
 #include <QString>
 #include <array>
 namespace fosd {
 namespace simulation {
-struct PlateSpec {
-    static constexpr double lengthMm = 1000.0;
-    static constexpr double widthMm = 400.0;
-    static constexpr double thicknessMm = 4.0;
-    static constexpr int sensors = 12;
-};
+using PlateSpec = Calculation::PlateSpec;
 struct PlateMotion {
     double amplitudeMm = 15.0;
     double frequencyHz = 0.35;

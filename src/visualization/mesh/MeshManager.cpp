@@ -45,6 +45,10 @@ core::ModelDataPtr MeshManager::originalModel() const {
     return m_originalModel;
 }
 
+qint64 MeshManager::polygonCount() const {
+    return m_originalMesh ? qint64(m_originalMesh->GetNumberOfPolys()) : 0;
+}
+
 const vtkPolyData *MeshManager::originalMesh() const {
     return m_originalMesh;
 }

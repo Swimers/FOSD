@@ -1,4 +1,5 @@
 #include "WorkbenchBackend.h"
+#include "../common/FeatureBackend.h"
 #include "account/backends/AccountBackend.h"
 #include "connection/backends/ConnectionBackend.h"
 #include "mainwindow/backends/MainWindowBackend.h"
@@ -28,12 +29,21 @@ void WorkbenchBackend::setBackend(FeatureId feature, IBackend *backend) {
     if (previous == backend)
         return;
     m_backends[int(feature)] = backend;
+    if (auto *featureBackend = qobject_cast<FeatureBackend *>(backend))
+        featureBackend->setServices(m_services);
     if (previous && !m_backends.values().contains(QPointer<IBackend>(previous)))
         disconnect(previous, &QObject::destroyed, this, &WorkbenchBackend::adapterDestroyed);
     if (backend)
         connect(backend, &QObject::destroyed, this, &WorkbenchBackend::adapterDestroyed,
                 Qt::UniqueConnection);
     emit backendChanged(feature);
+}
+
+void WorkbenchBackend::setServices(WorkbenchServices *services) {
+    m_services = services;
+    for (auto backend : m_backends)
+        if (auto *feature = qobject_cast<FeatureBackend *>(backend.data()))
+            feature->setServices(services);
 }
 
 void WorkbenchBackend::adapterDestroyed() {

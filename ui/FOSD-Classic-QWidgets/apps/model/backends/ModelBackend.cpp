@@ -9,7 +9,8 @@ ModelBackend::ModelBackend(QObject *parent)
 }
 
 void ModelBackend::handleRequest(const UiRequest &request) {
-    reportUnavailable(request);
+    if (!dispatch(request))
+        reportUnavailable(request);
 }
 } // namespace classic
 } // namespace ui

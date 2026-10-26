@@ -6,9 +6,10 @@ namespace fosd {
 namespace ui {
 namespace classic {
 AccountView::AccountView(QWidget *parent) : QWidget(parent), m_ui(new Ui::UserManage) {
-    initializeFosdUiResources();
-    m_ui->setupUi(this);
-    m_binding = new FormBinding(PanelId::Account, this, this);
+    initializeFosdUiResources();    // 注册图片、图标、QSS资源
+    m_ui->setupUi(this);    // 创建控件
+    
+    m_binding = new FormBinding(PanelId::Account, this, this);  // 绑定控件
     connect(m_binding, &ViewEvents::actionTriggered, this, &AccountView::relayControl);
 }
 

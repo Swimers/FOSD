@@ -7,7 +7,8 @@ ConnectionBackend::ConnectionBackend(QObject *parent)
 }
 
 void ConnectionBackend::handleRequest(const UiRequest &request) {
-    reportUnavailable(request);
+    if (!dispatch(request))
+        reportUnavailable(request);
 }
 } // namespace classic
 } // namespace ui

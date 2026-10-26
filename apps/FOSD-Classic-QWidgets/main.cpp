@@ -1,15 +1,15 @@
-#include "FOSD-Classic-QWidgets/apps/WorkbenchPresenter.h"
-#include "FOSD-Classic-QWidgets/apps/WorkbenchView.h"
+#include "ClassicWorkbench.h"
 #include <QApplication>
+#include <QSurfaceFormat>
+#include <QVTKOpenGLNativeWidget.h>
+#include <vtkAutoInit.h>
+VTK_MODULE_INIT(vtkRenderingOpenGL2);
+VTK_MODULE_INIT(vtkRenderingFreeType);
+VTK_MODULE_INIT(vtkInteractionStyle);
 int main(int argc, char *argv[]) {
+    QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat());
     QApplication app(argc, argv);
-
-    fosd::ui::classic::WorkbenchView view;
-    fosd::ui::classic::WorkbenchBackend backends;
-    fosd::ui::classic::WorkbenchPresenter presenter(&view);
-
-    presenter.setBackends(&backends);
-
+    ClassicWorkbench view;
     view.show();
     return app.exec();
 }

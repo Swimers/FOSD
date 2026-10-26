@@ -3,6 +3,11 @@
 
 namespace fosd {
 namespace core {
+void CalculationRepository::clear() {
+    QWriteLocker lock(&m_lock);
+    m_latest.reset();
+}
+
 CalculationResultPtr CalculationRepository::latest() const {
     QReadLocker lock(&m_lock);
     return m_latest;

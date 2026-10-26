@@ -7,7 +7,8 @@ PlotBackend::PlotBackend(QObject *parent)
 }
 
 void PlotBackend::handleRequest(const UiRequest &request) {
-    reportUnavailable(request);
+    if (!dispatch(request))
+        reportUnavailable(request);
 }
 } // namespace classic
 } // namespace ui

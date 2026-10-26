@@ -247,6 +247,8 @@
    <addaction name="actionInforDock"/>
    <addaction name="actionViewDock"/>
    <addaction name="separator"/>
+   <addaction name="actionPlateValidation"/>
+   <addaction name="actionHYY"/>
    <addaction name="actionStart"/>
    <addaction name="actionPause"/>
    <addaction name="actionStop"/>
@@ -283,6 +285,8 @@
     <string>ViewDock</string>
    </property>
   </action>
+  <action name="actionPlateValidation"><property name="text"><string>板模型 / Plate IFE</string></property></action>
+  <action name="actionHYY"><property name="text"><string>切换 HYY IFE</string></property></action>
   <action name="actionStart">
    <property name="icon">
     <iconset resource="../../resources/legacy_ui.qrc">

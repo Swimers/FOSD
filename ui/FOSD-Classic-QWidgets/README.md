@@ -60,11 +60,11 @@ Designer 控件 → FormBinding / ViewEvents → 当前表单的功能 Presenter
 
 每个表单拥有独立 Presenter 实例和待处理请求集合；同一功能的多个表单复用对应 Presenter 类。主 WorkbenchPresenter 只装配和绑定；导航、模型文件选择、账户输入清理等 UI 行为分别位于所属功能 Presenter。Presenter 不包含生成的 ui_*.h、QWidget 或业务 Control。
 
-Backend 也按上述七个功能划分。FeatureBackend 检查请求 panel 是否属于其功能；WorkbenchBackend 只管理功能到 Backend 的注册关系。当前各功能 Backend 均为扩展入口，收到业务请求会明确返回“业务适配尚未实现”，不执行旧版业务或伪造成功状态。
+Backend 按上述七个功能划分。FeatureBackend 检查 panel 范围，向注入的 WorkbenchServices 提交请求并转发展示数据；没有服务或服务未处理的请求统一由 reportUnavailable() 返回“业务适配尚未实现”。Classic 版本通过应用层 WorkbenchRuntime 复用现有 Control；界面库也可单独使用。具体范围见 [Classic 业务闭环对接](../../doc/Architectural/formal-workbench-integration.md)。
 
 ## 应用层接入
 
-独立入口 `apps/FOSD-Classic-QWidgets/main.cpp` 组合 View、功能 Backend 注册表和 Presenter；主程序 `apps/FOSD-Win` 复用同一界面。未来在应用适配层继承对应功能 Backend 并重写 `handleRequest()`，或实现 IBackend，再注入指定功能：
+独立入口 `apps/FOSD-Classic-QWidgets/main.cpp` 创建 ClassicWorkbench，由它组合 View、功能 Backend 注册表、Presenter 和 WorkbenchRuntime，并调用 `backends.setServices(runtime)`。本轮业务接入仅属于 Classic 版本，FOSD-Win 保持原入口。也可继承对应功能 Backend 或实现 IBackend，替换指定功能：
 
 ```cpp
 using namespace fosd::ui::classic;
@@ -73,7 +73,7 @@ WorkbenchBackend backends;
 WorkbenchPresenter presenter(&view);
 presenter.setBackends(&backends);
 backends.setBackend(FeatureId::Connection, connectionAdapter);
-// 主程序也提供 window.setUiBackend(FeatureId::Connection, connectionAdapter)。
+// ClassicWorkbench 也提供 window.setUiBackend(FeatureId::Connection, connectionAdapter)。
 ```
 
 注册表拥有其默认创建的占位 Backend；外部注入适配器的生命周期由应用层管理。注册表、View、Presenter 在 GUI 线程使用；适配器可运行在其他具有事件循环的线程，通过 queued 连接收发 UiRequest / UiResponse。适配器的 supports(panel) 必须覆盖其功能的表单。
@@ -86,7 +86,7 @@ backends.setBackend(FeatureId::Connection, connectionAdapter);
 
 ## 三维宿主
 
-经典界面的三维控件仍使用 RenderHostWidget 保留原 `vtk_openGL` 对象名。后续应用层可通过 `view.renderHost()->setSurface(qvtkWidget)` 挂载实际 QVTK 控件。宿主不创建 VisualizationControl，也不自行持有后台结果。真正 QVTK 到全部后端的集成示例见 [VTK 验证前端](../Test-VtkOpenGLNativeWidgets/README.md)。
+经典界面使用 RenderHostWidget 保留 `vtk_openGL` 对象名。Classic 应用通过自己的 `WorkbenchRenderSurface.ui` 创建 QVTKOpenGLNativeWidget，挂入宿主，再把同一 vtkGenericOpenGLRenderWindow 交给 VisualizationControl；界面库中的宿主不持有业务结果。完整流程见 Classic 业务闭环文档；独立验证示例见 [VTK 验证前端](../Test-VtkOpenGLNativeWidgets/README.md)。
 
 ## 构建和验证
 
@@ -99,6 +99,6 @@ $env:PATH = 'D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
 & ./build/fosd-widgets/bin/Debug/FOSD-Classic-QWidgets.exe
 ```
 
-沿用现有 `fosd-widgets` 预设名和工作台构建选项；应用目标更新为 `FOSD-Classic-QWidgets`，库目标使用 `fosd_classic_*` 前缀。测试目标为 `test_classic_widgets`。Qt Core 合约、功能 Backend、功能 Presenter、Widgets 与控件分别构建，预览程序不依赖业务模块。
+沿用 `fosd-widgets` 预设名，应用目标为 `FOSD-Classic-QWidgets`，库目标使用 `fosd_classic_*` 前缀。Qt Core 合约、功能 Backend、功能 Presenter、Widgets 与控件分别构建；应用层的 `fosd_classic_runtime` 组合全部后端。预设默认开启后端、可视化和 Classic 全链路测试，不构建 FOSD-Win。
 
 测试覆盖全部 19 个 IView、资源引用、控件级 signals、独立表单使用、页面和 Dock、表单输入隔离、敏感信息清理、成功/失败及重复响应、功能 Backend 范围、跨线程请求、替换后旧响应、显示字段和渲染宿主生命周期。

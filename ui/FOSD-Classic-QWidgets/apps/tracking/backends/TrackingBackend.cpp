@@ -8,7 +8,8 @@ TrackingBackend::TrackingBackend(QObject *parent)
 }
 
 void TrackingBackend::handleRequest(const UiRequest &request) {
-    reportUnavailable(request);
+    if (!dispatch(request))
+        reportUnavailable(request);
 }
 } // namespace classic
 } // namespace ui

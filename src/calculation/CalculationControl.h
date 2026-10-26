@@ -10,7 +10,9 @@
 
 namespace fosd {
 namespace Calculation {
+enum class CalculationAlgorithm { HYY, Plate };
 struct CalculationConfiguration {
+    CalculationAlgorithm algorithm = CalculationAlgorithm::HYY;
     CalibrationStrainData strainCalibration;   // 校准应变数据
     CalibrationChannelData channelCalibration; // 校准通道数据
 };
@@ -32,6 +34,7 @@ public slots:
     void shutdown();
     void configure(const fosd::Calculation::CalculationConfiguration &configuration);
     void setModel(const fosd::core::ModelData &model);
+    void clearModel();
     void processFrame(const fosd::core::FrameSnapshotPtr &snapshot);
 private slots:
     void pollLatest();
@@ -69,6 +72,7 @@ public:
     ~CalculationControl() override;
     void setConfiguration(const CalculationConfiguration &configuration);
     void setModel(const core::ModelData &model);
+    void clearModel();
     // Replay/manual input when constructed without a repository. Complete,
     // immutable snapshots only; do not combine replay with automatic polling.
     void submitFrame(const core::FrameSnapshotPtr &snapshot);
@@ -85,11 +89,13 @@ public slots:
     void setRawPointMap(const fosd::core::PointMap &rawPointMap);
 signals:
     void resultReady(const fosd::core::CalculationResultPtr &result);
+    void calibratedReady(const fosd::core::CalibratedDataPtr &data);
     void errorOccurred(const fosd::Calculation::CalculationError &error);
     void modelAccepted(quint64 revision);
     void configurationAccepted(quint64 revision);
     void requestConfigure(const fosd::Calculation::CalculationConfiguration &configuration);
     void requestSetModel(const fosd::core::ModelData &model);
+    void requestClearModel();
     void requestFrame(const fosd::core::FrameSnapshotPtr &snapshot);
 
 private:

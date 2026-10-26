@@ -39,6 +39,7 @@ public:
     bool loadModel(const QString &path);
     void unloadModel();
     core::ModelDataPtr originalModel() const;
+    qint64 modelPolygonCount() const;
 
     void setResultRepository(core::CalculationRepositoryPtr repository);
     void applyResult(const core::CalculationResultPtr &result);

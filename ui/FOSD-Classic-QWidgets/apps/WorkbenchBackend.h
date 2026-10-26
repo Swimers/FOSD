@@ -2,6 +2,7 @@
 #include "../common/IBackend.h"
 #include <QMap>
 #include <QPointer>
+#include "../common/WorkbenchServices.h"
 namespace fosd {
 namespace ui {
 namespace classic {
@@ -13,6 +14,7 @@ public:
     explicit WorkbenchBackend(QObject *parent = nullptr);
     IBackend *backend(FeatureId feature) const;
     void setBackend(FeatureId feature, IBackend *backend);
+    void setServices(WorkbenchServices *services);
 signals:
     void backendChanged(fosd::ui::classic::FeatureId feature);
 private slots:
@@ -20,6 +22,7 @@ private slots:
 
 private:
     QMap<int, QPointer<IBackend>> m_backends;
+    QPointer<WorkbenchServices> m_services;
 };
 } // namespace classic
 } // namespace ui

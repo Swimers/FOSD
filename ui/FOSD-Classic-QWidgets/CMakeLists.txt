@@ -2,6 +2,7 @@ find_package(Qt5 5.12 REQUIRED COMPONENTS Widgets PrintSupport)
 
 add_library(fosd_classic_contracts STATIC
     common/UiTypes.h common/UiTypes.cpp common/IView.h common/ViewEvents.h common/IBackend.h
+    common/WorkbenchServices.h
 )
 target_include_directories(fosd_classic_contracts PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_link_libraries(fosd_classic_contracts PUBLIC Qt5::Core)

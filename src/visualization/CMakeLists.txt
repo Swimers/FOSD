@@ -59,3 +59,18 @@ endforeach()
 target_link_libraries(fosd_visualization PUBLIC fosd_core Qt5::Core Qt5::Widgets fosd_visualization_vtk)
 
 target_compile_features(fosd_visualization PUBLIC cxx_std_11)
+
+if(FOSD_BUILD_WORKBENCH_APP OR FOSD_BUILD_VTK_NATIVE_TEST_APP)
+    find_package(Qt5 5.12 REQUIRED COMPONENTS OpenGL)
+    add_library(fosd_visualization_qt INTERFACE)
+    find_library(FOSD_vtkGUISupportQt_LIBRARY_RELEASE NAMES vtkGUISupportQt-8.2
+        PATHS "${FOSD_VISUALIZATION_VTK_ROOT}/lib" NO_DEFAULT_PATH)
+    find_library(FOSD_vtkGUISupportQt_LIBRARY_DEBUG NAMES vtkGUISupportQt-8.2d vtkGUISupportQt-8.2D
+        PATHS "${FOSD_VISUALIZATION_VTK_ROOT}/lib" NO_DEFAULT_PATH)
+    select_library_configurations(FOSD_vtkGUISupportQt)
+    if(NOT FOSD_vtkGUISupportQt_LIBRARY_RELEASE OR NOT FOSD_vtkGUISupportQt_LIBRARY_DEBUG)
+        message(FATAL_ERROR "QVTKOpenGLNativeWidget requires matching Debug/Release vtkGUISupportQt libraries")
+    endif()
+    target_link_libraries(fosd_visualization_qt INTERFACE fosd_visualization_vtk
+        Qt5::Widgets Qt5::OpenGL ${FOSD_vtkGUISupportQt_LIBRARY})
+endif()

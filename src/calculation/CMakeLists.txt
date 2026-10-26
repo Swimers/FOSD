@@ -6,6 +6,7 @@ add_library(fosd_calculation STATIC
     StrainCalibration.h
     HYYIFE.cpp
     HYYIFE.h
+    PlateIFE.h PlateIFE.cpp
 )
 
 # Consumers include these headers as "calculation/CalculationControl.h", so the

@@ -2,6 +2,8 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [Classic 版本业务闭环对接](Architectural/formal-workbench-integration.md) | Classic 独立入口、MVP 业务注入、完整数据流、已接控件/不可用功能、Plate IFE 及界面验证 |
+| [迁移完成度核查与后续计划](Architectural/migration-audit-and-plan.md) | 正式入口缺口、模型管理、独立追踪点、配置与会话、观察面板及分阶段验收 |
 | [场景环境与相机](Architectural/scene-environment-integration.md) | 坐标轴、三平面网格、背景与纹理世界、相机视图/投影及验证 |
 | [关键点与选点交互](Architectural/keypoint-picking-integration.md) | 球体/Label 统一创建、批量标记、左键选点、鼠标交互、变形随动与 Control 接口 |
 | [板模型与 UDP 仿真](../tools/plate-simulation/README.md) | 板 STL、默认标定、示例 IFE、固定频率发送器、一键显示及数值/渲染验证 |

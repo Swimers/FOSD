@@ -1,14 +1,22 @@
 #include "PlateIFE.h"
 #include <cmath>
 namespace fosd {
-namespace simulation {
+namespace Calculation {
+constexpr double PlateSpec::lengthMm;
+constexpr double PlateSpec::widthMm;
+constexpr double PlateSpec::thicknessMm;
+constexpr int PlateSpec::sensors;
+double plateSensorEta(int index) {
+    return -0.9 + 1.8 * index / (PlateSpec::sensors - 1);
+}
+
 PlateIFE::PlateIFE() {
     // Solve the fixed 3x3 normal matrix once; no matrix operations per point.
     double basis[PlateSpec::sensors][3];
     double augmented[3][6] = {};
     const double k = -PlateSpec::thicknessMm * 1e6 / (PlateSpec::lengthMm * PlateSpec::lengthMm);
     for (int i = 0; i < PlateSpec::sensors; ++i) {
-        const double eta = sensorEta(i);
+        const double eta = plateSensorEta(i);
         basis[i][0] = k;
         basis[i][1] = k * eta;
         basis[i][2] = k * eta * eta;
@@ -66,5 +74,5 @@ Calculation::Displacement PlateIFE::calculateDisplacement(const Calculation::Poi
 std::unique_ptr<Calculation::IFrameIFE> createPlateIFE() {
     return std::unique_ptr<Calculation::IFrameIFE>(new PlateIFE);
 }
-} // namespace simulation
+} // namespace Calculation
 } // namespace fosd

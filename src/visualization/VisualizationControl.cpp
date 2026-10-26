@@ -139,7 +139,13 @@ core::ModelDataPtr VisualizationControl::originalModel() const {
     return m_mesh->originalModel();
 }
 
+qint64 VisualizationControl::modelPolygonCount() const {
+    return m_mesh->polygonCount();
+}
+
 void VisualizationControl::setResultRepository(core::CalculationRepositoryPtr repository) {
+    if (m_repository == repository)
+        return;
     m_repository = std::move(repository);
     if (m_repository)
         m_refreshTimer->start();
@@ -206,6 +212,7 @@ void VisualizationControl::setDeformationScale(double scale) {
 }
 
 void VisualizationControl::resetDeformation() {
+    m_lastResultRevision = 0;
     m_deformation->resetDeformation();
     m_picker->setResult({});
     m_keyPoints->updatePositions();

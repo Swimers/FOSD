@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QPlainTextEdit>
+#include <QTextEdit>
 #include <QSignalBlocker>
 #include <QSpinBox>
 #include <QStandardItemModel>
@@ -40,6 +41,9 @@ FormBinding::FormBinding(PanelId panel, QWidget *widget, QObject *parent)
     for (auto *combo : widget->findChildren<QComboBox *>())
         if (named(combo))
             connect(combo, QOverload<int>::of(&QComboBox::activated), this, &FormBinding::relay);
+    for (auto *edit : widget->findChildren<QLineEdit *>())
+        if (edit->objectName().startsWith("le_MapRange") && !edit->isReadOnly())
+            connect(edit, &QLineEdit::editingFinished, this, &FormBinding::relay);
     for (auto *spin : widget->findChildren<QAbstractSpinBox *>())
         if (named(spin))
             connect(spin, &QAbstractSpinBox::editingFinished, this, &FormBinding::relay);
@@ -91,6 +95,9 @@ QVariantMap FormBinding::values() const {
     for (auto *edit : m_widget->findChildren<QPlainTextEdit *>())
         if (owns(edit) && named(edit) && !edit->isReadOnly())
             fields[edit->objectName()] = edit->toPlainText();
+    for (auto *edit : m_widget->findChildren<QTextEdit *>())
+        if (owns(edit) && named(edit) && !edit->isReadOnly())
+            fields[edit->objectName()] = edit->toPlainText();
     for (auto *combo : m_widget->findChildren<QComboBox *>()) {
         if (!owns(combo) || !named(combo))
             continue;
@@ -129,18 +136,32 @@ void FormBinding::applyFields(const QVariantMap &fields) {
     if (!m_widget)
         return;
     for (auto it = fields.constBegin(); it != fields.constEnd(); ++it) {
+        if (it.key() == "_status") {
+            showStatus(it.value().toString());
+            continue;
+        }
+        const bool enabledProperty = it.key().endsWith(".enabled");
+        const QString objectName = enabledProperty ? it.key().left(it.key().size() - 8) : it.key();
         QObject *object = nullptr;
-        for (auto *candidate : m_widget->findChildren<QObject *>(it.key()))
+        for (auto *candidate : m_widget->findChildren<QObject *>(objectName))
             if (owns(candidate)) {
                 object = candidate;
                 break;
             }
         if (!object)
             continue;
+        if (enabledProperty) {
+            if (auto *widget = qobject_cast<QWidget *>(object))
+                widget->setEnabled(it.value().toBool());
+            else if (auto *action = qobject_cast<QAction *>(object))
+                action->setEnabled(it.value().toBool());
+            continue;
+        }
         QSignalBlocker block(object);
         const auto value = it.value();
         if (auto *combo = qobject_cast<QComboBox *>(object)) {
             const auto data = value.toMap();
+            const auto previous = combo->currentText();
             if (data.contains("items")) {
                 combo->clear();
                 combo->addItems(data["items"].toStringList());
@@ -149,11 +170,18 @@ void FormBinding::applyFields(const QVariantMap &fields) {
                 combo->setCurrentIndex(data["index"].toInt());
             else if (data.contains("text"))
                 combo->setCurrentText(data["text"].toString());
+            else if (combo->findText(previous) >= 0)
+                combo->setCurrentText(previous);
         } else if (auto *edit = qobject_cast<QLineEdit *>(object))
             edit->setText(value.toString());
         else if (auto *edit = qobject_cast<QPlainTextEdit *>(object))
             edit->setPlainText(value.toString());
-        else if (auto *label = qobject_cast<QLabel *>(object))
+        else if (auto *edit = qobject_cast<QTextEdit *>(object))
+            edit->setPlainText(value.toString());
+        else if (auto *action = qobject_cast<QAction *>(object)) {
+            if (action->isCheckable())
+                action->setChecked(value.toBool());
+        } else if (auto *label = qobject_cast<QLabel *>(object))
             label->setText(value.toString());
         else if (auto *button = qobject_cast<QAbstractButton *>(object)) {
             if (value.type() == QVariant::Bool && button->isCheckable())

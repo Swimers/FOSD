@@ -1,5 +1,6 @@
 #include "CalculationControl.h"
 #include "HYYIFE.h"
+#include "PlateIFE.h"
 #include <QTimer>
 #include <cmath>
 #include <utility>
@@ -62,7 +63,8 @@ void CalculationWorker::configure(const CalculationConfiguration &configuration)
         reportError(QStringLiteral("configuration"), validation.lastError());
         return;
     }
-    auto algorithm = m_factory();
+    auto algorithm =
+        configuration.algorithm == CalculationAlgorithm::Plate ? createPlateIFE() : m_factory();
     if (!algorithm) {
         reportError(QStringLiteral("configuration"),
                     QStringLiteral("IFE factory returned no algorithm"));
@@ -92,6 +94,12 @@ void CalculationWorker::pollLatest() {
     const auto snapshot = m_input->latest();
     if (snapshot && snapshot != m_seenFrame)
         processFrame(snapshot);
+}
+
+void CalculationWorker::clearModel() {
+    m_model.reset();
+    m_output->clear();
+    m_seenFrame.reset();
 }
 
 void CalculationWorker::processFrame(const core::FrameSnapshotPtr &snapshot) {
@@ -210,11 +218,15 @@ CalculationControl::CalculationControl(core::FrameRepositoryPtr input, QObject *
             &detail::CalculationWorker::configure, Qt::QueuedConnection);
     connect(this, &CalculationControl::requestSetModel, m_worker,
             &detail::CalculationWorker::setModel, Qt::QueuedConnection);
+    connect(this, &CalculationControl::requestClearModel, m_worker,
+            &detail::CalculationWorker::clearModel, Qt::QueuedConnection);
     connect(this, &CalculationControl::requestFrame, m_worker,
             &detail::CalculationWorker::processFrame, Qt::QueuedConnection);
 
     connect(m_worker, &detail::CalculationWorker::resultReady, this,
             &CalculationControl::resultReady);
+    connect(m_worker, &detail::CalculationWorker::calibratedReady, this,
+            &CalculationControl::calibratedReady);
 
     // Both receivers live on this same thread; no UI-thread relay or extra queue.
     connect(m_worker, &detail::CalculationWorker::calibratedReady, m_storage->m_worker.data(),
@@ -251,6 +263,10 @@ void CalculationControl::setModel(const core::ModelData &model) {
 
 void CalculationControl::setRawPointMap(const core::PointMap &rawPointMap) {
     setModel(rawPointMap);
+}
+
+void CalculationControl::clearModel() {
+    emit requestClearModel();
 }
 
 void CalculationControl::submitFrame(const core::FrameSnapshotPtr &snapshot) {

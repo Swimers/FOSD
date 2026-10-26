@@ -17,6 +17,7 @@ public:
 private:
     friend class fosd::Calculation::detail::CalculationWorker;
     CalculationResultPtr publish(CalculationResult result);
+    void clear();
     mutable QReadWriteLock m_lock;
     CalculationResultPtr m_latest;
     quint64 m_revision = 0;

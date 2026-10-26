@@ -1,6 +1,6 @@
 # 板模型 / IFE / UDP 仿真
 
-该工具集只由 `vtk-native-widgets` 验证项目构建。包含可直接导入的 STL、与其几何一致的示例逆向应变重构算法、固定频率 UDP 波长发送器和测试。HYY 生产算法不改动。
+该工具集由 `vtk-native-widgets` 验证项目及 `fosd-widgets` Classic 完整业务版本构建，不由 FOSD-Win 配置启用。Plate IFE 实现已迁入 `src/calculation/PlateIFE.h/.cpp`，工具只保留兼容引用、运动/波长生成、发送器和测试；HYY 算法不改动。Classic 窗口使用方式见 [业务闭环对接](../../doc/Architectural/formal-workbench-integration.md)。
 
 ## 一键运行
 
@@ -39,7 +39,7 @@ $env:PATH = 'D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
 | `models/plate.stl` | 二进制封闭板，1000×400×4 mm；40×16 表面网格；VTK 合并后 1394 点、2784 三角面 |
 | `models/sensors.csv` | 12 个纵向表面传感器的编号、坐标、方向和参考波长 |
 | `generate_plate.py` | Python 3 标准库生成器；重新生成同一几何及传感器表 |
-| `PlateIFE.h/.cpp` | 实现 IFrameIFE：应变拟合三个模态及逐点插值 |
+| `PlateIFE.h` | 兼容引用 calculation/PlateIFE.h；算法在 calculation 模块实现 |
 | `PlateSimulation.h/.cpp` | 几何、标定默认值、运动与采样数据、MP 波长编码 |
 | `PlateUdpSender.h/.cpp` | 窗口内置与独立程序共用的定频发送实现 |
 | `sender_main.cpp` | 独立发送器命令行入口 |

@@ -195,7 +195,7 @@
    <item row="9" column="0" colspan="2">
     <widget class="QPushButton" name="pbtn_Normalize">
      <property name="text">
-      <string>归一化:开</string>
+      <string>归一化</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -259,6 +259,34 @@
     </widget>
    </item>
    <item row="13" column="0">
+    <widget class="QLabel" name="label_ValueMode"><property name="text"><string>数值模式</string></property></widget>
+   </item>
+   <item row="13" column="1">
+    <widget class="QComboBox" name="cbox_ScalarValue">
+     <item><property name="text"><string>保留符号</string></property></item>
+     <item><property name="text"><string>绝对值</string></property></item>
+    </widget>
+   </item>
+   <item row="14" column="0">
+    <widget class="QLabel" name="label_RangeMode"><property name="text"><string>色标范围</string></property></widget>
+   </item>
+   <item row="14" column="1">
+    <widget class="QComboBox" name="cbox_RangeMode">
+     <item><property name="text"><string>自动</string></property></item>
+     <item><property name="text"><string>手动</string></property></item>
+    </widget>
+   </item>
+   <item row="15" column="0">
+    <widget class="QLabel" name="label_DeformationScale"><property name="text"><string>变形倍率</string></property></widget>
+   </item>
+   <item row="15" column="1">
+    <widget class="QDoubleSpinBox" name="spin_DeformationScale">
+     <property name="minimum"><double>0.000000000000000</double></property>
+     <property name="maximum"><double>1000000.000000000000000</double></property>
+     <property name="value"><double>1.000000000000000</double></property>
+    </widget>
+   </item>
+   <item row="16" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
