@@ -4,9 +4,9 @@
 
 | 阶段 | 组件职责与 Control 接口 | 状态 |
 | --- | --- | --- |
-| 1. 位移/通用标量颜色映射 | ScalarColorMapper：数值选择、变换、色表；VisualizationControl：配置、结果和模型版本组织 | 本次实现 |
-| 2. 点击选点交互 | PointPicker / ModelInteractorStyle：命中模型、原始点 ID、显示坐标；沿用 pointPicked / clearSelection | 后续迁移 |
-| 3. 关键点配置渲染 | KeyPointManager：按模型点 ID 挂载标记和标签，跟随变形；沿用 setKeyPoints / showKeyPoints | 后续迁移 |
+| 1. 位移/通用标量颜色映射 | ScalarColorMapper：数值选择、变换、色表；VisualizationControl：配置、结果和模型版本组织 | 已实现 |
+| 2. 点击选点交互 | PointPicker / ModelInteractorStyle：模型专用拾取、原始/显示坐标与实际位移、鼠标门控及相机锁 | 已实现 |
+| 3. 关键点配置渲染 | KeyPointCreator / KeyPointManager：统一球体和 Label 创建、样式、批量显隐及变形随动 | 已实现 |
 | 4. 背景和场景环境 | SceneEnvironment：背景、网格、坐标轴与相机；沿用 showGrid / showAxes 等接口 | 后续迁移 |
 | 5. 模型外观 | 统一模型颜色、边线、透明度及材质设置；新增独立外观配置结构和 Control 设置入口 | 后续迁移 |
 
@@ -94,3 +94,5 @@ ctest --preset vtk-native-widgets-release
 `test_visualization` 检查四种位移值、带符号/绝对值、归一化/物理值、自动/手动范围、色表方向、常量/零场、超大数值、非法输入、自定义场、Control 即时切换、倍率独立性和模型生命周期。OpenGL 冒烟检查在真实 UDP 到解算结果的链路上额外验证四分量颜色数组、物理范围和复位清理。
 
 Debug 可编译同一测试，但运行须提供 Debug VTK DLL，不能使用 Release DLL。完成专项验证后，可用 `cmake --preset vtk-native-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=OFF` 还原默认测试集合。
+
+关键点和鼠标交互接口详见 [关键点与选点对接](keypoint-picking-integration.md)。

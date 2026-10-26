@@ -85,7 +85,7 @@ UDP / TCP → 拆包 → MP / JCS 波长解析 → FrameRepository（只读快�
 
 解绑只断开渲染窗口，后台继续接收、计算和存储；重新绑定后显示最新结果。关闭应用先停止通信/协议，再由 CalculationControl 排空任务并关闭存储，最后销毁可视化对象与前端窗口。
 
-模型加载及变形显示由生产模块 MeshManager / DeformationRenderer / VisualizationControl 实现，保持原始拓扑，每次从原始坐标加位移，避免累计变形。颜色配置支持 X/Y/Z/总位移、归一化/物理值、绝对值、自动/手动范围，点击“应用颜色映射”经 Presenter 提交。倍率不影响色值。选点、坐标轴等接口仍待迁移；示例球体用于原生 OpenGL 基础验证。通用应变等点标量入口与专项测试见 [标量映射对接](../../doc/Architectural/visualization-integration.md)。
+模型加载及变形显示由生产模块 MeshManager / DeformationRenderer / VisualizationControl 实现，保持原始拓扑，每次从原始坐标加位移，避免累计变形。颜色配置支持 X/Y/Z/总位移、归一化/物理值、绝对值、自动/手动范围，点击“应用颜色映射”经 Presenter 提交。倍率不影响色值。关键点配置和模型选点已接入，见 [关键点与选点对接](../../doc/Architectural/keypoint-picking-integration.md)；坐标轴、背景等仍待迁移；示例球体用于原生 OpenGL 基础验证。通用应变等点标量入口与专项测试见 [标量映射对接](../../doc/Architectural/visualization-integration.md)。
 
 ## 配置、构建和测试
 

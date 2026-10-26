@@ -7,6 +7,10 @@ public:
     vtkRenderWindow *received = nullptr;
     bool validContext = true, bound = false;
     QString status;
+    QString selection;
+    void showSelection(const QString &message) override {
+        selection = message;
+    }
     QString file;
     QString chooseFile(bool) override {
         return file;
@@ -72,6 +76,22 @@ public:
 class PresenterTests final : public QObject {
     Q_OBJECT
 private slots:
+    void keyPointActionsAndPresentation() {
+        FakeView view;
+        FakeBackend backend;
+        VtkValidationPresenter presenter(&view, &backend);
+        presenter.execute("keyPointsApplyButton", {{"keyPointIds", "0,2"}});
+        QVERIFY(backend.action.isEmpty()); // Rendering commands require a bound window.
+        presenter.attach();
+        presenter.execute("keyPointsApplyButton",
+                          {{"keyPointIds", "0,2"}, {"keyPointRadius", 3.0}});
+        QCOMPARE(backend.action, QStringLiteral("keyPointsApplyButton"));
+        QCOMPARE(backend.parameters["keyPointIds"].toString(), QStringLiteral("0,2"));
+        presenter.showSelection("ID 2 | displacement 1 mm");
+        QCOMPARE(view.selection, QStringLiteral("ID 2 | displacement 1 mm"));
+        presenter.execute("clearSelectionButton", {});
+        QCOMPARE(backend.action, QStringLiteral("clearSelectionButton"));
+    }
     void forwardsIntegrationData() {
         FakeView view;
         FakeBackend backend;

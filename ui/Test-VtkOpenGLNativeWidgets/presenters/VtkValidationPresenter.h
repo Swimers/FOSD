@@ -19,6 +19,7 @@ public slots:
     void render();
     void execute(const QString &action, const QVariantMap &parameters);
     void showStatus(const QString &message);
+    void showSelection(const QString &message);
 
 private:
     bool ready();

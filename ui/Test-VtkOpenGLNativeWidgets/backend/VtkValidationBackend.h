@@ -5,13 +5,15 @@
 #include "protocol/ProtocolControl.h"
 #include "calculation/CalculationControl.h"
 #include <QTimer>
+#include "visualization/VisualizationTypes.h"
 #include "plate-simulation/PlateUdpSender.h"
 class vtkActor;
 class vtkRenderer;
 namespace fosd {
 namespace visualization {
 class VisualizationControl;
-}
+struct PickedPointInfo;
+} // namespace visualization
 
 namespace vtk_test {
 // App-layer validation adapter, not part of the production visualization API.
@@ -39,6 +41,7 @@ public:
     }
 signals:
     void statusChanged(const QString &message);
+    void selectionTextChanged(const QString &message);
 private slots:
     void modelLoaded(const fosd::core::ModelDataPtr &model);
     void modelAccepted(quint64 revision);
@@ -54,6 +57,7 @@ private slots:
     void connectionState(fosd::communication::Channel channel,
                          fosd::communication::ConnectionState state);
     void updateStatistics();
+    void presentSelection(const fosd::visualization::PickedPointInfo &info);
 
 private:
     void createCalculation(bool plate);

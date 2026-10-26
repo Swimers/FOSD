@@ -42,6 +42,18 @@
     <item><widget class="QPushButton" name="scaleButton"><property name="text"><string>应用倍率</string></property></widget></item>
     <item><widget class="QPushButton" name="resetDeformationButton"><property name="text"><string>恢复原始形状</string></property></widget></item>
    </layout></item>
+   <item><layout class="QHBoxLayout" name="keyPointsLayout">
+    <item><widget class="QLineEdit" name="keyPointIds"><property name="placeholderText"><string>关键点 ID，逗号分隔；留空清空配置</string></property></widget></item>
+    <item><widget class="QDoubleSpinBox" name="keyPointRadius"><property name="prefix"><string>半径 mm </string></property><property name="minimum"><double>0.001</double></property><property name="maximum"><double>10000</double></property><property name="value"><double>5</double></property></widget></item>
+    <item><widget class="QCheckBox" name="keyPointsVisible"><property name="text"><string>显示关键点</string></property><property name="checked"><bool>true</bool></property></widget></item>
+    <item><widget class="QCheckBox" name="keyPointLabels"><property name="text"><string>显示标签</string></property><property name="checked"><bool>true</bool></property></widget></item>
+    <item><widget class="QCheckBox" name="pickingEnabled"><property name="text"><string>左键选点</string></property><property name="checked"><bool>true</bool></property></widget></item>
+    <item><widget class="QCheckBox" name="pickOnlyKeyPoints"><property name="text"><string>仅选关键点</string></property></widget></item>
+    <item><widget class="QCheckBox" name="cameraLocked"><property name="text"><string>锁定相机</string></property></widget></item>
+    <item><widget class="QPushButton" name="keyPointsApplyButton"><property name="text"><string>应用关键点/交互</string></property></widget></item>
+    <item><widget class="QPushButton" name="clearSelectionButton"><property name="text"><string>清除选择</string></property></widget></item>
+   </layout></item>
+   <item><widget class="QLabel" name="selectionLabel"><property name="text"><string>未选中模型点</string></property><property name="wordWrap"><bool>true</bool></property><property name="textInteractionFlags"><set>Qt::TextSelectableByMouse</set></property></widget></item>
    <item><layout class="QHBoxLayout" name="scalarLayout">
     <item><widget class="QCheckBox" name="scalarEnabled"><property name="text"><string>位移场着色</string></property></widget></item>
     <item><widget class="QComboBox" name="scalarField"><item><property name="text"><string>X 位移</string></property></item><item><property name="text"><string>Y 位移</string></property></item><item><property name="text"><string>Z 位移</string></property></item><item><property name="text"><string>总位移</string></property></item></widget></item>

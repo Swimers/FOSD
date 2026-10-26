@@ -14,6 +14,10 @@ void VtkValidationPresenter::showStatus(const QString &message) {
     m_view->showStatus(message);
 }
 
+void VtkValidationPresenter::showSelection(const QString &message) {
+    m_view->showSelection(message);
+}
+
 void VtkValidationPresenter::execute(const QString &action, const QVariantMap &parameters) {
     QVariantMap values = parameters;
     if (action == "modelButton" || action == "storageStartButton") {
@@ -26,7 +30,8 @@ void VtkValidationPresenter::execute(const QString &action, const QVariantMap &p
     }
     if ((action == "scaleButton" || action == "resetDeformationButton" ||
          action == "scalarApplyButton" || action == "plateStartButton" ||
-         action == "plateSetupButton" || action == "plateExitButton") &&
+         action == "plateSetupButton" || action == "plateExitButton" ||
+         action == "keyPointsApplyButton" || action == "clearSelectionButton") &&
         !ready())
         return;
     QString error;

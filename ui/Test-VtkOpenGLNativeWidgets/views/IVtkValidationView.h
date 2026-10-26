@@ -6,6 +6,7 @@ namespace vtk_test {
 class IVtkValidationView {
 public:
     virtual ~IVtkValidationView() = default;
+    virtual void showSelection(const QString &message) = 0;
     virtual QString chooseFile(bool) {
         return QString();
     }

@@ -22,7 +22,8 @@ VtkValidationWindow::VtkValidationWindow(QWidget *parent)
          {m_ui->openButton, m_ui->closeButton, m_ui->modelButton, m_ui->baselineButton,
           m_ui->storageStartButton, m_ui->storageStopButton, m_ui->scaleButton,
           m_ui->resetDeformationButton, m_ui->scalarApplyButton, m_ui->plateStartButton,
-          m_ui->plateSetupButton, m_ui->plateStopButton, m_ui->plateExitButton})
+          m_ui->plateSetupButton, m_ui->plateStopButton, m_ui->plateExitButton,
+          m_ui->keyPointsApplyButton, m_ui->clearSelectionButton})
         connect(button, &QPushButton::clicked, this, &VtkValidationWindow::requestAction);
     showBinding(false, nullptr);
 }
@@ -49,15 +50,20 @@ void VtkValidationWindow::showBinding(bool bound, vtkRenderWindow *backendWindow
                                     .arg(quintptr(renderWindow()), 0, 16)
                                     .arg(quintptr(backendWindow), 0, 16)
                                     .arg(bound ? tr("已绑定") : tr("未绑定")));
-    for (auto *button : {m_ui->detachButton, m_ui->demoButton, m_ui->clearButton,
-                         m_ui->resetCameraButton, m_ui->renderButton, m_ui->modelButton,
-                         m_ui->scaleButton, m_ui->resetDeformationButton, m_ui->scalarApplyButton,
-                         m_ui->plateStartButton, m_ui->plateSetupButton, m_ui->plateExitButton})
+    for (auto *button :
+         {m_ui->detachButton, m_ui->demoButton, m_ui->clearButton, m_ui->resetCameraButton,
+          m_ui->renderButton, m_ui->modelButton, m_ui->scaleButton, m_ui->resetDeformationButton,
+          m_ui->scalarApplyButton, m_ui->plateStartButton, m_ui->plateSetupButton,
+          m_ui->plateExitButton, m_ui->keyPointsApplyButton, m_ui->clearSelectionButton})
         button->setEnabled(bound);
 }
 
 void VtkValidationWindow::showStatus(const QString &message) {
     m_ui->statusLabel->setText(message);
+}
+
+void VtkValidationWindow::showSelection(const QString &message) {
+    m_ui->selectionLabel->setText(message);
 }
 
 QString VtkValidationWindow::chooseFile(bool save) {
@@ -97,6 +103,13 @@ void VtkValidationWindow::requestAction() {
     values["B"] = m_ui->calibrationB->value();
     values["format"] = m_ui->storageFormat->currentIndex();
     values["scale"] = m_ui->scale->value();
+    values["keyPointIds"] = m_ui->keyPointIds->text();
+    values["keyPointRadius"] = m_ui->keyPointRadius->value();
+    values["keyPointsVisible"] = m_ui->keyPointsVisible->isChecked();
+    values["keyPointLabels"] = m_ui->keyPointLabels->isChecked();
+    values["pickingEnabled"] = m_ui->pickingEnabled->isChecked();
+    values["pickOnlyKeyPoints"] = m_ui->pickOnlyKeyPoints->isChecked();
+    values["cameraLocked"] = m_ui->cameraLocked->isChecked();
     values["scalarEnabled"] = m_ui->scalarEnabled->isChecked();
     values["scalarField"] = m_ui->scalarField->currentIndex();
     values["scalarMapping"] = m_ui->scalarMapping->currentIndex();

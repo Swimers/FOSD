@@ -22,7 +22,7 @@ class PointPicker;
 class ModelInteractorStyle;
 class SceneEnvironment;
 // GUI-thread facade. Model loading and deformation display are implemented;
-// scene/selection APIs remain reserved for later development.
+// Scene environment APIs remain reserved for later development.
 
 class VisualizationControl final : public QObject {
     Q_OBJECT
@@ -59,8 +59,18 @@ public:
     // For future nodal strain/temperature/etc. Hardware strain arrays must be
     // interpolated to model point IDs before passing through this generic port.
     bool setPointScalarField(const PointScalarField &field);
-    void setKeyPoints(const QVector<KeyPointDefinition> &points);
+    bool setKeyPoints(const QVector<KeyPointDefinition> &points);
+    QVector<KeyPointDefinition> keyPoints() const;
+    bool setKeyPointStyle(const KeyPointStyle &style);
+    bool setSelectionStyle(const KeyPointStyle &style);
+    KeyPointStyle keyPointStyle() const;
+    KeyPointStyle selectionStyle() const;
     void showKeyPoints(bool visible);
+    bool setPickingSettings(const PickingSettings &settings);
+    PickingSettings pickingSettings() const;
+    PickedPointInfo selectPoint(vtkIdType pointId);
+    PickedPointInfo selectedPoint() const;
+    QVector<vtkIdType> nearbyPoints(const std::array<double, 3> &positionMm, double radiusMm) const;
     void clearSelection();
     void showAxes(bool visible);
     void showGrid(bool visible);
@@ -71,11 +81,13 @@ public:
 signals:
     void modelLoaded(const fosd::core::ModelDataPtr &model);
     void pointPicked(const fosd::visualization::PickedPointInfo &info);
+    void selectionUpdated(const fosd::visualization::PickedPointInfo &info);
     void errorOccurred(const QString &message);
     void scalarColorSettingsChanged(const fosd::visualization::ScalarColorSettings &settings);
 
 private slots:
     void refreshResult();
+    void handlePointPicked(const fosd::visualization::PickedPointInfo &info);
 
 private:
     void updateScalarColors();

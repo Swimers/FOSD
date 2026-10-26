@@ -21,6 +21,7 @@ public:
     bool contextReady() const override;
     void showBinding(bool bound, vtkRenderWindow *backendWindow) override;
     void showStatus(const QString &message) override;
+    void showSelection(const QString &message) override;
     QString chooseFile(bool save) override;
     QVTKOpenGLNativeWidget *vtkWidget() const;
 signals:

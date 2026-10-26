@@ -51,6 +51,8 @@ int main(int argc, char **argv) {
                      &VtkValidationPresenter::execute);
     QObject::connect(&backend, &VtkValidationBackend::statusChanged, &presenter,
                      &VtkValidationPresenter::showStatus);
+    QObject::connect(&backend, &VtkValidationBackend::selectionTextChanged, &presenter,
+                     &VtkValidationPresenter::showSelection);
     presenter.attach();
     view.show();
     SmokeCheck smoke(&view, &presenter, &backend, parser.value("screenshot"));

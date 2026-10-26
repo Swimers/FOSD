@@ -9,6 +9,7 @@
 #include <vtkSphereSource.h>
 #include <vtkCamera.h>
 #include <cmath>
+#include <limits>
 namespace fosd {
 namespace vtk_test {
 VtkValidationBackend::VtkValidationBackend() : m_protocol(new protocol::ProtocolControl) {
@@ -50,6 +51,10 @@ bool VtkValidationBackend::attach(vtkRenderWindow *window, QString *error) {
         m_control->setResultRepository(m_calculation->dataModel());
         connect(m_control.get(), &visualization::VisualizationControl::modelLoaded, this,
                 &VtkValidationBackend::modelLoaded);
+        connect(m_control.get(), &visualization::VisualizationControl::pointPicked, this,
+                &VtkValidationBackend::presentSelection);
+        connect(m_control.get(), &visualization::VisualizationControl::selectionUpdated, this,
+                &VtkValidationBackend::presentSelection);
         connect(m_control.get(), &visualization::VisualizationControl::errorOccurred, this,
                 &VtkValidationBackend::status);
     } else if (!m_control->attach(window)) {
@@ -392,6 +397,46 @@ bool VtkValidationBackend::execute(const QString &action, const QVariantMap &p, 
             config.baudRate = p.value("baud").toInt();
             connection.openSerial(config);
         }
+    } else if (action == "keyPointsApplyButton") {
+        if (!m_control || !boundWindow()) {
+            if (error)
+                *error = tr("请先绑定渲染窗口");
+            return false;
+        }
+        QVector<visualization::KeyPointDefinition> points;
+        for (const auto &value :
+             p.value("keyPointIds").toString().split(',', QString::SkipEmptyParts)) {
+            bool ok = false;
+            const qlonglong id = value.trimmed().toLongLong(&ok);
+            if (!ok || id < 0 || id > std::numeric_limits<vtkIdType>::max()) {
+                if (error)
+                    *error = tr("关键点 ID 必须为非负整数");
+                return false;
+            }
+            visualization::KeyPointDefinition definition;
+            definition.pointId = vtkIdType(id);
+            points.append(definition);
+        }
+        auto style = m_control->keyPointStyle();
+        style.radiusMm = p.value("keyPointRadius", 5.0).toDouble();
+        style.labelsVisible = p.value("keyPointLabels", true).toBool();
+        if (!m_control->setKeyPoints(points) || !m_control->setKeyPointStyle(style)) {
+            if (error)
+                *error = m_status;
+            return false;
+        }
+        m_control->showKeyPoints(p.value("keyPointsVisible", true).toBool());
+        auto picking = m_control->pickingSettings();
+        picking.enabled = p.value("pickingEnabled", true).toBool();
+        picking.onlyKeyPoints = p.value("pickOnlyKeyPoints").toBool();
+        if (!m_control->setPickingSettings(picking)) {
+            if (error)
+                *error = m_status;
+            return false;
+        }
+        m_control->setCameraLocked(p.value("cameraLocked").toBool());
+    } else if (action == "clearSelectionButton" && m_control) {
+        m_control->clearSelection();
     } else if (action == "scalarApplyButton") {
         if (!m_control || !boundWindow()) {
             if (error)
@@ -485,6 +530,25 @@ bool VtkValidationBackend::execute(const QString &action, const QVariantMap &p, 
         return false;
     }
     return true;
+}
+
+void VtkValidationBackend::presentSelection(const visualization::PickedPointInfo &info) {
+    if (!info.valid) {
+        emit selectionTextChanged(tr("未选中模型点"));
+        return;
+    }
+    emit selectionTextChanged(
+        tr("ID %1 | 原始 mm (%2, %3, %4) | 实际位移 mm (%5, %6, %7) | 显示 mm (%8, %9, %10)")
+            .arg(qlonglong(info.pointId))
+            .arg(info.originalPositionMm[0], 0, 'f', 3)
+            .arg(info.originalPositionMm[1], 0, 'f', 3)
+            .arg(info.originalPositionMm[2], 0, 'f', 3)
+            .arg(info.displacementMm[0], 0, 'f', 6)
+            .arg(info.displacementMm[1], 0, 'f', 6)
+            .arg(info.displacementMm[2], 0, 'f', 6)
+            .arg(info.displayPositionMm[0], 0, 'f', 3)
+            .arg(info.displayPositionMm[1], 0, 'f', 3)
+            .arg(info.displayPositionMm[2], 0, 'f', 3));
 }
 } // namespace vtk_test
 } // namespace fosd

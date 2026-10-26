@@ -10,6 +10,8 @@ add_library(fosd_visualization STATIC
     render/ScalarColorMapper.cpp
     marker/KeyPointManager.h 
     marker/KeyPointManager.cpp
+    marker/KeyPointCreator.h
+    marker/KeyPointCreator.cpp
     interaction/ModelInteractorStyle.h 
     interaction/ModelInteractorStyle.cpp
     interaction/PointPicker.h 

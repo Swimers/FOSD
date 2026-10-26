@@ -26,11 +26,17 @@ VisualizationControl::VisualizationControl(QObject *parent, vtkRenderWindow *ren
     qRegisterMetaType<ScalarColorSettings>("fosd::visualization::ScalarColorSettings");
     // 子模块初始化
     m_picker->setRenderer(m_renderer.GetPointer());
+    m_keyPoints->setRenderer(m_renderer.GetPointer());
+    m_picker->setKeyPointManager(m_keyPoints.get());
     m_interactorStyle->setPointPicker(m_picker.get());
+    m_interactorStyle->SetDefaultRenderer(m_renderer);
     m_scene->setRenderer(m_renderer.GetPointer());
 
     // 刷新
-    connect(m_picker.get(), &PointPicker::pointPicked, this, &VisualizationControl::pointPicked);
+    connect(m_picker.get(), &PointPicker::pointPicked, this,
+            &VisualizationControl::handlePointPicked);
+    connect(m_picker.get(), &PointPicker::selectionUpdated, this,
+            &VisualizationControl::selectionUpdated);
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(33);
     connect(m_refreshTimer, &QTimer::timeout, this, &VisualizationControl::refreshResult);
@@ -93,11 +99,16 @@ bool VisualizationControl::loadModel(const QString &path) {
         m_renderer->RemoveActor(m_deformation->actor());
 
     m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
+    // Drop borrowed VTK pointers and pick-list references before replacing the mesh.
+    m_picker->setMesh(nullptr, {});
+    m_keyPoints->setModel({}, nullptr);
     m_colorResult.reset();
     m_customField = PointScalarField();
     m_deformation->setOriginalMesh(m_mesh->originalMesh());
     m_deformation->actor()->GetProperty()->SetColor(0.5, 0.65, 0.15);
     m_renderer->AddActor(m_deformation->actor());
+    m_keyPoints->setModel(originalModel(), m_deformation->displayMesh());
+    m_picker->setMesh(m_deformation->displayMesh(), originalModel(), m_deformation->actor());
     m_expectedModelRevision = 0;
     m_lastResultRevision = 0;
     resetCamera();
@@ -106,6 +117,8 @@ bool VisualizationControl::loadModel(const QString &path) {
 }
 
 void VisualizationControl::unloadModel() {
+    m_picker->setMesh(nullptr, {});
+    m_keyPoints->setModel({}, nullptr);
     if (m_deformation->actor())
         m_renderer->RemoveActor(m_deformation->actor());
     m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
@@ -139,6 +152,8 @@ void VisualizationControl::refreshResult() {
 
 void VisualizationControl::setExpectedModelRevision(quint64 revision) {
     if (revision != m_expectedModelRevision) {
+        m_picker->clearSelection();
+        m_picker->setResult({});
         m_colorResult.reset();
         m_customField = PointScalarField();
         m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
@@ -168,6 +183,9 @@ void VisualizationControl::applyResult(const core::CalculationResultPtr &result)
         }
     }
     m_deformation->applyResult(result);
+    m_picker->setResult(result);
+    m_keyPoints->updatePositions();
+    m_picker->refreshSelection();
     m_colorResult = result;
     updateScalarColors();
     m_lastResultRevision = result->revision;
@@ -179,12 +197,17 @@ void VisualizationControl::setDeformationScale(double scale) {
     if (!std::isfinite(scale))
         return;
     m_deformation->setDeformationScale(scale);
+    m_keyPoints->updatePositions();
+    m_picker->refreshSelection();
     if (m_renderWindow)
         m_renderWindow->Render();
 }
 
 void VisualizationControl::resetDeformation() {
     m_deformation->resetDeformation();
+    m_picker->setResult({});
+    m_keyPoints->updatePositions();
+    m_picker->refreshSelection();
     m_colorResult.reset();
     m_customField = PointScalarField();
     m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
@@ -302,6 +325,99 @@ void VisualizationControl::updateScalarColors() {
                         : m_colors->applyResult(m_colorResult, mesh, mapper, &error);
     if (!ok)
         emit errorOccurred(error);
+}
+
+bool VisualizationControl::setKeyPoints(const QVector<KeyPointDefinition> &points) {
+    QString error;
+    if (!m_keyPoints->setKeyPoints(points, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    m_picker->refreshSelection();
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+QVector<KeyPointDefinition> VisualizationControl::keyPoints() const {
+    return m_keyPoints->keyPoints();
+}
+
+KeyPointStyle VisualizationControl::keyPointStyle() const {
+    return m_keyPoints->style();
+}
+
+KeyPointStyle VisualizationControl::selectionStyle() const {
+    return m_keyPoints->selectionStyle();
+}
+
+bool VisualizationControl::setKeyPointStyle(const KeyPointStyle &style) {
+    QString error;
+    if (!m_keyPoints->setStyle(style, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+bool VisualizationControl::setSelectionStyle(const KeyPointStyle &style) {
+    QString error;
+    if (!m_keyPoints->setSelectionStyle(style, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+void VisualizationControl::showKeyPoints(bool visible) {
+    m_keyPoints->setVisible(visible);
+    if (m_renderWindow)
+        m_renderWindow->Render();
+}
+
+bool VisualizationControl::setPickingSettings(const PickingSettings &settings) {
+    QString error;
+    if (!m_picker->setSettings(settings, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    m_interactorStyle->setClickTolerancePixels(settings.clickTolerancePixels);
+    return true;
+}
+
+PickingSettings VisualizationControl::pickingSettings() const {
+    return m_picker->settings();
+}
+
+PickedPointInfo VisualizationControl::selectPoint(vtkIdType pointId) {
+    return m_picker->selectPoint(pointId);
+}
+
+PickedPointInfo VisualizationControl::selectedPoint() const {
+    return m_picker->selection();
+}
+
+QVector<vtkIdType> VisualizationControl::nearbyPoints(const std::array<double, 3> &position,
+                                                      double radius) const {
+    return m_picker->nearbyPoints(position, radius);
+}
+
+void VisualizationControl::clearSelection() {
+    m_picker->clearSelection();
+}
+
+void VisualizationControl::setCameraLocked(bool locked) {
+    m_interactorStyle->setCameraLocked(locked);
+}
+
+void VisualizationControl::handlePointPicked(const PickedPointInfo &info) {
+    emit pointPicked(info);
+    if (m_renderWindow)
+        m_renderWindow->Render();
 }
 
 } // namespace visualization

@@ -15,6 +15,10 @@
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkDataArray.h>
+#include "visualization/VisualizationControl.h"
+#include "visualization/interaction/ModelInteractorStyle.h"
+#include <vtkRenderWindowInteractor.h>
+#include <vtkCamera.h>
 #include <QtEndian>
 #include <QFile>
 #include <QLabel>
@@ -207,6 +211,87 @@ void SmokeCheck::checkIntegration() {
             finish(false, "Calculation produced no displacement");
             return;
         }
+        // Exercise the real model-only picker through mouse callbacks. Markers
+        // overlap vertices deliberately; they must never intercept a pick.
+        auto *control = m_backend->visualization();
+        visualization::KeyPointDefinition first, last;
+        first.pointId = 0;
+        last.pointId = 2;
+        first.label = "root";
+        last.label = "tip";
+        if (!control->setKeyPoints({first, last})) {
+            finish(false, "Key point configuration failed");
+            return;
+        }
+        auto *renderer = m_view->renderWindow()->GetRenderers()->GetFirstRenderer();
+        auto *interactor = m_view->renderWindow()->GetInteractor();
+        auto *style =
+            visualization::ModelInteractorStyle::SafeDownCast(interactor->GetInteractorStyle());
+        if (!style) {
+            finish(false, "Model mouse adapter was not installed");
+            return;
+        }
+        double world[3];
+        mesh->GetPoint(1, world);
+        renderer->SetWorldPoint(world[0], world[1], world[2], 1);
+        renderer->WorldToDisplay();
+        const double *screen = renderer->GetDisplayPoint();
+        interactor->SetEventInformation(int(std::round(screen[0])), int(std::round(screen[1])), 0,
+                                        0);
+        style->OnLeftButtonDown();
+        style->OnLeftButtonUp();
+        if (!control->selectedPoint().valid || control->selectedPoint().pointId != 1 ||
+            !m_view->findChild<QLabel *>("selectionLabel")->text().contains("ID 1")) {
+            finish(false, "Left click did not select the model vertex through Presenter");
+            return;
+        }
+        const int clickX = interactor->GetEventPosition()[0],
+                  clickY = interactor->GetEventPosition()[1];
+        style->OnLeftButtonDown();
+        interactor->SetEventPosition(clickX + 30, clickY + 15);
+        style->OnMouseMove();
+        interactor->SetEventPosition(clickX, clickY);
+        style->OnLeftButtonUp();
+        style->OnMouseWheelForward();
+        if (!control->selectedPoint().valid || control->selectedPoint().pointId != 1) {
+            finish(false, "Camera interaction discarded selection");
+            return;
+        }
+        control->setCameraLocked(true);
+        double cameraPosition[3];
+        renderer->GetActiveCamera()->GetPosition(cameraPosition);
+        style->OnMouseWheelForward();
+        for (int axis = 0; axis < 3; ++axis)
+            if (cameraPosition[axis] != renderer->GetActiveCamera()->GetPosition()[axis]) {
+                finish(false, "Camera lock did not block wheel zoom");
+                return;
+            }
+        auto picking = control->pickingSettings();
+        picking.onlyKeyPoints = true;
+        control->setPickingSettings(picking);
+        mesh->GetPoint(0, world);
+        renderer->SetWorldPoint(world[0], world[1], world[2], 1);
+        renderer->WorldToDisplay();
+        screen = renderer->GetDisplayPoint();
+        interactor->SetEventInformation(int(std::round(screen[0])), int(std::round(screen[1])), 0,
+                                        0);
+        style->OnLeftButtonDown();
+        style->OnLeftButtonUp();
+        if (!control->selectedPoint().valid || control->selectedPoint().pointId != 0) {
+            finish(false, "Marker intercepted picking or locked camera prevented selection");
+            return;
+        }
+        interactor->SetEventPosition(-10, -10);
+        style->OnLeftButtonDown();
+        style->OnLeftButtonUp();
+        if (control->selectedPoint().valid) {
+            finish(false, "Background click did not clear selection");
+            return;
+        }
+        picking.onlyKeyPoints = false;
+        control->setPickingSettings(picking);
+        control->setCameraLocked(false);
+        control->selectPoint(1);
         QVariantMap colorSettings{{"scalarEnabled", true},
                                   {"scalarMapping", 0},
                                   {"scalarRangeMode", 0},
@@ -235,6 +320,13 @@ void SmokeCheck::checkIntegration() {
             return;
         }
         m_presenter->execute("scaleButton", {{"scale", 2.0}});
+        const auto selected = control->selectedPoint();
+        if (std::abs(selected.displayPositionMm[0] - result->deformedModel.value(1)[0] -
+                     result->displacementMap.value(1)[0]) > 1e-7 ||
+            selected.displacementMm[0] != result->displacementMap.value(1)[0]) {
+            finish(false, "Selected point data did not follow deformation scale");
+            return;
+        }
         for (auto point = result->deformedModel.constBegin();
              point != result->deformedModel.constEnd(); ++point) {
             double xyz[3];
@@ -247,6 +339,10 @@ void SmokeCheck::checkIntegration() {
                 }
         }
         m_presenter->execute("resetDeformationButton", {});
+        if (!control->selectedPoint().valid || control->selectedPoint().displacementMm[0] != 0) {
+            finish(false, "Reset did not refresh selection data");
+            return;
+        }
         if (mapper->GetScalarVisibility() || mesh->GetPointData()->GetArray("FOSD.ColorScalars")) {
             finish(false, "Reset retained stale colors");
             return;
@@ -274,9 +370,8 @@ void SmokeCheck::checkIntegration() {
         if (!data.contains("point_displacement") || !data.contains("wavelength") ||
             !data.contains("calibrated_hardware"))
             return;
-        finish(
-            true,
-            "Native window binding + UDP -> protocol -> HYY -> storage -> VTK deformation passed");
+        finish(true,
+               "UDP -> HYY -> storage -> VTK deformation/colors + key points/mouse picking passed");
     }
 }
 } // namespace vtk_test

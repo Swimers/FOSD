@@ -49,10 +49,27 @@ struct KeyPointDefinition {
     vtkIdType pointId = -1;
     QString label;
 };
+struct KeyPointStyle {
+    double radiusMm = 5.0;
+    std::array<double, 3> color{{1.0, 0.3, 0.1}};
+    std::array<double, 3> labelColor{{1.0, 1.0, 1.0}};
+    std::array<double, 3> labelOffsetMm{{0.0, 0.0, 8.0}};
+    int fontSize = 14;
+    int sphereResolution = 16;
+    bool labelsVisible = true;
+};
+struct PickingSettings {
+    bool enabled = true;
+    bool onlyKeyPoints = false;
+    bool clearOnCameraInteraction = false;
+    double tolerance = 0.009;     // Fraction of render-window diagonal (VTK).
+    int clickTolerancePixels = 4; // Device pixels, not Qt logical pixels.
+};
 struct PickedPointInfo {
     vtkIdType pointId = -1;
     std::array<double, 3> originalPositionMm{{0.0, 0.0, 0.0}};
     std::array<double, 3> displayPositionMm{{0.0, 0.0, 0.0}};
+    std::array<double, 3> displacementMm{{0.0, 0.0, 0.0}}; // Unscaled physical displacement.
     bool valid = false;
 };
 
@@ -68,4 +85,6 @@ Q_DECLARE_METATYPE(fosd::visualization::ScalarColorSettings)
 Q_DECLARE_METATYPE(fosd::visualization::PointScalarField)
 Q_DECLARE_METATYPE(fosd::visualization::CameraPreset)
 Q_DECLARE_METATYPE(fosd::visualization::KeyPointDefinition)
+Q_DECLARE_METATYPE(fosd::visualization::KeyPointStyle)
+Q_DECLARE_METATYPE(fosd::visualization::PickingSettings)
 Q_DECLARE_METATYPE(fosd::visualization::PickedPointInfo)
