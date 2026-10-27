@@ -13,8 +13,8 @@ public:
     // 用于通过基类指针识别具体类型并安全向下转型。
     vtkTypeMacro(ModelInteractorStyle, vtkInteractorStyleTrackballCamera);
 
-    void setPointPicker(PointPicker *picker);
-    void setCameraLocked(bool locked);
+    void setPointPicker(PointPicker *picker);   // 传递 Picker
+    void setCameraLocked(bool locked);          // 设置交互锁定
     void setClickTolerancePixels(int pixels);   // 设定点击/拖拽阈值
 
     void OnMouseMove() override;
@@ -39,15 +39,15 @@ private:
     ModelInteractorStyle(const ModelInteractorStyle &) = delete;    // 禁用拷贝
     ModelInteractorStyle &operator=(const ModelInteractorStyle &) = delete; // 禁用赋值
 
-    void otherInteraction();
-    void trackMovement();
+    void otherInteraction();    // 限制点击，调整picker进行交互
+    void trackMovement();   // 点击/拖拽判断，超过阈值改为拖拽交互
 
     PointPicker *m_picker = nullptr;
-    bool m_cameraLocked = false;
-    bool m_leftDown = false;
-    bool m_baseLeftDown = false;
-    bool m_clickAllowed = false;
-    int m_pressX = 0, m_pressY = 0;
+    bool m_cameraLocked = false;    // 相机锁，禁止相机鼠标交互
+    bool m_leftDown = false;        // 左键当前是否按住
+    bool m_baseLeftDown = false;    // 本次按下是否调用过父类
+    bool m_clickAllowed = false;    // 点击是否合法
+    int m_pressX = 0, m_pressY = 0; // 按下坐标基准
     int m_clickTolerancePixels = 4; // 点击/拖拽阈值
 };
 } // namespace visualization

@@ -99,10 +99,11 @@ PickedPointInfo PointPicker::selectPoint(vtkIdType id) {
             emit pointPicked(PickedPointInfo());
         return {};
     }
+
     m_selectedId = id;
     if (m_keyPoints)
         m_keyPoints->setSelectedPoint(id);
-    const auto info = selection();
+    const auto info = selection();  // 返回更新后的选点信息
     emit pointPicked(info);
     return info;
 }
@@ -110,12 +111,20 @@ PickedPointInfo PointPicker::selectPoint(vtkIdType id) {
 PickedPointInfo PointPicker::pick(int x, int y) {
     if (!m_settings.enabled)
         return {};
-    if (!m_renderer || !m_renderer->GetRenderWindow() || !m_modelActor || !m_displayMesh ||
-        !m_modelActor->GetVisibility() || x < 0 || y < 0)
+
+    if (!m_renderer || 
+        !m_renderer->GetRenderWindow() || 
+        !m_modelActor || 
+        !m_displayMesh ||
+        !m_modelActor->GetVisibility() || 
+        x < 0 || 
+        y < 0)
         return selectPoint(-1);
+
     const int *size = m_renderer->GetRenderWindow()->GetSize();
     if (x >= size[0] || y >= size[1])
         return selectPoint(-1);
+    
     m_picker->Pick(x, y, 0, m_renderer);
     if (m_picker->GetActor() != m_modelActor || m_picker->GetDataSet() != m_displayMesh)
         return selectPoint(-1);

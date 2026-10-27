@@ -24,7 +24,9 @@ void ModelInteractorStyle::setCameraLocked(bool locked) {
     if (m_cameraLocked == locked)
         return;
     m_cameraLocked = locked;
-    if (locked && this->Interactor && this->Interactor->GetRenderWindow() &&
+    if (locked && 
+        this->Interactor && 
+        this->Interactor->GetRenderWindow() &&
         this->State != VTKIS_NONE) {
         this->StopState();
         this->ReleaseFocus();
@@ -58,13 +60,16 @@ void ModelInteractorStyle::OnMouseMove() {
 void ModelInteractorStyle::OnLeftButtonDown() {
     if (!this->Interactor)
         return;
+
     const int *xy = this->Interactor->GetEventPosition();
     m_pressX = xy[0];
     m_pressY = xy[1];
     m_leftDown = true;
-    m_clickAllowed = !this->Interactor->GetShiftKey() && !this->Interactor->GetControlKey() &&
+    m_clickAllowed = !this->Interactor->GetShiftKey() && 
+                     !this->Interactor->GetControlKey() &&
                      !this->Interactor->GetAltKey();
     m_baseLeftDown = !m_cameraLocked;
+
     if (!m_clickAllowed && !m_cameraLocked && m_picker)
         m_picker->cameraInteractionStarted();
     if (m_baseLeftDown)
@@ -75,13 +80,18 @@ void ModelInteractorStyle::OnLeftButtonUp() {
     if (!this->Interactor)
         return;
     trackMovement();
-    const bool click = m_leftDown && m_clickAllowed && !this->Interactor->GetShiftKey() &&
-                       !this->Interactor->GetControlKey() && !this->Interactor->GetAltKey();
+    const bool click = m_leftDown && 
+                       m_clickAllowed && 
+                       !this->Interactor->GetShiftKey() &&
+                       !this->Interactor->GetControlKey() && 
+                       !this->Interactor->GetAltKey();
     m_leftDown = false;
     m_clickAllowed = false;
+
     if (m_baseLeftDown)
         this->Superclass::OnLeftButtonUp();
     m_baseLeftDown = false;
+    
     if (click && m_picker) {
         const int *xy = this->Interactor->GetEventPosition();
         m_picker->pick(xy[0], xy[1]);
