@@ -32,10 +32,12 @@ void PointPicker::setKeyPointManager(KeyPointManager *manager) {
 void PointPicker::setMesh(vtkPolyData *mesh, core::ModelDataPtr originalModel, vtkActor *actor) {
     clearSelection();
     m_result.reset();
+
     m_picker->InitializePickList();
     m_displayMesh = mesh;
     m_originalModel = std::move(originalModel);
     m_modelActor = actor;
+    
     if (actor)
         m_picker->AddPickList(actor);
     m_locator->SetDataSet(mesh);

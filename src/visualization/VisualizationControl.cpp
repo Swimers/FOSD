@@ -103,9 +103,10 @@ bool VisualizationControl::loadModel(const QString &path) {
         m_renderer->RemoveActor(m_deformation->actor());
 
     m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
-    // Drop borrowed VTK pointers and pick-list references before replacing the mesh.
+    // 是在替换网格之前，主动切断其它模块对旧 VTK 对象的裸指针引用
     m_picker->setMesh(nullptr, {});
     m_keyPoints->setModel({}, nullptr);
+
     m_colorResult.reset();
     m_customField = PointScalarField();
     m_deformation->setOriginalMesh(m_mesh->originalMesh());

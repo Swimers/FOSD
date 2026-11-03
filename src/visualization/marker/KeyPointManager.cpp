@@ -157,7 +157,17 @@ void KeyPointManager::clearSelection() {
 }
 
 void KeyPointManager::clear() {
+    // 先从渲染器摘除所有标记，再清空内部状态。
+    // setModel 与析构都依赖本函数，不能留下指向旧 displayMesh 的残留 actor。
+    for (const auto &actors : m_points)
+        remove(actors);
+    remove(m_selection);
 
+    m_points.clear();
+    m_definitions.clear();
+    m_selection = KeyPointActors();
+    m_model.reset();
+    m_displayMesh = nullptr;
 }
 } // namespace visualization
 } // namespace fosd

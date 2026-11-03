@@ -10,6 +10,7 @@
 
 namespace fosd {
 namespace visualization {
+
 namespace {
 const char *rawName = "FOSD.RawScalars";
 const char *mappedName = "FOSD.ColorScalars";
@@ -20,11 +21,14 @@ bool fail(QString *error, const QString &message) {
 }
 
 bool validField(ScalarField field) {
-    return field == ScalarField::DisplacementX || field == ScalarField::DisplacementY ||
-           field == ScalarField::DisplacementZ || field == ScalarField::Magnitude ||
+    return field == ScalarField::DisplacementX || 
+           field == ScalarField::DisplacementY ||
+           field == ScalarField::DisplacementZ || 
+           field == ScalarField::Magnitude ||
            field == ScalarField::Custom;
 }
 } // namespace
+
 ScalarColorMapper::ScalarColorMapper() : m_lookupTable(vtkSmartPointer<vtkLookupTable>::New()) {
 }
 
@@ -32,21 +36,22 @@ ScalarColorMapper::~ScalarColorMapper() = default;
 bool ScalarColorMapper::setSettings(const ScalarColorSettings &settings, QString *error) {
     if (error)
         error->clear();
+
     if (!validField(settings.field) ||
-        (settings.mappingMode != ScalarMappingMode::Normalized &&
-         settings.mappingMode != ScalarMappingMode::Physical) ||
-        (settings.valueMode != ScalarValueMode::Signed &&
-         settings.valueMode != ScalarValueMode::Absolute) ||
-        (settings.rangeMode != ColorRangeMode::Automatic &&
-         settings.rangeMode != ColorRangeMode::Manual))
+        (settings.mappingMode != ScalarMappingMode::Normalized && settings.mappingMode != ScalarMappingMode::Physical) ||
+        (settings.valueMode != ScalarValueMode::Signed && settings.valueMode != ScalarValueMode::Absolute) ||
+        (settings.rangeMode != ColorRangeMode::Automatic && settings.rangeMode != ColorRangeMode::Manual))
         return fail(error, QStringLiteral("Unknown scalar mapping mode or field"));
+
     if (!std::isfinite(settings.minimum) || !std::isfinite(settings.maximum) ||
         settings.minimum >= settings.maximum)
         return fail(error, QStringLiteral("Color range requires finite minimum < maximum"));
+
     if (!std::isfinite(settings.hueStart) || !std::isfinite(settings.hueEnd) ||
         settings.hueStart < 0 || settings.hueStart > 1 || settings.hueEnd < 0 ||
         settings.hueEnd > 1)
         return fail(error, QStringLiteral("Hue endpoints must be in [0, 1]"));
+
     m_settings = settings;
     return true;
 }
@@ -70,24 +75,28 @@ void ScalarColorMapper::setColorRange(double minimum, double maximum) {
     setSettings(settings);
 }
 
-bool ScalarColorMapper::applyResult(const core::CalculationResultPtr &result, vtkPolyData *mesh,
-                                    vtkPolyDataMapper *mapper, QString *error) {
+bool ScalarColorMapper::applyResult(const core::CalculationResultPtr &result, 
+                                    vtkPolyData *mesh,
+                                    vtkPolyDataMapper *mapper, 
+                                    QString *error) {
     if (!m_settings.enabled) {
         clear(mesh, mapper);
         if (error)
             error->clear();
         return true;
     }
+
     if (!result || m_settings.field == ScalarField::Custom) {
         clear(mesh, mapper);
         return fail(error, QStringLiteral("No displacement field available"));
     }
+
     PointScalarField field;
     field.id = QStringLiteral("displacement");
     field.unit = QStringLiteral("mm");
     field.modelRevision = result->modelRevision;
-    for (auto point = result->displacementMap.constBegin();
-         point != result->displacementMap.constEnd(); ++point) {
+
+    for (auto point = result->displacementMap.constBegin(); point != result->displacementMap.constEnd(); ++point) {
         const auto &d = point.value();
         if (d.size() != 3 || !std::isfinite(d[0]) || !std::isfinite(d[1]) || !std::isfinite(d[2])) {
             clear(mesh, mapper);
@@ -115,19 +124,25 @@ bool ScalarColorMapper::applyResult(const core::CalculationResultPtr &result, vt
     return applyField(field, mesh, mapper, error);
 }
 
-bool ScalarColorMapper::applyField(const PointScalarField &field, vtkPolyData *mesh,
-                                   vtkPolyDataMapper *mapper, QString *error) {
+bool ScalarColorMapper::applyField(const PointScalarField &field, 
+                                   vtkPolyData *mesh,
+                                   vtkPolyDataMapper *mapper, 
+                                   QString *error) {
     if (error)
         error->clear();
     if (!m_settings.enabled) {
         clear(mesh, mapper);
         return true;
     }
-    if (!mesh || !mapper || !mesh->GetNumberOfPoints() || field.id.isEmpty() ||
+    if (!mesh || 
+        !mapper || 
+        !mesh->GetNumberOfPoints() || 
+        field.id.isEmpty() ||
         field.values.size() != mesh->GetNumberOfPoints()) {
         clear(mesh, mapper);
         return fail(error, QStringLiteral("Scalar field must cover every model point"));
     }
+
     auto raw = vtkSmartPointer<vtkDoubleArray>::New();
     raw->SetName(rawName);
     auto mapped = vtkSmartPointer<vtkDoubleArray>::New();
@@ -135,17 +150,21 @@ bool ScalarColorMapper::applyField(const PointScalarField &field, vtkPolyData *m
     const vtkIdType count = mesh->GetNumberOfPoints();
     raw->SetNumberOfValues(count);
     mapped->SetNumberOfValues(count);
+
     double minimum = std::numeric_limits<double>::max(),
            maximum = std::numeric_limits<double>::lowest();
     auto value = field.values.constBegin();
+
     for (vtkIdType id = 0; id < count; ++id, ++value) {
-        if (value == field.values.constEnd() || value.key() != id ||
+        if (value == field.values.constEnd() || 
+            value.key() != id ||
             !std::isfinite(value.value())) {
             clear(mesh, mapper);
             return fail(
                 error,
                 QStringLiteral("Missing or nonfinite scalar at point %1").arg(qlonglong(id)));
         }
+
         raw->SetValue(id, value.value());
         const double transformed = m_settings.valueMode == ScalarValueMode::Absolute
                                        ? std::abs(value.value())
@@ -154,10 +173,11 @@ bool ScalarColorMapper::applyField(const PointScalarField &field, vtkPolyData *m
         minimum = std::min(minimum, transformed);
         maximum = std::max(maximum, transformed);
     }
+
     ScalarColorRange range;
     range.dataMinimum = minimum;
     range.dataMaximum = maximum;
-    if (m_settings.mappingMode == ScalarMappingMode::Normalized) {
+    if (m_settings.mappingMode == ScalarMappingMode::Normalized) {  //归一化
         const double span = maximum - minimum;
         for (vtkIdType id = 0; id < count; ++id) {
             const double value = mapped->GetValue(id);
@@ -171,10 +191,10 @@ bool ScalarColorMapper::applyField(const PointScalarField &field, vtkPolyData *m
         }
         range.lookupMinimum = 0;
         range.lookupMaximum = 1;
-    } else if (m_settings.rangeMode == ColorRangeMode::Manual) {
+    } else if (m_settings.rangeMode == ColorRangeMode::Manual) {    // 设定范围
         range.lookupMinimum = m_settings.minimum;
         range.lookupMaximum = m_settings.maximum;
-    } else {
+    } else {                                                        // 去极值范围
         range.lookupMinimum = minimum;
         range.lookupMaximum = maximum;
         if (minimum == maximum) {
@@ -185,22 +205,26 @@ bool ScalarColorMapper::applyField(const PointScalarField &field, vtkPolyData *m
                 range.lookupMinimum -= padding;
         }
     }
-    m_lookupTable->SetNumberOfTableValues(256);
-    m_lookupTable->SetHueRange(m_settings.hueStart, m_settings.hueEnd);
-    m_lookupTable->SetTableRange(range.lookupMinimum, range.lookupMaximum);
-    m_lookupTable->Build();
-    mesh->GetPointData()->RemoveArray(rawName);
+
+    m_lookupTable->SetNumberOfTableValues(256);                              // 生成 256 级离散色阶
+    m_lookupTable->SetHueRange(m_settings.hueStart, m_settings.hueEnd);      // 色相插值区间，默认蓝→红
+    m_lookupTable->SetTableRange(range.lookupMinimum, range.lookupMaximum);  // 数值→颜色的映射范围
+    m_lookupTable->Build();                                                  // 按以上参数重建色表
+
+    mesh->GetPointData()->RemoveArray(rawName);     // 先删同名数组，避免重复累积
     mesh->GetPointData()->RemoveArray(mappedName);
-    mesh->GetPointData()->AddArray(raw);
-    mesh->GetPointData()->AddArray(mapped);
-    mapper->SetLookupTable(m_lookupTable);
-    mapper->SetScalarModeToUsePointFieldData();
-    mapper->SelectColorArray(mappedName);
-    mapper->SetColorModeToMapScalars();
-    mapper->InterpolateScalarsBeforeMappingOn();
-    mapper->SetScalarRange(range.lookupMinimum, range.lookupMaximum);
-    mapper->UseLookupTableScalarRangeOn();
-    mapper->ScalarVisibilityOn();
+    mesh->GetPointData()->AddArray(raw);            // 原始物理值，供图例/取值使用
+    mesh->GetPointData()->AddArray(mapped);         // 变换后的值，实际驱动着色
+
+    mapper->SetLookupTable(m_lookupTable);                  // 绑定色表
+    mapper->SetScalarModeToUsePointFieldData();             // 标量取自点数据数组
+    mapper->SelectColorArray(mappedName);                   // 选用变换后的那份数组
+    mapper->SetColorModeToMapScalars();                     // 按标量查表取色，而非直接 RGB
+    mapper->InterpolateScalarsBeforeMappingOn();            // 顶点色之间插值，色带平滑
+    mapper->SetScalarRange(range.lookupMinimum, range.lookupMaximum);  // 标量范围与色表一致
+    mapper->UseLookupTableScalarRangeOn();                  // 以 LUT 自身范围为准
+    mapper->ScalarVisibilityOn();                           // 启用标量着色
+    
     m_rawScalars = raw;
     m_scalars = mapped;
     m_range = range;
@@ -211,12 +235,13 @@ bool ScalarColorMapper::applyField(const PointScalarField &field, vtkPolyData *m
 
 void ScalarColorMapper::clear(vtkPolyData *mesh, vtkPolyDataMapper *mapper) {
     if (mapper)
-        mapper->ScalarVisibilityOff();
+        mapper->ScalarVisibilityOff();  // 关闭mapper映射
     if (mesh) {
-        mesh->GetPointData()->RemoveArray(rawName);
-        mesh->GetPointData()->RemoveArray(mappedName);
+        mesh->GetPointData()->RemoveArray(rawName);     
+        mesh->GetPointData()->RemoveArray(mappedName);  
         mesh->Modified();
     }
+     
     m_scalars = nullptr;
     m_rawScalars = nullptr;
     m_range = ScalarColorRange();

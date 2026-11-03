@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+
 namespace fosd {
 namespace visualization {
 namespace {
@@ -111,10 +112,11 @@ bool validBounds(const double b[6]) {
     return b[0] <= b[1] && b[2] <= b[3] && b[4] <= b[5];
 }
 } // namespace
+
 SceneEnvironment::SceneEnvironment()
     : m_renderObserver(vtkSmartPointer<vtkCallbackCommand>::New()) {
-    m_renderObserver->SetClientData(this);
-    m_renderObserver->SetCallback(&SceneEnvironment::onRender);
+    m_renderObserver->SetClientData(this);  // 对象指针通过 SetClientData(this) 传入
+    m_renderObserver->SetCallback(&SceneEnvironment::onRender); 
 }
 
 SceneEnvironment::~SceneEnvironment() {
@@ -122,7 +124,7 @@ SceneEnvironment::~SceneEnvironment() {
 }
 
 void SceneEnvironment::onRender(vtkObject *, unsigned long, void *data, void *) {
-    static_cast<SceneEnvironment *>(data)->updateClippingRange();
+    static_cast<SceneEnvironment *>(data)->updateClippingRange();   // 将回调监听放提供的 ClientData void *data 静态转化为SceneEnvironment* 然后调用更新截断范围
 }
 
 void SceneEnvironment::detachProps() {
@@ -154,7 +156,7 @@ void SceneEnvironment::setRenderer(vtkRenderer *renderer) {
     m_observerTag = 0;
     if (!renderer)
         return;
-    m_observerTag = renderer->AddObserver(vtkCommand::StartEvent, m_renderObserver);
+    m_observerTag = renderer->AddObserver(vtkCommand::StartEvent, m_renderObserver); // 绑定Observer，类似于Qt connect
     setBackgroundSettings(m_backgroundSettings);
     setCameraSettings(m_cameraSettings);
     if (m_hasSavedPose)
@@ -325,6 +327,7 @@ bool SceneEnvironment::setWorldSettings(const WorldSettings &s, QString *error) 
     ground->GetProperty()->SetColor(groundTexture ? 1 : s.groundColor[0],
                                     groundTexture ? 1 : s.groundColor[1],
                                     groundTexture ? 1 : s.groundColor[2]);
+
     auto sphere = vtkSmartPointer<vtkTexturedSphereSource>::New();
     sphere->SetRadius(s.skyRadiusMm);
     sphere->SetThetaResolution(48);

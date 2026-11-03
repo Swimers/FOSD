@@ -11,16 +11,20 @@ DeformationRenderer::DeformationRenderer() = default;
 DeformationRenderer::~DeformationRenderer() = default;
 
 void DeformationRenderer::setOriginalMesh(const vtkPolyData *mesh) {
+
     clear();
     if (!mesh)
         return;
+
     m_originalMesh = vtkSmartPointer<vtkPolyData>::New();
     m_originalMesh->DeepCopy(const_cast<vtkPolyData *>(mesh));
     m_displayMesh = vtkSmartPointer<vtkPolyData>::New();
     m_displayMesh->DeepCopy(m_originalMesh);
+
     m_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     m_mapper->SetInputData(m_displayMesh);
     m_mapper->ScalarVisibilityOff();
+
     m_actor = vtkSmartPointer<vtkActor>::New();
     m_actor->SetMapper(m_mapper);
 }
@@ -34,6 +38,7 @@ void DeformationRenderer::applyResult(const core::CalculationResultPtr &result) 
     auto points = vtkSmartPointer<vtkPoints>::New();
     points->SetDataTypeToDouble();
     points->SetNumberOfPoints(m_originalMesh->GetNumberOfPoints());
+
     for (vtkIdType id = 0; id < m_originalMesh->GetNumberOfPoints(); ++id) {
         double xyz[3];
         m_originalMesh->GetPoint(id, xyz);
@@ -45,6 +50,7 @@ void DeformationRenderer::applyResult(const core::CalculationResultPtr &result) 
         }
         points->SetPoint(id, xyz);
     }
+    
     m_displayMesh->SetPoints(points);
     m_displayMesh->Modified();
 }

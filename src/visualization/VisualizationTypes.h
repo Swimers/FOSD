@@ -12,14 +12,19 @@ class vtkBillboardTextActor3D;
 class vtkSphereSource;
 
 namespace fosd {
-namespace visualization {
-enum class ScalarField { DisplacementX, DisplacementY, DisplacementZ, Magnitude, Custom };
 
-// Physical retains the field's unit and sign (the legacy non-normalized mode).
+namespace visualization {
+
+// 颜色映射相关
+enum class ScalarField { 
+    DisplacementX, 
+    DisplacementY, 
+    DisplacementZ, 
+    Magnitude, 
+    Custom };
 enum class ScalarMappingMode { Normalized, Physical };
 enum class ScalarValueMode { Signed, Absolute };
 enum class ColorRangeMode { Automatic, Manual };
-
 struct ScalarColorSettings {
     bool enabled = false;
     ScalarField field = ScalarField::Magnitude;
@@ -31,17 +36,13 @@ struct ScalarColorSettings {
     double hueStart = 0.6;
     double hueEnd = 0.1;
 };
-
-// Generic point field, independent of hardware strain arrays. IDs must match
-// the model's VTK point IDs; custom fields are explicitly bound to a revision.
-struct PointScalarField {
-    QString id;
-    QString label;
-    QString unit;
-    quint64 modelRevision = 0;
-    QMap<core::PointId, double> values;
+struct PointScalarField {               // 通用点标量场：与硬件应变数组解耦，任何逐点物理量都可经此结构送入着色。键必须与模型的 VTK 点 ID 一致；自定义场须显式绑定模型版本，版本不符则拒绝应用。
+    QString id;                         // 场标识，用于判空与区分不同数据源
+    QString label;                      // 显示名称，供图例/界面使用
+    QString unit;                       // 物理单位，如 "mm"
+    quint64 modelRevision = 0;          // 绑定的模型版本，防止旧数据套用到新模型
+    QMap<core::PointId, double> values; // 键为 VTK 点 ID，值为该点的标量值
 };
-
 struct ScalarColorRange {
     double dataMinimum = 0.0; // After Signed/Absolute, before normalization.
     double dataMaximum = 0.0;
@@ -49,6 +50,7 @@ struct ScalarColorRange {
     double lookupMaximum = 1.0;
 };
 
+// 相机环境相关
 enum class CameraPreset { Isometric, Front, Back, Left, Right, Top, Bottom };
 enum class GridPlane { XZ, XY, YZ };
 enum class CameraProjection { Perspective, Parallel };
