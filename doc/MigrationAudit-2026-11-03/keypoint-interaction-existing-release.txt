@@ -1,0 +1,15 @@
+********* Start testing of KeyPointInteractionTests *********
+Config: Using QtTest library 5.12.2, Qt 5.12.2 (x86_64-little_endian-llp64 shared (dynamic) release build; by MSVC 2017)
+PASS   : KeyPointInteractionTests::initTestCase()
+PASS   : KeyPointInteractionTests::creator()
+FAIL!  : KeyPointInteractionTests::managerLifecycle() Compared values are not the same
+   Actual   (second->GetViewProps()->GetNumberOfItems()): 4
+   Expected (0)                                         : 0
+D:\Documents\GitHub\FOSD-ReArc\test\keypoint_interaction_tests.cpp(121) : failure location
+PASS   : KeyPointInteractionTests::selectionAndLocator()
+PASS   : KeyPointInteractionTests::dragDoesNotDispatchClick()
+FAIL!  : KeyPointInteractionTests::controlDeformationAndReset() 'control.keyPoints().isEmpty()' returned FALSE. ()
+D:\Documents\GitHub\FOSD-ReArc\test\keypoint_interaction_tests.cpp(242) : failure location
+PASS   : KeyPointInteractionTests::cleanupTestCase()
+Totals: 5 passed, 2 failed, 0 skipped, 0 blacklisted, 11ms
+********* Finished testing of KeyPointInteractionTests *********

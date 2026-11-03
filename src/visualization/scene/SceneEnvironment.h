@@ -52,7 +52,6 @@ private:
     void syncProps();                                               // 按可见性懒创建并挂载/摘除环境 prop
     void configureAxes();                                           // 创建并配置坐标轴的尺寸、标签与颜色
     bool modelBounds(double bounds[6]) const;                       // 取得相机适配用的包围盒，优先取模型 actor
-
     vtkCamera *camera() const;                                      // 返回当前 renderer 的活动相机，空安全
     vtkRenderer *m_renderer = nullptr; // Borrowed from Control.
     vtkWeakPointer<vtkProp3D> m_model;

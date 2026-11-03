@@ -20,6 +20,9 @@ function(fosd_add_test name)
     add_test(NAME ${name} COMMAND ${name})
 endfunction()
 
+fosd_add_test(test_config config_tests.cpp)
+target_link_libraries(test_config PRIVATE fosd_config)
+
 fosd_add_test(test_communication
     communication_tests.cpp
 )
