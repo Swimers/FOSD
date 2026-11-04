@@ -1,6 +1,6 @@
 # INI 配置模块
 
-`src/config` 提供独立的 INI 参数读写能力，命名空间为 `fosd::config`，CMake 目标为 `fosd_config`，仅依赖 Qt Core。本实现已替换原 JSON 版本；其他业务模块的初始化和配置接线仍留待后续完成。
+`src/config` 提供 INI 参数读写能力，命名空间为 `fosd::config`。通用目标 `fosd_config` 仅依赖 Qt Core；新增的类型化参数层 `fosd_parameters` 已接到各业务 Control 的核心参数入口，默认模板、运行文件及校验规则见 [核心参数配置](core-parameters.md)。
 
 ## 格式与分区
 
@@ -90,7 +90,7 @@ config.writeModule("storage", storage, &error);
 
 ## 构建和测试
 
-后续消费者链接 fosd_config，并包含 config/IConfigStore.h 或 config/IniConfigStore.h。本次未在其他业务模块中新增配置调用。
+通用消费者链接 fosd_config，并包含 config/IConfigStore.h 或 config/IniConfigStore.h；业务核心参数统一使用 fosd_parameters 和 config/ParameterStore.h。IniConfigStore 另提供 ensureModule / ensureDefaults，在文件锁内只补齐缺失默认键，保留已有用户值。
 
 ```powershell
 cmake --preset windows-msvc2017

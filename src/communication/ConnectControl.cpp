@@ -1,4 +1,6 @@
 #include "ConnectControl.h"
+#include "config/ParameterStore.h"
+#include <QDebug>
 
 #include "ITransport.h"
 #include "PacketDecoders.h"
@@ -178,6 +180,14 @@ ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory, Q
     qRegisterMetaType<CommunicationError>("fosd::communication::CommunicationError");
     qRegisterMetaType<DecoderError>("fosd::communication::DecoderError");
 
+    config::ParameterStore parameters;
+    QString parameterError;
+    SerialConfig serial; UdpConfig udp; TcpConfig tcp;
+    if (!parameters.initialize(&serial, &parameterError) || !parameters.initialize(&udp, &parameterError) || !parameters.initialize(&tcp, &parameterError)) {
+        CommunicationError error; error.operation = "configuration"; error.message = parameterError;
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(fosd::communication::CommunicationError, error));
+    }
+
     m_worker->moveToThread(m_thread);
     connect(m_thread, &QThread::started, m_worker.data(), &detail::ConnectWorker::initialize);
     connect(m_thread, &QThread::finished, m_worker.data(), &QObject::deleteLater);
@@ -227,14 +237,41 @@ void ConnectControl::shutdown() {
 }
 
 void ConnectControl::openSerial(const SerialConfig &config) {
+    QString message;
+    if (!fosd::config::validateParameter(config, true, &message)) {
+        CommunicationError error; error.channel = Channel::Serial; error.operation = "open"; error.message = message;
+        emit errorOccurred(error); return;
+    }
+    if (!fosd::config::ParameterStore().write(config, true, &message)) {
+        CommunicationError error; error.channel = Channel::Serial; error.operation = "configuration"; error.message = message;
+        emit errorOccurred(error); return;
+    }
     emit requestOpenSerial(config);
 }
 
 void ConnectControl::openUdp(const UdpConfig &config) {
+    QString message;
+    if (!fosd::config::validateParameter(config, true, &message)) {
+        CommunicationError error; error.channel = Channel::Udp; error.operation = "open"; error.message = message;
+        emit errorOccurred(error); return;
+    }
+    if (!fosd::config::ParameterStore().write(config, true, &message)) {
+        CommunicationError error; error.channel = Channel::Udp; error.operation = "configuration"; error.message = message;
+        emit errorOccurred(error); return;
+    }
     emit requestOpenUdp(config);
 }
 
 void ConnectControl::openTcp(const TcpConfig &config) {
+    QString message;
+    if (!fosd::config::validateParameter(config, true, &message)) {
+        CommunicationError error; error.channel = Channel::Tcp; error.operation = "open"; error.message = message;
+        emit errorOccurred(error); return;
+    }
+    if (!fosd::config::ParameterStore().write(config, true, &message)) {
+        CommunicationError error; error.channel = Channel::Tcp; error.operation = "configuration"; error.message = message;
+        emit errorOccurred(error); return;
+    }
     emit requestOpenTcp(config);
 }
 

@@ -15,6 +15,9 @@ public:
     IniConfigStore &operator=(const IniConfigStore &) = delete;
 
     QString filePath() const { return m_filePath; }
+    // Atomic default seeding: keep existing keys, add missing defaults only.
+    bool ensureModule(const QString &module, const ConfigSection &defaults, QString *error = nullptr);
+    bool ensureDefaults(const ConfigData &defaults, QString *error = nullptr);
     bool readAll(ConfigData *configuration, QString *error = nullptr) const override;
     // Explicit full replacement: can also repair a malformed existing file.
     bool writeAll(const ConfigData &configuration, QString *error = nullptr) override;
@@ -28,7 +31,7 @@ public:
     bool removeValue(const QString &module, const QString &key, QString *error = nullptr) override;
 
 private:
-    enum class Change { ReplaceAll, ReplaceModule, SetValue, RemoveModule, RemoveValue };
+    enum class Change { ReplaceAll, ReplaceModule, SetValue, RemoveModule, RemoveValue, EnsureModule, EnsureAll };
     bool modify(Change change, const QString &module, const QString &key,
                 const ConfigData &replacement, const QVariant &value, QString *error);
     bool load(ConfigData *configuration, bool allowMissing, QString *error) const;

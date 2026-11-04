@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "calculation/CalculationControl.h"
 #include "calculation/HYYIFE.h"
 #include "protocol/MPWavelengthParser.h"
@@ -178,7 +179,10 @@ bool readRows(const QString &path, StorageFormat format, QVector<QStringList> *r
 
 class EndToEndTests final : public QObject {
     Q_OBJECT
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void communicationToStorage_data();
     void communicationToStorage();
 };

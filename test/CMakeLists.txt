@@ -22,6 +22,9 @@ endfunction()
 
 fosd_add_test(test_config config_tests.cpp)
 target_link_libraries(test_config PRIVATE fosd_config)
+fosd_add_test(test_parameters parameters_tests.cpp)
+target_link_libraries(test_parameters PRIVATE fosd_parameters fosd_communication fosd_calculation)
+target_compile_definitions(test_parameters PRIVATE FOSD_PARAMETER_TEMPLATE_SOURCE="${PROJECT_SOURCE_DIR}/src/config/core-defaults.ini")
 
 fosd_add_test(test_communication
     communication_tests.cpp

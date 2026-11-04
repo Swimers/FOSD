@@ -1,4 +1,5 @@
 #include "VisualizationControl.h"
+#include "config/ParameterStore.h"
 
 #include "mesh/MeshManager.h"
 #include "render/DeformationRenderer.h"
@@ -42,8 +43,45 @@ VisualizationControl::VisualizationControl(QObject *parent, vtkRenderWindow *ren
     connect(m_picker.get(), &PointPicker::selectionUpdated, this,
             &VisualizationControl::selectionUpdated);
     m_refreshTimer = new QTimer(this);
-    m_refreshTimer->setInterval(33);
+    m_refreshTimer->setInterval(VisualizationRuntimeSettings().refreshIntervalMs);
     connect(m_refreshTimer, &QTimer::timeout, this, &VisualizationControl::refreshResult);
+
+    config::ParameterStore parameters;
+    QString parameterError;
+    ScalarColorSettings saved0;
+    if (!parameters.initialize(&saved0, &parameterError) || !m_colors->setSettings(saved0, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    AxesSettings saved1;
+    if (!parameters.initialize(&saved1, &parameterError) || !m_scene->setAxesSettings(saved1, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    GridSettings saved2;
+    if (!parameters.initialize(&saved2, &parameterError) || !m_scene->setGridSettings(saved2, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    BackgroundSettings saved3;
+    if (!parameters.initialize(&saved3, &parameterError) || !m_scene->setBackgroundSettings(saved3, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    WorldSettings saved4;
+    if (!parameters.initialize(&saved4, &parameterError) || !m_scene->setWorldSettings(saved4, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    CameraSettings saved5;
+    if (!parameters.initialize(&saved5, &parameterError) || !m_scene->setCameraSettings(saved5, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    KeyPointStyle saved6;
+    if (!parameters.initialize(&saved6, &parameterError) || !m_keyPoints->setStyle(saved6, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    SelectionStyleSettings saved7;
+    if (!parameters.initialize(&saved7, &parameterError) || !m_keyPoints->setSelectionStyle(saved7, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    PickingSettings saved8;
+    if (!parameters.initialize(&saved8, &parameterError) || !m_picker->setSettings(saved8, &parameterError))
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    VisualizationRuntimeSettings runtime;
+    if (parameters.initialize(&runtime, &parameterError)) {
+        m_deformation->setDeformationScale(runtime.deformationScale);
+        m_refreshTimer->setInterval(runtime.refreshIntervalMs);
+    } else QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(QString, parameterError));
+    m_interactorStyle->setCameraLocked(m_scene->cameraSettings().locked);
+    m_interactorStyle->setClickTolerancePixels(m_picker->settings().clickTolerancePixels);
 
     // 功能绑定
     if (renderWindowPtr)
@@ -207,6 +245,13 @@ void VisualizationControl::applyResult(const core::CalculationResultPtr &result)
 }
 
 void VisualizationControl::setDeformationScale(double scale) {
+    VisualizationRuntimeSettings saved;
+    QString error;
+    config::ParameterStore store;
+    if (!store.initialize(&saved, &error)) { emit errorOccurred(error); return; }
+    saved.deformationScale = scale;
+    if (!store.write(saved, true, &error)) { emit errorOccurred(error); return; }
+
     if (!std::isfinite(scale))
         return;
     m_deformation->setDeformationScale(scale);
@@ -230,6 +275,13 @@ void VisualizationControl::resetDeformation() {
 }
 
 void VisualizationControl::setfreshFPS(int Interval) {
+    VisualizationRuntimeSettings saved;
+    QString error;
+    config::ParameterStore store;
+    if (!store.initialize(&saved, &error)) { emit errorOccurred(error); return; }
+    saved.refreshIntervalMs = Interval;
+    if (!store.write(saved, true, &error)) { emit errorOccurred(error); return; }
+
     m_refreshTimer->stop();
     m_refreshTimer->setInterval(Interval);
     m_refreshTimer->start();
@@ -252,10 +304,14 @@ ScalarColorRange VisualizationControl::scalarColorRange() const {
 }
 
 bool VisualizationControl::setScalarColorSettings(const ScalarColorSettings &settings) {
+    const auto previous = m_colors->settings();
     QString error;
     if (!m_colors->setSettings(settings, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(settings, true, &error)) {
+        m_colors->setSettings(previous, nullptr); emit errorOccurred(error); return false;
     }
     updateScalarColors();
     emit scalarColorSettingsChanged(settings);
@@ -366,10 +422,14 @@ KeyPointStyle VisualizationControl::selectionStyle() const {
 }
 
 bool VisualizationControl::setKeyPointStyle(const KeyPointStyle &style) {
+    const auto previous = m_keyPoints->style();
     QString error;
     if (!m_keyPoints->setStyle(style, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(style, true, &error)) {
+        m_keyPoints->setStyle(previous, nullptr); emit errorOccurred(error); return false;
     }
     if (m_renderWindow)
         m_renderWindow->Render();
@@ -377,10 +437,15 @@ bool VisualizationControl::setKeyPointStyle(const KeyPointStyle &style) {
 }
 
 bool VisualizationControl::setSelectionStyle(const KeyPointStyle &style) {
+    const auto previous = m_keyPoints->selectionStyle();
     QString error;
     if (!m_keyPoints->setSelectionStyle(style, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    SelectionStyleSettings saved; static_cast<KeyPointStyle &>(saved) = style;
+    if (!config::ParameterStore().write(saved, true, &error)) {
+        m_keyPoints->setSelectionStyle(previous, nullptr); emit errorOccurred(error); return false;
     }
     if (m_renderWindow)
         m_renderWindow->Render();
@@ -394,10 +459,14 @@ void VisualizationControl::showKeyPoints(bool visible) {
 }
 
 bool VisualizationControl::setPickingSettings(const PickingSettings &settings) {
+    const auto previous = m_picker->settings();
     QString error;
     if (!m_picker->setSettings(settings, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(settings, true, &error)) {
+        m_picker->setSettings(previous, nullptr); emit errorOccurred(error); return false;
     }
     m_interactorStyle->setClickTolerancePixels(settings.clickTolerancePixels);
     return true;
@@ -425,8 +494,9 @@ void VisualizationControl::clearSelection() {
 }
 
 void VisualizationControl::setCameraLocked(bool locked) {
-    m_scene->setCameraLocked(locked);
-    m_interactorStyle->setCameraLocked(locked);
+    auto settings = cameraSettings();
+    settings.locked = locked;
+    setCameraSettings(settings);
 }
 
 void VisualizationControl::handlePointPicked(const PickedPointInfo &info) {
@@ -460,10 +530,14 @@ CameraPose VisualizationControl::cameraPose() const {
 }
 
 bool VisualizationControl::setAxesSettings(const AxesSettings &settings) {
+    const auto previous = m_scene->axesSettings();
     QString error;
     if (!m_scene->setAxesSettings(settings, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(settings, true, &error)) {
+        m_scene->setAxesSettings(previous, nullptr); emit errorOccurred(error); return false;
     }
     if (m_renderWindow)
         m_renderWindow->Render();
@@ -471,10 +545,14 @@ bool VisualizationControl::setAxesSettings(const AxesSettings &settings) {
 }
 
 bool VisualizationControl::setGridSettings(const GridSettings &settings) {
+    const auto previous = m_scene->gridSettings();
     QString error;
     if (!m_scene->setGridSettings(settings, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(settings, true, &error)) {
+        m_scene->setGridSettings(previous, nullptr); emit errorOccurred(error); return false;
     }
     if (m_renderWindow)
         m_renderWindow->Render();
@@ -482,10 +560,14 @@ bool VisualizationControl::setGridSettings(const GridSettings &settings) {
 }
 
 bool VisualizationControl::setBackgroundSettings(const BackgroundSettings &settings) {
+    const auto previous = m_scene->backgroundSettings();
     QString error;
     if (!m_scene->setBackgroundSettings(settings, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(settings, true, &error)) {
+        m_scene->setBackgroundSettings(previous, nullptr); emit errorOccurred(error); return false;
     }
     if (m_renderWindow)
         m_renderWindow->Render();
@@ -493,10 +575,14 @@ bool VisualizationControl::setBackgroundSettings(const BackgroundSettings &setti
 }
 
 bool VisualizationControl::setWorldSettings(const WorldSettings &settings) {
+    const auto previous = m_scene->worldSettings();
     QString error;
     if (!m_scene->setWorldSettings(settings, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(settings, true, &error)) {
+        m_scene->setWorldSettings(previous, nullptr); emit errorOccurred(error); return false;
     }
     if (m_renderWindow)
         m_renderWindow->Render();
@@ -504,10 +590,14 @@ bool VisualizationControl::setWorldSettings(const WorldSettings &settings) {
 }
 
 bool VisualizationControl::setCameraSettings(const CameraSettings &settings) {
+    const auto previous = m_scene->cameraSettings();
     QString error;
     if (!m_scene->setCameraSettings(settings, &error)) {
         emit errorOccurred(error);
         return false;
+    }
+    if (!config::ParameterStore().write(settings, true, &error)) {
+        m_scene->setCameraSettings(previous, nullptr); emit errorOccurred(error); return false;
     }
     m_interactorStyle->setCameraLocked(settings.locked);
     if (m_renderWindow)
@@ -549,14 +639,11 @@ void VisualizationControl::showGrid(bool visible) {
 }
 
 bool VisualizationControl::showGrid(GridPlane plane, bool visible) {
-    QString error;
-    if (!m_scene->showGrid(plane, visible, &error)) {
-        emit errorOccurred(error);
-        return false;
-    }
-    if (m_renderWindow)
-        m_renderWindow->Render();
-    return true;
+    const int index = int(plane);
+    if (index < 0 || index >= 3) { emit errorOccurred("Unknown grid plane"); return false; }
+    auto settings = gridSettings();
+    settings.visible[size_t(index)] = visible;
+    return setGridSettings(settings);
 }
 
 bool VisualizationControl::setBackground(double r, double g, double b) {

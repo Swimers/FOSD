@@ -1,4 +1,5 @@
 #pragma once
+#include "config/CoreParameters.h"
 #include "IFrameIFE.h"
 #include "StrainCalibration.h"
 #include "core/Datamodel/CalculationRepository.h"
@@ -10,12 +11,8 @@
 
 namespace fosd {
 namespace Calculation {
-enum class CalculationAlgorithm { HYY, Plate };
-struct CalculationConfiguration {
-    CalculationAlgorithm algorithm = CalculationAlgorithm::HYY;
-    CalibrationStrainData strainCalibration;   // 校准应变数据
-    CalibrationChannelData channelCalibration; // 校准通道数据
-};
+
+
 struct CalculationError {
     QString operation;
     QString message;

@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "visualization/VisualizationControl.h"
 #include "visualization/render/ScalarColorMapper.h"
 #include "visualization/render/DeformationRenderer.h"
@@ -46,7 +47,10 @@ vtkDoubleArray *colors(vtkPolyData *data) {
 } // namespace
 class VisualizationTests final : public QObject {
     Q_OBJECT
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void componentsAndNormalization() {
         ScalarColorMapper coloring;
         ScalarColorSettings settings;

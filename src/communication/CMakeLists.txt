@@ -31,3 +31,5 @@ target_link_libraries(fosd_communication
         Qt5::Network
         Qt5::SerialPort
 )
+
+target_link_libraries(fosd_communication PUBLIC fosd_parameters)

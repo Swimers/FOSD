@@ -1,4 +1,5 @@
 #pragma once
+#include "config/CoreParameters.h"
 #include "core/Datamodel/CalibratedData.h"
 #include "core/Datamodel/ModelData.h"
 #include <QFlags>
@@ -6,19 +7,13 @@
 
 namespace fosd {
 namespace storage {
-using PointId = core::PointId;
 
-enum class StorageFormat { Csv, SQLite };
-enum class DataType { Wavelength = 1, CalibratedHardware = 2, PointDisplacement = 4 };
-Q_DECLARE_FLAGS(DataTypes, DataType)
 
-struct StorageConfiguration {
-    StorageFormat format = StorageFormat::Csv;  // 写入方式
-    QString path;                               // A single append-only CSV or SQLite file.
-    DataTypes dataTypes = DataType::Wavelength; // 写入数据类型
-    QVector<PointId> pointIds;
-    bool allPoints = false;
-};
+
+
+
+
+
 struct StorageError {
     QString operation;
     QString message;

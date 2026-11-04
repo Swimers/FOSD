@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "communication/ConnectControl.h"
 #include "communication/PacketDecoders.h"
 
@@ -48,7 +49,10 @@ createPassthroughDecoder(Channel channel, std::atomic<bool> *factoryOnWorker, QT
 class CommunicationTests : public QObject {
     Q_OBJECT
 
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void udpRoundTripAndDecoder();
     void udpDefaultDecoder();
     void tcpDefaultDecoderAndReconnect();

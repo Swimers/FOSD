@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "storage/CsvWriter.h"
 #include "storage/SQLiteWriter.h"
 #include "storage/StorageRecords.h"
@@ -256,7 +257,10 @@ QByteArray packet() {
 } // namespace
 class StorageTests : public QObject {
     Q_OBJECT
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void csvAppendEscapingAndSchema();
     void sqliteTransactionsAndSchema();
     void serializersRejectInvalidPayloads();

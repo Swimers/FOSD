@@ -2,6 +2,7 @@
 #define STRAINCALIBRATION_H
 
 #pragma once
+#include "config/CoreParameters.h"
 
 #include <vector>
 #include <array>
@@ -13,16 +14,8 @@ namespace Calculation {
 using Strain = std::vector<double>;     // 节点自由度数组
 using Wavelength = std::vector<double>; // 波长数组
 
-struct CalibrationStrainData {
-    std::vector<double> originalWavelength;
-    double calibrationFactor = 0.00075;
-    double A = 0.0;
-    double B = 0.0;
-};
-struct CalibrationChannelData {
-    std::vector<int> channelIndices;        // 校准通道索引数组
-    std::vector<double> calibrationFactors; // 校准因子数组
-};
+
+
 
 class StrainCalibration final : public QObject {
     Q_OBJECT

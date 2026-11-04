@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "calculation/CalculationControl.h"
 #include "protocol/ProtocolControl.h"
 #include "protocol/MPWavelengthParser.h"
@@ -164,7 +165,10 @@ private:
 
 class CalculationTests : public QObject {
     Q_OBJECT
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void calibrationFormulaAndSelection();
     void calibrationRejectsInvalidInputs();
     void opaqueAlgorithmData();

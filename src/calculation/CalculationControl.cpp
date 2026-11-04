@@ -1,4 +1,5 @@
 #include "CalculationControl.h"
+#include "config/ParameterStore.h"
 #include "HYYIFE.h"
 #include "PlateIFE.h"
 #include <QTimer>
@@ -39,6 +40,12 @@ CalculationWorker::CalculationWorker(core::FrameRepositoryPtr input,
 
 void CalculationWorker::initialize() {
     m_calibration = new StrainCalibration(this);
+    CalculationConfiguration saved;
+    QString error;
+    if (!config::ParameterStore().initialize(&saved, &error)) reportError("configuration", error);
+    // Do not start solving automatically: the application owns acquisition and
+    // baseline activation. Saved typed parameters remain available via ParameterStore.
+
     if (m_input) {
         // Read the latest immutable snapshot directly, without a UI signal relay.
         QTimer *timer = new QTimer(this);
@@ -70,6 +77,8 @@ void CalculationWorker::configure(const CalculationConfiguration &configuration)
                     QStringLiteral("IFE factory returned no algorithm"));
         return;
     }
+    QString persistError;
+    if (!config::ParameterStore().write(configuration, true, &persistError)) { reportError("configuration", persistError); return; }
     m_algorithm = std::move(algorithm);
     m_calibration->setCalibrationStrainData(configuration.strainCalibration);
     m_calibration->setCalibrationChannelData(configuration.channelCalibration);

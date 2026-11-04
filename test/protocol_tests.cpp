@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "communication/ConnectControl.h"
 #include "communication/PacketDecoders.h"
 #include "protocol/ProtocolControl.h"
@@ -193,7 +194,10 @@ private:
 
 class ProtocolTests : public QObject {
     Q_OBJECT
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void defaultParsers() {
         auto parsers = protocol::createFrameParsers();
         QStringList ids;

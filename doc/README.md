@@ -2,6 +2,7 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [核心参数与运行时 INI](Architectural/core-parameters.md) | 统一参数结构、只读默认模板、构建部署、各模块接入和校验 |
 | [INI 配置读写](Architectural/config-integration.md) | 模块分区、统一读写接口、原子保存、并发访问、错误处理与测试 |
 | [Classic 版本业务闭环对接](Architectural/formal-workbench-integration.md) | Classic 独立入口、MVP 业务注入、完整数据流、已接控件/不可用功能、Plate IFE 及界面验证 |
 | [迁移完成度核查与后续计划](Architectural/migration-audit-and-plan.md) | 正式入口缺口、模型管理、独立追踪点、配置与会话、观察面板及分阶段验收 |

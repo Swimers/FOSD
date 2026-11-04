@@ -98,3 +98,5 @@ if(FOSD_BUILD_WORKBENCH_APP OR FOSD_BUILD_VTK_NATIVE_TEST_APP)
     target_link_libraries(fosd_visualization_qt INTERFACE fosd_visualization_vtk
         Qt5::Widgets Qt5::OpenGL ${FOSD_vtkGUISupportQt_LIBRARY})
 endif()
+
+target_link_libraries(fosd_visualization PUBLIC fosd_parameters)

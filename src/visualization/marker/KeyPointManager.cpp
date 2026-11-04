@@ -9,9 +9,7 @@ namespace fosd {
 namespace visualization {
 KeyPointManager::KeyPointManager() {
     // 初始化默认参数
-    m_selectionStyle.radiusMm = 7;
-    m_selectionStyle.color = {{0.0, 1.0, 1.0}};
-    m_selectionStyle.labelColor = {{0.0, 1.0, 1.0}};
+    m_selectionStyle = SelectionStyleSettings();
 }
 
 KeyPointManager::~KeyPointManager() {

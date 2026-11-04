@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "visualization/scene/SceneEnvironment.h"
 #include "visualization/VisualizationControl.h"
 #include <QtTest>
@@ -35,7 +36,10 @@ vtkSmartPointer<vtkActor> model() {
 } // namespace
 class SceneEnvironmentTests final : public QObject {
     Q_OBJECT
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void axesAndGridLifecycle() {
         auto first = vtkSmartPointer<vtkRenderer>::New(),
              second = vtkSmartPointer<vtkRenderer>::New();

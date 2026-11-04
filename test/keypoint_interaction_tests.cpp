@@ -1,3 +1,4 @@
+#include "ParameterTestIsolation.h"
 #include "visualization/marker/KeyPointCreator.h"
 #include "visualization/marker/KeyPointManager.h"
 #include "visualization/interaction/PointPicker.h"
@@ -47,7 +48,10 @@ KeyPointDefinition definition(vtkIdType id, const QString &label = {}) {
 } // namespace
 class KeyPointInteractionTests final : public QObject {
     Q_OBJECT
+    ParameterTestIsolation m_parameterIsolation;
 private slots:
+    void init() { m_parameterIsolation.reset(); }
+
     void creator() {
         KeyPointStyle style;
         auto actors = KeyPointCreator::create(42, {{1, 2, 3}}, "tip", style);

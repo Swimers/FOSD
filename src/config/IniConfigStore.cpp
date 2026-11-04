@@ -165,7 +165,7 @@ bool IniConfigStore::modify(Change change, const QString &module, const QString 
                             const ConfigData &replacement, const QVariant &value, QString *error) {
     clearError(error);
     if (!validPath(error)) return false;
-    if (change != Change::ReplaceAll && !validName(module, error)) return false;
+    if (change != Change::ReplaceAll && change != Change::EnsureAll && !validName(module, error)) return false;
     if ((change == Change::SetValue || change == Change::RemoveValue) && !validName(key, error)) return false;
     if (change == Change::SetValue && !validValue(value, error)) return false;
     if (!validDocument(replacement, error)) return false;
@@ -176,10 +176,27 @@ bool IniConfigStore::modify(Change change, const QString &module, const QString 
     if (!fileLock.tryLock(m_lockTimeoutMs))
         return fail(error, QStringLiteral("Cannot lock '%1' (QLockFile error %2)").arg(m_filePath).arg(int(fileLock.error())));
     ConfigData data;
-    const bool creating = change == Change::ReplaceModule || change == Change::SetValue;
+    const bool creating = change == Change::ReplaceModule || change == Change::SetValue || change == Change::EnsureModule || change == Change::EnsureAll;
     if (change != Change::ReplaceAll && !load(&data, creating, error)) return false;
     if (change == Change::ReplaceAll) data = replacement;
-    else if (change == Change::ReplaceModule) {
+    else if (change == Change::EnsureAll) {
+        bool changed = false;
+        for (auto section=replacement.constBegin(); section!=replacement.constEnd(); ++section) {
+            auto values = data.value(section.key());
+            for (auto entry=section.value().constBegin(); entry!=section.value().constEnd(); ++entry)
+                if (!values.contains(entry.key())) { values[entry.key()] = entry.value(); changed = true; }
+            if (!values.isEmpty()) data[section.key()] = values;
+        }
+        if (!changed) return true;
+    } else if (change == Change::EnsureModule) {
+        auto values = data.value(module);
+        const auto defaults = replacement.value(module);
+        bool changed = false;
+        for (auto it = defaults.constBegin(); it != defaults.constEnd(); ++it)
+            if (!values.contains(it.key())) { values[it.key()] = it.value(); changed = true; }
+        if (!changed) return true;
+        data[module] = values;
+    } else if (change == Change::ReplaceModule) {
         const auto values = replacement.value(module);
         if (values.isEmpty()) data.remove(module); else data[module] = values;
     } else if (change == Change::RemoveModule) {
@@ -194,6 +211,12 @@ bool IniConfigStore::modify(Change change, const QString &module, const QString 
 }
 bool IniConfigStore::writeAll(const ConfigData &configuration, QString *error) {
     return modify(Change::ReplaceAll, {}, {}, configuration, {}, error);
+}
+bool IniConfigStore::ensureModule(const QString &module, const ConfigSection &defaults, QString *error) {
+    return modify(Change::EnsureModule, module, {}, {{module, defaults}}, {}, error);
+}
+bool IniConfigStore::ensureDefaults(const ConfigData &defaults, QString *error) {
+    return modify(Change::EnsureAll, {}, {}, defaults, {}, error);
 }
 bool IniConfigStore::writeModule(const QString &module, const ConfigSection &values, QString *error) {
     return modify(Change::ReplaceModule, module, {}, {{module, values}}, {}, error);

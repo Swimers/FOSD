@@ -1,4 +1,5 @@
 #include "StorageControl.h"
+#include "config/ParameterStore.h"
 #include "StorageRecords.h"
 #include <QSet>
 #include <QUuid>
@@ -63,6 +64,9 @@ void StorageWorker::start(const StorageConfiguration &configuration) {
     if (!writer->open(configuration.path, &error)) {
         reportError(QStringLiteral("open"), error);
         return;
+    }
+    if (!config::ParameterStore().write(configuration, true, &error)) {
+        writer->close(); reportError("configuration", error); return;
     }
     m_writer = std::move(writer);
     m_session = QUuid::createUuid().toString(QUuid::WithoutBraces);
@@ -168,6 +172,12 @@ StorageControl::StorageControl(QThread &host, WriterFactory factory, QObject *pa
     qRegisterMetaType<core::CalibratedDataPtr>("fosd::core::CalibratedDataPtr");
     qRegisterMetaType<core::CalculationResultPtr>("fosd::core::CalculationResultPtr");
 
+    StorageConfiguration saved;
+    QString message;
+    if (!config::ParameterStore().initialize(&saved, &message)) {
+        StorageError error; error.operation = "configuration"; error.message = message;
+        QMetaObject::invokeMethod(this, "errorOccurred", Qt::QueuedConnection, Q_ARG(fosd::storage::StorageError, error));
+    }
     m_worker->moveToThread(&host);
 
     connect(&host, &QThread::finished, m_worker.data(), &QObject::deleteLater);

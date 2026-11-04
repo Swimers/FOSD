@@ -24,3 +24,5 @@ target_link_libraries(fosd_calculation
 )
 
 target_compile_features(fosd_calculation PUBLIC cxx_std_11)
+
+target_link_libraries(fosd_calculation PUBLIC fosd_parameters)
