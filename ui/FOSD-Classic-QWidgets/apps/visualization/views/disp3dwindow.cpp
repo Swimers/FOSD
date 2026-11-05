@@ -69,14 +69,6 @@ void VisualizationView::relayControl(PanelId panel, const QString &action) {
         emit actionStopRequested(values());
         return;
     }
-    if (action == "actionTrackingPointData") {
-        emit actionTrackingPointDataRequested(values());
-        return;
-    }
-    if (action == "actionTrackingPoints") {
-        emit actionTrackingPointsRequested(values());
-        return;
-    }
     if (action == "actionViewDock") {
         emit actionViewDockRequested(values());
         return;

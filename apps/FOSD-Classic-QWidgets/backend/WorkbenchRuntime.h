@@ -4,7 +4,8 @@
 #include "calculation/CalculationControl.h"
 #include "visualization/VisualizationControl.h"
 #include <QTimer>
-#include <QTemporaryDir>
+#include <QElapsedTimer>
+#include "config/ParameterStore.h"
 #include <QSet>
 #include <QQueue>
 namespace fosd {
@@ -27,7 +28,7 @@ public:
     Calculation::CalculationControl &calculation() {
         return *m_calculation;
     }
-    bool loadPlate(QString *error = nullptr);
+
 private slots:
     void frameReceived(const fosd::core::FrameSnapshotPtr &frame);
     void hardwareReady(const fosd::core::CalibratedDataPtr &data);
@@ -50,6 +51,7 @@ private slots:
     void notice(const QString &message);
     void publishLatest();
     void publishScalar();
+    void clearReceiveLogs();
 
 private:
     bool connectionAction(const ui::classic::UiRequest &, ui::classic::UiResponse *);
@@ -62,20 +64,50 @@ private:
     void publishRunState();
     void initializePorts();
     bool startStorage(const QString &path, bool single, QString *error);
+    QString rawDisplay(int channel) const;
+    QString udpLogEntry() const;
+    bool sendSerialCommand(const QString &command, QString *error);
     static QString text(const QVariantMap &fields, const QString &name);
     static int index(const QVariantMap &fields, const QString &name);
     std::unique_ptr<protocol::ProtocolControl> m_protocol;
     std::unique_ptr<Calculation::CalculationControl> m_calculation;
     std::unique_ptr<visualization::VisualizationControl> m_visualization;
     Calculation::CalculationConfiguration m_configuration;
+    Calculation::CalculationConfiguration m_pendingConfiguration;
     core::FrameSnapshotPtr m_frame;
     core::CalibratedDataPtr m_hardware;
     core::CalculationResultPtr m_result;
     QTimer m_timer;
-    QTemporaryDir m_assets;
+    QTimer m_receiveLogCleanupTimer;
+    config::ParameterStore m_parameters;
+    int m_baselineCount = 0;
+    int m_baselineTarget = 20;
+    int m_baselineTimeout = 10000;
+    QVector<double> m_baselineSum;
+    QString m_baselineIdentity;
+    QString m_activeIdentity;
+    QString m_pendingIdentity;
+    QElapsedTimer m_baselineClock;
+    quint64 m_baselineRevision = 0;
+    bool m_solving = true;
+    quint64 m_runStartFrameRevision = 0;
+    QMap<QString, QVariantList> m_history;
+    QElapsedTimer m_historyClock;
     QString m_modelPath;
     QString m_lastNotice;
     QString m_rawText[3];
+    QByteArray m_rawBytes[2];
+    bool m_rawHex[2] = {false, true};
+    bool m_rawDirty[3] = {false, false, false};
+    core::FrameSnapshotPtr m_udpLogFrame;
+    QByteArray m_udpPreview;
+    communication::Endpoint m_udpPeer;
+    QDateTime m_udpReceivedAt;
+    int m_udpPacketBytes = 0;
+    quint64 m_udpPacketCount = 0;
+    QString m_udpLogStatus;
+    bool m_udpLogPending = false;
+    QStringList m_udpLogLines;
     communication::ConnectionState m_states[3] = {communication::ConnectionState::Closed,
                                                   communication::ConnectionState::Closed,
                                                   communication::ConnectionState::Closed};

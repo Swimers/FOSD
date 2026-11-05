@@ -1,0 +1,38 @@
+Internal ctest changing into directory: D:/Documents/GitHub/FOSD-ReArc/build/fosd-widgets
+Test project D:/Documents/GitHub/FOSD-ReArc/build/fosd-widgets
+      Start  1: test_classic_widgets
+ 1/16 Test  #1: test_classic_widgets .............   Passed    0.35 sec
+      Start  2: test_workbench_runtime
+ 2/16 Test  #2: test_workbench_runtime ...........   Passed    6.24 sec
+      Start  3: test_workbench_main
+ 3/16 Test  #3: test_workbench_main ..............   Passed    6.44 sec
+      Start  4: test_config
+ 4/16 Test  #4: test_config ......................   Passed    2.58 sec
+      Start  5: test_parameters
+ 5/16 Test  #5: test_parameters ..................   Passed    0.64 sec
+      Start  6: test_communication
+ 6/16 Test  #6: test_communication ...............   Passed    2.12 sec
+      Start  7: test_packet_decoders
+ 7/16 Test  #7: test_packet_decoders .............   Passed    0.06 sec
+      Start  8: test_protocol
+ 8/16 Test  #8: test_protocol ....................   Passed    1.30 sec
+      Start  9: test_jcs_wavelength_parser
+ 9/16 Test  #9: test_jcs_wavelength_parser .......   Passed    0.05 sec
+      Start 10: test_jcs_channel_parser
+10/16 Test #10: test_jcs_channel_parser ..........   Passed    0.05 sec
+      Start 11: test_calculation
+11/16 Test #11: test_calculation .................   Passed    1.68 sec
+      Start 12: test_storage
+12/16 Test #12: test_storage .....................   Passed    2.15 sec
+      Start 13: test_end_to_end
+13/16 Test #13: test_end_to_end ..................   Passed    2.62 sec
+      Start 14: test_visualization
+14/16 Test #14: test_visualization ...............   Passed    0.75 sec
+      Start 15: test_keypoint_interaction
+15/16 Test #15: test_keypoint_interaction ........   Passed    0.38 sec
+      Start 16: test_scene_environment
+16/16 Test #16: test_scene_environment ...........   Passed    0.49 sec
+
+100% tests passed, 0 tests failed out of 16
+
+Total Test time (real) =  27.92 sec

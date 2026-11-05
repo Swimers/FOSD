@@ -1,14 +1,8 @@
 #include "WorkbenchRuntime.h"
-#include "calculation/PlateIFE.h"
 #include <QFile>
 #include <QNetworkInterface>
 #include <QSerialPortInfo>
 #include <cmath>
-
-// Referencing the resource initializer also retains it when linking this static library.
-static void initializeWorkbenchResources() {
-    Q_INIT_RESOURCE(workbench);
-}
 
 namespace fosd {
 namespace application {
@@ -17,7 +11,7 @@ WorkbenchRuntime::WorkbenchRuntime(QObject *parent)
     : WorkbenchServices(parent), m_protocol(new protocol::ProtocolControl),
       m_calculation(new Calculation::CalculationControl(m_protocol->dataModel())),
       m_visualization(new visualization::VisualizationControl) {
-    initializeWorkbenchResources();
+    m_historyClock.start();
     qRegisterMetaType<PanelId>("fosd::ui::classic::PanelId");
     qRegisterMetaType<UiResponse>("fosd::ui::classic::UiResponse");
     auto &communication = m_protocol->communication();
@@ -62,7 +56,19 @@ WorkbenchRuntime::WorkbenchRuntime(QObject *parent)
     m_timer.setInterval(100);
     connect(&m_timer, &QTimer::timeout, this, &WorkbenchRuntime::publishLatest);
     m_timer.start();
+    m_receiveLogCleanupTimer.setParent(this);
+    m_receiveLogCleanupTimer.setObjectName("receiveLogCleanupTimer");
+    m_receiveLogCleanupTimer.setInterval(60000);
+    connect(&m_receiveLogCleanupTimer, &QTimer::timeout, this, &WorkbenchRuntime::clearReceiveLogs);
+    m_receiveLogCleanupTimer.start();
     m_configuration.strainCalibration.A = 1.0;
+    QString error;
+    Calculation::CalculationConfiguration saved;
+    if (m_parameters.read(&saved, true, &error)) {
+        config::IniConfigStore store(config::ParameterStore::runtimePath()); QVariant identity;
+        if(store.readValue("classic.baseline","identity",&identity)) m_activeIdentity=identity.toString();
+        configure(saved, &error);
+    }
 }
 
 WorkbenchRuntime::~WorkbenchRuntime() {
@@ -102,6 +108,23 @@ bool WorkbenchRuntime::handleRequest(const UiRequest &request, UiResponse *respo
 
 void WorkbenchRuntime::initialize() {
     initializePorts();
+    communication::SerialConfig serial; communication::UdpConfig udp; communication::TcpConfig tcp; QString loadError;
+    if(m_parameters.read(&serial,false,&loadError)) emit presentationChanged(PanelId::Connection,{{"cbox_SerialNameChoose",QVariantMap{{"text",serial.portName}}},{"cbox_SerialBaudChoose",QVariantMap{{"text",QString::number(serial.baudRate)}}}});
+    if(m_parameters.read(&udp,false,&loadError) && udp.localPort) emit presentationChanged(PanelId::Connection,{{"edit_LocalPort",QString::number(udp.localPort)},{"edit_TargetIP",udp.defaultPeer.address.toString()},{"edit_TargetPort",QString::number(udp.defaultPeer.port)}});
+    if(m_parameters.read(&tcp,false,&loadError)) emit presentationChanged(PanelId::Connection,{{"cbox_TcpRole",QVariantMap{{"index",int(tcp.role)}}}});
+
+    config::IniConfigStore store(config::ParameterStore::runtimePath()); QVariant channels;
+    QVariantMap commands;
+    for (int i = 0; i < 10; ++i) {
+        QVariant command;
+        if (store.readValue("classic.serialCommands", QString::number(i), &command))
+            commands[QStringLiteral("edit_SerialCommand%1").arg(i)] = command;
+    }
+    if (!commands.isEmpty())
+        emit presentationChanged(PanelId::Connection, commands);
+    if(store.readValue("classic.display","channels",&channels)) {
+        m_filterChannels=true; m_channels.clear(); for(const auto &s:channels.toStringList()) if(s.toInt()>=1 && s.toInt()<=16) m_channels.insert(s.toInt());
+    }
     QStringList addresses{QStringLiteral("0.0.0.0"), QStringLiteral("127.0.0.1")};
     for (const auto &address : QNetworkInterface::allAddresses())
         if (address.protocol() == QAbstractSocket::IPv4Protocol &&
@@ -109,18 +132,14 @@ void WorkbenchRuntime::initialize() {
             addresses.append(address.toString());
     QVariantMap fields{{"cbox_LocakIP", QVariantMap{{"items", addresses}, {"index", 0}}}};
     for (int channel = 1; channel <= 16; ++channel)
-        fields[QStringLiteral("ckbox_CH%1").arg(channel)] = true;
+        fields[QStringLiteral("ckbox_CH%1").arg(channel)] = !m_filterChannels || m_channels.contains(channel);
     emit presentationChanged(PanelId::Connection, fields);
     emit presentationChanged(PanelId::ModelPanel,
                              {{"cbox_ScalarSelect", QVariantMap{{"index", 3}}}});
     emit presentationChanged(PanelId::HardwareData, {{"checkBox", true}});
     emit presentationChanged(PanelId::KeyPointSelect,
                              {{"radioButton", true}, {"radioButton_3", true}});
-    emit presentationChanged(PanelId::Connection,
-                             {{"textEdit_StrainTopPara", tr("阈值业务尚未实现")},
-                              {"textEdit_StrainTopPara.enabled", false},
-                              {"textEdit_StrainLowPara", tr("阈值业务尚未实现")},
-                              {"textEdit_StrainLowPara.enabled", false}});
+
     m_visualization->setfreshFPS(40);
     emit presentationChanged(PanelId::ModelPanel, {{"cbox_FPS", QVariantMap{{"index", 2}}}});
     const auto axes = m_visualization->axesSettings();
@@ -139,7 +158,7 @@ void WorkbenchRuntime::initialize() {
     publishRunState();
     publishModel();
     publishScalar();
-    notice(tr("就绪：先接收波长并置零配置，或在三维工具栏选择板模型 / Plate IFE。"));
+    notice(tr("就绪：连接设备，采样置零后加载模型。"));
 }
 
 void WorkbenchRuntime::initializePorts() {
@@ -154,15 +173,55 @@ void WorkbenchRuntime::initializePorts() {
 
 void WorkbenchRuntime::frameReceived(const core::FrameSnapshotPtr &frame) {
     m_frame = frame;
+    if (frame && frame->source.transport == core::TransportKind::Udp) {
+        m_udpLogFrame = frame;
+        m_udpLogPending = true;
+    }
+    auto wavelengths = frame ? std::dynamic_pointer_cast<const core::WavelengthFrame>(frame->data) : nullptr;
+    QString layout;
+    if(wavelengths) for(const auto &r:wavelengths->records) layout += QString("/%1:%2").arg(r.channel).arg(r.sensor);
+    if(!m_activeIdentity.isEmpty() && layout != m_activeIdentity && !m_baselineClock.isValid()) {
+        m_calculation->setRunning(false); m_solving=false; m_visualization->setResultRepository(nullptr); notice(tr("传感器布局改变，请重新置零并启动解算"));
+    }
+    if (!m_baselineClock.isValid()) return;
+    auto data = frame ? std::dynamic_pointer_cast<const core::WavelengthFrame>(frame->data) : nullptr;
+    QString identity = frame ? frame->protocolId + frame->source.address + QString::number(frame->source.port) + QString::number(int(frame->source.transport)) : QString();
+    if (data) for (const auto &r : data->records) identity += QString("/%1:%2").arg(r.channel).arg(r.sensor);
+    if (!data || data->records.isEmpty() || (m_baselineCount && identity != m_baselineIdentity)) {
+        m_baselineClock.invalidate(); notice(tr("置零失败：来源或传感器布局改变")); return;
+    }
+    if (frame->revision == m_baselineRevision) return;
+    for (const auto &r : data->records) if (!std::isfinite(r.wavelength) || r.wavelength <= 0) {
+        m_baselineClock.invalidate(); notice(tr("置零失败：无效波长")); return;
+    }
+    if (!m_baselineCount) { m_baselineIdentity = identity; m_baselineSum.fill(0, data->records.size()); }
+    m_baselineRevision = frame->revision;
+    for (int i=0;i<data->records.size();++i) m_baselineSum[i] += data->records[i].wavelength;
+    ++m_baselineCount;
+    notice(tr("置零采样 %1/%2").arg(m_baselineCount).arg(m_baselineTarget));
+    if (m_baselineCount == m_baselineTarget) {
+        m_baselineClock.invalidate();
+        auto c = m_configuration;
+        c.strainCalibration.originalWavelength.clear();
+        for (double sum : m_baselineSum) c.strainCalibration.originalWavelength.push_back(sum / m_baselineTarget);
+        if (c.channelCalibration.channelIndices.empty()) for (int i=0;i<qMin(12,m_baselineSum.size());++i) {
+            c.channelCalibration.channelIndices.push_back(i); c.channelCalibration.calibrationFactors.push_back(1.0);
+        }
+        QString error;
+        m_pendingIdentity=layout;
+        if (!configure(c, &error)) { m_pendingIdentity.clear(); notice(error); }
+    }
 }
 
 void WorkbenchRuntime::hardwareReady(const core::CalibratedDataPtr &data) {
-    if (!m_configurationPending && data && data->configurationRevision == m_configurationRevision)
+    if (m_solving && !m_configurationPending && data && data->sourceFrame &&
+        data->sourceFrame->revision > m_runStartFrameRevision && data->configurationRevision == m_configurationRevision)
         m_hardware = data;
 }
 
 void WorkbenchRuntime::resultReady(const core::CalculationResultPtr &result) {
-    if (!m_modelPending && !m_configurationPending && result &&
+    if (m_solving && !m_modelPending && !m_configurationPending && result && result->sourceFrame &&
+        result->sourceFrame->revision > m_runStartFrameRevision &&
         result->modelRevision == m_modelRevision &&
         result->configurationRevision == m_configurationRevision) {
         m_result = result;
@@ -193,9 +252,17 @@ void WorkbenchRuntime::modelAccepted(quint64 revision) {
 }
 
 void WorkbenchRuntime::configurationAccepted(quint64 revision) {
+    m_configuration = m_pendingConfiguration;
+    publishCalibration();
+    QString savedError;
+    if(!m_pendingIdentity.isEmpty()) {
+        m_activeIdentity=m_pendingIdentity; m_pendingIdentity.clear();
+        config::IniConfigStore store(config::ParameterStore::runtimePath()); QString error;
+        if(!store.writeValue("classic.baseline","identity",m_activeIdentity,&error)) savedError=error;
+    }
     m_configurationRevision = revision;
     m_configurationPending = false;
-    notice(tr("解算配置已生效"));
+    notice(savedError.isEmpty() ? tr("解算配置已生效并保存到 INI") : tr("基线已生效，身份保存失败：%1").arg(savedError));
 }
 
 bool WorkbenchRuntime::configure(const Calculation::CalculationConfiguration &configuration,
@@ -213,7 +280,7 @@ bool WorkbenchRuntime::configure(const Calculation::CalculationConfiguration &co
             *error = validation.lastError();
         return false;
     }
-    m_configuration = configuration;
+    m_pendingConfiguration = configuration;
     m_configurationPending = true;
     m_result.reset();
     m_visualization->setResultRepository(nullptr);
@@ -223,64 +290,22 @@ bool WorkbenchRuntime::configure(const Calculation::CalculationConfiguration &co
 }
 
 bool WorkbenchRuntime::baseline(QString *error) {
-    const auto frame =
-        m_frame ? std::dynamic_pointer_cast<const core::WavelengthFrame>(m_frame->data) : nullptr;
-    if (!frame || frame->records.isEmpty()) {
-        if (error)
-            *error = tr("尚未接收到波长快报");
+    if (m_baselineClock.isValid() || m_configurationPending) { if(error) *error=tr("请等待当前置零或配置提交完成"); return false; }
+    if (!m_frame) { if(error) *error=tr("尚未接收到波长帧"); return false; }
+    config::IniConfigStore store(config::ParameterStore::runtimePath());
+    config::ConfigSection sampling;
+    if (!store.ensureModule("classic.baseline", {{"sampleCount",20},{"timeoutMs",10000}}, error) ||
+        !store.readModule("classic.baseline", &sampling, error)) return false;
+    bool countOk=false, timeoutOk=false;
+    const int count=sampling.value("sampleCount").toInt(&countOk);
+    const int timeout=sampling.value("timeoutMs").toInt(&timeoutOk);
+    if(!countOk || count<1 || count>10000 || !timeoutOk || timeout<100 || timeout>3600000) {
+        if(error) *error=tr("置零配置无效：sampleCount应为1～10000，timeoutMs应为100～3600000");
         return false;
     }
-    auto configuration = m_configuration;
-    configuration.strainCalibration.originalWavelength.clear();
-    for (const auto &record : frame->records)
-        configuration.strainCalibration.originalWavelength.push_back(record.wavelength);
-    if (configuration.channelCalibration.channelIndices.empty()) {
-        for (int i = 0; i < qMin(12, frame->records.size()); ++i) {
-            configuration.channelCalibration.channelIndices.push_back(i);
-            configuration.channelCalibration.calibrationFactors.push_back(1.0);
-        }
-    }
-    return configure(configuration, error);
-}
-
-bool WorkbenchRuntime::loadPlate(QString *error) {
-    if (m_configurationPending) {
-        if (error)
-            *error = tr("请等待上一项配置完成");
-        return false;
-    }
-    const auto path = m_assets.filePath("plate.stl");
-    if (!QFile::exists(path) && !QFile::copy(":/workbench/plate.stl", path)) {
-        if (error)
-            *error = tr("无法提取内置板模型");
-        return false;
-    }
-    Calculation::CalculationConfiguration configuration;
-    configuration.algorithm = Calculation::CalculationAlgorithm::Plate;
-    configuration.strainCalibration.A = 1.0;
-    configuration.strainCalibration.calibrationFactor = 1250.0;
-    for (int i = 0; i < Calculation::PlateSpec::sensors; ++i) {
-        configuration.strainCalibration.originalWavelength.push_back(1550.0 + 0.5 * i);
-        configuration.channelCalibration.channelIndices.push_back(i);
-        configuration.channelCalibration.calibrationFactors.push_back(1.0);
-    }
-    if (!m_visualization->loadModel(path)) {
-        if (error)
-            *error = tr("板模型载入失败");
-        return false;
-    }
-    m_modelPath = path;
-    if (!configure(configuration, error))
-        return false;
-    auto colors = m_visualization->scalarColorSettings();
-    colors.enabled = true;
-    colors.field = visualization::ScalarField::Magnitude;
-    colors.rangeMode = visualization::ColorRangeMode::Automatic;
-    m_visualization->setScalarColorSettings(colors);
-    m_running = true;
-    publishModel();
-    publishRunState();
-    notice(tr("Plate IFE 已选择；请在通信页打开 UDP 并用 plate-udp-sender 发送仿真波长。"));
+    m_baselineTarget=count; m_baselineTimeout=timeout;
+    m_baselineCount=0; m_baselineRevision=0; m_baselineSum.clear(); m_baselineIdentity.clear(); m_baselineClock.start();
+    if(error) *error=tr("开始采样置零：等待%1个有效帧").arg(m_baselineTarget);
     return true;
 }
 
@@ -288,6 +313,7 @@ void WorkbenchRuntime::notice(const QString &message) {
     if (message == m_lastNotice)
         return;
     m_lastNotice = message;
+    emit presentationChanged(PanelId::Connection, {{"lab_OperationStatus", message}});
     emit presentationChanged(PanelId::Main, {{"_status", message}});
 }
 
@@ -296,16 +322,25 @@ void WorkbenchRuntime::transportError(const communication::CommunicationError &e
 }
 
 void WorkbenchRuntime::decoderError(const communication::DecoderError &error) {
+    if (error.channel == communication::Channel::Udp) {
+        m_udpLogStatus = error.message;
+        m_udpLogPending = true;
+    }
     notice(tr("拆包 %1：%2").arg(error.operation, error.message));
 }
 
 void WorkbenchRuntime::protocolError(const protocol::ProtocolError &error) {
+    if (error.channel == communication::Channel::Udp) {
+        m_udpLogFrame.reset();
+        m_udpLogStatus = error.message;
+        m_udpLogPending = true;
+    }
     notice(tr("协议 %1：%2").arg(error.protocolId, error.message));
 }
 
 void WorkbenchRuntime::calculationError(const Calculation::CalculationError &error) {
     if (error.operation == "configuration")
-        m_configurationPending = false;
+        { m_configurationPending = false; m_pendingIdentity.clear(); }
     if (error.operation == "model" && !m_modelRequests.isEmpty()) {
         if (m_modelRequests.dequeue() == m_modelGeneration)
             m_modelPending = false;
@@ -340,10 +375,6 @@ void WorkbenchRuntime::selectionChanged(const visualization::PickedPointInfo &in
                                  {{"edit_IDKeyPoint", QString::number(qlonglong(info.pointId))}});
     } else if (!info.valid) {
         m_selectedPoint = -1;
-        emit presentationChanged(PanelId::Visualization, {{"lab_KeyPointID", QString()},
-                                                          {"lab_KeyPointRawPos", QString()},
-                                                          {"lab_KeyPointDisplace", QString()},
-                                                          {"lab_KeyPointNewPos", QString()}});
         emit presentationChanged(PanelId::KeyPointEdit, {{"lab_XPosition", QString()},
                                                          {"lab_YPosition", QString()},
                                                          {"lab_ZPosition", QString()}});

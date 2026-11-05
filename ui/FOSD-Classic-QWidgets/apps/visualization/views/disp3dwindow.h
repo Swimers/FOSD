@@ -30,8 +30,6 @@ signals:
     void actionResetRequested(const QVariantMap &fields);
     void actionStartRequested(const QVariantMap &fields);
     void actionStopRequested(const QVariantMap &fields);
-    void actionTrackingPointDataRequested(const QVariantMap &fields);
-    void actionTrackingPointsRequested(const QVariantMap &fields);
     void actionViewDockRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);

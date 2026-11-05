@@ -19,17 +19,9 @@ FeatureId featureForPanel(PanelId panel) {
         case PanelId::ModelPanel:
         case PanelId::KeyPointEdit:
         case PanelId::KeyPointSelect:
-        case PanelId::ColorPicker:
             return FeatureId::Model;
         case PanelId::HardwareData:
-        case PanelId::TrackingManager:
-        case PanelId::TrackingData:
             return FeatureId::Tracking;
-        case PanelId::Login:
-        case PanelId::Registration:
-        case PanelId::Recovery:
-        case PanelId::Account:
-            return FeatureId::Account;
     }
     return FeatureId::MainWindow;
 }

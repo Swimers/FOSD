@@ -9,14 +9,7 @@
 #include "../apps/model/views/disp3dmodeldockpanel.h"
 #include "../apps/model/views/disp3dkeypointedit.h"
 #include "../apps/model/views/disp3dkeypointselect.h"
-#include "../apps/model/views/disp3dcolorpicker.h"
 #include "../apps/tracking/views/dispdata.h"
-#include "../apps/tracking/views/trackingpointmanager.h"
-#include "../apps/tracking/views/trackingpointdatatable.h"
-#include "../apps/account/views/login.h"
-#include "../apps/account/views/userregister.h"
-#include "../apps/account/views/userforget.h"
-#include "../apps/account/views/usermanage.h"
 #include "../apps/mainwindow/views/oldmainwindow.h"
 namespace fosd {
 namespace ui {
@@ -43,22 +36,8 @@ QWidget *createPanelView(PanelId panel, QWidget *parent) {
             return new KeyPointEditView(parent);
         case PanelId::KeyPointSelect:
             return new KeyPointSelectView(parent);
-        case PanelId::ColorPicker:
-            return new ColorPickerView(parent);
         case PanelId::HardwareData:
             return new HardwareDataView(parent);
-        case PanelId::TrackingManager:
-            return new TrackingManagerView(parent);
-        case PanelId::TrackingData:
-            return new TrackingDataView(parent);
-        case PanelId::Login:
-            return new LoginView(parent);
-        case PanelId::Registration:
-            return new RegistrationView(parent);
-        case PanelId::Recovery:
-            return new RecoveryView(parent);
-        case PanelId::Account:
-            return new AccountView(parent);
         case PanelId::Main:
             return new MainWindowView(parent);
     }

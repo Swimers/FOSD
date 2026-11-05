@@ -21,8 +21,6 @@ bool MainWindowPresenter::localAction(const UiRequest &request) {
             m_host->applyTheme(request.fields.value("switch_Style").toBool());
             return true;
         }
-        if (action == "pbtn_TurnOff")
-            return showPanel(PanelId::Login);
     }
     return PanelPresenter::localAction(request);
 }

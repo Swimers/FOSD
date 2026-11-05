@@ -17,6 +17,7 @@
 #include <QSpinBox>
 #include <QStandardItemModel>
 #include <QStatusBar>
+#include <QToolTip>
 #include <QTableView>
 #include <QTableWidget>
 #include <cmath>
@@ -174,8 +175,12 @@ void FormBinding::applyFields(const QVariantMap &fields) {
                 combo->setCurrentText(previous);
         } else if (auto *edit = qobject_cast<QLineEdit *>(object))
             edit->setText(value.toString());
-        else if (auto *edit = qobject_cast<QPlainTextEdit *>(object))
-            edit->setPlainText(value.toString());
+        else if (auto *edit = qobject_cast<QPlainTextEdit *>(object)) {
+            if (value.type() == QVariant::Map && value.toMap().contains("append"))
+                edit->appendPlainText(value.toMap().value("append").toString());
+            else
+                edit->setPlainText(value.toString());
+        }
         else if (auto *edit = qobject_cast<QTextEdit *>(object))
             edit->setPlainText(value.toString());
         else if (auto *action = qobject_cast<QAction *>(object)) {
@@ -198,6 +203,21 @@ void FormBinding::applyFields(const QVariantMap &fields) {
             slider->setValue(value.toInt());
         else if (auto *plot = qobject_cast<QCustomPlot *>(object)) {
             const auto data = value.toMap();
+            if(data.contains("savePath")) {
+                const auto p=data["savePath"].toString();
+                const bool ok=p.endsWith(".jpg",Qt::CaseInsensitive) ? plot->saveJpg(p) : p.endsWith(".bmp",Qt::CaseInsensitive) ? plot->saveBmp(p) : plot->savePng(p);
+                QToolTip::showText(m_widget->mapToGlobal(QPoint(20,20)),ok ? tr("图片已保存") : tr("图片保存失败"),m_widget);
+                continue;
+            }
+            if(data.contains("series")) {
+                plot->clearGraphs();
+                for(const auto &v:data["series"].toList()) {
+                    const auto series=v.toMap(); QVector<double> x,y;
+                    for(const auto &sample:series["samples"].toList()) {const auto p=sample.toList(); if(p.size()==2) {x.append(p[0].toDouble()); y.append(p[1].toDouble());}}
+                    auto *g=plot->addGraph(); g->setName(series["name"].toString()); g->setPen(QPen(QColor::fromHsv((plot->graphCount()*47)%360,200,230))); g->setData(x,y);
+                }
+                plot->xAxis->setLabel(tr("时间 (s)")); plot->yAxis->setLabel(tr("波长 (nm)")); plot->legend->setVisible(true); plot->rescaleAxes(); plot->replot(); continue;
+            }
             const auto xs = data["x"].toList(), ys = data["y"].toList();
             if (xs.size() != ys.size())
                 continue;
@@ -278,8 +298,7 @@ void FormBinding::showStatus(const QString &message) {
     if (!m_widget)
         return;
     m_widget->setProperty("presenterStatus", message);
-    if (auto *window = qobject_cast<QMainWindow *>(m_widget.data()))
-        window->statusBar()->showMessage(message);
+    if (message.contains(QString::fromUtf8("失败")) || message.contains(QString::fromUtf8("置零")) || message.contains(QString::fromUtf8("已生效"))) QToolTip::showText(m_widget->mapToGlobal(QPoint(20,20)),message,m_widget);
 }
 } // namespace classic
 } // namespace ui

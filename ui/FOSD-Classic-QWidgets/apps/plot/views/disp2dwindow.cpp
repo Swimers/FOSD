@@ -40,14 +40,6 @@ void PlotView::showStatus(const QString &message) {
 void PlotView::relayControl(PanelId panel, const QString &action) {
     if (panel != PanelId::Plot)
         return;
-    if (action == "pbtn_ChangeBackGround") {
-        emit pbtn_ChangeBackGroundRequested(values());
-        return;
-    }
-    if (action == "pbtn_ChangeOriginalCoordinates") {
-        emit pbtn_ChangeOriginalCoordinatesRequested(values());
-        return;
-    }
     if (action == "pbtn_Observe") {
         emit pbtn_ObserveRequested(values());
         return;

@@ -1,0 +1,92 @@
+CMake is re-running because D:/Documents/GitHub/FOSD-ReArc/build/vtk-native-widgets/apps/Test-VtkOpenGLNativeWidgets/CMakeFiles/generate.stamp is out-of-date.
+  the file 'D:/Documents/GitHub/FOSD-ReArc/apps/Test-VtkOpenGLNativeWidgets/CMakeLists.txt'
+  is newer than 'D:/Documents/GitHub/FOSD-ReArc/build/vtk-native-widgets/apps/Test-VtkOpenGLNativeWidgets/CMakeFiles/generate.stamp.depend'
+  result='-1'
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- Configuring done (0.1s)
+-- Generating done (3.2s)
+-- Build files have been written to: D:/Documents/GitHub/FOSD-ReArc/build/vtk-native-widgets
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.30+gc0e4b0e683
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+  Automatic MOC and UIC for target fosd_config
+  Building Custom Rule D:/Documents/GitHub/FOSD-ReArc/src/config/CMakeLists.txt
+  IniConfigStore.cpp
+  mocs_compilation_Release.cpp
+  fosd_config.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_config.lib
+  Automatic MOC and UIC for target fosd_core
+  fosd_core.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_core.lib
+  Building Custom Rule D:/Documents/GitHub/FOSD-ReArc/src/config/CMakeLists.txt
+  Automatic MOC and UIC for target fosd_parameters
+  1>Automatic RCC for parameter_defaults.qrc
+  Building Custom Rule D:/Documents/GitHub/FOSD-ReArc/src/config/CMakeLists.txt
+  ParameterDefaults.cpp
+  ParameterValidation.cpp
+  ParameterStore.cpp
+  qrc_parameter_defaults.cpp
+  mocs_compilation_Release.cpp
+  fosd_parameters.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_parameters.lib
+  Automatic MOC and UIC for target fosd_storage
+  StorageTypes.cpp
+  StorageRecords.cpp
+  IStorageWriter.cpp
+  CsvWriter.cpp
+  SQLiteWriter.cpp
+  StorageControl.cpp
+  mocs_compilation_Release.cpp
+  fosd_storage.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_storage.lib
+  Automatic MOC and UIC for target fosd_calculation
+  CalculationControl.cpp
+  StrainCalibration.cpp
+  HYYIFE.cpp
+  mocs_compilation_Release.cpp
+  fosd_calculation.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_calculation.lib
+  Automatic MOC and UIC for target fosd_communication
+  ConnectControl.cpp
+  PacketDecoders.cpp
+  Tcp.cpp
+  Udp.cpp
+  Usart.cpp
+  Serialport.cpp
+  mocs_compilation_Release.cpp
+  fosd_communication.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_communication.lib
+  Automatic MOC and UIC for target fosd_protocol
+  IFrameParser.cpp
+  MPWavelengthParser.cpp
+  JCSWavelengthParser.cpp
+  JCSChannelParser.cpp
+  ProtocolControl.cpp
+  mocs_compilation_Release.cpp
+  fosd_protocol.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_protocol.lib
+  Automatic MOC and UIC for target fosd_visualization
+  VisualizationControl.cpp
+  MeshManager.cpp
+  DeformationRenderer.cpp
+  ScalarColorMapper.cpp
+  KeyPointManager.cpp
+  KeyPointCreator.cpp
+  ModelInteractorStyle.cpp
+  PointPicker.cpp
+  SceneEnvironment.cpp
+  mocs_compilation_Release.cpp
+  fosd_visualization.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_visualization.lib
+  Automatic MOC and UIC for target fosd_vtk_validation_presenter
+  VtkValidationPresenter.cpp
+  fosd_vtk_validation_presenter.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_vtk_validation_presenter.lib
+  Automatic MOC and UIC for target fosd_vtk_validation_backend
+  VtkValidationBackend.cpp
+  mocs_compilation_Release.cpp
+D:\Documents\GitHub\FOSD-ReArc\ui\Test-VtkOpenGLNativeWidgets\backend\VtkValidationBackend.cpp(19): warning C4819: 该文件包含不能在当前代码页(0)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失 [D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\ui\Test-VtkOpenGLNativeWidgets\fosd_vtk_validation_backend.vcxproj]
+D:\Documents\GitHub\FOSD-ReArc\ui\Test-VtkOpenGLNativeWidgets\backend\VtkValidationBackend.cpp(27): warning C4819: 该文件包含不能在当前代码页(0)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失 [D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\ui\Test-VtkOpenGLNativeWidgets\fosd_vtk_validation_backend.vcxproj]
+  fosd_vtk_validation_backend.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_vtk_validation_backend.lib
+  Automatic MOC and UIC for target fosd_vtk_validation_widgets
+  VtkValidationWindow.cpp
+  fosd_vtk_validation_widgets.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_vtk_validation_widgets.lib
+  Automatic MOC and UIC for target fosd_vtk_validation_smoke
+  SmokeCheck.cpp
+  mocs_compilation_Release.cpp
+  fosd_vtk_validation_smoke.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\lib\Release\fosd_vtk_validation_smoke.lib
+  Automatic MOC and UIC for target Test-VtkOpenGLNativeWidgets
+  main.cpp
+  mocs_compilation_Release.cpp
+  Test-VtkOpenGLNativeWidgets.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\vtk-native-widgets\bin\Release\Test-VtkOpenGLNativeWidgets.exe

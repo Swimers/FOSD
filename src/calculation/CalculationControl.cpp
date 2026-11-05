@@ -1,7 +1,6 @@
 #include "CalculationControl.h"
 #include "config/ParameterStore.h"
 #include "HYYIFE.h"
-#include "PlateIFE.h"
 #include <QTimer>
 #include <cmath>
 #include <utility>
@@ -55,6 +54,8 @@ void CalculationWorker::initialize() {
     }
 }
 
+void CalculationWorker::setRunning(bool enabled) { m_running = enabled; m_seenFrame.reset(); }
+
 void CalculationWorker::shutdown() {
     m_stopping = true;
     const auto timers = findChildren<QTimer *>();
@@ -70,8 +71,7 @@ void CalculationWorker::configure(const CalculationConfiguration &configuration)
         reportError(QStringLiteral("configuration"), validation.lastError());
         return;
     }
-    auto algorithm =
-        configuration.algorithm == CalculationAlgorithm::Plate ? createPlateIFE() : m_factory();
+    auto algorithm = m_factory();
     if (!algorithm) {
         reportError(QStringLiteral("configuration"),
                     QStringLiteral("IFE factory returned no algorithm"));
@@ -98,7 +98,7 @@ void CalculationWorker::setModel(const core::ModelData &model) {
 }
 
 void CalculationWorker::pollLatest() {
-    if (m_stopping || !m_algorithm)
+    if (m_stopping || !m_running || !m_algorithm)
         return;
     const auto snapshot = m_input->latest();
     if (snapshot && snapshot != m_seenFrame)
@@ -250,6 +250,7 @@ CalculationControl::CalculationControl(core::FrameRepositoryPtr input, QObject *
     connect(m_worker, &detail::CalculationWorker::configurationAccepted, this,
             &CalculationControl::configurationAccepted);
 
+    connect(this, &CalculationControl::requestRunning, m_worker, &detail::CalculationWorker::setRunning, Qt::QueuedConnection);
     m_thread.start();
 }
 
@@ -260,6 +261,11 @@ CalculationControl::~CalculationControl() {
     m_thread.quit();
     m_thread.wait();
     m_storage.reset();
+}
+
+void CalculationControl::setRunning(bool enabled) {
+    QMetaObject::invokeMethod(m_worker, "setRunning", Qt::BlockingQueuedConnection, Q_ARG(bool, enabled));
+    emit runningChanged(enabled);
 }
 
 void CalculationControl::setConfiguration(const CalculationConfiguration &configuration) {

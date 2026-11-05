@@ -3,7 +3,7 @@
 #include <QtEndian>
 #include <cstring>
 namespace workbench_test {
-inline QByteArray packet(quint32 sequence) {
+inline QByteArray packet(quint32 sequence, double offset = -0.04) {
     QByteArray bytes(10, '\0');
     bytes[0] = char(0x5a);
     bytes[1] = char(0xa5);
@@ -14,7 +14,7 @@ inline QByteArray packet(quint32 sequence) {
     for (int i = 0; i < 12; ++i) {
         bytes.append(char(i + 1));
         bytes.append(char(1));
-        const float value = float(1550.0 + 0.5 * i - 0.04);
+        const float value = float(1550.0 + 0.5 * i + offset);
         quint32 bits = 0;
         std::memcpy(&bits, &value, sizeof(bits));
         char encoded[4];

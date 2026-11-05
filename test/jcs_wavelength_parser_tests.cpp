@@ -7,7 +7,7 @@ using namespace fosd;
 namespace {
 QByteArray examplePacket() {
     // Protocol document example: CH1=2, CH2=1, N=3.
-    return QByteArray::fromHex("fafbfafb020100000000000300c0c14400d0c14400b8c144");
+    return QByteArray::fromHex("fafbfafb020100000000000000000000000000000300000000c0c14400d0c14400b8c144");
 }
 
 std::shared_ptr<const core::WavelengthFrame> decode(const QByteArray &packet,
@@ -49,29 +49,30 @@ void JCSParserTests::documentExample() {
 }
 
 void JCSParserTests::sparseChannelsAndUnsignedCounts() {
-    QByteArray packet = QByteArray::fromHex("fafbfafb0002000000000103");
-    packet += examplePacket().mid(12);
+    QByteArray packet = QByteArray::fromHex("fafbfafb0002000000000000000000000000000103000000");
+    packet += examplePacket().mid(24);
     const auto sparse = decode(packet);
     QVERIFY(sparse);
     QCOMPARE(sparse->records.at(0).channel, quint8(2));
     QCOMPARE(sparse->records.at(1).sensor, quint8(2));
-    QCOMPARE(sparse->records.at(2).channel, quint8(7));
+    QCOMPARE(sparse->records.at(2).channel, quint8(16));
     QCOMPARE(sparse->records.at(2).sensor, quint8(1));
 
-    packet = QByteArray::fromHex("fafbfafb000000000000ffff");
+    packet = QByteArray(24, '\0'); packet.replace(0,4,QByteArray::fromHex("fafbfafb")); packet[19]=char(255); packet[20]=char(255);
     for (int index = 0; index < 255; ++index)
         packet += QByteArray::fromHex("0000c03f");
     const auto maximum = decode(packet);
     QVERIFY(maximum);
     QCOMPARE(maximum->recordCount, quint16(255));
     QCOMPARE(maximum->records.size(), 255);
-    QCOMPARE(maximum->records.last().channel, quint8(7));
+    QCOMPARE(maximum->records.last().channel, quint8(16));
     QCOMPARE(maximum->records.last().sensor, quint8(255));
     QCOMPARE(maximum->records.last().wavelength, 1.5f);
 }
 
 void JCSParserTests::emptyAndTrailingBytes() {
-    const auto empty = decode(QByteArray::fromHex("fafbfafb0000000000000000"));
+    QByteArray zero(24,'\0'); zero.replace(0,4,QByteArray::fromHex("fafbfafb"));
+    const auto empty = decode(zero);
     QVERIFY(empty);
     QCOMPARE(empty->recordCount, quint16(0));
     QVERIFY(empty->records.isEmpty());
@@ -95,7 +96,7 @@ void JCSParserTests::malformedPackets() {
     packet[0] = 0;
     invalid.append(packet);
     packet = valid;
-    packet[11] = 2; // Total smaller than channel sum.
+    packet[20] = 2; // Total smaller than channel sum.
     invalid.append(packet);
     packet = valid;
     packet[4] = 0; // Total larger than channel sum.
@@ -112,7 +113,7 @@ void JCSParserTests::malformedPackets() {
 }
 
 void JCSParserTests::floatBitPatterns() {
-    QByteArray packet = examplePacket().left(12);
+    QByteArray packet = examplePacket().left(24);
     packet += QByteArray::fromHex("0000807f0000c07f000010c0");
     const auto frame = decode(packet);
     QVERIFY(frame);

@@ -3,7 +3,7 @@
 namespace fosd {
 namespace ui {
 namespace classic {
-// Backend extension point for ModelPanel, KeyPointEdit, KeyPointSelect, ColorPicker only.
+// Backend extension point for the retained model and key-point panels.
 class ModelBackend : public FeatureBackend {
     Q_OBJECT
 public:

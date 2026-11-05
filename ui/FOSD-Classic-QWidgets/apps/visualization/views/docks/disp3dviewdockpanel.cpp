@@ -49,10 +49,6 @@ void ScenePanelView::relayControl(PanelId panel, const QString &action) {
         emit cbox_CareamLockAbleRequested(values());
         return;
     }
-    if (action == "cbox_FellowAble") {
-        emit cbox_FellowAbleRequested(values());
-        return;
-    }
     if (action == "cbox_GridAble") {
         emit cbox_GridAbleRequested(values());
         return;

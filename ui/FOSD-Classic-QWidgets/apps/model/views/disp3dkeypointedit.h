@@ -25,12 +25,8 @@ public:
 signals:
     void cbox_IDKeyPointRequested(const QVariantMap &fields);
     void pbtn_ClearAllRequested(const QVariantMap &fields);
-    void pbtn_ClearCubeRequested(const QVariantMap &fields);
-    void pbtn_DispCubeRequested(const QVariantMap &fields);
     void pbtn_FindKeyPointRequested(const QVariantMap &fields);
     void pbtn_SelectAllRequested(const QVariantMap &fields);
-    void pbtn_SelectCubeRequested(const QVariantMap &fields);
-    void pushButtonRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 

@@ -2,13 +2,45 @@
 #include "../../../common/FormBinding.h"
 #include "../../../resources/UiResources.h"
 #include "ui_connectwindow.h"
+#include <QLineEdit>
+#include <QPushButton>
 namespace fosd {
 namespace ui {
 namespace classic {
 ConnectionView::ConnectionView(QWidget *parent) : QWidget(parent), m_ui(new Ui::connectwindow) {
     initializeFosdUiResources();
     m_ui->setupUi(this);
+    m_ui->ptedit_UdpRec->setMaximumBlockCount(200);
+    m_ui->ptedit_UdpRec->setUndoRedoEnabled(false);
+    m_ui->ptedit_UdpRec->setLineWrapMode(QPlainTextEdit::NoWrap);
+    m_ui->label_14->setText(tr("UDP 接收日志（有效包显示摘要，每60秒自动清理）"));
+    m_ui->cbox_UdpDisplayMode->setToolTip(tr("有效包显示接收时间、协议、序号和记录数；此选项仅切换未识别包的预览格式"));
+    const QStringList defaults{QStringLiteral("udp"), QStringLiteral("reset"),
+                               QStringLiteral("fbg"), QStringLiteral("start")};
+    for (int i = 0; i < 10; ++i) {
+        auto *edit = new QLineEdit(this);
+        edit->setObjectName(QStringLiteral("edit_SerialCommand%1").arg(i));
+        edit->setPlaceholderText(tr("编辑快捷指令"));
+        edit->setToolTip(tr("字符串指令；发送时自动追加回车换行，编辑后自动保存"));
+        if (i < defaults.size())
+            edit->setText(defaults[i]);
+        auto *button = new QPushButton(QString::number(i), this);
+        button->setObjectName(QStringLiteral("pbtn_SerialCommand%1").arg(i));
+        button->setToolTip(tr("发送第 %1 组指令（自动追加 CRLF）").arg(i));
+        button->setFixedWidth(42);
+        m_ui->gridLayout_PresetCmd->addWidget(edit, i % 5, (i / 5) * 2);
+        m_ui->gridLayout_PresetCmd->addWidget(button, i % 5, (i / 5) * 2 + 1);
+    }
+    m_ui->gridLayout_PresetCmd->setColumnStretch(0, 1);
+    m_ui->gridLayout_PresetCmd->setColumnStretch(2, 1);
+    m_ui->ptedit_SerialSend->setPlaceholderText(tr("输入串口指令，发送时自动追加 CRLF（回车换行）"));
     m_binding = new FormBinding(PanelId::Connection, this, this);
+    for (auto *edit : findChildren<QLineEdit *>()) {
+        if (edit->objectName().startsWith("edit_SerialCommand"))
+            connect(edit, &QLineEdit::editingFinished, this, [this, edit]() {
+                emit m_binding->actionTriggered(PanelId::Connection, edit->objectName());
+            });
+    }
     connect(m_binding, &ViewEvents::actionTriggered, this, &ConnectionView::relayControl);
 }
 
@@ -40,24 +72,12 @@ void ConnectionView::showStatus(const QString &message) {
 void ConnectionView::relayControl(PanelId panel, const QString &action) {
     if (panel != PanelId::Connection)
         return;
-    if (action == "cbox_CampingFre") {
-        emit cbox_CampingFreRequested(values());
-        return;
-    }
     if (action == "cbox_CommuteChoose") {
         emit cbox_CommuteChooseRequested(values());
         return;
     }
     if (action == "cbox_LocakIP") {
         emit cbox_LocakIPRequested(values());
-        return;
-    }
-    if (action == "cbox_ModleSelect") {
-        emit cbox_ModleSelectRequested(values());
-        return;
-    }
-    if (action == "cbox_SaveCycle") {
-        emit cbox_SaveCycleRequested(values());
         return;
     }
     if (action == "cbox_SerialBaudChoose") {
@@ -130,30 +150,6 @@ void ConnectionView::relayControl(PanelId panel, const QString &action) {
     }
     if (action == "ckbox_CH9") {
         emit ckbox_CH9Requested(values());
-        return;
-    }
-    if (action == "pbtn_CmdDebug") {
-        emit pbtn_CmdDebugRequested(values());
-        return;
-    }
-    if (action == "pbtn_CmdFbg") {
-        emit pbtn_CmdFbgRequested(values());
-        return;
-    }
-    if (action == "pbtn_CmdReset") {
-        emit pbtn_CmdResetRequested(values());
-        return;
-    }
-    if (action == "pbtn_CmdSerial") {
-        emit pbtn_CmdSerialRequested(values());
-        return;
-    }
-    if (action == "pbtn_CmdStart") {
-        emit pbtn_CmdStartRequested(values());
-        return;
-    }
-    if (action == "pbtn_CmdUdp") {
-        emit pbtn_CmdUdpRequested(values());
         return;
     }
     if (action == "pbtn_Diagnosis") {

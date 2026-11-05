@@ -26,7 +26,6 @@ signals:
     void cbox_KeyPointIDRequested(const QVariantMap &fields);
     void pbtn_AddPointRequested(const QVariantMap &fields);
     void pbtn_DeletePointRequested(const QVariantMap &fields);
-    void pbtn_EditPointRequested(const QVariantMap &fields);
     void pbtn_ExitRequested(const QVariantMap &fields);
     void radioButtonRequested(const QVariantMap &fields);
     void radioButton_2Requested(const QVariantMap &fields);

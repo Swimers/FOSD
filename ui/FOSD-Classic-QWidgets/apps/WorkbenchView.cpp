@@ -10,6 +10,11 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QComboBox>
+#include "../common/ViewEvents.h"
 #include <QTableWidget>
 
 namespace fosd {
@@ -21,7 +26,7 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
 
     // Capture/bind each form before nesting other forms in it. Values are also
     // filtered at runtime by fosdPanelRoot, so sibling fields never leak.
-    for (int index = int(PanelId::Main); index <= int(PanelId::Account); ++index) {
+    for (int index = int(PanelId::Main); index <= int(PanelId::HardwareData); ++index) {
         const auto panel = PanelId(index);
         QWidget *widget = panel == PanelId::Main ? this : createPanelView(panel, this);
 
@@ -47,18 +52,27 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     }
     navigation->setExclusive(true);
     selectPage(0);
+    auto *connection = panelWidget(PanelId::Connection);
+    auto *grid = qobject_cast<QGridLayout *>(connection->layout());
+    auto *controls = new QWidget(connection); auto *layout = new QHBoxLayout(controls);
+    if(grid) grid->addWidget(controls,grid->rowCount(),0);
+    if (layout) {
+        auto *role = new QComboBox(connection); role->setObjectName("cbox_TcpRole"); role->addItems({tr("TCP Client"),tr("TCP Server")}); layout->addWidget(role);
+        auto *state = new QLabel(tr("等待连接和有效配置"), connection);
+        state->setObjectName("lab_OperationStatus");
+        state->setWordWrap(true);
+        layout->addWidget(state);
+        for (const auto &pair : QVector<QPair<QString,QString>>{{"pbtn_CalculationStart",tr("开始解算")},{"pbtn_CalculationStop",tr("停止解算")},{"pbtn_ConfigRead",tr("读取 INI 标定配置")}}) {
+            auto *button = new QPushButton(pair.second, connection); button->setObjectName(pair.first); layout->addWidget(button);
+            connect(button,&QPushButton::clicked,this,[this,button]() { auto *v=panelView(PanelId::Connection); emit v->events()->actionTriggered(PanelId::Connection,button->objectName()); });
+        }
+    }
 
     const QMap<int, QString> titles{{int(PanelId::ConnectionDebug), tr("通信诊断")},
                                     {int(PanelId::PlotSettings), tr("标定参数")},
                                     {int(PanelId::KeyPointEdit), tr("关键点编辑")},
                                     {int(PanelId::KeyPointSelect), tr("关键点选择")},
-                                    {int(PanelId::ColorPicker), tr("模型颜色")},
-                                    {int(PanelId::HardwareData), tr("硬件数据")},
-                                    {int(PanelId::TrackingManager), tr("追踪点管理器")},
-                                    {int(PanelId::TrackingData), tr("追踪点变形量")},
-                                    {int(PanelId::Registration), tr("用户注册")},
-                                    {int(PanelId::Recovery), tr("找回密码")},
-                                    {int(PanelId::Account), tr("账户管理")}};
+                                    {int(PanelId::HardwareData), tr("硬件数据")}};
     for (auto title = titles.constBegin(); title != titles.constEnd(); ++title)
         panelWidget(PanelId(title.key()))->setWindowTitle(title.value());
 
@@ -85,16 +99,7 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     auto *data = panelWidget(PanelId::HardwareData)->findChild<QTableWidget *>("tableWidget");
     data->setColumnCount(3);
     data->setHorizontalHeaderLabels({tr("IFE 输入"), tr("波长源序号"), tr("标定应变")});
-    auto *tracking =
-        panelWidget(PanelId::TrackingManager)->findChild<QTableWidget *>("tab_pointtable");
-    tracking->setColumnCount(7);
-    tracking->setHorizontalHeaderLabels(
-        {tr("显示"), "ID", tr("名称"), "X (mm)", "Y (mm)", "Z (mm)", ""});
-    auto *trackingData =
-        panelWidget(PanelId::TrackingData)->findChild<QTableWidget *>("tab_datatable");
-    trackingData->setColumnCount(10);
-    trackingData->setHorizontalHeaderLabels({tr("显示"), "ID", tr("名称"), "X0 (mm)", "Y0 (mm)",
-                                             "Z0 (mm)", "dX (mm)", "dY (mm)", "dZ (mm)", ""});
+
 }
 
 WorkbenchView::~WorkbenchView() = default;

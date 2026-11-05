@@ -23,8 +23,6 @@ public:
     void clearInputs() override;
     void showStatus(const QString &message) override;
 signals:
-    void pbtn_ChangeBackGroundRequested(const QVariantMap &fields);
-    void pbtn_ChangeOriginalCoordinatesRequested(const QVariantMap &fields);
     void pbtn_ObserveRequested(const QVariantMap &fields);
     void pbtn_ParaReviseRequested(const QVariantMap &fields);
 private slots:

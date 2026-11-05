@@ -90,7 +90,7 @@ void PanelPresenter::complete(const UiResponse &response) {
     const auto message = response.message.isEmpty()
                              ? (response.success ? tr("操作完成") : tr("操作未完成"))
                              : response.message;
-    m_view->showStatus(message);
+    m_view->showStatus(response.success ? message : tr("操作失败：%1").arg(message));
     emit statusChanged(message);
 }
 

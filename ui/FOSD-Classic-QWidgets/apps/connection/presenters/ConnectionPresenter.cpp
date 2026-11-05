@@ -11,6 +11,11 @@ ConnectionPresenter::ConnectionPresenter(PanelId panel, IView *view, IWorkbenchV
 
 bool ConnectionPresenter::localAction(const UiRequest &request) {
     const auto &action = request.action;
+    if (action == "pbtn_SaveSpectrum") {
+        const auto path=m_host->chooseFile(true,tr("保存波长曲线"),tr("PNG (*.png);;JPEG (*.jpg);;BMP (*.bmp)"));
+        if(!path.isEmpty()) m_view->applyFields({{"cplot_Spectrum",QVariantMap{{"savePath",path}}}});
+        return true;
+    }
     if (action == "pbtn_Diagnosis")
         return showPanel(PanelId::ConnectionDebug);
     if (action.startsWith("ckbox_CH"))

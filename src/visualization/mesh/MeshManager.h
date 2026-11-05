@@ -11,8 +11,10 @@ public:
     ~MeshManager();
     
     bool loadModel(const QString &path, QString *error = nullptr);  // 加载模型
-    bool optimize(QString *error = nullptr);    // 
-    bool exportModel(const QString &path, QString *error = nullptr) const;  // 
+    bool optimize(QString *error = nullptr) {
+        if (error) *error = QStringLiteral("Mesh optimization is not supported");
+        return false;
+    }
     void clear();   // 
 
     core::ModelDataPtr originalModel() const;   // 

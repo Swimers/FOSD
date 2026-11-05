@@ -3,7 +3,7 @@ namespace fosd {
 namespace ui {
 namespace classic {
 TrackingBackend::TrackingBackend(QObject *parent)
-    : FeatureBackend({PanelId::HardwareData, PanelId::TrackingManager, PanelId::TrackingData},
+    : FeatureBackend({PanelId::HardwareData},
                      parent) {
 }
 

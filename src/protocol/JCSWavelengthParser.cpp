@@ -28,15 +28,13 @@ core::FrameDataPtr JCSWavelengthParser::parse(const QByteArray &packet, QString 
     if (error)
         error->clear();
 
-    // Reverse-engineered layout: MAX_CHANNELS=7, DataAddress=12 and
-    // FLOATA2.all=float32 are assumptions from FBG逆向解包.md. Confirm
-    // against the original global.h/analyzepackets.h or device captures.
-    const int channelCount = 7;
-    const int countOffset = 4 + channelCount;
-    const int headerSize = countOffset + 1;
+    // Legacy 16-channel layout: counts[4..19], total[20], payload[24].
+    const int channelCount = 16;
+    const int countOffset = 20;
+    const int headerSize = 24;
     const int recordSize = 4;
     if (packet.size() < headerSize)
-        return fail(error, QStringLiteral("JCS frame is shorter than the 12-byte header"));
+        return fail(error, QStringLiteral("JCS frame is shorter than the 24-byte header"));
     if (!matches(packet))
         return fail(error, QStringLiteral("Invalid JCS wavelength frame magic"));
 

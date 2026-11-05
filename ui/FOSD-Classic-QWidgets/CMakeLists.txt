@@ -16,7 +16,6 @@ add_library(fosd_classic_backends STATIC
     apps/visualization/backends/VisualizationBackend.h apps/visualization/backends/VisualizationBackend.cpp
     apps/model/backends/ModelBackend.h apps/model/backends/ModelBackend.cpp
     apps/tracking/backends/TrackingBackend.h apps/tracking/backends/TrackingBackend.cpp
-    apps/account/backends/AccountBackend.h apps/account/backends/AccountBackend.cpp
 )
 target_link_libraries(fosd_classic_backends PUBLIC fosd_classic_contracts)
 
@@ -29,7 +28,6 @@ add_library(fosd_classic_presenters STATIC
     apps/visualization/presenters/VisualizationPresenter.h apps/visualization/presenters/VisualizationPresenter.cpp
     apps/model/presenters/ModelPresenter.h apps/model/presenters/ModelPresenter.cpp
     apps/tracking/presenters/TrackingPresenter.h apps/tracking/presenters/TrackingPresenter.cpp
-    apps/account/presenters/AccountPresenter.h apps/account/presenters/AccountPresenter.cpp
 )
 target_link_libraries(fosd_classic_presenters PUBLIC fosd_classic_backends)
 
@@ -75,30 +73,9 @@ add_library(fosd_classic_widgets STATIC
     apps/model/views/disp3dkeypointselect.h
     apps/model/views/disp3dkeypointselect.cpp
     apps/model/views/disp3dkeypointselect.ui
-    apps/model/views/disp3dcolorpicker.h
-    apps/model/views/disp3dcolorpicker.cpp
-    apps/model/views/disp3dcolorpicker.ui
     apps/tracking/views/dispdata.h
     apps/tracking/views/dispdata.cpp
     apps/tracking/views/dispdata.ui
-    apps/tracking/views/trackingpointmanager.h
-    apps/tracking/views/trackingpointmanager.cpp
-    apps/tracking/views/trackingpointmanager.ui
-    apps/tracking/views/trackingpointdatatable.h
-    apps/tracking/views/trackingpointdatatable.cpp
-    apps/tracking/views/trackingpointdatatable.ui
-    apps/account/views/login.h
-    apps/account/views/login.cpp
-    apps/account/views/login.ui
-    apps/account/views/userregister.h
-    apps/account/views/userregister.cpp
-    apps/account/views/userregister.ui
-    apps/account/views/userforget.h
-    apps/account/views/userforget.cpp
-    apps/account/views/userforget.ui
-    apps/account/views/usermanage.h
-    apps/account/views/usermanage.cpp
-    apps/account/views/usermanage.ui
     apps/mainwindow/views/oldmainwindow.h
     apps/mainwindow/views/oldmainwindow.cpp
     apps/mainwindow/views/oldmainwindow.ui

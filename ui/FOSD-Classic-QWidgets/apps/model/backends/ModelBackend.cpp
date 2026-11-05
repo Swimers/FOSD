@@ -3,8 +3,7 @@ namespace fosd {
 namespace ui {
 namespace classic {
 ModelBackend::ModelBackend(QObject *parent)
-    : FeatureBackend({PanelId::ModelPanel, PanelId::KeyPointEdit, PanelId::KeyPointSelect,
-                      PanelId::ColorPicker},
+    : FeatureBackend({PanelId::ModelPanel, PanelId::KeyPointEdit, PanelId::KeyPointSelect},
                      parent) {
 }
 

@@ -1,5 +1,4 @@
 #include "WorkbenchPresenter.h"
-#include "account/presenters/AccountPresenter.h"
 #include "connection/presenters/ConnectionPresenter.h"
 #include "mainwindow/presenters/MainWindowPresenter.h"
 #include "model/presenters/ModelPresenter.h"
@@ -11,7 +10,7 @@ namespace ui {
 namespace classic {
 WorkbenchPresenter::WorkbenchPresenter(IWorkbenchView *view, QObject *parent)
     : QObject(parent), m_view(view) {
-    for (int index = int(PanelId::Main); index <= int(PanelId::Account); ++index) {
+    for (int index = int(PanelId::Main); index <= int(PanelId::HardwareData); ++index) {
         const auto panel = PanelId(index);
         auto *panelView = view->panelView(panel);
         if (!panelView)
@@ -36,16 +35,13 @@ WorkbenchPresenter::WorkbenchPresenter(IWorkbenchView *view, QObject *parent)
             case FeatureId::Tracking:
                 presenter = new TrackingPresenter(panel, panelView, view, this);
                 break;
-            case FeatureId::Account:
-                presenter = new AccountPresenter(panel, panelView, view, this);
-                break;
         }
         m_presenters.insert(index, presenter);
         connect(presenter, &PanelPresenter::requestReady, this,
                 &WorkbenchPresenter::backendRequest);
         connect(presenter, &PanelPresenter::statusChanged, this, &WorkbenchPresenter::showStatus);
     }
-    showStatus(tr("经典界面已就绪，后端适配器尚未接入"));
+
 }
 
 void WorkbenchPresenter::setBackends(WorkbenchBackend *backends) {
@@ -60,7 +56,7 @@ void WorkbenchPresenter::setBackends(WorkbenchBackend *backends) {
                 &WorkbenchPresenter::refreshBackend);
         connect(backends, &QObject::destroyed, this, &WorkbenchPresenter::registryDestroyed);
     }
-    for (int feature = int(FeatureId::MainWindow); feature <= int(FeatureId::Account); ++feature)
+    for (int feature = int(FeatureId::MainWindow); feature <= int(FeatureId::Tracking); ++feature)
         refreshBackend(FeatureId(feature));
 }
 

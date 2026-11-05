@@ -4,6 +4,7 @@
 #include <vtkSTLReader.h>
 #include <vtkPoints.h>
 #include <QFile>
+#include <QTemporaryFile>
 #include <cmath>
 namespace fosd {
 namespace visualization {
@@ -13,7 +14,11 @@ MeshManager::~MeshManager() = default;
 bool MeshManager::loadModel(const QString &path, QString *error) {
     // 读取STL模型
     auto reader = vtkSmartPointer<vtkSTLReader>::New();
-    reader->SetFileName(QFile::encodeName(path).constData());
+    QFile input(path); QTemporaryFile copy;
+    if(!input.open(QIODevice::ReadOnly) || !copy.open()) { if(error) *error=QStringLiteral("Cannot open model: %1").arg(path); return false; }
+    while(!input.atEnd()) { const auto bytes=input.read(1024*1024); if(bytes.isEmpty() && input.error()!=QFile::NoError) {if(error) *error=input.errorString(); return false;} if(copy.write(bytes)!=bytes.size()) {if(error) *error=copy.errorString(); return false;} }
+    copy.flush();
+    reader->SetFileName(QFile::encodeName(copy.fileName()).constData());
     reader->Update();
     auto *mesh = reader->GetOutput();
     if (!mesh || !mesh->GetNumberOfPoints() || !mesh->GetNumberOfCells()) {

@@ -25,7 +25,6 @@ public:
 signals:
     void cbox_AxisAbleRequested(const QVariantMap &fields);
     void cbox_CareamLockAbleRequested(const QVariantMap &fields);
-    void cbox_FellowAbleRequested(const QVariantMap &fields);
     void cbox_GridAbleRequested(const QVariantMap &fields);
     void cbox_SelectViewRequested(const QVariantMap &fields);
     void cbox_XOYGridRequested(const QVariantMap &fields);

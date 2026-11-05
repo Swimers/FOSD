@@ -27,9 +27,6 @@
         <file>icon/Reset_icon.png</file>
         <file>icon/Stop_icon.png</file>
         <file>icon/TurnOff.png</file>
-        <file>icon/UserIcon.png</file>
-        <file>icon/UserIcon2.png</file>
-        <file>icon/UserManage.png</file>
         <file>icon/xidian_logo.jpg</file>
     </qresource>
 <qresource prefix="/fosd-ui/styles"><file alias="dark.qss">QSS/MaterialDark-B.qss</file><file alias="light.qss">QSS/MacOS.qss</file></qresource></RCC>

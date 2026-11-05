@@ -17,16 +17,9 @@ enum class PanelId {
     InfoPanel,
     KeyPointEdit,
     KeyPointSelect,
-    ColorPicker,
     HardwareData,
-    TrackingManager,
-    TrackingData,
-    Login,
-    Registration,
-    Recovery,
-    Account
 };
-enum class FeatureId { MainWindow, Connection, Plot, Visualization, Model, Tracking, Account };
+enum class FeatureId { MainWindow, Connection, Plot, Visualization, Model, Tracking };
 FeatureId featureForPanel(PanelId panel);
 
 enum class WindowAction { Minimize, ToggleFullScreen, Close };

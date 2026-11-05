@@ -29,9 +29,7 @@ void VtkValidationPresenter::execute(const QString &action, const QVariantMap &p
         values["path"] = path;
     }
     if ((action == "scaleButton" || action == "resetDeformationButton" ||
-         action == "scalarApplyButton" || action == "plateStartButton" ||
-         action == "plateSetupButton" || action == "plateExitButton" ||
-         action == "keyPointsApplyButton" || action == "clearSelectionButton" ||
+         action == "scalarApplyButton" || action == "keyPointsApplyButton" || action == "clearSelectionButton" ||
          action == "sceneApplyButton" || action == "cameraViewButton" ||
          action == "cameraApplyButton") &&
         !ready())

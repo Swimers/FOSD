@@ -2,7 +2,7 @@
 add_library(fosd_classic_runtime STATIC
     backend/WorkbenchRuntime.h backend/WorkbenchRuntime.cpp
     backend/WorkbenchConnection.cpp backend/WorkbenchVisualization.cpp backend/WorkbenchData.cpp
-    resources/workbench.qrc)
+    )
 target_include_directories(fosd_classic_runtime PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(fosd_classic_runtime PUBLIC fosd_classic_contracts
     fosd_protocol fosd_calculation fosd_visualization)

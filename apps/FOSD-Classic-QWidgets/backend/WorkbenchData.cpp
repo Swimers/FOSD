@@ -67,10 +67,6 @@ void WorkbenchRuntime::publishCalibration() {
                                                         : 1.0,
             'g', 12);
     }
-    for (const auto *axis : {"edit_Xaxis", "edit_Yaxis", "edit_Zaxis"}) {
-        fields[axis] = tr("无对应配置");
-        fields[QString(axis) + ".enabled"] = false;
-    }
     emit presentationChanged(PanelId::PlotSettings, fields);
 }
 
@@ -121,19 +117,44 @@ void WorkbenchRuntime::publishModel() {
 }
 
 void WorkbenchRuntime::publishLatest() {
+    if (m_baselineClock.isValid() && m_baselineClock.elapsed() > m_baselineTimeout) { m_baselineClock.invalidate(); notice(tr("置零失败：采样超时")); }
     QVariantMap raw;
+    if (m_udpLogPending) {
+        m_udpLogPending = false;
+        const auto entry = udpLogEntry();
+        m_udpLogLines.append(entry);
+        while (m_udpLogLines.size() > 200)
+            m_udpLogLines.removeFirst();
+        raw["ptedit_UdpRec"] = QVariantMap{{"append", entry}};
+    }
     const char *names[] = {"ptedit_SerialRec", "ptedit_UdpRec", "ptedit_TcpRec"};
-    for (int i = 0; i < 3; ++i)
-        if (m_rawText[i] != m_presentedRaw[i]) {
-            raw[names[i]] = m_rawText[i];
-            m_presentedRaw[i] = m_rawText[i];
+    for (int i = 0; i < 3; ++i) {
+        if (!m_rawDirty[i])
+            continue;
+        m_rawDirty[i] = false;
+        const auto display = rawDisplay(i);
+        if (display != m_presentedRaw[i]) {
+            raw[names[i]] = display;
+            m_presentedRaw[i] = display;
         }
+    }
     if (!raw.isEmpty())
         emit presentationChanged(PanelId::Connection, raw);
     if (m_frame && m_presentedFrame != m_frame->revision) {
         const auto frame = std::dynamic_pointer_cast<const core::WavelengthFrame>(m_frame->data);
         if (frame) {
             QVariantList rows;
+            for (const auto &record:frame->records) {
+                const auto key=QString("CH%1_%2").arg(record.channel).arg(record.sensor);
+                auto &samples=m_history[key]; samples.append(QVariant(QVariantList{m_historyClock.elapsed()/1000.0, record.wavelength}));
+                while(samples.size()>300) samples.removeFirst();
+            }
+            QVariantList series;
+            for(auto it=m_history.constBegin();it!=m_history.constEnd();++it) {
+                int ch=it.key().mid(2).section('_',0,0).toInt();
+                if(!m_filterChannels || m_channels.contains(ch)) series.append(QVariantMap{{"name",it.key()},{"samples",it.value()}});
+            }
+            emit presentationChanged(PanelId::Connection,{{"cplot_Spectrum",QVariantMap{{"series",series}}}});
             for (const auto &record : frame->records) {
                 if (m_filterChannels && !m_channels.contains(record.channel))
                     continue;
@@ -182,7 +203,7 @@ void WorkbenchRuntime::publishLatest() {
         for (const auto &d : m_result->displacementMap)
             if (d.size() == 3)
                 maximum = qMax(maximum, std::sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]));
-        emit presentationChanged(
+        if (m_running) emit presentationChanged(
             PanelId::InfoPanel, {{"lab_MaxDeformation", QString::number(maximum, 'g', 8) + " mm"}});
         m_presentedResult = m_result->revision;
         // Only key-point rows change with deformation; avoid rebuilding all-ID combo boxes per frame.
@@ -205,12 +226,7 @@ void WorkbenchRuntime::publishLatest() {
                                      {{"tablew_PointPara", table(headers, rows)}});
     }
     const auto selection = m_visualization->selectedPoint();
-    if (selection.valid) {
-        emit presentationChanged(PanelId::Visualization,
-                                 {{"lab_KeyPointID", QString::number(qlonglong(selection.pointId))},
-                                  {"lab_KeyPointRawPos", xyz(selection.originalPositionMm)},
-                                  {"lab_KeyPointDisplace", xyz(selection.displacementMm)},
-                                  {"lab_KeyPointNewPos", xyz(selection.displayPositionMm)}});
+    if (selection.valid && m_running) {
         emit presentationChanged(
             PanelId::KeyPointEdit,
             {{"lab_XPosition", QString::number(selection.originalPositionMm[0])},

@@ -278,8 +278,8 @@ void PacketDecoderTests::jcsChannelPackets() {
     }
 
     // A fixed FA FB FA FB header takes priority over the FA candidate marker.
-    const QByteArray dataPacket =
-        QByteArray::fromHex("fafbfafb020100000000000300c0c14400d0c14400b8c144");
+    QByteArray dataPacket(24,'\0'); dataPacket.replace(0,4,QByteArray::fromHex("fafbfafb")); dataPacket[4]=2; dataPacket[5]=1; dataPacket[20]=3;
+    dataPacket += QByteArray::fromHex("00c0c14400d0c14400b8c144");
     UdpPacketDecoder dataUdp;
     QCOMPARE(dataUdp.feed(dataPacket, Endpoint()), QVector<QByteArray>({dataPacket}));
     const QByteArray stream = dataPacket + channelPacket + dataPacket;

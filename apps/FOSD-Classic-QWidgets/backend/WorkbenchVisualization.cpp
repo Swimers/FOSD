@@ -16,25 +16,22 @@ bool WorkbenchRuntime::visualizationAction(const UiRequest &request, UiResponse 
     response->success = true;
     response->message = tr("设置已应用");
     if (panel == PanelId::Visualization) {
-        if (a == "actionPlateValidation")
-            response->success = loadPlate(&response->message);
-        else if (a == "actionHYY") {
-            auto configuration = m_configuration;
-            if (configuration.algorithm == Calculation::CalculationAlgorithm::Plate)
-                configuration.strainCalibration.calibrationFactor = 0.00075;
-            configuration.algorithm = Calculation::CalculationAlgorithm::HYY;
-            response->success = configure(configuration, &response->message);
-            if (response->success)
-                response->message = tr("HYY 配置已提交；实际设备请重新置零并检查标定参数和模型");
-        } else if (a == "actionStart" || a == "actionPause" || a == "actionStop" ||
+        if (a == "actionStart" || a == "actionPause" || a == "actionStop" ||
                    a == "actionReset") {
+            if (a == "actionStart" && !view.originalModel()) {
+                response->success = false;
+                response->message = tr("请先载入模型");
+                return true;
+            }
             m_running = a == "actionStart";
             view.setResultRepository(m_running && !m_modelPending && !m_configurationPending &&
                                              m_result
                                          ? m_calculation->dataModel()
                                          : nullptr);
-            if (a == "actionReset")
+            if (a == "actionReset") {
                 view.resetDeformation();
+                emit presentationChanged(PanelId::InfoPanel, {{"lab_MaxDeformation", QStringLiteral("0 mm")}});
+            }
             response->message = m_running ? tr("实时变形显示已启动")
                                           : tr("变形显示已暂停；通信、解算和存储继续运行");
             publishRunState();

@@ -3,7 +3,7 @@
 namespace fosd {
 namespace ui {
 namespace classic {
-// Backend extension point for HardwareData, TrackingManager, TrackingData only.
+// Hardware calibration data adapter.
 class TrackingBackend : public FeatureBackend {
     Q_OBJECT
 public:

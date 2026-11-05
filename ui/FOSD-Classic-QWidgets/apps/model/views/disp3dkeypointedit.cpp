@@ -49,28 +49,12 @@ void KeyPointEditView::relayControl(PanelId panel, const QString &action) {
         emit pbtn_ClearAllRequested(values());
         return;
     }
-    if (action == "pbtn_ClearCube") {
-        emit pbtn_ClearCubeRequested(values());
-        return;
-    }
-    if (action == "pbtn_DispCube") {
-        emit pbtn_DispCubeRequested(values());
-        return;
-    }
     if (action == "pbtn_FindKeyPoint") {
         emit pbtn_FindKeyPointRequested(values());
         return;
     }
     if (action == "pbtn_SelectAll") {
         emit pbtn_SelectAllRequested(values());
-        return;
-    }
-    if (action == "pbtn_SelectCube") {
-        emit pbtn_SelectCubeRequested(values());
-        return;
-    }
-    if (action == "pushButton") {
-        emit pushButtonRequested(values());
         return;
     }
 }

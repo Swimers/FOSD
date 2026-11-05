@@ -28,13 +28,10 @@ signals:
     void pbtn_KeyPointEditRequested(const QVariantMap &fields);
     void pbtn_KeyPointSelectRequested(const QVariantMap &fields);
     void pbtn_ModelClearRequested(const QVariantMap &fields);
-    void pbtn_ModelExportRequested(const QVariantMap &fields);
     void pbtn_ModelLoadRequested(const QVariantMap &fields);
-    void pbtn_ModelMergeRequested(const QVariantMap &fields);
     void pbtn_NormalizeRequested(const QVariantMap &fields);
     void pbtn_ScalarClearRequested(const QVariantMap &fields);
     void pbtn_ScalarSetRequested(const QVariantMap &fields);
-    void pbtn_SelectColorRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 

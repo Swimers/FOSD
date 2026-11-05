@@ -10,19 +10,17 @@ ModelPresenter::ModelPresenter(PanelId panel, IView *view, IWorkbenchView *host,
 
 bool ModelPresenter::localAction(const UiRequest &request) {
     const auto &action = request.action;
-    if (action == "pbtn_KeyPointEdit" || action == "pbtn_EditPoint")
+    if (action == "pbtn_KeyPointEdit")
         return showPanel(PanelId::KeyPointEdit);
     if (action == "pbtn_KeyPointSelect")
         return showPanel(PanelId::KeyPointSelect);
-    if (action == "pbtn_SelectColor")
-        return showPanel(PanelId::ColorPicker);
     return PanelPresenter::localAction(request);
 }
 
 bool ModelPresenter::prepareRequest(UiRequest &request) {
     if (!m_host || request.action != "pbtn_ModelLoad")
         return true;
-    const bool save = request.action == "pbtn_ModelExport";
+    const bool save = false;
     const QString path =
         m_host->chooseFile(save, tr("选择文件"), tr("STL 模型 (*.stl);;所有文件 (*)"));
     if (path.isEmpty())

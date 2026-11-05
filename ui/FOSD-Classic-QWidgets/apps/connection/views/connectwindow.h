@@ -23,11 +23,8 @@ public:
     void clearInputs() override;
     void showStatus(const QString &message) override;
 signals:
-    void cbox_CampingFreRequested(const QVariantMap &fields);
     void cbox_CommuteChooseRequested(const QVariantMap &fields);
     void cbox_LocakIPRequested(const QVariantMap &fields);
-    void cbox_ModleSelectRequested(const QVariantMap &fields);
-    void cbox_SaveCycleRequested(const QVariantMap &fields);
     void cbox_SerialBaudChooseRequested(const QVariantMap &fields);
     void cbox_SerialNameChooseRequested(const QVariantMap &fields);
     void ckbox_CH1Requested(const QVariantMap &fields);
@@ -46,12 +43,6 @@ signals:
     void ckbox_CH7Requested(const QVariantMap &fields);
     void ckbox_CH8Requested(const QVariantMap &fields);
     void ckbox_CH9Requested(const QVariantMap &fields);
-    void pbtn_CmdDebugRequested(const QVariantMap &fields);
-    void pbtn_CmdFbgRequested(const QVariantMap &fields);
-    void pbtn_CmdResetRequested(const QVariantMap &fields);
-    void pbtn_CmdSerialRequested(const QVariantMap &fields);
-    void pbtn_CmdStartRequested(const QVariantMap &fields);
-    void pbtn_CmdUdpRequested(const QVariantMap &fields);
     void pbtn_DiagnosisRequested(const QVariantMap &fields);
     void pbtn_OpenNetRequested(const QVariantMap &fields);
     void pbtn_OpenSerialRequested(const QVariantMap &fields);

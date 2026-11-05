@@ -30,7 +30,7 @@
     {
       "name": "fosd-widgets",
       "displayName": "FOSD-Classic-QWidgets 完整业务版本 (MSVC 2017 x64)",
-      "description": "经典界面独立版本：MVP、全部后端、QVTK、Plate IFE、存储及全链路测试；不构建 FOSD-Win。",
+      "description": "经典界面独立版本：MVP、全部后端、QVTK、HYY IFE、存储及全链路测试；不构建 FOSD-Win。",
       "inherits": "windows-msvc2017",
       "binaryDir": "${sourceDir}/build/fosd-widgets",
       "cacheVariables": {

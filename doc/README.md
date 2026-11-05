@@ -2,13 +2,13 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [Classic 迁移实施与验证](MigrationCompletion-2026-11-04/README.md) | 当前 INI、16通道JCS、HYY、功能裁剪与验证记录 |
 | [核心参数与运行时 INI](Architectural/core-parameters.md) | 统一参数结构、只读默认模板、构建部署、各模块接入和校验 |
 | [INI 配置读写](Architectural/config-integration.md) | 模块分区、统一读写接口、原子保存、并发访问、错误处理与测试 |
-| [Classic 版本业务闭环对接](Architectural/formal-workbench-integration.md) | Classic 独立入口、MVP 业务注入、完整数据流、已接控件/不可用功能、Plate IFE 及界面验证 |
+| [Classic 版本业务闭环对接](Architectural/formal-workbench-integration.md) | Classic 独立入口、MVP 业务注入、完整数据流、已接控件/不可用功能、历史界面验证（当前范围见实施记录） |
 | [迁移完成度核查与后续计划](Architectural/migration-audit-and-plan.md) | 正式入口缺口、模型管理、独立追踪点、配置与会话、观察面板及分阶段验收 |
 | [场景环境与相机](Architectural/scene-environment-integration.md) | 坐标轴、三平面网格、背景与纹理世界、相机视图/投影及验证 |
 | [关键点与选点交互](Architectural/keypoint-picking-integration.md) | 球体/Label 统一创建、批量标记、左键选点、鼠标交互、变形随动与 Control 接口 |
-| [板模型与 UDP 仿真](../tools/plate-simulation/README.md) | 板 STL、默认标定、示例 IFE、固定频率发送器、一键显示及数值/渲染验证 |
 | [可视化迁移与标量映射](Architectural/visualization-integration.md) | 分步迁移安排、X/Y/Z/总位移着色、归一化与物理值、通用点标量入口及测试 |
 | [独立构建预设](build-presets.md) | 主程序、FOSD-Classic-QWidgets 预览、原生 Qt/VTK 验证及通信助手的配置、构建、测试与运行 |
 | [原生 Qt/VTK 验证前端](../ui/Test-VtkOpenGLNativeWidgets/README.md) | Designer UI、Presenter、全部后端连接、窗口指针传递及收包到变形显示验证 |

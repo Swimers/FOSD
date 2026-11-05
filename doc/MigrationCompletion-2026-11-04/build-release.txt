@@ -1,0 +1,75 @@
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.30+gc0e4b0e683
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+  Automatic MOC and UIC for target fosd_config
+  fosd_config.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_config.lib
+  Automatic MOC and UIC for target fosd_core
+  fosd_core.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_core.lib
+  Automatic MOC and UIC for target fosd_parameters
+  fosd_parameters.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_parameters.lib
+  Automatic MOC and UIC for target fosd_storage
+  fosd_storage.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_storage.lib
+  Automatic MOC and UIC for target fosd_calculation
+  fosd_calculation.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_calculation.lib
+  Automatic MOC and UIC for target fosd_classic_contracts
+  fosd_classic_contracts.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_classic_contracts.lib
+  Automatic MOC and UIC for target fosd_classic_backends
+  fosd_classic_backends.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_classic_backends.lib
+  Automatic MOC and UIC for target fosd_classic_controls
+  fosd_classic_controls.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_classic_controls.lib
+  Automatic MOC and UIC for target fosd_classic_presenters
+  fosd_classic_presenters.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_classic_presenters.lib
+  Automatic MOC and UIC for target fosd_communication
+  fosd_communication.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_communication.lib
+  Automatic MOC and UIC for target fosd_protocol
+  fosd_protocol.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_protocol.lib
+  Automatic MOC and UIC for target fosd_visualization
+  fosd_visualization.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_visualization.lib
+  Automatic MOC and UIC for target fosd_classic_runtime
+  WorkbenchConnection.cpp
+  WorkbenchData.cpp
+  WorkbenchRuntime.cpp
+  WorkbenchVisualization.cpp
+  mocs_compilation_Release.cpp
+  fosd_classic_runtime.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_classic_runtime.lib
+  Automatic MOC and UIC for target fosd_classic_widgets
+  fosd_classic_widgets.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\lib\Release\fosd_classic_widgets.lib
+  Automatic MOC and UIC for target FOSD-Classic-QWidgets
+  ClassicWorkbench.cpp
+  FOSD-Classic-QWidgets.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\FOSD-Classic-QWidgets.exe
+  Deploying VTK runtime DLLs for FOSD-Classic-QWidgets
+  Automatic MOC and UIC for target test_calculation
+  test_calculation.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_calculation.exe
+  Automatic MOC and UIC for target test_classic_widgets
+  test_classic_widgets.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_classic_widgets.exe
+  Automatic MOC and UIC for target test_communication
+  test_communication.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_communication.exe
+  Automatic MOC and UIC for target test_config
+  test_config.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_config.exe
+  Automatic MOC and UIC for target test_end_to_end
+  test_end_to_end.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_end_to_end.exe
+  Automatic MOC and UIC for target test_jcs_channel_parser
+  test_jcs_channel_parser.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_jcs_channel_parser.exe
+  Automatic MOC and UIC for target test_jcs_wavelength_parser
+  test_jcs_wavelength_parser.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_jcs_wavelength_parser.exe
+  Automatic MOC and UIC for target test_keypoint_interaction
+  test_keypoint_interaction.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_keypoint_interaction.exe
+  Automatic MOC and UIC for target test_packet_decoders
+  test_packet_decoders.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_packet_decoders.exe
+  Automatic MOC and UIC for target test_parameters
+  test_parameters.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_parameters.exe
+  Automatic MOC and UIC for target test_protocol
+  test_protocol.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_protocol.exe
+  Automatic MOC and UIC for target test_scene_environment
+  test_scene_environment.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_scene_environment.exe
+  Automatic MOC and UIC for target test_storage
+  test_storage.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_storage.exe
+  Automatic MOC and UIC for target test_visualization
+  test_visualization.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_visualization.exe
+  Automatic MOC and UIC for target test_workbench_main
+  ClassicWorkbench.cpp
+  workbench_main_tests.cpp
+  test_workbench_main.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_workbench_main.exe
+  Automatic MOC and UIC for target test_workbench_runtime
+  workbench_runtime_tests.cpp
+  test_workbench_runtime.vcxproj -> D:\Documents\GitHub\FOSD-ReArc\build\fosd-widgets\bin\Release\test_workbench_runtime.exe

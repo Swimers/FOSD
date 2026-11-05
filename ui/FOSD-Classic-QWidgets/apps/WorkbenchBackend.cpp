@@ -1,6 +1,5 @@
 #include "WorkbenchBackend.h"
 #include "../common/FeatureBackend.h"
-#include "account/backends/AccountBackend.h"
 #include "connection/backends/ConnectionBackend.h"
 #include "mainwindow/backends/MainWindowBackend.h"
 #include "model/backends/ModelBackend.h"
@@ -17,7 +16,6 @@ WorkbenchBackend::WorkbenchBackend(QObject *parent) : QObject(parent) {
     setBackend(FeatureId::Visualization, new VisualizationBackend(this));
     setBackend(FeatureId::Model, new ModelBackend(this));
     setBackend(FeatureId::Tracking, new TrackingBackend(this));
-    setBackend(FeatureId::Account, new AccountBackend(this));
 }
 
 IBackend *WorkbenchBackend::backend(FeatureId feature) const {

@@ -51,7 +51,7 @@ struct CalibrationChannelData {
     std::vector<int> channelIndices;        // 校准通道索引数组
     std::vector<double> calibrationFactors; // 校准因子数组
 };
-enum class CalculationAlgorithm { HYY, Plate };
+enum class CalculationAlgorithm { HYY };
 struct CalculationConfiguration {
     CalculationAlgorithm algorithm = CalculationAlgorithm::HYY;
     CalibrationStrainData strainCalibration;   // 校准应变数据

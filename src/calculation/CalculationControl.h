@@ -29,6 +29,7 @@ public:
 public slots:
     void initialize();
     void shutdown();
+    void setRunning(bool enabled);
     void configure(const fosd::Calculation::CalculationConfiguration &configuration);
     void setModel(const fosd::core::ModelData &model);
     void clearModel();
@@ -54,6 +55,7 @@ private:
     quint64 m_modelRevision = 0;
     quint64 m_configurationRevision = 0;
     bool m_stopping = false;
+    bool m_running = true;
 };
 } // namespace detail
 
@@ -68,6 +70,7 @@ public:
                        storage::WriterFactory writerFactory = storage::WriterFactory());
     ~CalculationControl() override;
     void setConfiguration(const CalculationConfiguration &configuration);
+    void setRunning(bool enabled);
     void setModel(const core::ModelData &model);
     void clearModel();
     // Replay/manual input when constructed without a repository. Complete,
@@ -93,6 +96,8 @@ signals:
     void requestConfigure(const fosd::Calculation::CalculationConfiguration &configuration);
     void requestSetModel(const fosd::core::ModelData &model);
     void requestClearModel();
+    void requestRunning(bool enabled);
+    void runningChanged(bool enabled);
     void requestFrame(const fosd::core::FrameSnapshotPtr &snapshot);
 
 private:

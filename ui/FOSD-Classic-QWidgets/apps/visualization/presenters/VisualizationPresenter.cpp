@@ -14,8 +14,6 @@ bool VisualizationPresenter::localAction(const UiRequest &request) {
     const QMap<QString, PanelId> targets{{"actionModelDock", PanelId::ModelPanel},
                                          {"actionViewDock", PanelId::ScenePanel},
                                          {"actionInforDock", PanelId::InfoPanel},
-                                         {"actionTrackingPoints", PanelId::TrackingManager},
-                                         {"actionTrackingPointData", PanelId::TrackingData},
                                          {"actionBackData", PanelId::HardwareData}};
     if (targets.contains(action))
         return showPanel(targets[action]);

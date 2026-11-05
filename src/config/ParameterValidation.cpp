@@ -21,7 +21,7 @@ bool validateCoreSection(const QString &group, const ConfigSection &v, bool read
         const auto baseline = v["strainCalibration.originalWavelength"].toStringList();
         const auto indices = v["channelCalibration.channelIndices"].toStringList();
         const auto factors = v["channelCalibration.calibrationFactors"].toStringList();
-        ok = QSet<int>{0,1}.contains(v["algorithm"].toInt()) && v["strainCalibration.calibrationFactor"].toDouble() > 0 && indices.size() == factors.size();
+        ok = (v["algorithm"].toInt() == 0) && v["strainCalibration.calibrationFactor"].toDouble() > 0 && indices.size() == factors.size();
         for (const auto &s : baseline) ok = ok && s.toDouble() > 0;
         for (int i=0; i<indices.size(); ++i) ok = ok && indices[i].toInt() >= 0 && indices[i].toInt() < baseline.size() && factors[i].toDouble() > 0;
         if (ready) ok = ok && !baseline.isEmpty() && !indices.isEmpty() && v["strainCalibration.A"].toDouble() != 0;

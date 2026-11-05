@@ -53,10 +53,6 @@ void KeyPointSelectView::relayControl(PanelId panel, const QString &action) {
         emit pbtn_DeletePointRequested(values());
         return;
     }
-    if (action == "pbtn_EditPoint") {
-        emit pbtn_EditPointRequested(values());
-        return;
-    }
     if (action == "pbtn_Exit") {
         emit pbtn_ExitRequested(values());
         return;

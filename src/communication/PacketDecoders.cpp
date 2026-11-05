@@ -40,7 +40,7 @@ int markerSuffixSize(const QByteArray &bytes, const QVector<PacketRule> &rules) 
 
 namespace Rule {
 PacketRule JCS_Data_PacketRule() {
-    const int headerSize = 12;
+    const int headerSize = 24;
     const int recordSize = 4;
     PacketRule rule;
     rule.marker = QByteArray::fromHex("fafbfafb");
@@ -50,11 +50,11 @@ PacketRule JCS_Data_PacketRule() {
             return 0;
         const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
         int sensors = 0;
-        for (int channel = 0; channel < 7; ++channel)
+        for (int channel = 0; channel < 16; ++channel)
             sensors += data[4 + channel];
-        if (sensors != data[11])
+        if (sensors != data[20])
             return -1;
-        return headerSize + int(data[11]) * recordSize;
+        return headerSize + int(data[20]) * recordSize;
     };
     return rule;
 }
@@ -116,6 +116,8 @@ QVector<QByteArray> UdpPacketDecoder::feed(const QByteArray &bytes, const Endpoi
         if (!bytes.startsWith(rule.marker))
             continue;
         const int size = rule.frameSize(bytes);
+        if (rule.marker == QByteArray::fromHex("fafbfafb") && validSize(rule, size) && bytes.size() >= size)
+            return {bytes.left(size)};
         if (validSize(rule, size) && size == bytes.size() &&
             (!rule.validate || rule.validate(bytes)))
             return {bytes};

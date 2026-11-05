@@ -61,16 +61,8 @@ void ModelPanelView::relayControl(PanelId panel, const QString &action) {
         emit pbtn_ModelClearRequested(values());
         return;
     }
-    if (action == "pbtn_ModelExport") {
-        emit pbtn_ModelExportRequested(values());
-        return;
-    }
     if (action == "pbtn_ModelLoad") {
         emit pbtn_ModelLoadRequested(values());
-        return;
-    }
-    if (action == "pbtn_ModelMerge") {
-        emit pbtn_ModelMergeRequested(values());
         return;
     }
     if (action == "pbtn_Normalize") {
@@ -83,10 +75,6 @@ void ModelPanelView::relayControl(PanelId panel, const QString &action) {
     }
     if (action == "pbtn_ScalarSet") {
         emit pbtn_ScalarSetRequested(values());
-        return;
-    }
-    if (action == "pbtn_SelectColor") {
-        emit pbtn_SelectColorRequested(values());
         return;
     }
 }
