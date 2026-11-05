@@ -1,0 +1,7 @@
+add_executable(MPWavelengthSimulator main.cpp)
+target_link_libraries(MPWavelengthSimulator PRIVATE fosd_protocol Qt5::Network)
+set_target_properties(MPWavelengthSimulator PROPERTIES WIN32_EXECUTABLE OFF)
+if(FOSD_BUILD_TESTS)
+    add_test(NAME test_mp_wavelength_loopback COMMAND MPWavelengthSimulator --self-test)
+    set_tests_properties(test_mp_wavelength_loopback PROPERTIES TIMEOUT 60)
+endif()

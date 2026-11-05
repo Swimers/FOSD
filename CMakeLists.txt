@@ -120,6 +120,10 @@ if(FOSD_BUILD_WIDGETS_ASSISTANT)
     add_subdirectory(apps/CommunicationAssistantWidgets)
 endif()
 
+if(TARGET fosd_protocol)
+    add_subdirectory(tools/mp-wavelength-simulator)
+endif()
+
 if(FOSD_BUILD_TESTS)
     add_subdirectory(test)
 endif()
