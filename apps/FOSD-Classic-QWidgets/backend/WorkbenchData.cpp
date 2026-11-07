@@ -20,11 +20,7 @@ bool WorkbenchRuntime::dataAction(const UiRequest &request, UiResponse *response
     const auto &action = request.action;
     response->success = true;
     response->message = tr("设置已应用");
-    if (request.panel == PanelId::Plot && action == "pbtn_Observe") {
-        m_observing = !m_observing;
-        m_presentedResult = 0;
-        response->fields[action] = m_observing ? tr("暂停观测") : tr("开始观测");
-    } else if (request.panel == PanelId::PlotSettings && action == "pbtn_SenerSet") {
+    if (request.panel == PanelId::ChannelCalibration && action == "pbtn_SenerSet") {
         auto configuration = m_configuration;
         configuration.channelCalibration.channelIndices.clear();
         configuration.channelCalibration.calibrationFactors.clear();
@@ -67,7 +63,7 @@ void WorkbenchRuntime::publishCalibration() {
                                                         : 1.0,
             'g', 12);
     }
-    emit presentationChanged(PanelId::PlotSettings, fields);
+    emit presentationChanged(PanelId::ChannelCalibration, fields);
 }
 
 void WorkbenchRuntime::publishModel() {
@@ -109,34 +105,25 @@ void WorkbenchRuntime::publishModel() {
     if (!m_result) {
         emit presentationChanged(PanelId::InfoPanel,
                                  {{"lab_MaxDeformation", QStringLiteral("--")}});
-        emit presentationChanged(
-            PanelId::Plot,
-            {{"table_Disp2DPara",
-              table({"ID", "X0", "Y0", "Z0", "dX", "dY", "dZ", "X", "Y", "Z"}, {})}});
     }
 }
 
 void WorkbenchRuntime::publishLatest() {
     if (m_baselineClock.isValid() && m_baselineClock.elapsed() > m_baselineTimeout) { m_baselineClock.invalidate(); notice(tr("置零失败：采样超时")); }
     QVariantMap raw;
-    if (m_udpLogPending) {
-        m_udpLogPending = false;
-        const auto entry = udpLogEntry();
-        m_udpLogLines.append(entry);
-        while (m_udpLogLines.size() > 200)
-            m_udpLogLines.removeFirst();
-        raw["ptedit_UdpRec"] = QVariantMap{{"append", entry}};
-    }
+    flushUdpTraffic();
     const char *names[] = {"ptedit_SerialRec", "ptedit_UdpRec", "ptedit_TcpRec"};
     for (int i = 0; i < 3; ++i) {
-        if (!m_rawDirty[i])
-            continue;
-        m_rawDirty[i] = false;
-        const auto display = rawDisplay(i);
-        if (display != m_presentedRaw[i]) {
-            raw[names[i]] = display;
-            m_presentedRaw[i] = display;
+        QVariantList entries;
+        for (const auto &entry : m_traffic[i]) {
+            if (m_resetTraffic[i] || entry.id > m_publishedTrafficId[i])
+                entries.append(QVariantMap{{"text",formatTraffic(i,entry)},{"outgoing",entry.outgoing}});
         }
+        if (!entries.isEmpty() || m_resetTraffic[i])
+            raw[names[i]] = QVariantMap{{"entries",entries},{"clear",m_resetTraffic[i]}};
+        if (!m_traffic[i].isEmpty())
+            m_publishedTrafficId[i] = m_traffic[i].last().id;
+        m_resetTraffic[i] = false;
     }
     if (!raw.isEmpty())
         emit presentationChanged(PanelId::Connection, raw);
@@ -156,8 +143,6 @@ void WorkbenchRuntime::publishLatest() {
             }
             emit presentationChanged(PanelId::Connection,{{"cplot_Spectrum",QVariantMap{{"series",series}}}});
             for (const auto &record : frame->records) {
-                if (m_filterChannels && !m_channels.contains(record.channel))
-                    continue;
                 rows.append(QVariant(QVariantList{record.channel, record.sensor,
                                                   QString::number(record.wavelength, 'f', 6)}));
                 if (rows.size() >= 2048)
@@ -181,24 +166,6 @@ void WorkbenchRuntime::publishLatest() {
         m_presentedHardware = m_hardware;
     }
     if (m_result && m_presentedResult != m_result->revision) {
-        if (m_observing) {
-            QVariantList rows;
-            for (auto point = m_result->deformedModel.constBegin();
-                 point != m_result->deformedModel.constEnd(); ++point) {
-                const auto d = m_result->displacementMap.value(point.key());
-                const auto p = point.value();
-                if (d.size() == 3 && p.size() == 3)
-                    rows.append(
-                        QVariant(QVariantList{point.key(), p[0] - d[0], p[1] - d[1], p[2] - d[2],
-                                              d[0], d[1], d[2], p[0], p[1], p[2]}));
-                if (rows.size() >= 256)
-                    break;
-            }
-            emit presentationChanged(
-                PanelId::Plot,
-                {{"table_Disp2DPara",
-                  table({"ID", "X0", "Y0", "Z0", "dX", "dY", "dZ", "X", "Y", "Z"}, rows)}});
-        }
         double maximum = 0;
         for (const auto &d : m_result->displacementMap)
             if (d.size() == 3)

@@ -23,7 +23,6 @@ public:
     void clearInputs() override;
     void showStatus(const QString &message) override;
 signals:
-    void pbtn_2DPlotRequested(const QVariantMap &fields);
     void pbtn_3DPlotRequested(const QVariantMap &fields);
     void pbtn_FullRequested(const QVariantMap &fields);
     void pbtn_JieTiaoYiRequested(const QVariantMap &fields);

@@ -12,7 +12,7 @@ MainWindowPresenter::MainWindowPresenter(PanelId panel, IView *view, IWorkbenchV
 bool MainWindowPresenter::localAction(const UiRequest &request) {
     const auto &action = request.action;
     if (m_host) {
-        const QStringList navigation{"pbtn_JieTiaoYi", "pbtn_2DPlot", "pbtn_3DPlot"};
+        const QStringList navigation{"pbtn_JieTiaoYi", "pbtn_3DPlot"};
         if (navigation.contains(action)) {
             m_host->selectPage(navigation.indexOf(action));
             return true;

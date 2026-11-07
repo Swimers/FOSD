@@ -3,7 +3,6 @@
 #include "connection/backends/ConnectionBackend.h"
 #include "mainwindow/backends/MainWindowBackend.h"
 #include "model/backends/ModelBackend.h"
-#include "plot/backends/PlotBackend.h"
 #include "tracking/backends/TrackingBackend.h"
 #include "visualization/backends/VisualizationBackend.h"
 namespace fosd {
@@ -12,7 +11,6 @@ namespace classic {
 WorkbenchBackend::WorkbenchBackend(QObject *parent) : QObject(parent) {
     setBackend(FeatureId::MainWindow, new MainWindowBackend(this));
     setBackend(FeatureId::Connection, new ConnectionBackend(this));
-    setBackend(FeatureId::Plot, new PlotBackend(this));
     setBackend(FeatureId::Visualization, new VisualizationBackend(this));
     setBackend(FeatureId::Model, new ModelBackend(this));
     setBackend(FeatureId::Tracking, new TrackingBackend(this));

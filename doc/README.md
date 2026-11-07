@@ -2,6 +2,7 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [Classic 通信日志与通道标定改进（2026-11-07）](Classic-Communication-Logs-Calibration-2026-11-07.md) | 本地地址刷新、曲线筛选范围、三种通信的彩色收发日志、二维页面删除及 channlCalibration 迁移 |
 | [Classic 通信页面改进与验证（2026-11-07）](Classic-Connection-UI-2026-11-07.md) | Designer 布局、TCP 模式、完整串口参数、保存状态与曲线交互/主题的接入和验证 |
 | [Classic 前后端功能闭环审阅（2026-11-07）](FOSD-Classic-QWidgets-Backend-Audit-2026-11-07.md) | 参数设置覆盖、配置恢复缺陷、诊断/设备应答缺口、各面板完成度和建议验收清单 |
 | [Classic 迁移实施与验证](MigrationCompletion-2026-11-04/README.md) | 当前 INI、16通道JCS、HYY、功能裁剪与验证记录 |

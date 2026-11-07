@@ -18,6 +18,10 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QWheelEvent>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QTextBlock>
+#include <QStandardItemModel>
 #include "FOSD-Classic-QWidgets/controls/qcustomplot.h"
 #include <QSignalSpy>
 #include <QtEndian>
@@ -40,6 +44,110 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void calibrationEntryFilteringAndAddressRefresh() {
+  using namespace fosd; using namespace fosd::ui::classic;
+  QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("calibration.ini").toUtf8());
+  Calculation::CalculationConfiguration initial; initial.strainCalibration.A=1;
+  initial.strainCalibration.originalWavelength.assign(12,1550.);
+  for(int i=0;i<12;++i){initial.channelCalibration.channelIndices.push_back(i);initial.channelCalibration.calibrationFactors.push_back(1.);}
+  QString error; QVERIFY(config::ParameterStore().write(initial,true,&error));
+  TestWindow w; w.resize(1360,900); w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w)); QTest::qWait(180);
+  QVERIFY(!w.findChild<QPushButton *>("pbtn_2DPlot"));
+  auto *panel=w.panelWidget(PanelId::Connection); auto *tabs=panel->findChild<QTabWidget *>("tabWidget");
+  auto *filter=panel->findChild<QWidget *>("groupBox_select"); auto *wave=panel->findChild<QWidget *>("tab_guangpu");
+  QVERIFY(wave->isAncestorOf(filter));
+  tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_udp")); QVERIFY(!filter->isVisible());
+  auto *addresses=panel->findChild<QComboBox *>("cbox_LocakIP");
+  addresses->addItem("192.0.2.123"); addresses->setCurrentIndex(addresses->findText("127.0.0.1"));
+  panel->findChild<QPushButton *>("pbtn_RefreshLocalAddress")->click();
+  QTRY_COMPARE(addresses->findText("192.0.2.123"),-1); QCOMPARE(addresses->currentText(),QString("127.0.0.1"));
+  auto *calibration=w.panelWidget(PanelId::ChannelCalibration); QVERIFY(calibration);
+  QCOMPARE(calibration->objectName(),QString("channlCalibration"));
+  panel->findChild<QPushButton *>("pbtn_ChannelCalibration")->click(); QTRY_VERIFY(calibration->isVisible());
+  auto *order=calibration->findChild<QLineEdit *>("edit_Sensor1Order");
+  auto *factor=calibration->findChild<QLineEdit *>("edit_Sensor1Para"); QVERIFY(order && factor);
+  QTRY_COMPARE(order->text(),QString("1")); order->setText("2"); factor->setText("1.75");
+  QSignalSpy accepted(&w.runtime().calculation(),&Calculation::CalculationControl::configurationAccepted);
+  calibration->findChild<QPushButton *>("pbtn_SenerSet")->click(); QTRY_COMPARE(accepted.count(),1);
+  Calculation::CalculationConfiguration saved; QVERIFY(config::ParameterStore().read(&saved,true,&error));
+  QCOMPARE(saved.channelCalibration.channelIndices[0],1); QCOMPARE(saved.channelCalibration.calibrationFactors[0],1.75);
+  order->setText("99"); calibration->findChild<QPushButton *>("pbtn_SenerSet")->click(); QTest::qWait(100);
+  QCOMPARE(accepted.count(),1); QVERIFY(config::ParameterStore().read(&saved,true,&error)); QCOMPARE(saved.channelCalibration.channelIndices[0],1);
+  calibration->findChild<QPushButton *>("pbtn_SenerCancel")->click(); QTRY_VERIFY(!calibration->isVisible());
+  panel->findChild<QPushButton *>("pbtn_ChannelCalibration")->click(); QTRY_COMPARE(order->text(),QString("2"));
+  calibration->grab().save("channel-calibration.png"); calibration->close();
+  tabs->setCurrentWidget(wave); QVERIFY(filter->isVisible());
+  for(int i=1;i<=16;++i)panel->findChild<QCheckBox *>(QString("ckbox_CH%1").arg(i))->setChecked(i==16);
+  panel->findChild<QPushButton *>("pbtn_SelectCH")->click();
+  w.runtime().protocol().parseFrame(communication::Channel::Udp,jcs(0));
+  auto *plot=panel->findChild<QCustomPlot *>("cplot_Spectrum"); QTRY_COMPARE(plot->graphCount(),6);
+  for(int i=0;i<plot->graphCount();++i)QVERIFY(plot->graph(i)->name().startsWith("CH16_"));
+  auto *table=panel->findChild<QTableView *>("tablev_Wavelength"); QVERIFY(table);
+  QTRY_COMPARE(table->model()->rowCount(),12); // Curve filtering never filters the raw wavelength table.
+  w.grab().save("connection-wave-filter.png");
+  w.findChild<QPushButton *>("pbtn_3DPlot")->click(); QTest::qWait(50);
+  w.findChild<QPushButton *>("pbtn_JieTiaoYi")->click(); QTRY_VERIFY(panel->isVisible());
+  qunsetenv("FOSD_CONFIG_FILE");
+ }
+ void coloredTrafficLogs() {
+  using namespace fosd; using namespace fosd::ui::classic; using namespace communication;
+  QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("traffic.ini").toUtf8());
+  SerialConfig serialConfig; serialConfig.portName="COM42"; QString error;
+  QVERIFY(config::ParameterStore().write(serialConfig,true,&error));
+  TestWindow w; w.resize(1360,900); w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w)); QTest::qWait(150);
+  auto *panel=w.panelWidget(PanelId::Connection); auto &transport=w.runtime().protocol().communication();
+  auto *serial=panel->findChild<QPlainTextEdit *>("ptedit_SerialRec");
+  auto *udp=panel->findChild<QPlainTextEdit *>("ptedit_UdpRec");
+  auto *tcp=panel->findChild<QPlainTextEdit *>("ptedit_TcpRec");
+  emit transport.rawDataReceived(Channel::Serial,"serial reply\r\n",{});
+  const QByteArray serialOut("serial out\r\n"); const Endpoint none;
+  QVERIFY(QMetaObject::invokeMethod(&w.runtime(),"rawSent",Qt::DirectConnection,
+      Q_ARG(fosd::communication::Channel,Channel::Serial),Q_ARG(QByteArray,serialOut),Q_ARG(fosd::communication::Endpoint,none)));
+  QTRY_VERIFY(serial->toPlainText().contains("serial out\\r\\n"));
+  QVERIFY(serial->toPlainText().contains("COM42 @115200"));
+  QUdpSocket remote; QVERIFY(remote.bind(QHostAddress(QHostAddress::LocalHost),quint16(0)));
+  QUdpSocket reserve; QVERIFY(reserve.bind(QHostAddress(QHostAddress::LocalHost),quint16(0)));
+  const quint16 localPort=reserve.localPort(); reserve.close();
+  UdpConfig udpConfig; udpConfig.bindAddress=QHostAddress::LocalHost; udpConfig.localPort=localPort;
+  udpConfig.defaultPeer.address=QHostAddress::LocalHost; udpConfig.defaultPeer.port=remote.localPort();
+  QSignalSpy state(&transport,&ConnectControl::stateChanged); transport.openUdp(udpConfig); QTRY_VERIFY(!state.isEmpty());
+  QTest::keyClick(panel->findChild<QComboBox *>("cbox_UdpDisplayMode"),Qt::Key_End);
+  const QByteArray udpReply("udp reply\r\n"); QCOMPARE(remote.writeDatagram(udpReply,QHostAddress::LocalHost,localPort),qint64(udpReply.size()));
+  QTRY_VERIFY(udp->toPlainText().contains("udp reply\\r\\n"));
+  transport.send(Channel::Udp,"udp out\r\n",udpConfig.defaultPeer);
+  QTRY_VERIFY(remote.hasPendingDatagrams()); QByteArray datagram(int(remote.pendingDatagramSize()),'\0'); remote.readDatagram(datagram.data(),datagram.size());
+  QCOMPARE(datagram,QByteArray("udp out\r\n")); QTRY_VERIFY(udp->toPlainText().contains("udp out\\r\\n"));
+  QVERIFY(udp->toPlainText().contains(QString::number(localPort))); QVERIFY(udp->toPlainText().contains(QString::number(remote.localPort())));
+  QTcpServer server; QVERIFY(server.listen(QHostAddress::LocalHost,0));
+  TcpConfig tcpConfig; tcpConfig.host="127.0.0.1"; tcpConfig.port=server.serverPort(); transport.openTcp(tcpConfig);
+  QTRY_VERIFY(server.hasPendingConnections()); QScopedPointer<QTcpSocket> peer(server.nextPendingConnection());
+  QTest::keyClick(panel->findChild<QComboBox *>("cbox_TcpDisplayMode"),Qt::Key_End);
+  peer->write("tcp reply\r\n"); peer->flush(); QTRY_VERIFY(tcp->toPlainText().contains("tcp reply\\r\\n"));
+  transport.send(Channel::Tcp,"tcp out\r\n"); QTRY_VERIFY(peer->bytesAvailable()>0);
+  QCOMPARE(peer->readAll(),QByteArray("tcp out\r\n")); QTRY_VERIFY(tcp->toPlainText().contains("tcp out\\r\\n"));
+  QVERIFY(tcp->toPlainText().contains(QString::number(server.serverPort())));
+  auto checkColors=[](QPlainTextEdit *log,bool dark) {
+   bool rx=false,tx=false;
+   for(auto block=log->document()->begin();block.isValid();block=block.next()) {
+    const int kind=block.userState(); if(kind!=1 && kind!=2)continue;
+    const auto fragment=block.begin().fragment();
+    const QColor expected(kind==2 ? (dark?"#73b7ff":"#1d4ed8") : (dark?"#63df91":"#15803d"));
+    if(fragment.charFormat().foreground().color()!=expected)return false;
+    rx|=kind==1;tx|=kind==2;
+   }
+   return rx&&tx;
+  };
+  for(auto *log:{serial,udp,tcp}) {
+   QVERIFY(checkColors(log,false)); QVERIFY(log->document()->blockCount()>=2);
+   QVERIFY(QRegularExpression("\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\]").match(log->toPlainText()).hasMatch());
+  }
+  auto *tabs=panel->findChild<QTabWidget *>("tabWidget"); tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_tcp"));
+  w.applyTheme(true); for(auto *log:{serial,udp,tcp})QVERIFY(checkColors(log,true));
+  w.grab().save("connection-traffic-dark.png"); w.applyTheme(false); w.grab().save("connection-traffic-light.png");
+  auto *cleanup=w.runtime().findChild<QTimer *>("receiveLogCleanupTimer"); QVERIFY(cleanup); cleanup->start(30);
+  QTRY_VERIFY(serial->toPlainText().isEmpty()&&udp->toPlainText().isEmpty()&&tcp->toPlainText().isEmpty()); cleanup->stop();
+  qunsetenv("FOSD_CONFIG_FILE");
+ }
  void connectionLayoutSavingAndSpectrum() {
   using namespace fosd; using namespace fosd::ui::classic;
   QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("interface.ini").toUtf8());
@@ -187,23 +295,21 @@ private slots:
   invalid.message = "not a protocol frame";
   emit transport.decoderErrorOccurred(invalid);
   const QString hex = QString::fromLatin1(bytes.toHex(' ').toUpper());
-  // QPlainTextEdit normalizes CRLF to LF.
-  const QString plain = QString::fromUtf8(bytes).replace("\r\n", "\n");
-  QTRY_COMPARE(serialText->toPlainText(), plain);
+  const QString plain = QString::fromUtf8("中文 AB\\r\\n");
+  QTRY_VERIFY(serialText->toPlainText().contains(plain));
   QTRY_VERIFY(udpText->toPlainText().contains(hex));
   QTest::keyClick(serialMode, Qt::Key_Home);
-  QTRY_COMPARE(serialText->toPlainText(), hex);
+  QTRY_VERIFY(serialText->toPlainText().contains(QString::fromLatin1(bytes.mid(1).toHex(' ').toUpper())));
   QTest::keyClick(udpMode, Qt::Key_End);
   QTRY_VERIFY(udpText->toPlainText().contains(QString::fromUtf8("预览UTF-8：中文 AB\\r\\n")));
   const QString udpLog = udpText->toPlainText();
   const QByteArray binary = QByteArray::fromHex("00ff");
   emit transport.rawDataReceived(communication::Channel::Serial, binary, {});
-  const auto binaryHex = QString::fromLatin1((bytes + binary).toHex(' ').toUpper());
-  QTRY_COMPARE(serialText->toPlainText(), binaryHex);
+  QTRY_VERIFY(serialText->toPlainText().contains("00 FF"));
   QTest::keyClick(serialMode, Qt::Key_End);
   QTest::qWait(150);
   QTest::keyClick(serialMode, Qt::Key_Home);
-  QTRY_COMPARE(serialText->toPlainText(), binaryHex);
+  QTRY_VERIFY(serialText->toPlainText().contains("00 FF"));
   // Each channel keeps its own mode and receive history.
   QCOMPARE(udpText->toPlainText(), udpLog);
   panel->findChild<QPushButton *>("pbtn_SerialClear")->click();
@@ -213,7 +319,9 @@ private slots:
   QVERIFY(serialText->toPlainText().isEmpty());
   QCOMPARE(udpText->toPlainText(), udpLog);
   emit transport.rawDataReceived(communication::Channel::Serial, QByteArray(70000, 'A'), {});
-  QTRY_COMPARE(serialText->toPlainText(), QString(65536, 'A'));
+  QTRY_VERIFY(serialText->toPlainText().contains("70000 B"));
+  QVERIFY(!serialText->toPlainText().contains(QString(65,'A')));
+  QVERIFY(serialText->toPlainText().size()<1000);
   qunsetenv("FOSD_CONFIG_FILE");
  }
  void udpPacketSummaryAndCleanup() {
@@ -243,7 +351,7 @@ private slots:
   QTRY_VERIFY(log->toPlainText().contains("mp.wavelength"));
   auto contents = log->toPlainText();
   // Expected UTF-8 bytes are independent of MSVC's source/literal conversion.
-  QCOMPARE(contents.section(" | ", 2, 2), QString::fromUtf8("\xE7\xB4\xAF\xE8\xAE\xA1=1"));
+  QVERIFY(contents.contains(QString::fromUtf8("\xE7\xB4\xAF\xE8\xAE\xA1=1")));
   QVERIFY(contents.contains("127.0.0.1:"));
   QVERIFY(contents.contains(QString::fromUtf8("序号=305419896")));
   QVERIFY(contents.contains(QString::fromUtf8("记录=2")));
@@ -277,7 +385,7 @@ private slots:
   QTRY_COMPARE(log->document()->blockCount(), 200);
   QVERIFY(log->toPlainText().size() < 100000);
   emit transport.rawDataReceived(communication::Channel::Serial, "serial text", {});
-  QTRY_COMPARE(serial->toPlainText(), QString("serial text"));
+  QTRY_VERIFY(serial->toPlainText().contains("serial text"));
   auto *cleanup = runtime.findChild<QTimer *>("receiveLogCleanupTimer");
   QVERIFY(cleanup); QCOMPARE(cleanup->interval(), 60000);
   cleanup->start(30); // Verify the same production timer without a 60-second delay.
@@ -310,7 +418,7 @@ private slots:
   file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 10 0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n"); file.close();
   w.selectedFile=model; QSignalSpy models(&w.runtime().calculation(),&Calculation::CalculationControl::modelAccepted);
   w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelLoad")->click(); QTRY_COMPARE(models.count(),1);
-  w.selectPage(2); send(.02f);
+  w.selectPage(1); send(.02f);
   QTRY_VERIFY(w.runtime().calculation().dataModel()->latest());
   QCOMPARE(w.runtime().calculation().dataModel()->latest()->algorithmId,QString("HYY.IFE"));
   QTest::qWait(150); auto selected=w.runtime().visualization().selectPoint(0); QVERIFY(selected.valid);

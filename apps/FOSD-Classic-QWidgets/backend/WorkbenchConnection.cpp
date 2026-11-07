@@ -7,6 +7,8 @@ using namespace ui::classic;
 using namespace communication;
 void WorkbenchRuntime::transportState(Channel channel, ConnectionState state) {
     m_states[int(channel)] = state;
+    if (channel == Channel::Tcp && (state == ConnectionState::Closed || state == ConnectionState::Listening))
+        m_logTcpPeer = {};
     if(state==ConnectionState::Closed) { m_history.clear(); m_historyClock.restart(); }
     if (state == ConnectionState::Closed && m_baselineClock.isValid()) { m_baselineClock.invalidate(); notice(tr("置零取消：通信已关闭")); }
     const bool serial = channel == Channel::Serial;
@@ -21,9 +23,9 @@ void WorkbenchRuntime::transportState(Channel channel, ConnectionState state) {
 }
 
 void WorkbenchRuntime::rawReceived(Channel channel, const QByteArray &bytes, const Endpoint &peer) {
-    const int i = int(channel);
+    if (channel == Channel::Tcp && peer.isValid())
+        m_logTcpPeer = peer;
     if (channel == Channel::Udp) {
-        // Keep only the latest short preview. Successful parsing replaces it with metadata.
         m_udpPreview = bytes.left(64);
         m_udpPacketBytes = bytes.size();
         m_udpPeer = peer;
@@ -31,45 +33,91 @@ void WorkbenchRuntime::rawReceived(Channel channel, const QByteArray &bytes, con
         ++m_udpPacketCount;
         m_udpLogFrame.reset();
         m_udpLogStatus.clear();
-        m_udpLogPending = false; // Wait for the decoder/parser result; never dump a valid packet.
-        return;
+        m_udpLogPending = false;
+        return; // The production parser/decoder supplies the summary or rejection.
     }
-    if (channel == Channel::Serial || channel == Channel::Udp) {
-        auto &cache = m_rawBytes[i];
-        cache.append(bytes);
-        if (cache.size() > 65536)
-            cache = cache.right(65536);
-    } else {
-        auto &cache = m_rawText[i];
-        cache.append(QString::fromLatin1(bytes.toHex(' ').toUpper()) + '\n');
-        if (cache.size() > 65536)
-            cache = cache.right(65536);
-    }
-    m_rawDirty[i] = true;
-    // Actual widgets are refreshed at 10 Hz, independently of the receive rate.
+    appendTraffic(channel, bytes, peer, false);
 }
 
-QString WorkbenchRuntime::rawDisplay(int channel) const {
-    if (channel == int(Channel::Udp))
-        return m_udpLogLines.join('\n');
-    if (channel == int(Channel::Tcp))
-        return m_rawText[channel];
-    const auto &bytes = m_rawBytes[channel];
-    return m_rawHex[channel] ? QString::fromLatin1(bytes.toHex(' ').toUpper())
-                             : QString::fromUtf8(bytes);
+void WorkbenchRuntime::rawSent(Channel channel, const QByteArray &bytes, const Endpoint &peer) {
+    if (channel == Channel::Udp)
+        flushUdpTraffic();
+    appendTraffic(channel, bytes, peer, true);
+}
+
+void WorkbenchRuntime::appendTraffic(Channel channel, const QByteArray &bytes, const Endpoint &peer,
+                                   bool outgoing, const QString &summary, int byteCount,
+                                   bool showPayload, const QDateTime &at) {
+    const int i = int(channel);
+    TrafficEntry entry;
+    entry.id = ++m_nextTrafficId[i];
+    entry.at = at.isValid() ? at : QDateTime::currentDateTime();
+    entry.outgoing = outgoing;
+    entry.byteCount = byteCount < 0 ? bytes.size() : byteCount;
+    entry.preview = bytes.left(64);
+    entry.summary = summary;
+    entry.showPayload = showPayload;
+    if (outgoing || channel == Channel::Udp)
+        entry.utf8 = QString::fromUtf8(bytes).left(64);
+    else {
+        if (!m_receiveDecoder[i])
+            m_receiveDecoder[i].reset(QTextCodec::codecForName("UTF-8")->makeDecoder());
+        // Decode all bytes to preserve UTF-8 state across serial/TCP reads, but retain a short preview.
+        entry.utf8 = m_receiveDecoder[i]->toUnicode(bytes).left(64);
+    }
+    auto endpoint = [](const Endpoint &value) {
+        return value.address.toString() + ':' + QString::number(value.port);
+    };
+    if (channel == Channel::Serial) {
+        entry.endpoint = tr("串口 %1 @%2")
+            .arg(m_logSerial.portName.isEmpty() ? tr("未指定") : m_logSerial.portName)
+            .arg(m_logSerial.baudRate);
+    } else if (channel == Channel::Udp) {
+        const auto remote = peer.isValid() ? peer : m_logUdp.defaultPeer;
+        const QString local = m_logUdp.bindAddress.toString() + ':' +
+            (m_logUdp.localPort ? QString::number(m_logUdp.localPort) : tr("自动端口"));
+        entry.endpoint = outgoing ? local + " -> " + endpoint(remote)
+                                  : endpoint(remote) + " -> " + local;
+    } else {
+        const QString local = m_logTcp.role == TcpRole::Server
+            ? m_logTcp.listenAddress.toString() + ':' + QString::number(m_logTcp.port)
+            : tr("本地系统分配端口");
+        const QString remote = peer.isValid() ? endpoint(peer)
+            : m_logTcp.role == TcpRole::Client ? m_logTcp.host + ':' + QString::number(m_logTcp.port)
+            : m_logTcpPeer.isValid() ? endpoint(m_logTcpPeer) : tr("客户端端口待接收数据确认");
+        entry.endpoint = outgoing ? local + " -> " + remote : remote + " -> " + local;
+    }
+    auto &entries = m_traffic[i];
+    entries.append(entry);
+    while (entries.size() > 200)
+        entries.removeFirst();
+}
+
+QString WorkbenchRuntime::formatTraffic(int channel, const TrafficEntry &entry) const {
+    const char *names[] = {"SERIAL", "UDP", "TCP"};
+    QString line = QStringLiteral("[%1] %2 %3 | %4 | %5 B")
+        .arg(entry.at.toString("yyyy-MM-dd HH:mm:ss.zzz"), names[channel],
+             entry.outgoing ? tr("TX 发送请求") : tr("RX 接收"), entry.endpoint)
+        .arg(entry.byteCount);
+    if (!entry.summary.isEmpty())
+        line += " | " + entry.summary;
+    if (entry.showPayload) {
+        const QString payload = m_rawHex[channel]
+            ? QString::fromLatin1(entry.preview.toHex(' ').toUpper())
+            : QString(entry.utf8).replace('\r', "\\r").replace('\n', "\\n")
+                                .replace(QChar(0x2028), "\\u2028").replace(QChar(0x2029), "\\u2029");
+        line += tr(" | 预览%1：%2").arg(m_rawHex[channel] ? "Hex" : "UTF-8", payload);
+        if (entry.byteCount > entry.preview.size())
+            line += tr(" …（预览已截断）");
+    }
+    return line;
 }
 
 QString WorkbenchRuntime::udpLogEntry() const {
-    const auto frame = m_udpLogFrame;
-    const auto timestamp = frame ? frame->receivedAtUtc.toLocalTime() : m_udpReceivedAt;
-    const auto address = frame ? frame->source.address : m_udpPeer.address.toString();
-    const auto port = frame ? frame->source.port : m_udpPeer.port;
-    QString line = tr("[%1] UDP %2:%3 | %4 B | 累计=%5 | ")
-        .arg(timestamp.toString("yyyy-MM-dd HH:mm:ss.zzz"), address)
-        .arg(port).arg(m_udpPacketBytes).arg(m_udpPacketCount);
-    if (frame) {
-        line += frame->protocolId;
-        const auto wavelengths = std::dynamic_pointer_cast<const core::WavelengthFrame>(frame->data);
+    QString line = tr("累计=%1").arg(m_udpPacketCount);
+    if (m_udpLogFrame) {
+        line += " | " + m_udpLogFrame->protocolId;
+        const auto wavelengths = std::dynamic_pointer_cast<const core::WavelengthFrame>(m_udpLogFrame->data);
         if (wavelengths) {
             line += tr(" | 序号=%1 | 版本=%2 类型=%3 | 记录=%4")
                 .arg(wavelengths->sequence).arg(wavelengths->version)
@@ -80,32 +128,37 @@ QString WorkbenchRuntime::udpLogEntry() const {
                     .arg(first.channel).arg(first.sensor).arg(first.wavelength, 0, 'g', 9);
             }
         }
-    } else {
-        line += tr("未识别/无效包：%1 | 预览%2：%3")
-            .arg(m_udpLogStatus.left(160), m_rawHex[1] ? "Hex" : "UTF-8",
-                 m_rawHex[1] ? QString::fromLatin1(m_udpPreview.toHex(' ').toUpper())
-                             : QString::fromUtf8(m_udpPreview).replace('\r', "\\r").replace('\n', "\\n"));
-        if (m_udpPacketBytes > m_udpPreview.size())
-            line += tr(" …（仅显示前64字节）");
-    }
+    } else
+        line += tr(" | 未识别/无效包：%1").arg(m_udpLogStatus.left(160));
     return line;
 }
 
-void WorkbenchRuntime::clearReceiveLogs() {
-    for (int i = 0; i < 3; ++i) {
-        m_rawText[i].clear();
-        m_presentedRaw[i].clear();
-        m_rawDirty[i] = false;
-    }
-    for (auto &bytes : m_rawBytes)
-        bytes.clear();
-    m_udpLogLines.clear();
-    m_udpLogFrame.reset();
-    m_udpPreview.clear();
-    m_udpLogStatus.clear();
-    m_udpPacketBytes = 0;
-    m_udpPacketCount = 0;
+void WorkbenchRuntime::flushUdpTraffic() {
+    if (!m_udpLogPending)
+        return;
     m_udpLogPending = false;
+    appendTraffic(Channel::Udp, m_udpPreview, m_udpPeer, false, udpLogEntry(),
+                  m_udpPacketBytes, !m_udpLogFrame, m_udpReceivedAt);
+}
+
+void WorkbenchRuntime::clearTraffic(int channel) {
+    m_traffic[channel].clear();
+    m_publishedTrafficId[channel] = 0;
+    m_resetTraffic[channel] = true;
+    m_receiveDecoder[channel].reset();
+    if (channel == int(Channel::Udp)) {
+        m_udpLogFrame.reset();
+        m_udpPreview.clear();
+        m_udpLogStatus.clear();
+        m_udpPacketBytes = 0;
+        m_udpPacketCount = 0;
+        m_udpLogPending = false;
+    }
+}
+
+void WorkbenchRuntime::clearReceiveLogs() {
+    for (int i = 0; i < 3; ++i)
+        clearTraffic(i);
     emit presentationChanged(PanelId::Connection,
         {{"ptedit_SerialRec", QString()}, {"ptedit_UdpRec", QString()}, {"ptedit_TcpRec", QString()}});
 }
@@ -183,6 +236,11 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
     } else if (action == "pbtn_ConfigRead") {
         Calculation::CalculationConfiguration c;
         response->success=m_parameters.read(&c,true,&response->message) && configure(c,&response->message);
+    } else if (action == "pbtn_ChannelCalibration") {
+        publishCalibration();
+    } else if (action == "pbtn_RefreshLocalAddress") {
+        initializeLocalAddresses(text(fields, "cbox_LocakIP"));
+        response->message = tr("本地 IPv4 地址已刷新");
     } else if (action == "pbtn_RefreshSerial") {
         const auto serial = fields.value("cbox_SerialNameChoose").toMap();
         initializePorts(serial.value("data", serial.value("text")).toString().section(':', 0, 0),
@@ -348,36 +406,14 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
             response->message = tr("请先打开通信通道");
         } else
             communication.send(channel, text(fields, input).toUtf8(), peer);
-    } else if (action == "cbox_SerialDisplayMode" || action == "cbox_UdpDisplayMode") {
-        const int channel = action == "cbox_SerialDisplayMode" ? 0 : 1;
+    } else if (action == "cbox_SerialDisplayMode" || action == "cbox_UdpDisplayMode" || action == "cbox_TcpDisplayMode") {
+        const int channel = action == "cbox_SerialDisplayMode" ? 0 : action == "cbox_UdpDisplayMode" ? 1 : 2;
         m_rawHex[channel] = index(fields, action) == 0;
-        if (channel == 1) {
-            if (!m_udpLogFrame && !m_udpLogStatus.isEmpty())
-                m_udpLogPending = true;
-            response->message = tr("已切换未识别包的预览格式；有效包显示时间和摘要");
-            return true;
-        }
-        m_rawDirty[channel] = true;
-        const char *name = channel == 0 ? "ptedit_SerialRec" : "ptedit_UdpRec";
-        response->fields[name] = rawDisplay(channel);
-        response->message = m_rawHex[channel] ? tr("接收区已切换为 Hex 显示")
-                                             : tr("接收区已切换为字符串显示（UTF-8）");
-    } else if (action == "pbtn_SerialClear" || action == "pbtn_UdpClear" ||
-               action == "pbtn_TcpClear") {
+        m_resetTraffic[channel] = true;
+        response->message = tr("已切换收发日志的预览格式；有效 UDP 包保留摘要");
+    } else if (action == "pbtn_SerialClear" || action == "pbtn_UdpClear" || action == "pbtn_TcpClear") {
         const int channel = action == "pbtn_SerialClear" ? 0 : action == "pbtn_UdpClear" ? 1 : 2;
-        m_rawText[channel].clear();
-        if (channel < 2)
-            m_rawBytes[channel].clear();
-        if (channel == 1) {
-            m_udpLogLines.clear();
-            m_udpLogFrame.reset();
-            m_udpPreview.clear();
-            m_udpLogStatus.clear();
-            m_udpPacketBytes = 0;
-            m_udpPacketCount = 0;
-            m_udpLogPending = false;
-        }
-        m_rawDirty[channel] = true;
+        clearTraffic(channel);
         const char *names[] = {"ptedit_SerialRec", "ptedit_UdpRec", "ptedit_TcpRec"};
         response->fields[names[channel]] = QString();
     } else if (action == "pbtn_WaveLengthReset")
@@ -404,7 +440,7 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
         config::IniConfigStore store(config::ParameterStore::runtimePath()); QString error;
         if(!store.writeValue("classic.display","channels",selected,&error)) {response->success=false; response->message=error;}
         m_presentedFrame = 0;
-        response->message = tr("已更新波长表显示通道；原始数据继续完整解算和存储");
+        response->message = tr("已更新曲线显示通道；波长表、解算和存储保留全部通道");
     } else if (action == "pbtn_SaveDynamic") {
         if (m_storagePending) {
             response->success = false;

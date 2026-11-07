@@ -2,7 +2,6 @@
 #include "connection/presenters/ConnectionPresenter.h"
 #include "mainwindow/presenters/MainWindowPresenter.h"
 #include "model/presenters/ModelPresenter.h"
-#include "plot/presenters/PlotPresenter.h"
 #include "tracking/presenters/TrackingPresenter.h"
 #include "visualization/presenters/VisualizationPresenter.h"
 namespace fosd {
@@ -22,9 +21,6 @@ WorkbenchPresenter::WorkbenchPresenter(IWorkbenchView *view, QObject *parent)
                 break;
             case FeatureId::Connection:
                 presenter = new ConnectionPresenter(panel, panelView, view, this);
-                break;
-            case FeatureId::Plot:
-                presenter = new PlotPresenter(panel, panelView, view, this);
                 break;
             case FeatureId::Visualization:
                 presenter = new VisualizationPresenter(panel, panelView, view, this);

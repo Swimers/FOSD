@@ -12,7 +12,6 @@ add_library(fosd_classic_backends STATIC
     apps/WorkbenchBackend.h apps/WorkbenchBackend.cpp
     apps/mainwindow/backends/MainWindowBackend.h apps/mainwindow/backends/MainWindowBackend.cpp
     apps/connection/backends/ConnectionBackend.h apps/connection/backends/ConnectionBackend.cpp
-    apps/plot/backends/PlotBackend.h apps/plot/backends/PlotBackend.cpp
     apps/visualization/backends/VisualizationBackend.h apps/visualization/backends/VisualizationBackend.cpp
     apps/model/backends/ModelBackend.h apps/model/backends/ModelBackend.cpp
     apps/tracking/backends/TrackingBackend.h apps/tracking/backends/TrackingBackend.cpp
@@ -24,7 +23,6 @@ add_library(fosd_classic_presenters STATIC
     apps/IWorkbenchView.h apps/WorkbenchPresenter.h apps/WorkbenchPresenter.cpp
     apps/mainwindow/presenters/MainWindowPresenter.h apps/mainwindow/presenters/MainWindowPresenter.cpp
     apps/connection/presenters/ConnectionPresenter.h apps/connection/presenters/ConnectionPresenter.cpp
-    apps/plot/presenters/PlotPresenter.h apps/plot/presenters/PlotPresenter.cpp
     apps/visualization/presenters/VisualizationPresenter.h apps/visualization/presenters/VisualizationPresenter.cpp
     apps/model/presenters/ModelPresenter.h apps/model/presenters/ModelPresenter.cpp
     apps/tracking/presenters/TrackingPresenter.h apps/tracking/presenters/TrackingPresenter.cpp
@@ -46,12 +44,9 @@ add_library(fosd_classic_widgets STATIC
     apps/connection/views/connectwindow.h
     apps/connection/views/connectwindow.cpp
     apps/connection/views/connectwindow.ui
-    apps/plot/views/disp2dwindow.h
-    apps/plot/views/disp2dwindow.cpp
-    apps/plot/views/disp2dwindow.ui
-    apps/plot/views/disp2dpara.h
-    apps/plot/views/disp2dpara.cpp
-    apps/plot/views/disp2dpara.ui
+    apps/connection/views/channlCalibration.h
+    apps/connection/views/channlCalibration.cpp
+    apps/connection/views/channlCalibration.ui
     apps/visualization/views/disp3dwindow.h
     apps/visualization/views/disp3dwindow.cpp
     apps/visualization/views/disp3dwindow.ui

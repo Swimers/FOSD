@@ -3,7 +3,7 @@ namespace fosd {
 namespace ui {
 namespace classic {
 ConnectionBackend::ConnectionBackend(QObject *parent)
-    : FeatureBackend({PanelId::Connection}, parent) {
+    : FeatureBackend({PanelId::Connection, PanelId::ChannelCalibration}, parent) {
 }
 
 void ConnectionBackend::handleRequest(const UiRequest &request) {

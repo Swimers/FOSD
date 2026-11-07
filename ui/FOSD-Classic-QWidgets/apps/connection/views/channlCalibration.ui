@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+  <class>channlCalibration</class>
+  <widget class="QWidget" name="channlCalibration">
+    <property name="windowTitle">
+      <string>通道与系数标定</string>
+    </property>
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>580</width>
+        <height>560</height>
+      </rect>
+    </property>
+    <property name="minimumSize">
+      <size>
+        <width>500</width>
+        <height>0</height>
+      </size>
+    </property>
+    <layout class="QVBoxLayout" name="layout_ChannelCalibration">
+      <property name="sizeConstraint">
+        <enum>QLayout::SetFixedSize</enum>
+      </property>
+      <item>
+        <widget class="QLabel" name="label_CalibrationHelp">
+          <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+            </sizepolicy>
+          </property>
+          <property name="wordWrap">
+            <bool>true</bool>
+          </property>
+          <property name="text">
+            <string>配置 HYY 的12路应变输入。波长源序号从1开始，倍率须为正数；应用前需完成置零或读取有效标定配置。</string>
+          </property>
+        </widget>
+      </item>
+      <item>
+        <layout class="QGridLayout" name="layout_ChannelFactors" columnstretch="0,1,1" rowstretch="1,1,1,1,1,1,1,1,1,1,1,1,1">
+          <item row="0" column="0">
+            <widget class="QLabel" name="label_InputHeader">
+              <property name="text">
+                <string>解算输入</string>
+              </property>
+            </widget>
+          </item>
+          <item row="0" column="1">
+            <widget class="QLabel" name="label_SourceHeader">
+              <property name="text">
+                <string>波长源序号</string>
+              </property>
+            </widget>
+          </item>
+          <item row="0" column="2">
+            <widget class="QLabel" name="label_FactorHeader">
+              <property name="text">
+                <string>校准倍率</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="0">
+            <widget class="QLabel" name="label_Channel1">
+              <property name="text">
+                <string>输入 1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="1">
+            <widget class="QLineEdit" name="edit_Sensor1Order">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="2">
+            <widget class="QLineEdit" name="edit_Sensor1Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="2" column="0">
+            <widget class="QLabel" name="label_Channel2">
+              <property name="text">
+                <string>输入 2</string>
+              </property>
+            </widget>
+          </item>
+          <item row="2" column="1">
+            <widget class="QLineEdit" name="edit_Sensor2Order">
+              <property name="text">
+                <string>2</string>
+              </property>
+            </widget>
+          </item>
+          <item row="2" column="2">
+            <widget class="QLineEdit" name="edit_Sensor2Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="3" column="0">
+            <widget class="QLabel" name="label_Channel3">
+              <property name="text">
+                <string>输入 3</string>
+              </property>
+            </widget>
+          </item>
+          <item row="3" column="1">
+            <widget class="QLineEdit" name="edit_Sensor3Order">
+              <property name="text">
+                <string>3</string>
+              </property>
+            </widget>
+          </item>
+          <item row="3" column="2">
+            <widget class="QLineEdit" name="edit_Sensor3Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="4" column="0">
+            <widget class="QLabel" name="label_Channel4">
+              <property name="text">
+                <string>输入 4</string>
+              </property>
+            </widget>
+          </item>
+          <item row="4" column="1">
+            <widget class="QLineEdit" name="edit_Sensor4Order">
+              <property name="text">
+                <string>4</string>
+              </property>
+            </widget>
+          </item>
+          <item row="4" column="2">
+            <widget class="QLineEdit" name="edit_Sensor4Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="5" column="0">
+            <widget class="QLabel" name="label_Channel5">
+              <property name="text">
+                <string>输入 5</string>
+              </property>
+            </widget>
+          </item>
+          <item row="5" column="1">
+            <widget class="QLineEdit" name="edit_Sensor5Order">
+              <property name="text">
+                <string>5</string>
+              </property>
+            </widget>
+          </item>
+          <item row="5" column="2">
+            <widget class="QLineEdit" name="edit_Sensor5Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="6" column="0">
+            <widget class="QLabel" name="label_Channel6">
+              <property name="text">
+                <string>输入 6</string>
+              </property>
+            </widget>
+          </item>
+          <item row="6" column="1">
+            <widget class="QLineEdit" name="edit_Sensor6Order">
+              <property name="text">
+                <string>6</string>
+              </property>
+            </widget>
+          </item>
+          <item row="6" column="2">
+            <widget class="QLineEdit" name="edit_Sensor6Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="7" column="0">
+            <widget class="QLabel" name="label_Channel7">
+              <property name="text">
+                <string>输入 7</string>
+              </property>
+            </widget>
+          </item>
+          <item row="7" column="1">
+            <widget class="QLineEdit" name="edit_Sensor7Order">
+              <property name="text">
+                <string>7</string>
+              </property>
+            </widget>
+          </item>
+          <item row="7" column="2">
+            <widget class="QLineEdit" name="edit_Sensor7Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="8" column="0">
+            <widget class="QLabel" name="label_Channel8">
+              <property name="text">
+                <string>输入 8</string>
+              </property>
+            </widget>
+          </item>
+          <item row="8" column="1">
+            <widget class="QLineEdit" name="edit_Sensor8Order">
+              <property name="text">
+                <string>8</string>
+              </property>
+            </widget>
+          </item>
+          <item row="8" column="2">
+            <widget class="QLineEdit" name="edit_Sensor8Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="9" column="0">
+            <widget class="QLabel" name="label_Channel9">
+              <property name="text">
+                <string>输入 9</string>
+              </property>
+            </widget>
+          </item>
+          <item row="9" column="1">
+            <widget class="QLineEdit" name="edit_Sensor9Order">
+              <property name="text">
+                <string>9</string>
+              </property>
+            </widget>
+          </item>
+          <item row="9" column="2">
+            <widget class="QLineEdit" name="edit_Sensor9Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="10" column="0">
+            <widget class="QLabel" name="label_Channel10">
+              <property name="text">
+                <string>输入 10</string>
+              </property>
+            </widget>
+          </item>
+          <item row="10" column="1">
+            <widget class="QLineEdit" name="edit_Sensor10Order">
+              <property name="text">
+                <string>10</string>
+              </property>
+            </widget>
+          </item>
+          <item row="10" column="2">
+            <widget class="QLineEdit" name="edit_Sensor10Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="11" column="0">
+            <widget class="QLabel" name="label_Channel11">
+              <property name="text">
+                <string>输入 11</string>
+              </property>
+            </widget>
+          </item>
+          <item row="11" column="1">
+            <widget class="QLineEdit" name="edit_Sensor11Order">
+              <property name="text">
+                <string>11</string>
+              </property>
+            </widget>
+          </item>
+          <item row="11" column="2">
+            <widget class="QLineEdit" name="edit_Sensor11Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="12" column="0">
+            <widget class="QLabel" name="label_Channel12">
+              <property name="text">
+                <string>输入 12</string>
+              </property>
+            </widget>
+          </item>
+          <item row="12" column="1">
+            <widget class="QLineEdit" name="edit_Sensor12Order">
+              <property name="text">
+                <string>12</string>
+              </property>
+            </widget>
+          </item>
+          <item row="12" column="2">
+            <widget class="QLineEdit" name="edit_Sensor12Para">
+              <property name="text">
+                <string>1</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </item>
+      <item>
+        <layout class="QHBoxLayout" name="layout_CalibrationActions">
+          <item>
+            <widget class="QPushButton" name="pbtn_SenerSet">
+              <property name="text">
+                <string>应用</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QPushButton" name="pbtn_SenerCancel">
+              <property name="text">
+                <string>取消</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </item>
+    </layout>
+  </widget>
+  <resources />
+  <connections />
+</ui>

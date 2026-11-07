@@ -39,21 +39,21 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     }
 
     m_pages = findChild<QStackedWidget *>("stackedWidget");
-    for (auto panel : {PanelId::Connection, PanelId::Plot, PanelId::Visualization}) {
+    for (auto panel : {PanelId::Connection, PanelId::Visualization}) {
         auto *page = panelWidget(panel);
         page->setWindowFlags(Qt::Widget);
         m_pages->addWidget(page);
     }
 
     auto *navigation = new QButtonGroup(this);
-    for (const auto &name : {"pbtn_JieTiaoYi", "pbtn_2DPlot", "pbtn_3DPlot"}) {
+    for (const auto &name : {"pbtn_JieTiaoYi", "pbtn_3DPlot"}) {
         auto *button = findChild<QPushButton *>(name);
         button->setCheckable(true);
         navigation->addButton(button);
     }
     navigation->setExclusive(true);
     selectPage(0);
-    const QMap<int, QString> titles{{int(PanelId::PlotSettings), tr("标定参数")},
+    const QMap<int, QString> titles{{int(PanelId::ChannelCalibration), tr("通道与系数标定")},
                                     {int(PanelId::KeyPointEdit), tr("关键点编辑")},
                                     {int(PanelId::KeyPointSelect), tr("关键点选择")},
                                     {int(PanelId::HardwareData), tr("硬件数据")}};
@@ -103,7 +103,7 @@ void WorkbenchView::selectPage(int index) {
     if (index < 0 || index >= m_pages->count())
         return;
     m_pages->setCurrentIndex(index);
-    const QStringList names{"pbtn_JieTiaoYi", "pbtn_2DPlot", "pbtn_3DPlot"};
+    const QStringList names{"pbtn_JieTiaoYi", "pbtn_3DPlot"};
     for (int button = 0; button < names.size(); ++button) {
         auto *widget = findChild<QPushButton *>(names[button]);
         widget->setChecked(button == index);
@@ -114,7 +114,7 @@ void WorkbenchView::selectPage(int index) {
 
 void WorkbenchView::showPanel(PanelId panel) {
     if (m_docks.contains(int(panel))) {
-        selectPage(2);
+        selectPage(1);
         auto *dock = m_docks.value(int(panel));
         dock->show();
         dock->raise();

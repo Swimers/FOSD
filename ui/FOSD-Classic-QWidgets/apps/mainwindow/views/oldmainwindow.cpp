@@ -40,10 +40,6 @@ void MainWindowView::showStatus(const QString &message) {
 void MainWindowView::relayControl(PanelId panel, const QString &action) {
     if (panel != PanelId::Main)
         return;
-    if (action == "pbtn_2DPlot") {
-        emit pbtn_2DPlotRequested(values());
-        return;
-    }
     if (action == "pbtn_3DPlot") {
         emit pbtn_3DPlotRequested(values());
         return;

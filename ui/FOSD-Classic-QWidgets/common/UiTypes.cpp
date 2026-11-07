@@ -7,10 +7,8 @@ FeatureId featureForPanel(PanelId panel) {
         case PanelId::Main:
             return FeatureId::MainWindow;
         case PanelId::Connection:
+        case PanelId::ChannelCalibration:
             return FeatureId::Connection;
-        case PanelId::Plot:
-        case PanelId::PlotSettings:
-            return FeatureId::Plot;
         case PanelId::Visualization:
         case PanelId::ScenePanel:
         case PanelId::InfoPanel:

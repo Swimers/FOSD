@@ -13,6 +13,9 @@
 #include <QMainWindow>
 #include <QPlainTextEdit>
 #include <QTextEdit>
+#include <QTextBlock>
+#include <QTextCursor>
+#include <QScrollBar>
 #include <QSignalBlocker>
 #include <QSpinBox>
 #include <QStandardItemModel>
@@ -182,7 +185,29 @@ void FormBinding::applyFields(const QVariantMap &fields) {
         } else if (auto *edit = qobject_cast<QLineEdit *>(object))
             edit->setText(value.toString());
         else if (auto *edit = qobject_cast<QPlainTextEdit *>(object)) {
-            if (value.type() == QVariant::Map && value.toMap().contains("append"))
+            if (value.type() == QVariant::Map && value.toMap().contains("entries")) {
+                const auto data = value.toMap();
+                const bool follow = edit->verticalScrollBar()->value() == edit->verticalScrollBar()->maximum();
+                if (data.value("clear").toBool())
+                    edit->clear();
+                QTextCursor cursor(edit->document());
+                cursor.movePosition(QTextCursor::End);
+                const bool dark = edit->property("trafficDarkTheme").toBool();
+                for (const auto &value : data.value("entries").toList()) {
+                    const auto row = value.toMap();
+                    const bool outgoing = row.value("outgoing").toBool();
+                    if (!edit->document()->isEmpty())
+                        cursor.insertBlock();
+                    QTextCharFormat format;
+                    format.setForeground(QColor(outgoing ? (dark ? "#73b7ff" : "#1d4ed8")
+                                                         : (dark ? "#63df91" : "#15803d")));
+                    cursor.insertText(row.value("text").toString(), format);
+                    auto block = cursor.block();
+                    block.setUserState(outgoing ? 2 : 1);
+                }
+                if (follow)
+                    edit->verticalScrollBar()->setValue(edit->verticalScrollBar()->maximum());
+            } else if (value.type() == QVariant::Map && value.toMap().contains("append"))
                 edit->appendPlainText(value.toMap().value("append").toString());
             else
                 edit->setPlainText(value.toString());

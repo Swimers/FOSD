@@ -1,7 +1,6 @@
 #include "ViewFactory.h"
 #include "../apps/connection/views/connectwindow.h"
-#include "../apps/plot/views/disp2dwindow.h"
-#include "../apps/plot/views/disp2dpara.h"
+#include "../apps/connection/views/channlCalibration.h"
 #include "../apps/visualization/views/disp3dwindow.h"
 #include "../apps/visualization/views/docks/disp3dinfodockpanel.h"
 #include "../apps/visualization/views/docks/disp3dviewdockpanel.h"
@@ -17,10 +16,8 @@ QWidget *createPanelView(PanelId panel, QWidget *parent) {
     switch (panel) {
         case PanelId::Connection:
             return new ConnectionView(parent);
-        case PanelId::Plot:
-            return new PlotView(parent);
-        case PanelId::PlotSettings:
-            return new PlotSettingsView(parent);
+        case PanelId::ChannelCalibration:
+            return new ChannelCalibrationView(parent);
         case PanelId::Visualization:
             return new VisualizationView(parent);
         case PanelId::InfoPanel:

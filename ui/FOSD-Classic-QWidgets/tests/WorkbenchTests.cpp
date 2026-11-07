@@ -14,7 +14,12 @@ private slots: void retainedAndRemoved() {
  QCOMPARE(mode->count(),3); QCOMPARE(mode->itemText(1),QString("TCP Server")); QCOMPARE(mode->itemText(2),QString("TCP Client"));
  QVERIFY(c->findChild<QPushButton *>("pbtn_CalculationStop"));
  for(auto name:{"cbox_TcpRole","pbtn_Diagnosis","groupBox_3","lab_OperationStatus","pbtn_SaveStatic"}) QVERIFY2(!c->findChild<QWidget *>(name),name);
- for(auto name:{"pbtn_CmdStart","pbtn_ModelMerge","pbtn_SelectColor","edit_Xaxis","cbox_FellowAble"}) QVERIFY2(!w.findChild<QWidget *>(name),name);
+ for(auto name:{"pbtn_2DPlot","pbtn_CmdStart","pbtn_ModelMerge","pbtn_SelectColor","edit_Xaxis","cbox_FellowAble"}) QVERIFY2(!w.findChild<QWidget *>(name),name);
+ QVERIFY(w.panelView(PanelId::ChannelCalibration));
+ auto *wave=c->findChild<QWidget *>("tab_guangpu"); QVERIFY(wave);
+ QVERIFY(wave->isAncestorOf(c->findChild<QWidget *>("groupBox_select")));
+ QVERIFY(c->findChild<QPushButton *>("pbtn_RefreshLocalAddress"));
+ QVERIFY(c->findChild<QPushButton *>("pbtn_ChannelCalibration"));
  }};
 QTEST_MAIN(WorkbenchTests)
 #include "WorkbenchTests.moc"

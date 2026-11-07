@@ -86,7 +86,27 @@
                   </widget>
                 </item>
                 <item row="2" column="1">
-                  <widget class="QComboBox" name="cbox_LocakIP" />
+                  <layout class="QHBoxLayout" name="layout_LocalAddressRefresh">
+                    <item>
+                      <widget class="QComboBox" name="cbox_LocakIP" />
+                    </item>
+                    <item>
+                      <widget class="QPushButton" name="pbtn_RefreshLocalAddress">
+                        <property name="text">
+                          <string>刷新</string>
+                        </property>
+                        <property name="toolTip">
+                          <string>重新枚举本地 IPv4 地址，保留当前仍有效的选择</string>
+                        </property>
+                        <property name="maximumSize">
+                          <size>
+                            <width>52</width>
+                            <height>16777215</height>
+                          </size>
+                        </property>
+                      </widget>
+                    </item>
+                  </layout>
                 </item>
                 <item row="3" column="0">
                   <widget class="QLabel" name="label_Comm3">
@@ -343,7 +363,7 @@
         </layout>
       </item>
       <item>
-        <layout class="QVBoxLayout" name="layout_DataColumn" stretch="1,0">
+        <layout class="QVBoxLayout" name="layout_DataColumn" stretch="1">
           <item>
             <widget class="QTabWidget" name="tabWidget">
               <property name="styleSheet">
@@ -378,7 +398,7 @@ QTabBar::tab:selected {
                 <attribute name="title">
                   <string>波长曲线</string>
                 </attribute>
-                <layout class="QGridLayout" name="gridLayout_9" rowstretch="0,1,0">
+                <layout class="QGridLayout" name="gridLayout_9" rowstretch="0,1,0,0">
                   <item row="0" column="0">
                     <layout class="QHBoxLayout" name="layout_SpectrumTools">
                       <item>
@@ -417,6 +437,201 @@ QTabBar::tab:selected {
                       </property>
                     </widget>
                   </item>
+                  <item row="3" column="0">
+                    <widget class="QGroupBox" name="groupBox_select">
+                      <property name="title">
+                        <string>曲线显示通道</string>
+                      </property>
+                      <layout class="QGridLayout" name="layout_ChannelFilter">
+                        <item row="0" column="0">
+                          <widget class="QCheckBox" name="ckbox_CH1">
+                            <property name="text">
+                              <string>CH1</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="0" column="1">
+                          <widget class="QCheckBox" name="ckbox_CH2">
+                            <property name="text">
+                              <string>CH2</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="0" column="2">
+                          <widget class="QCheckBox" name="ckbox_CH3">
+                            <property name="text">
+                              <string>CH3</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="0" column="3">
+                          <widget class="QCheckBox" name="ckbox_CH4">
+                            <property name="text">
+                              <string>CH4</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="0" column="4">
+                          <widget class="QCheckBox" name="ckbox_CH5">
+                            <property name="text">
+                              <string>CH5</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="0" column="5">
+                          <widget class="QCheckBox" name="ckbox_CH6">
+                            <property name="text">
+                              <string>CH6</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="0" column="6">
+                          <widget class="QCheckBox" name="ckbox_CH7">
+                            <property name="text">
+                              <string>CH7</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="0" column="7">
+                          <widget class="QCheckBox" name="ckbox_CH8">
+                            <property name="text">
+                              <string>CH8</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="0">
+                          <widget class="QCheckBox" name="ckbox_CH9">
+                            <property name="text">
+                              <string>CH9</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="1">
+                          <widget class="QCheckBox" name="ckbox_CH10">
+                            <property name="text">
+                              <string>CH10</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="2">
+                          <widget class="QCheckBox" name="ckbox_CH11">
+                            <property name="text">
+                              <string>CH11</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="3">
+                          <widget class="QCheckBox" name="ckbox_CH12">
+                            <property name="text">
+                              <string>CH12</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="4">
+                          <widget class="QCheckBox" name="ckbox_CH13">
+                            <property name="text">
+                              <string>CH13</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="5">
+                          <widget class="QCheckBox" name="ckbox_CH14">
+                            <property name="text">
+                              <string>CH14</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="6">
+                          <widget class="QCheckBox" name="ckbox_CH15">
+                            <property name="text">
+                              <string>CH15</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="1" column="7">
+                          <widget class="QCheckBox" name="ckbox_CH16">
+                            <property name="text">
+                              <string>CH16</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="2" column="4" colspan="2">
+                          <widget class="QPushButton" name="pbtn_SelectAllCH">
+                            <property name="minimumSize">
+                              <size>
+                                <width>0</width>
+                                <height>32</height>
+                              </size>
+                            </property>
+                            <property name="text">
+                              <string>全选</string>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="2" column="6" colspan="2">
+                          <widget class="QPushButton" name="pbtn_SelectCH">
+                            <property name="minimumSize">
+                              <size>
+                                <width>0</width>
+                                <height>32</height>
+                              </size>
+                            </property>
+                            <property name="text">
+                              <string>应用筛选</string>
+                            </property>
+                          </widget>
+                        </item>
+                      </layout>
+                    </widget>
+                  </item>
                 </layout>
               </widget>
               <widget class="QWidget" name="tab_bochang">
@@ -437,7 +652,7 @@ QTabBar::tab:selected {
                   <item>
                     <widget class="QLabel" name="label_13">
                       <property name="text">
-                        <string>串口收发</string>
+                        <string>串口收发日志</string>
                       </property>
                       <property name="alignment">
                         <set>Qt::AlignCenter</set>
@@ -479,6 +694,18 @@ QTabBar::tab:selected {
                     <widget class="QPlainTextEdit" name="ptedit_SerialRec">
                       <property name="readOnly">
                         <bool>true</bool>
+                      </property>
+                      <property name="maximumBlockCount">
+                        <number>200</number>
+                      </property>
+                      <property name="undoRedoEnabled">
+                        <bool>false</bool>
+                      </property>
+                      <property name="lineWrapMode">
+                        <enum>QPlainTextEdit::NoWrap</enum>
+                      </property>
+                      <property name="toolTip">
+                        <string>绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200条，每60秒清理</string>
                       </property>
                     </widget>
                   </item>
@@ -878,7 +1105,7 @@ QTabBar::tab:selected {
                   <item>
                     <widget class="QLabel" name="label_14">
                       <property name="text">
-                        <string>UDP 接收日志（有效包摘要，每60秒清理）</string>
+                        <string>UDP 收发日志（有效包摘要，每60秒清理）</string>
                       </property>
                       <property name="alignment">
                         <set>Qt::AlignCenter</set>
@@ -917,6 +1144,18 @@ QTabBar::tab:selected {
                     <widget class="QPlainTextEdit" name="ptedit_UdpRec">
                       <property name="readOnly">
                         <bool>true</bool>
+                      </property>
+                      <property name="maximumBlockCount">
+                        <number>200</number>
+                      </property>
+                      <property name="undoRedoEnabled">
+                        <bool>false</bool>
+                      </property>
+                      <property name="lineWrapMode">
+                        <enum>QPlainTextEdit::NoWrap</enum>
+                      </property>
+                      <property name="toolTip">
+                        <string>绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200条，每60秒清理</string>
                       </property>
                     </widget>
                   </item>
@@ -1015,7 +1254,7 @@ QTabBar::tab:selected {
                   <item>
                     <widget class="QLabel" name="label_17">
                       <property name="text">
-                        <string>TCP协议收发</string>
+                        <string>TCP 收发日志</string>
                       </property>
                       <property name="alignment">
                         <set>Qt::AlignCenter</set>
@@ -1023,9 +1262,46 @@ QTabBar::tab:selected {
                     </widget>
                   </item>
                   <item>
+                    <layout class="QHBoxLayout" name="layout_TcpDisplayMode">
+                      <item>
+                        <widget class="QLabel" name="label_TcpDisplayMode">
+                          <property name="text">
+                            <string>收发日志显示：</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QComboBox" name="cbox_TcpDisplayMode">
+                          <item>
+                            <property name="text">
+                              <string>Hex</string>
+                            </property>
+                          </item>
+                          <item>
+                            <property name="text">
+                              <string>字符串（UTF-8）</string>
+                            </property>
+                          </item>
+                        </widget>
+                      </item>
+                    </layout>
+                  </item>
+                  <item>
                     <widget class="QPlainTextEdit" name="ptedit_TcpRec">
                       <property name="readOnly">
                         <bool>true</bool>
+                      </property>
+                      <property name="maximumBlockCount">
+                        <number>200</number>
+                      </property>
+                      <property name="undoRedoEnabled">
+                        <bool>false</bool>
+                      </property>
+                      <property name="lineWrapMode">
+                        <enum>QPlainTextEdit::NoWrap</enum>
+                      </property>
+                      <property name="toolTip">
+                        <string>绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200条，每60秒清理</string>
                       </property>
                     </widget>
                   </item>
@@ -1118,201 +1394,6 @@ QTabBar::tab:selected {
               </widget>
             </widget>
           </item>
-          <item>
-            <widget class="QGroupBox" name="groupBox_select">
-              <property name="title">
-                <string>显示通道</string>
-              </property>
-              <layout class="QGridLayout" name="layout_ChannelFilter">
-                <item row="0" column="0">
-                  <widget class="QCheckBox" name="ckbox_CH1">
-                    <property name="text">
-                      <string>CH1</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="0" column="1">
-                  <widget class="QCheckBox" name="ckbox_CH2">
-                    <property name="text">
-                      <string>CH2</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="0" column="2">
-                  <widget class="QCheckBox" name="ckbox_CH3">
-                    <property name="text">
-                      <string>CH3</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="0" column="3">
-                  <widget class="QCheckBox" name="ckbox_CH4">
-                    <property name="text">
-                      <string>CH4</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="0" column="4">
-                  <widget class="QCheckBox" name="ckbox_CH5">
-                    <property name="text">
-                      <string>CH5</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="0" column="5">
-                  <widget class="QCheckBox" name="ckbox_CH6">
-                    <property name="text">
-                      <string>CH6</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="0" column="6">
-                  <widget class="QCheckBox" name="ckbox_CH7">
-                    <property name="text">
-                      <string>CH7</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="0" column="7">
-                  <widget class="QCheckBox" name="ckbox_CH8">
-                    <property name="text">
-                      <string>CH8</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="0">
-                  <widget class="QCheckBox" name="ckbox_CH9">
-                    <property name="text">
-                      <string>CH9</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="1">
-                  <widget class="QCheckBox" name="ckbox_CH10">
-                    <property name="text">
-                      <string>CH10</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="2">
-                  <widget class="QCheckBox" name="ckbox_CH11">
-                    <property name="text">
-                      <string>CH11</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="3">
-                  <widget class="QCheckBox" name="ckbox_CH12">
-                    <property name="text">
-                      <string>CH12</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="4">
-                  <widget class="QCheckBox" name="ckbox_CH13">
-                    <property name="text">
-                      <string>CH13</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="5">
-                  <widget class="QCheckBox" name="ckbox_CH14">
-                    <property name="text">
-                      <string>CH14</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="6">
-                  <widget class="QCheckBox" name="ckbox_CH15">
-                    <property name="text">
-                      <string>CH15</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="1" column="7">
-                  <widget class="QCheckBox" name="ckbox_CH16">
-                    <property name="text">
-                      <string>CH16</string>
-                    </property>
-                    <property name="checked">
-                      <bool>true</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item row="2" column="4" colspan="2">
-                  <widget class="QPushButton" name="pbtn_SelectAllCH">
-                    <property name="minimumSize">
-                      <size>
-                        <width>0</width>
-                        <height>32</height>
-                      </size>
-                    </property>
-                    <property name="text">
-                      <string>全选</string>
-                    </property>
-                  </widget>
-                </item>
-                <item row="2" column="6" colspan="2">
-                  <widget class="QPushButton" name="pbtn_SelectCH">
-                    <property name="minimumSize">
-                      <size>
-                        <width>0</width>
-                        <height>32</height>
-                      </size>
-                    </property>
-                    <property name="text">
-                      <string>应用筛选</string>
-                    </property>
-                  </widget>
-                </item>
-              </layout>
-            </widget>
-          </item>
         </layout>
       </item>
       <item>
@@ -1328,7 +1409,7 @@ QTabBar::tab:selected {
               <property name="maximumSize">
                 <size>
                   <width>220</width>
-                  <height>200</height>
+                  <height>245</height>
                 </size>
               </property>
               <property name="title">
@@ -1423,6 +1504,19 @@ QTabBar::tab:selected {
                       </widget>
                     </item>
                   </layout>
+                </item>
+                <item row="4" column="0" colspan="2">
+                  <widget class="QPushButton" name="pbtn_ChannelCalibration">
+                    <property name="minimumSize">
+                      <size>
+                        <width>0</width>
+                        <height>32</height>
+                      </size>
+                    </property>
+                    <property name="text">
+                      <string>通道与系数标定</string>
+                    </property>
+                  </widget>
                 </item>
               </layout>
             </widget>

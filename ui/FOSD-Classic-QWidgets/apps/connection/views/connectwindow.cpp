@@ -6,6 +6,8 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QMouseEvent>
+#include <QTextBlock>
+#include <QTextCursor>
 #include "../../../controls/qcustomplot.h"
 namespace fosd {
 namespace ui {
@@ -16,7 +18,6 @@ ConnectionView::ConnectionView(QWidget *parent) : QWidget(parent), m_ui(new Ui::
     m_ui->ptedit_UdpRec->setMaximumBlockCount(200);
     m_ui->ptedit_UdpRec->setUndoRedoEnabled(false);
     m_ui->ptedit_UdpRec->setLineWrapMode(QPlainTextEdit::NoWrap);
-    m_ui->label_14->setText(tr("UDP 接收日志（有效包显示摘要，每60秒自动清理）"));
     m_ui->cbox_UdpDisplayMode->setToolTip(tr("有效包显示接收时间、协议、序号和记录数；此选项仅切换未识别包的预览格式"));
     initializeSpectrum();
     m_binding = new FormBinding(PanelId::Connection, this, this);
@@ -117,6 +118,19 @@ void ConnectionView::refreshSpectrumSelection() {
 }
 
 void ConnectionView::setSpectrumTheme(bool dark) {
+    for (auto *log : {m_ui->ptedit_SerialRec, m_ui->ptedit_UdpRec, m_ui->ptedit_TcpRec}) {
+        log->setProperty("trafficDarkTheme", dark);
+        for (auto block = log->document()->begin(); block.isValid(); block = block.next()) {
+            if (block.userState() != 1 && block.userState() != 2)
+                continue;
+            QTextCursor cursor(block);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            QTextCharFormat format;
+            format.setForeground(QColor(block.userState() == 2 ? (dark ? "#73b7ff" : "#1d4ed8")
+                                                               : (dark ? "#63df91" : "#15803d")));
+            cursor.mergeCharFormat(format);
+        }
+    }
     auto *plot = m_ui->cplot_Spectrum;
     plot->setProperty("spectrumDarkTheme", dark);
     const QColor background = dark ? QColor("#20252b") : QColor("#ffffff");

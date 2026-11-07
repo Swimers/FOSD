@@ -8,8 +8,7 @@ namespace classic {
 enum class PanelId {
     Main,
     Connection,
-    Plot,
-    PlotSettings,
+    ChannelCalibration,
     Visualization,
     ModelPanel,
     ScenePanel,
@@ -18,7 +17,7 @@ enum class PanelId {
     KeyPointSelect,
     HardwareData,
 };
-enum class FeatureId { MainWindow, Connection, Plot, Visualization, Model, Tracking };
+enum class FeatureId { MainWindow, Connection, Visualization, Model, Tracking };
 FeatureId featureForPanel(PanelId panel);
 
 enum class WindowAction { Minimize, ToggleFullScreen, Close };

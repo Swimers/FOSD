@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ui version="4.0">
   <class>OldMainWindow</class>
   <widget class="QMainWindow" name="OldMainWindow">
@@ -140,44 +140,6 @@
                 <property name="icon">
                   <iconset resource="../../resources/legacy_ui.qrc">
                     <normaloff>:/icon/icon/Menu.png</normaloff>:/icon/icon/Menu.png</iconset>
-                </property>
-                <property name="iconSize">
-                  <size>
-                    <width>24</width>
-                    <height>24</height>
-                  </size>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QPushButton" name="pbtn_2DPlot">
-                <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                  </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                  <size>
-                    <width>120</width>
-                    <height>50</height>
-                  </size>
-                </property>
-                <property name="baseSize">
-                  <size>
-                    <width>0</width>
-                    <height>0</height>
-                  </size>
-                </property>
-                <property name="styleSheet">
-                  <string notr="true" />
-                </property>
-                <property name="text">
-                  <string>二维验证</string>
-                </property>
-                <property name="icon">
-                  <iconset resource="../../resources/legacy_ui.qrc">
-                    <normaloff>:/icon/icon/2D_Plot.png</normaloff>:/icon/icon/2D_Plot.png</iconset>
                 </property>
                 <property name="iconSize">
                   <size>

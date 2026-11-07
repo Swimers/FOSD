@@ -19,6 +19,18 @@ WorkbenchRuntime::WorkbenchRuntime(QObject *parent)
             &WorkbenchRuntime::transportState);
     connect(&communication, &communication::ConnectControl::rawDataReceived, this,
             &WorkbenchRuntime::rawReceived);
+    connect(&communication, &communication::ConnectControl::requestSend, this,
+            &WorkbenchRuntime::rawSent);
+    connect(&communication, &communication::ConnectControl::requestOpenSerial, this,
+            [this](const communication::SerialConfig &value) { m_logSerial = value; });
+    connect(&communication, &communication::ConnectControl::requestOpenUdp, this,
+            [this](const communication::UdpConfig &value) { m_logUdp = value; });
+    connect(&communication, &communication::ConnectControl::requestOpenTcp, this,
+            [this](const communication::TcpConfig &value) { m_logTcp = value; m_logTcpPeer = {}; });
+    QString logConfigError;
+    m_parameters.read(&m_logSerial, false, &logConfigError);
+    m_parameters.read(&m_logUdp, false, &logConfigError);
+    m_parameters.read(&m_logTcp, false, &logConfigError);
     connect(&communication, &communication::ConnectControl::errorOccurred, this,
             &WorkbenchRuntime::transportError);
     connect(&communication, &communication::ConnectControl::decoderErrorOccurred, this,
@@ -185,15 +197,18 @@ void WorkbenchRuntime::initializePorts(const QString &serialPort, const QString 
     const auto preferred = serialPort.isEmpty() ? saved.portName : serialPort;
     int selected = ports.indexOf(preferred);
     if (selected < 0) selected = ports.isEmpty() ? -1 : 0;
+    emit presentationChanged(PanelId::Connection,
+        {{"cbox_SerialNameChoose",QVariantMap{{"items",labels},{"data",data},{"index",selected}}}});
+    initializeLocalAddresses(localAddress);
+}
+
+void WorkbenchRuntime::initializeLocalAddresses(const QString &localAddress) {
     QStringList addresses{QStringLiteral("0.0.0.0"), QStringLiteral("127.0.0.1")};
     for (const auto &address : QNetworkInterface::allAddresses())
         if (address.protocol() == QAbstractSocket::IPv4Protocol && !addresses.contains(address.toString()))
             addresses.append(address.toString());
     const int localIndex = addresses.indexOf(localAddress);
-    emit presentationChanged(
-        PanelId::Connection,
-        {{"cbox_SerialNameChoose", QVariantMap{{"items", labels}, {"data",data}, {"index", selected}}},
-         {"cbox_LocakIP",QVariantMap{{"items",addresses},{"index",localIndex < 0 ? 0 : localIndex}}}});
+    emit presentationChanged(PanelId::Connection, {{"cbox_LocakIP",QVariantMap{{"items",addresses},{"index",localIndex < 0 ? 0 : localIndex}}}});
 }
 
 void WorkbenchRuntime::publishNetworkConfiguration(int mode) {

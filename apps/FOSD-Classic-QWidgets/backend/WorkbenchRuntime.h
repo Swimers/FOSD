@@ -8,6 +8,7 @@
 #include "config/ParameterStore.h"
 #include <QSet>
 #include <QQueue>
+#include <QTextCodec>
 namespace fosd {
 namespace application {
 class WorkbenchRuntime final : public ui::classic::WorkbenchServices {
@@ -40,6 +41,8 @@ private slots:
                         fosd::communication::ConnectionState state);
     void rawReceived(fosd::communication::Channel channel, const QByteArray &bytes,
                      const fosd::communication::Endpoint &peer);
+    void rawSent(fosd::communication::Channel channel, const QByteArray &bytes,
+                 const fosd::communication::Endpoint &peer);
     void transportError(const fosd::communication::CommunicationError &error);
     void decoderError(const fosd::communication::DecoderError &error);
     void protocolError(const fosd::protocol::ProtocolError &error);
@@ -63,10 +66,28 @@ private:
     void publishModel();
     void publishRunState();
     void initializePorts(const QString &serialPort = QString(), const QString &localAddress = QString());
+    void initializeLocalAddresses(const QString &selected = QString());
     void publishNetworkConfiguration(int mode);
     bool startStorage(const QString &path, QString *error);
-    QString rawDisplay(int channel) const;
     QString udpLogEntry() const;
+    struct TrafficEntry {
+        quint64 id = 0;
+        QDateTime at;
+        bool outgoing = false;
+        QString endpoint;
+        int byteCount = 0;
+        QByteArray preview;
+        QString utf8;
+        QString summary;
+        bool showPayload = true;
+    };
+    void appendTraffic(communication::Channel channel, const QByteArray &bytes,
+                       const communication::Endpoint &peer, bool outgoing,
+                       const QString &summary = QString(), int byteCount = -1,
+                       bool showPayload = true, const QDateTime &at = QDateTime());
+    QString formatTraffic(int channel, const TrafficEntry &entry) const;
+    void flushUdpTraffic();
+    void clearTraffic(int channel);
     bool sendSerialCommand(const QString &command, QString *error);
     static QString text(const QVariantMap &fields, const QString &name);
     static int index(const QVariantMap &fields, const QString &name);
@@ -96,10 +117,16 @@ private:
     QElapsedTimer m_historyClock;
     QString m_modelPath;
     QString m_lastNotice;
-    QString m_rawText[3];
-    QByteArray m_rawBytes[2];
-    bool m_rawHex[2] = {false, true};
-    bool m_rawDirty[3] = {false, false, false};
+    bool m_rawHex[3] = {false, true, true};
+    QVector<TrafficEntry> m_traffic[3];
+    quint64 m_nextTrafficId[3] = {0,0,0};
+    quint64 m_publishedTrafficId[3] = {0,0,0};
+    bool m_resetTraffic[3] = {false,false,false};
+    std::unique_ptr<QTextDecoder> m_receiveDecoder[3];
+    communication::SerialConfig m_logSerial;
+    communication::UdpConfig m_logUdp;
+    communication::TcpConfig m_logTcp;
+    communication::Endpoint m_logTcpPeer;
     core::FrameSnapshotPtr m_udpLogFrame;
     QByteArray m_udpPreview;
     communication::Endpoint m_udpPeer;
@@ -108,7 +135,6 @@ private:
     quint64 m_udpPacketCount = 0;
     QString m_udpLogStatus;
     bool m_udpLogPending = false;
-    QStringList m_udpLogLines;
     communication::ConnectionState m_states[3] = {communication::ConnectionState::Closed,
                                                   communication::ConnectionState::Closed,
                                                   communication::ConnectionState::Closed};
@@ -117,7 +143,6 @@ private:
     QSet<int> m_channels;
     bool m_filterChannels = false;
     bool m_running = true;
-    bool m_observing = false;
     bool m_hardwareRefresh = true;
     bool m_recording = false;
     bool m_storagePending = false;
@@ -131,7 +156,6 @@ private:
     quint64 m_presentedResult = 0;
     core::CalibratedDataPtr m_presentedHardware;
     vtkIdType m_selectedPoint = -1;
-    QString m_presentedRaw[3];
     bool m_originalKeyCoordinates = false;
 };
 } // namespace application
