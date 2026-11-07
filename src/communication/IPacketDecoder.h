@@ -41,6 +41,9 @@ public:
     }
 
 signals:
+    // Non-protocol serial frames, including their terminator. Keep bytes intact;
+    // text encoding/display belongs to the consumer.
+    void commandReceived(const QByteArray &command, const fosd::communication::Endpoint &peer);
     void errorOccurred(const fosd::communication::DecoderError &error);
 
 protected:

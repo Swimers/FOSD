@@ -191,19 +191,46 @@ void TcpPacketDecoder::reset() {
     m_buffer.clear();
 }
 
-SerialPacketDecoder::SerialPacketDecoder(QByteArray terminator, int maxFrameSize)
-    : IPacketDecoder(Channel::Serial), m_terminator(std::move(terminator)),
+SerialPacketDecoder::SerialPacketDecoder(QByteArray terminator, int maxFrameSize,
+                                         QVector<PacketRule> rules)
+    : IPacketDecoder(Channel::Serial), m_rules(std::move(rules)),
+      m_terminator(std::move(terminator)),
       m_maxFrameSize(maxFrameSize) {
 }
 
 QString SerialPacketDecoder::validateConfiguration() const {
     if (m_terminator.isEmpty() || m_maxFrameSize < m_terminator.size())
         return QStringLiteral("Invalid serial framing configuration");
-    return {};
+    return checkRules(m_rules);
+}
+
+QVector<QByteArray> SerialPacketDecoder::decodeFrame(const QByteArray &frame) const {
+    QVector<QByteArray> packets;
+    int offset = 0;
+    while (offset < frame.size()) {
+        const QByteArray remaining = frame.mid(offset);
+        const PacketRule *matched = nullptr;
+        for (const PacketRule &rule : m_rules) {
+            if (remaining.startsWith(rule.marker)) {
+                matched = &rule;
+                break;
+            }
+        }
+        if (!matched)
+            return {};
+        const int size = matched->frameSize(remaining);
+        if (!validSize(*matched, size) || size > remaining.size())
+            return {};
+        const QByteArray packet = remaining.left(size);
+        if (matched->validate && !matched->validate(packet))
+            return {};
+        packets.append(packet);
+        offset += size;
+    }
+    return packets;
 }
 
 QVector<QByteArray> SerialPacketDecoder::feed(const QByteArray &bytes, const Endpoint &peer) {
-    Q_UNUSED(peer)
     if (!initialize())
         return {};
     m_buffer.append(bytes);
@@ -221,9 +248,16 @@ QVector<QByteArray> SerialPacketDecoder::feed(const QByteArray &bytes, const End
             break;
         }
         const int size = pos + m_terminator.size();
-        if (!m_discarding && size <= m_maxFrameSize)
-            packets.append(m_buffer.left(size));
-        else if (!m_discarding)
+        if (!m_discarding && size <= m_maxFrameSize) {
+            const QByteArray frame = m_buffer.left(size);
+            const auto decoded = decodeFrame(frame.left(pos));
+            // Classify the entire delimited frame atomically: never publish a
+            // valid prefix and silently lose an invalid suffix.
+            if (decoded.isEmpty())
+                emit commandReceived(frame, peer);
+            else
+                packets += decoded;
+        } else if (!m_discarding)
             reportError(QStringLiteral("decode"),
                         QStringLiteral("Serial command exceeds maximum frame size"));
         m_buffer.remove(0, size);

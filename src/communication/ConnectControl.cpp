@@ -35,6 +35,10 @@ void ConnectWorker::initialize() {
 std::unique_ptr<IPacketDecoder> ConnectWorker::initializeDecoder(Channel channel) {
     std::unique_ptr<IPacketDecoder> parser = m_decoderFactory(channel);
     if (parser) {
+        connect(parser.get(), &IPacketDecoder::commandReceived, this,
+                [this, channel](const QByteArray &command, const Endpoint &peer) {
+                    emit commandReceived(channel, command, peer);
+                });
         connect(parser.get(), &IPacketDecoder::errorOccurred, this,
                 &ConnectWorker::decoderErrorOccurred);
         parser->initialize();
@@ -207,6 +211,8 @@ ConnectControl::ConnectControl(QObject *parent, DecoderFactory decoderFactory, Q
             &ConnectControl::rawDataReceived);
     connect(m_worker, &detail::ConnectWorker::packetReceived, this,
             &ConnectControl::packetReceived);
+    connect(m_worker, &detail::ConnectWorker::commandReceived, this,
+            &ConnectControl::commandReceived);
     connect(m_worker, &detail::ConnectWorker::stateChanged, this, &ConnectControl::stateChanged);
     connect(m_worker, &detail::ConnectWorker::errorOccurred, this, &ConnectControl::errorOccurred);
     connect(m_worker, &detail::ConnectWorker::decoderErrorOccurred, this,

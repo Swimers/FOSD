@@ -39,6 +39,8 @@ public slots:
     void shutdown();
 
 signals:
+    void commandReceived(fosd::communication::Channel channel, const QByteArray &command,
+                         const fosd::communication::Endpoint &peer);
     void rawDataReceived(fosd::communication::Channel channel, const QByteArray &bytes,
                          const fosd::communication::Endpoint &peer);
     void packetReceived(fosd::communication::Channel channel, const QByteArray &packet,
@@ -91,6 +93,8 @@ public:
     void send(Channel channel, const QByteArray &bytes, const Endpoint &peer = Endpoint());
 
 signals:
+    void commandReceived(fosd::communication::Channel channel, const QByteArray &command,
+                         const fosd::communication::Endpoint &peer);
     void rawDataReceived(fosd::communication::Channel channel, const QByteArray &bytes,
                          const fosd::communication::Endpoint &peer);
     void packetReceived(fosd::communication::Channel channel, const QByteArray &packet,

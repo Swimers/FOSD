@@ -12,7 +12,6 @@ target_compile_features(fosd_config PUBLIC cxx_std_11)
 find_package(Qt5 5.12 REQUIRED COMPONENTS Network SerialPort)
 add_library(fosd_parameters STATIC
     CoreParameters.h
-    CoreParameters.cpp
     ParameterCodec.h
     ParameterCodec.cpp
     ParameterDefaults.cpp

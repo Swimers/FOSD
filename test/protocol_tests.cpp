@@ -1,6 +1,7 @@
 #include "ParameterTestIsolation.h"
 #include "communication/ConnectControl.h"
 #include "communication/PacketDecoders.h"
+#include "communication/Serialport.h"
 #include "protocol/ProtocolControl.h"
 #include "protocol/MPWavelengthParser.h"
 #include <QCoreApplication>
@@ -215,7 +216,43 @@ private slots:
     void tcpFragmentsEndToEnd();
     void sharedThreadWithoutMainDispatchAndShutdown();
     void hostedCommunicationLifecycle();
+    void serialProtocolAndCommandRouting();
 };
+
+void ProtocolTests::serialProtocolAndCommandRouting() {
+    ProtocolControl protocol;
+    communication::detail::ConnectWorker worker{communication::DecoderFactory()};
+    worker.initialize();
+    auto *serial = worker.findChild<communication::Serialport *>();
+    QVERIFY(serial);
+    QSignalSpy commands(&worker, &communication::detail::ConnectWorker::commandReceived);
+    QSignalSpy packets(&worker, &communication::detail::ConnectWorker::packetReceived);
+    QSignalSpy parsed(&protocol, &ProtocolControl::frameParsed);
+    QSignalSpy errors(&protocol, &ProtocolControl::errorOccurred);
+    connect(&worker, &communication::detail::ConnectWorker::packetReceived,
+            &protocol, &ProtocolControl::parseFrame);
+    const QByteArray packet = goldenPacket();
+    emit serial->bytesReceived("COMMAND1\r" + packet.left(7), Endpoint());
+    QCOMPARE(commands.count(), 1);
+    QCOMPARE(commands.first().at(0).value<Channel>(), Channel::Serial);
+    QCOMPARE(commands.first().at(1).toByteArray(), QByteArray("COMMAND1\r"));
+    QCOMPARE(packets.count(), 0);
+    emit serial->bytesReceived(packet.mid(7), Endpoint());
+    QCOMPARE(packets.count(), 0); // Binary length alone does not close a serial frame.
+    emit serial->bytesReceived("\rBAD\r", Endpoint());
+    QCOMPARE(packets.count(), 1);
+    QCOMPARE(packets.first().at(1).toByteArray(), packet);
+    QCOMPARE(commands.count(), 2);
+    QTRY_COMPARE(parsed.count(), 1);
+    const auto snapshot = protocol.dataModel()->latest();
+    QVERIFY(snapshot);
+    QCOMPARE(snapshot->source.transport, core::TransportKind::Serial);
+    const auto data = std::dynamic_pointer_cast<const core::WavelengthFrame>(snapshot->data);
+    QVERIFY(data);
+    QCOMPARE(data->sequence, quint32(0x12345678));
+    QCOMPARE(errors.count(), 0);
+    worker.shutdown();
+}
 
 void ProtocolTests::parseFieldsAndBoundaries() {
     protocol::MPWavelengthParser parser;

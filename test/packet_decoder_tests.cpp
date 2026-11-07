@@ -39,6 +39,8 @@ private slots:
     void serialCommands();
     void serialLimitAndReset();
     void serialCustomTerminator();
+    void serialProtocolFrames();
+    void serialRulesAndFallback();
     void invalidConfiguration();
     void decoderErrorSignals();
     void jcsChannelPackets();
@@ -118,33 +120,102 @@ void PacketDecoderTests::customRulesAndRecovery() {
 
 void PacketDecoderTests::serialCommands() {
     SerialPacketDecoder decoder;
+    QSignalSpy commands(&decoder, &IPacketDecoder::commandReceived);
     QVERIFY(decoder.feed("SET ", Endpoint()).isEmpty());
-    QCOMPARE(decoder.feed("1\rGET\r\rtail", Endpoint()),
-             QVector<QByteArray>({"SET 1\r", "GET\r", "\r"}));
-    QCOMPARE(decoder.feed("\r", Endpoint()), QVector<QByteArray>({"tail\r"}));
+    QVERIFY(decoder.feed("1\rGET\r\rtail", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 3);
+    QCOMPARE(commands.at(0).at(0).toByteArray(), QByteArray("SET 1\r"));
+    QCOMPARE(commands.at(1).at(0).toByteArray(), QByteArray("GET\r"));
+    QCOMPARE(commands.at(2).at(0).toByteArray(), QByteArray("\r"));
+    QVERIFY(decoder.feed("\r", Endpoint()).isEmpty());
+    QCOMPARE(commands.last().at(0).toByteArray(), QByteArray("tail\r"));
     QVERIFY(decoder.feed({}, Endpoint()).isEmpty());
 }
 
 void PacketDecoderTests::serialLimitAndReset() {
     SerialPacketDecoder decoder("\r", 4);
-    QCOMPARE(decoder.feed("abc\rtoolong\rOK\r", Endpoint()),
-             QVector<QByteArray>({"abc\r", "OK\r"}));
+    QSignalSpy commands(&decoder, &IPacketDecoder::commandReceived);
+    QVERIFY(decoder.feed("abc\rtoolong\rOK\r", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 2);
+    QCOMPARE(commands.at(0).at(0).toByteArray(), QByteArray("abc\r"));
+    QCOMPARE(commands.at(1).at(0).toByteArray(), QByteArray("OK\r"));
     QVERIFY(decoder.feed("12345", Endpoint()).isEmpty());
-    QCOMPARE(decoder.feed("tail\rX\r", Endpoint()), QVector<QByteArray>({"X\r"}));
+    QVERIFY(decoder.feed("tail\rX\r", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 3);
+    QCOMPARE(commands.last().at(0).toByteArray(), QByteArray("X\r"));
     QVERIFY(decoder.feed("12345", Endpoint()).isEmpty());
     decoder.reset();
-    QCOMPARE(decoder.feed("X\r", Endpoint()), QVector<QByteArray>({"X\r"}));
+    QVERIFY(decoder.feed("X\r", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 4);
     QVERIFY(decoder.feed("old", Endpoint()).isEmpty());
     decoder.reset();
-    QCOMPARE(decoder.feed("\r", Endpoint()), QVector<QByteArray>({"\r"}));
+    QVERIFY(decoder.feed("\r", Endpoint()).isEmpty());
+    QCOMPARE(commands.last().at(0).toByteArray(), QByteArray("\r"));
 }
 
 void PacketDecoderTests::serialCustomTerminator() {
     SerialPacketDecoder decoder("\r\n", 6);
+    QSignalSpy commands(&decoder, &IPacketDecoder::commandReceived);
     QVERIFY(decoder.feed("CMD\r", Endpoint()).isEmpty());
-    QCOMPARE(decoder.feed("\nX\r\n", Endpoint()), QVector<QByteArray>({"CMD\r\n", "X\r\n"}));
+    QVERIFY(decoder.feed("\nX\r\n", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 2);
+    QCOMPARE(commands.at(0).at(0).toByteArray(), QByteArray("CMD\r\n"));
+    QCOMPARE(commands.at(1).at(0).toByteArray(), QByteArray("X\r\n"));
     QVERIFY(decoder.feed("toolong\r", Endpoint()).isEmpty());
-    QCOMPARE(decoder.feed("\nOK\r\n", Endpoint()), QVector<QByteArray>({"OK\r\n"}));
+    QVERIFY(decoder.feed("\nOK\r\n", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 3);
+    QCOMPARE(commands.last().at(0).toByteArray(), QByteArray("OK\r\n"));
+}
+
+void PacketDecoderTests::serialProtocolFrames() {
+    QByteArray jcs(24, '\0');
+    jcs.replace(0, 4, QByteArray::fromHex("fafbfafb"));
+    const QByteArray stream = "COMMAND1\r" + frame() + '\r' + jcs + frame(0) + '\r';
+    for (int split = 0; split <= stream.size(); ++split) {
+        SerialPacketDecoder decoder;
+        QSignalSpy commands(&decoder, &IPacketDecoder::commandReceived);
+        auto packets = decoder.feed(stream.left(split), Endpoint());
+        packets += decoder.feed(stream.mid(split), Endpoint());
+        QCOMPARE(packets, QVector<QByteArray>({frame(), jcs, frame(0)}));
+        QCOMPARE(commands.count(), 1);
+        QCOMPARE(commands.first().at(0).toByteArray(), QByteArray("COMMAND1\r"));
+    }
+    SerialPacketDecoder decoder;
+    QVERIFY(decoder.feed(frame(), Endpoint()).isEmpty()); // Wait for terminator.
+    QCOMPARE(decoder.feed("\r", Endpoint()), QVector<QByteArray>({frame()}));
+    QVERIFY(decoder.feed(frame().left(8), Endpoint()).isEmpty());
+    decoder.reset();
+    QVERIFY(decoder.feed(frame().mid(8) + '\r', Endpoint()).isEmpty());
+    QCOMPARE(decoder.feed(frame() + '\r', Endpoint()), QVector<QByteArray>({frame()}));
+
+    QByteArray channel = frame();
+    channel.replace(0, 4, QByteArray::fromHex("fa01fa01"));
+    SerialPacketDecoder channelDecoder("\r", 65536,
+        {Rule::JCS_Data_PacketRule(), Rule::JCS_Channel_PacketRule()});
+    QCOMPARE(channelDecoder.feed(jcs + channel + '\r', Endpoint()),
+             QVector<QByteArray>({jcs, channel}));
+}
+
+void PacketDecoderTests::serialRulesAndFallback() {
+    PacketRule rule;
+    rule.marker = "XY";
+    rule.maxFrameSize = 8;
+    rule.frameSize = customFrameSize;
+    rule.validate = customFrameValid;
+    SerialPacketDecoder decoder("\r", 65536, {rule, Rule::MP_PacketRule()});
+    QSignalSpy commands(&decoder, &IPacketDecoder::commandReceived);
+    QSignalSpy errors(&decoder, &IPacketDecoder::errorOccurred);
+    const QByteArray valid = QByteArray("XY") + char(4) + '!';
+    QCOMPARE(decoder.feed(valid + '\r', Endpoint()), QVector<QByteArray>({valid}));
+    const QVector<QByteArray> invalid = {frame().left(9), frame().left(15),
+        frame() + "junk", QByteArray("noise") + frame(),
+        QByteArray("XY") + char(4) + '?', QByteArray("XY") + char(9) + '!'};
+    for (const auto &bytes : invalid) {
+        QVERIFY(decoder.feed(bytes + '\r', Endpoint()).isEmpty());
+        QCOMPARE(commands.last().at(0).toByteArray(), bytes + '\r');
+    }
+    QCOMPARE(commands.count(), invalid.size());
+    QCOMPARE(errors.count(), 0); // Non-protocol commands are normal input.
 }
 
 void PacketDecoderTests::invalidConfiguration() {
@@ -164,11 +235,13 @@ void PacketDecoderTests::invalidConfiguration() {
     for (const QVector<PacketRule> &rules : invalidRules) {
         UdpPacketDecoder udp(rules);
         TcpPacketDecoder tcp(rules);
+        SerialPacketDecoder serial("\r", 65536, rules);
         QSignalSpy udpErrors(&udp, &IPacketDecoder::errorOccurred);
         QSignalSpy tcpErrors(&tcp, &IPacketDecoder::errorOccurred);
         // Initialization happens after observers connect, not in constructors.
         QVERIFY(!udp.initialize());
         QVERIFY(!tcp.initialize());
+        QVERIFY(!serial.initialize());
         QCOMPARE(udpErrors.count(), 1);
         QCOMPARE(tcpErrors.count(), 1);
         const DecoderError udpError = qvariant_cast<DecoderError>(udpErrors.first().at(0));
@@ -235,14 +308,19 @@ void PacketDecoderTests::decoderErrorSignals() {
 
     SerialPacketDecoder serial("\r", 4);
     QSignalSpy serialErrors(&serial, &IPacketDecoder::errorOccurred);
+    QSignalSpy commands(&serial, &IPacketDecoder::commandReceived);
     QVERIFY(serial.feed("12345", Endpoint()).isEmpty());
     QCOMPARE(serialErrors.count(), 1);
     QVERIFY(serial.feed("more", Endpoint()).isEmpty());
     QCOMPARE(serialErrors.count(), 1);
-    QCOMPARE(serial.feed("\rOK\r", Endpoint()), QVector<QByteArray>({"OK\r"}));
+    QVERIFY(serial.feed("\rOK\r", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 1);
+    QCOMPARE(commands.last().at(0).toByteArray(), QByteArray("OK\r"));
     QCOMPARE(serialErrors.count(), 1);
     QCOMPARE(qvariant_cast<DecoderError>(serialErrors.first().at(0)).channel, Channel::Serial);
-    QCOMPARE(serial.feed("oversized\rX\r", Endpoint()), QVector<QByteArray>({"X\r"}));
+    QVERIFY(serial.feed("oversized\rX\r", Endpoint()).isEmpty());
+    QCOMPARE(commands.count(), 2);
+    QCOMPARE(commands.last().at(0).toByteArray(), QByteArray("X\r"));
     QCOMPARE(serialErrors.count(), 2);
 }
 

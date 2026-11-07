@@ -22,7 +22,9 @@ struct Endpoint {
     quint16 port = 0;
 
     // A peer needs both a concrete address and a nonzero port.
-    bool isValid() const;
+    bool isValid() const {
+        return !address.isNull() && port != 0;
+    }
 };
 
 struct SerialConfig {
@@ -177,7 +179,11 @@ struct PickingSettings {
 };
 
 struct SelectionStyleSettings : KeyPointStyle {
-    SelectionStyleSettings();
+    SelectionStyleSettings() {
+        radiusMm = 7;
+        color = {{0.0, 1.0, 1.0}};
+        labelColor = {{0.0, 1.0, 1.0}};
+    }
 };
 } // namespace visualization
 } // namespace fosd

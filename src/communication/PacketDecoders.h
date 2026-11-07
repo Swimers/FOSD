@@ -53,15 +53,22 @@ private:
 
 class SerialPacketDecoder final : public IPacketDecoder {
 public:
-    // Output retains the terminator, including empty commands ("\r"). An
-    // oversized command is discarded through its terminator, never truncated.
+    // Split at terminator first, then match complete binary packets with rules.
+    // feed() returns protocol packets without the terminator. Non-matching
+    // frames emit commandReceived with the original terminator (even "\r").
+    // An oversized frame is discarded through its terminator, never truncated.
+    // The sender must escape terminator bytes inside binary payloads.
     explicit SerialPacketDecoder(QByteArray terminator = QByteArray("\r"),
-                                 int maxFrameSize = 64 * 1024);
+                                 int maxFrameSize = 64 * 1024,
+                                 QVector<PacketRule> rules = {Rule::MP_PacketRule(),
+                                                              Rule::JCS_Data_PacketRule()});
     QVector<QByteArray> feed(const QByteArray &bytes, const Endpoint &peer) override;
     void reset() override;
 
 private:
     QString validateConfiguration() const override;
+    QVector<QByteArray> decodeFrame(const QByteArray &frame) const;
+    QVector<PacketRule> m_rules;
     QByteArray m_terminator;
     int m_maxFrameSize;
     QByteArray m_buffer;
