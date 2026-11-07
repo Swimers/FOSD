@@ -188,6 +188,7 @@ void WorkbenchRuntime::initialize() {
     publishRunState();
     publishModel();
     publishScalar();
+    publishAppearance();
     notice(tr("就绪：连接设备，采样置零后加载模型。"));
 }
 
@@ -308,6 +309,9 @@ void WorkbenchRuntime::resultReady(const core::CalculationResultPtr &result) {
 }
 
 void WorkbenchRuntime::modelLoaded(const core::ModelDataPtr &model) {
+    m_running = false;
+    m_displayPaused = false;
+    publishRunState();
     m_result.reset();
     m_modelPending = true;
     m_modelRequests.enqueue(++m_modelGeneration);
@@ -447,6 +451,14 @@ void WorkbenchRuntime::storageStopped() {
 
 void WorkbenchRuntime::selectionChanged(const visualization::PickedPointInfo &info) {
     m_selectedPoint = info.valid ? info.pointId : -1;
+    auto position = [](const std::array<double,3> &p) {
+        return QString("(%1, %2, %3)").arg(p[0],0,'g',9).arg(p[1],0,'g',9).arg(p[2],0,'g',9);
+    };
+    emit presentationChanged(PanelId::Visualization,
+        {{"statusBar_SelectedPoint", info.valid
+            ? tr("SelectedPoint ID: %1 | 原始位置: %2 | 变形位置: %3 (mm)")
+                .arg(qlonglong(info.pointId)).arg(position(info.originalPositionMm),position(info.displayPositionMm))
+            : tr("SelectedPoint：未选择 | 原始位置：-- | 变形位置：-- (mm)")}});
     if (info.valid) {
         emit presentationChanged(PanelId::KeyPointEdit,
             {{"edit_IDKeyPoint", QString::number(qlonglong(info.pointId))},
@@ -460,9 +472,14 @@ void WorkbenchRuntime::selectionChanged(const visualization::PickedPointInfo &in
 }
 
 void WorkbenchRuntime::publishRunState() {
+    const bool model = bool(m_visualization->originalModel());
     emit presentationChanged(
         PanelId::Visualization,
-        {{"_status", m_running ? tr("实时变形显示") : tr("显示已暂停；通信、解算和存储继续运行")}});
+        {{"actionStart.enabled", model && !m_running},
+         {"actionPause.enabled", model && m_running},
+         {"actionStop.enabled", model && (m_running || m_displayPaused)},
+         {"actionReset.enabled", model},
+         {"_status", m_running ? tr("实时变形显示") : tr("显示未启动或已暂停；通信、解算和存储继续运行")}});
 }
 } // namespace application
 } // namespace fosd

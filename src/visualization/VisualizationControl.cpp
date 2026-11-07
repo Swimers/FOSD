@@ -1,5 +1,6 @@
 #include "VisualizationControl.h"
 #include "config/ParameterStore.h"
+#include "config/IniConfigStore.h"
 
 #include "mesh/MeshManager.h"
 #include "render/DeformationRenderer.h"
@@ -83,6 +84,21 @@ VisualizationControl::VisualizationControl(QObject *parent, vtkRenderWindow *ren
     m_interactorStyle->setCameraLocked(m_scene->cameraSettings().locked);
     m_interactorStyle->setClickTolerancePixels(m_picker->settings().clickTolerancePixels);
 
+    QVariant savedColor;
+    if (config::IniConfigStore(config::ParameterStore::runtimePath()).readValue(
+            "visualization.appearance", "modelColor", &savedColor)) {
+        const auto parts = savedColor.toStringList();
+        std::array<double, 3> color;
+        bool valid = parts.size() == 3;
+        for (int i = 0; valid && i < 3; ++i) {
+            bool ok = false;
+            color[i] = parts[i].toDouble(&ok);
+            valid = ok && std::isfinite(color[i]) && color[i] >= 0 && color[i] <= 1;
+        }
+        if (valid)
+            m_modelColor = color;
+    }
+
     // 功能绑定
     if (renderWindowPtr)
         attach(renderWindowPtr);
@@ -130,6 +146,29 @@ void VisualizationControl::detach() {
     m_renderWindow = nullptr;
 }
 
+bool VisualizationControl::setModelColor(const std::array<double, 3> &color) {
+    for (double component : color)
+        if (!std::isfinite(component) || component < 0 || component > 1) {
+            emit errorOccurred(QStringLiteral("Model RGB components must be in [0,1]"));
+            return false;
+        }
+    QStringList saved;
+    for (double component : color)
+        saved.append(QString::number(component, 'g', 17));
+    QString error;
+    if (!config::IniConfigStore(config::ParameterStore::runtimePath()).writeValue(
+            "visualization.appearance", "modelColor", saved, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    m_modelColor = color;
+    if (m_deformation->actor())
+        m_deformation->actor()->GetProperty()->SetColor(m_modelColor.data());
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
 bool VisualizationControl::loadModel(const QString &path) {
     QString error;
     if (!m_mesh->loadModel(path, &error)) {
@@ -148,7 +187,7 @@ bool VisualizationControl::loadModel(const QString &path) {
     m_colorResult.reset();
     m_customField = PointScalarField();
     m_deformation->setOriginalMesh(m_mesh->originalMesh());
-    m_deformation->actor()->GetProperty()->SetColor(0.5, 0.65, 0.15);
+    m_deformation->actor()->GetProperty()->SetColor(m_modelColor.data());
     m_renderer->AddActor(m_deformation->actor());
     m_keyPoints->setModel(originalModel(), m_deformation->displayMesh());
     m_scene->setModelActor(m_deformation->actor());

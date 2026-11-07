@@ -1,5 +1,6 @@
 #include "WorkbenchRuntime.h"
 #include <cmath>
+#include <QColor>
 namespace fosd {
 namespace application {
 using namespace ui::classic;
@@ -18,12 +19,19 @@ bool WorkbenchRuntime::visualizationAction(const UiRequest &request, UiResponse 
     if (panel == PanelId::Visualization) {
         if (a == "actionStart" || a == "actionPause" || a == "actionStop" ||
                    a == "actionReset") {
-            if (a == "actionStart" && !view.originalModel()) {
+            if (!view.originalModel()) {
                 response->success = false;
                 response->message = tr("请先载入模型");
                 return true;
             }
+            if ((a == "actionStart" && m_running) || (a == "actionPause" && !m_running)) {
+                response->success = false;
+                response->message = tr("显示状态已改变，请使用当前可用的操作");
+                publishRunState();
+                return true;
+            }
             m_running = a == "actionStart";
+            m_displayPaused = a == "actionPause";
             view.setResultRepository(m_running && !m_modelPending && !m_configurationPending &&
                                              m_result
                                          ? m_calculation->dataModel()
@@ -53,8 +61,11 @@ bool WorkbenchRuntime::visualizationAction(const UiRequest &request, UiResponse 
             m_result.reset();
             m_modelRevision = 0;
             m_modelPending = false;
+            m_running = false;
+            m_displayPaused = false;
             ++m_modelGeneration;
             publishModel();
+            publishRunState();
         } else if (a == "cbox_FPS") {
             QString rate = text(f, "cbox_FPS");
             rate.remove("Hz", Qt::CaseInsensitive);
@@ -111,7 +122,32 @@ bool WorkbenchRuntime::visualizationAction(const UiRequest &request, UiResponse 
         } else
             return false;
     } else if (panel == PanelId::ScenePanel) {
-        if (a == "cbox_AxisAble")
+        if (a == "cbox_BackgroundMode" || a == "pbtn_BackgroundBottomColor" ||
+            a == "pbtn_BackgroundTopColor" || a == "pbtn_ModelColor") {
+            auto background = view.backgroundSettings();
+            if (a == "cbox_BackgroundMode") {
+                const int mode = index(f,a);
+                response->success = mode == 0 || mode == 1;
+                background.gradient = mode == 1;
+            } else {
+                const QColor color(text(f,"color"));
+                response->success = color.isValid();
+                if (response->success) {
+                    const std::array<double,3> rgb{{color.redF(),color.greenF(),color.blueF()}};
+                    if (a == "pbtn_ModelColor")
+                        response->success = view.setModelColor(rgb);
+                    else if (a == "pbtn_BackgroundTopColor")
+                        background.topColor = rgb;
+                    else
+                        background.bottomColor = rgb;
+                }
+            }
+            if (response->success && a != "pbtn_ModelColor")
+                response->success = view.setBackgroundSettings(background);
+            if (!response->success)
+                response->message = tr("颜色或背景设置未能保存");
+            publishAppearance();
+        } else if (a == "cbox_AxisAble")
             view.showAxes(f.value(a).toBool());
         else if (a == "hsd_AxisSize") {
             auto settings = view.axesSettings();
@@ -172,6 +208,20 @@ void WorkbenchRuntime::publishScalar() {
          {"le_MapRangeMax", QString::number(settings.maximum, 'g', 10)},
          {"le_MapRangeMin.enabled", manual},
          {"le_MapRangeMax.enabled", manual}});
+}
+
+void WorkbenchRuntime::publishAppearance() {
+    const auto background = m_visualization->backgroundSettings();
+    auto colorName = [](const std::array<double,3> &rgb) {
+        return QColor::fromRgbF(rgb[0],rgb[1],rgb[2]).name();
+    };
+    emit presentationChanged(PanelId::ScenePanel,
+        {{"pbtn_ModelColor", colorName(m_visualization->modelColor())},
+         {"pbtn_BackgroundBottomColor", colorName(background.bottomColor)},
+         {"pbtn_BackgroundTopColor", colorName(background.topColor)},
+         {"cbox_BackgroundMode", QVariantMap{{"index",background.gradient ? 1 : 0}}},
+         {"pbtn_BackgroundTopColor.enabled", background.gradient},
+         {"label_BackgroundTop.enabled", background.gradient}});
 }
 } // namespace application
 } // namespace fosd

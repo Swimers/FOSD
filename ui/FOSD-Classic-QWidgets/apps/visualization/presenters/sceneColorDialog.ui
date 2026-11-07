@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SceneColorDialog</class>
+ <widget class="QColorDialog" name="sceneColorDialog">
+  <property name="windowTitle"><string>选择颜色</string></property>
+  <property name="options"><set>QColorDialog::DontUseNativeDialog</set></property>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

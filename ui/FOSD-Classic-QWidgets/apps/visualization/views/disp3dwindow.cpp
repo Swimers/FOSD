@@ -9,6 +9,7 @@ VisualizationView::VisualizationView(QWidget *parent)
     : QMainWindow(parent), m_ui(new Ui::disp3dwindow) {
     initializeFosdUiResources();
     m_ui->setupUi(this);
+    m_ui->statusBar_SelectedPoint->showMessage(tr("SelectedPoint：未选择 | 原始位置：-- | 变形位置：-- (mm)"));
     m_binding = new FormBinding(PanelId::Visualization, this, this);
     connect(m_binding, &ViewEvents::actionTriggered, this, &VisualizationView::relayControl);
 }

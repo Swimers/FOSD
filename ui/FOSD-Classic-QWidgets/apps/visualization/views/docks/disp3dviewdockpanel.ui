@@ -188,7 +188,22 @@
           </item>
         </layout>
       </item>
-      <item row="8" column="0">
+      <item row="8" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_Colors">
+          <property name="title"><string>模型与背景颜色</string></property>
+          <layout class="QGridLayout" name="layout_Colors">
+            <item row="0" column="0"><widget class="QLabel" name="label_ModelColor"><property name="text"><string>模型纯色</string></property></widget></item>
+            <item row="0" column="1"><widget class="QPushButton" name="pbtn_ModelColor"><property name="text"><string>#80a626</string></property><property name="toolTip"><string>打开色卡选择模型颜色，关闭标量着色时生效</string></property></widget></item>
+            <item row="1" column="0"><widget class="QLabel" name="label_BackgroundMode"><property name="text"><string>背景模式</string></property></widget></item>
+            <item row="1" column="1"><widget class="QComboBox" name="cbox_BackgroundMode"><item><property name="text"><string>纯色</string></property></item><item><property name="text"><string>渐变</string></property></item></widget></item>
+            <item row="2" column="0"><widget class="QLabel" name="label_BackgroundBottom"><property name="text"><string>背景 / 底色</string></property></widget></item>
+            <item row="2" column="1"><widget class="QPushButton" name="pbtn_BackgroundBottomColor"><property name="text"><string>#000000</string></property></widget></item>
+            <item row="3" column="0"><widget class="QLabel" name="label_BackgroundTop"><property name="text"><string>渐变顶色</string></property></widget></item>
+            <item row="3" column="1"><widget class="QPushButton" name="pbtn_BackgroundTopColor"><property name="enabled"><bool>false</bool></property><property name="text"><string>#334d80</string></property></widget></item>
+          </layout>
+        </widget>
+      </item>
+      <item row="9" column="0">
         <spacer name="verticalSpacer_3">
           <property name="orientation">
             <enum>Qt::Vertical</enum>

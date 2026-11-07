@@ -39,6 +39,8 @@ public:
     void unloadModel();
     core::ModelDataPtr originalModel() const;
     qint64 modelPolygonCount() const;
+    bool setModelColor(const std::array<double, 3> &color);
+    std::array<double, 3> modelColor() const { return m_modelColor; }
 
     void setResultRepository(core::CalculationRepositoryPtr repository);
     void applyResult(const core::CalculationResultPtr &result);
@@ -128,6 +130,7 @@ private:
     std::unique_ptr<SceneEnvironment> m_scene;
     core::CalculationRepositoryPtr m_repository;
     core::CalculationResultPtr m_colorResult;
+    std::array<double, 3> m_modelColor{{0.5, 0.65, 0.15}};
     PointScalarField m_customField;
 
     QTimer *m_refreshTimer = nullptr; // GUI polls the latest result at 30 Hz.

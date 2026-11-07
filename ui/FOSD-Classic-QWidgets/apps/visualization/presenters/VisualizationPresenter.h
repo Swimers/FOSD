@@ -11,6 +11,7 @@ public:
 
 protected:
     bool localAction(const UiRequest &request) override;
+    bool prepareRequest(UiRequest &request) override;
 };
 } // namespace classic
 } // namespace ui

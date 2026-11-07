@@ -182,7 +182,9 @@ void FormBinding::applyFields(const QVariantMap &fields) {
                 combo->setCurrentText(data["text"].toString());
             else if (combo->findText(previous) >= 0)
                 combo->setCurrentText(previous);
-        } else if (auto *edit = qobject_cast<QLineEdit *>(object))
+        } else if (auto *status = qobject_cast<QStatusBar *>(object))
+            status->showMessage(value.toString());
+        else if (auto *edit = qobject_cast<QLineEdit *>(object))
             edit->setText(value.toString());
         else if (auto *edit = qobject_cast<QPlainTextEdit *>(object)) {
             if (value.type() == QVariant::Map && value.toMap().contains("entries")) {

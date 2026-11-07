@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
   <class>disp3dwindow</class>
   <widget class="QMainWindow" name="disp3dwindow">
@@ -32,6 +32,10 @@
           </widget>
         </item>
       </layout>
+    </widget>
+    <widget class="QStatusBar" name="statusBar_SelectedPoint">
+      <property name="sizeGripEnabled"><bool>false</bool></property>
+      <property name="toolTip"><string>SelectedPoint：模型顶点 ID、原始位置和当前显示的变形位置，坐标单位 mm；变形位置包含显示倍率</string></property>
     </widget>
     <widget class="QToolBar" name="toolBar">
       <property name="windowTitle">
@@ -82,6 +86,7 @@
       </property>
     </action>
     <action name="actionStart">
+      <property name="enabled"><bool>false</bool></property>
       <property name="icon">
         <iconset resource="../../resources/legacy_ui.qrc">
           <normaloff>:/icon/icon/Play_icon.png</normaloff>:/icon/icon/Play_icon.png</iconset>
@@ -91,6 +96,7 @@
       </property>
     </action>
     <action name="actionStop">
+      <property name="enabled"><bool>false</bool></property>
       <property name="icon">
         <iconset resource="../../resources/legacy_ui.qrc">
           <normaloff>:/icon/icon/Stop_icon.png</normaloff>:/icon/icon/Stop_icon.png</iconset>
@@ -100,6 +106,7 @@
       </property>
     </action>
     <action name="actionPause">
+      <property name="enabled"><bool>false</bool></property>
       <property name="icon">
         <iconset resource="../../resources/legacy_ui.qrc">
           <normaloff>:/icon/icon/Pasue_icon.png</normaloff>:/icon/icon/Pasue_icon.png</iconset>
@@ -109,6 +116,7 @@
       </property>
     </action>
     <action name="actionReset">
+      <property name="enabled"><bool>false</bool></property>
       <property name="icon">
         <iconset resource="../../resources/legacy_ui.qrc">
           <normaloff>:/icon/icon/Reset_icon.png</normaloff>:/icon/icon/Reset_icon.png</iconset>

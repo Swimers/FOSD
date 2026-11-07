@@ -12,6 +12,7 @@
 | `showGrid(GridPlane, bool)` | 单独控制某一平面 |
 | `setBackgroundSettings` / `backgroundSettings` | 纯色或底部到顶部的渐变背景 |
 | `setBackground(r,g,b)` | 设置纯色并关闭渐变 |
+| `setModelColor` / `modelColor` | 模型基础 RGB 颜色，各分量为有限的 [0,1]；不改变标量云图的开启状态 |
 | `setWorldSettings` / `worldSettings` | 可选地面、天空球、实色或图片纹理 |
 | `setCameraPreset` | 等距、前/后/左/右/顶/底视图并适配模型 |
 | `setCameraSettings` / `cameraSettings` | 透视/正交、视角、正交比例及鼠标锁 |
@@ -19,6 +20,16 @@
 | `setCameraLocked` / `resetCamera` | 锁定鼠标相机交互 / 保持方向、适配模型 |
 
 bool 设置接口失败时保留原设置，Control 通过 `errorOccurred(QString)` 上报。单组配置原子提交；应用同时修改多个独立配置组时应先保证各组参数有效。
+
+## Classic 三维界面（2026-11-07）
+
+`disp3dviewdockpanel.ui` 新增模型纯色、背景模式、背景/底色和渐变顶色控件。颜色按钮打开 `sceneColorDialog.ui` 定义的 Qt 色卡，确认后提交，取消保持原值。纯色模式禁用顶色按钮但保留其颜色，切回渐变时恢复使用；背景沿用 `BackgroundSettings` 持久化。模型基础颜色保存于运行时 INI 的 `[visualization.appearance] modelColor`，加载新模型时继续使用；关闭标量着色时显示基础颜色，开启时仍使用标量云图。
+
+`disp3dwindow.ui` 定义 SelectedPoint 状态栏，显示顶点 ID、原始位置和变形显示位置（mm，包含显示倍率），跟随 `pointPicked/selectionUpdated` 更新；清除选择或卸载模型后恢复未选择提示。
+
+模型载入后需点击 Start 启动显示：运行时禁用 Start、启用 Pause/Stop；暂停后启用 Start/Stop、禁用 Pause；停止或复位后恢复待启动状态。未载入模型时禁用 Start/Pause/Stop/Reset。暂停与停止只影响变形显示，通信、解算和存储继续运行。
+
+Release 全部 18 个测试目标通过，包含色卡确认/取消、颜色持久化、工具栏状态、选点坐标随变形与复位更新，并检查了三维界面截图。
 
 ## 坐标轴与网格
 

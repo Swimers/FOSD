@@ -68,6 +68,7 @@ private:
     void publishCalibration();
     void publishModel();
     void publishRunState();
+    void publishAppearance();
     void initializePorts(const QString &serialPort = QString(), const QString &localAddress = QString());
     void initializeLocalAddresses(const QString &selected = QString());
     void publishNetworkConfiguration(int mode);
@@ -145,7 +146,8 @@ private:
     communication::TcpRole m_tcpRole = communication::TcpRole::Client;
     QSet<int> m_channels;
     bool m_filterChannels = false;
-    bool m_running = true;
+    bool m_running = false;
+    bool m_displayPaused = false;
     bool m_hardwareRefresh = true;
     bool m_recording = false;
     bool m_storagePending = false;

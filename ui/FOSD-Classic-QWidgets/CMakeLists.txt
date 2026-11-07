@@ -24,10 +24,11 @@ add_library(fosd_classic_presenters STATIC
     apps/mainwindow/presenters/MainWindowPresenter.h apps/mainwindow/presenters/MainWindowPresenter.cpp
     apps/connection/presenters/ConnectionPresenter.h apps/connection/presenters/ConnectionPresenter.cpp
     apps/visualization/presenters/VisualizationPresenter.h apps/visualization/presenters/VisualizationPresenter.cpp
+    apps/visualization/presenters/sceneColorDialog.ui
     apps/model/presenters/ModelPresenter.h apps/model/presenters/ModelPresenter.cpp
     apps/tracking/presenters/TrackingPresenter.h apps/tracking/presenters/TrackingPresenter.cpp
 )
-target_link_libraries(fosd_classic_presenters PUBLIC fosd_classic_backends)
+target_link_libraries(fosd_classic_presenters PUBLIC fosd_classic_backends Qt5::Widgets)
 
 add_library(fosd_classic_controls STATIC
     controls/qcustomplot.h controls/qcustomplot.cpp

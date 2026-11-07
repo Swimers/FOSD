@@ -21,6 +21,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTextBlock>
+#include <QColorDialog>
 #include <QStandardItemModel>
 #include "FOSD-Classic-QWidgets/controls/qcustomplot.h"
 #include <QSignalSpy>
@@ -44,6 +45,67 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void sceneAppearanceSelectionAndToolbar() {
+  using namespace fosd; using namespace fosd::ui::classic;
+  QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("scene.ini").toUtf8());
+  TestWindow w; w.resize(1600,1000); w.show(); w.selectPage(1);
+  QVERIFY(QTest::qWaitForWindowExposed(&w));
+  auto *scene=w.panelWidget(PanelId::ScenePanel); auto *page=w.panelWidget(PanelId::Visualization);
+  auto *status=page->findChild<QStatusBar *>("statusBar_SelectedPoint"); QVERIFY(status);
+  QTRY_VERIFY(status->isVisible()); QVERIFY(status->currentMessage().contains(QString::fromUtf8("未选择")));
+  auto *start=page->findChild<QAction *>("actionStart"); auto *pause=page->findChild<QAction *>("actionPause");
+  auto *stop=page->findChild<QAction *>("actionStop"); auto *reset=page->findChild<QAction *>("actionReset");
+  QTRY_VERIFY(!start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&!reset->isEnabled());
+  auto &view=w.runtime().visualization();
+  auto choose=[&](const char *name,const QColor &color,bool accept) {
+   QTimer::singleShot(30,[color,accept] {
+    auto *dialog=qobject_cast<QColorDialog *>(QApplication::activeModalWidget()); QVERIFY(dialog);
+    dialog->setCurrentColor(color); dialog->grab().save("scene-color-dialog.png");
+    if(accept)dialog->accept(); else dialog->reject();
+   });
+   scene->findChild<QPushButton *>(name)->click();
+  };
+  auto *mode=scene->findChild<QComboBox *>("cbox_BackgroundMode"); QVERIFY(mode);
+  QTRY_VERIFY(!scene->findChild<QPushButton *>("pbtn_BackgroundTopColor")->isEnabled());
+  choose("pbtn_BackgroundBottomColor",QColor("#17324d"),true);
+  QTRY_COMPARE(scene->findChild<QPushButton *>("pbtn_BackgroundBottomColor")->text(),QString("#17324d"));
+  QVERIFY(!view.backgroundSettings().gradient);
+  const auto bottom=view.backgroundSettings().bottomColor;
+  choose("pbtn_BackgroundBottomColor",Qt::red,false); QTest::qWait(50);
+  QVERIFY(view.backgroundSettings().bottomColor==bottom);
+  QTest::keyClick(mode,Qt::Key_End); QTRY_VERIFY(view.backgroundSettings().gradient);
+  QTRY_VERIFY(scene->findChild<QPushButton *>("pbtn_BackgroundTopColor")->isEnabled());
+  choose("pbtn_BackgroundTopColor",QColor("#86aed4"),true);
+  QTRY_COMPARE(scene->findChild<QPushButton *>("pbtn_BackgroundTopColor")->text(),QString("#86aed4"));
+  choose("pbtn_ModelColor",QColor("#d48528"),true);
+  QTRY_COMPARE(scene->findChild<QPushButton *>("pbtn_ModelColor")->text(),QString("#d48528"));
+  auto saved=view.modelColor(); QVERIFY(!view.setModelColor({{-1,0,0}})); QVERIFY(view.modelColor()==saved);
+  visualization::VisualizationControl restored;
+  QVERIFY(restored.modelColor()==saved); QVERIFY(restored.backgroundSettings().gradient);
+  QVERIFY(restored.backgroundSettings().bottomColor==bottom);
+  const auto model=dir.filePath("model.stl"); QFile file(model); QVERIFY(file.open(QIODevice::WriteOnly));
+  file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 50 0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n"); file.close();
+  QSignalSpy accepted(&w.runtime().calculation(),&Calculation::CalculationControl::modelAccepted);
+  QVERIFY(view.loadModel(model)); QTRY_COMPARE(accepted.count(),1);
+  QTRY_VERIFY(start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&reset->isEnabled());
+  start->trigger(); QTRY_VERIFY(!start->isEnabled()&&pause->isEnabled()&&stop->isEnabled());
+  pause->trigger(); QTRY_VERIFY(start->isEnabled()&&!pause->isEnabled()&&stop->isEnabled());
+  start->trigger(); QTRY_VERIFY(!start->isEnabled()&&pause->isEnabled());
+  stop->trigger(); QTRY_VERIFY(start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled());
+  view.setExpectedModelRevision(7); view.setDeformationScale(2);
+  QVERIFY(view.selectPoint(0).valid); QTRY_VERIFY(status->currentMessage().contains("ID: 0"));
+  core::CalculationResult result; result.revision=1; result.modelRevision=7;
+  for(auto id:view.originalModel()->keys())result.displacementMap.insert(id,{1,2,3});
+  view.applyResult(std::make_shared<const core::CalculationResult>(result));
+  QTRY_VERIFY(status->currentMessage().contains("(102, 4, 6)"));
+  QVERIFY(status->currentMessage().contains("(100, 0, 0)"));
+  w.grab().save("scene-appearance-selected-point.png");
+  reset->trigger(); QTRY_VERIFY(status->currentMessage().contains(QString::fromUtf8("变形位置: (100, 0, 0)")));
+  view.clearSelection(); QTRY_VERIFY(status->currentMessage().contains(QString::fromUtf8("未选择")));
+  w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelClear")->click();
+  QTRY_VERIFY(!start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&!reset->isEnabled());
+  qunsetenv("FOSD_CONFIG_FILE");
+ }
  void calibrationEntryFilteringAndAddressRefresh() {
   using namespace fosd; using namespace fosd::ui::classic;
   QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("calibration.ini").toUtf8());
@@ -431,6 +493,8 @@ private slots:
   file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 10 0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n"); file.close();
   w.selectedFile=model; QSignalSpy models(&w.runtime().calculation(),&Calculation::CalculationControl::modelAccepted);
   w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelLoad")->click(); QTRY_COMPARE(models.count(),1);
+  QTRY_VERIFY(w.findChild<QAction *>("actionStart")->isEnabled());
+  w.findChild<QAction *>("actionStart")->trigger(); QTRY_VERIFY(w.findChild<QAction *>("actionPause")->isEnabled());
   w.selectPage(1); send(.02f);
   QTRY_VERIFY(w.runtime().calculation().dataModel()->latest());
   QCOMPARE(w.runtime().calculation().dataModel()->latest()->algorithmId,QString("HYY.IFE"));
@@ -458,7 +522,8 @@ private slots:
  QVERIFY(w.renderHost()->surface()->findChild<QVTKOpenGLNativeWidget *>());
  QVERIFY(!w.findChild<QAction *>("actionPlateValidation"));
  QVERIFY(!w.findChild<QAction *>("actionTrackingPoints"));
- for(auto *bar:w.findChildren<QStatusBar *>()) QVERIFY(!bar->isVisible());
+ w.selectPage(1);
+ QTRY_VERIFY(w.panelWidget(fosd::ui::classic::PanelId::Visualization)->findChild<QStatusBar *>("statusBar_SelectedPoint")->isVisible());
  }};
 int main(int argc,char **argv) { QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat()); QApplication a(argc,argv); WorkbenchMainTests t; return QTest::qExec(&t,argc,argv); }
 #include "workbench_main_tests.moc"
