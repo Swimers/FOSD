@@ -705,7 +705,7 @@ QTabBar::tab:selected {
                         <enum>QPlainTextEdit::NoWrap</enum>
                       </property>
                       <property name="toolTip">
-                        <string>绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200条，每60秒清理</string>
+                        <string>每帧两行：信息行和数据行；绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200帧，每60秒清理</string>
                       </property>
                     </widget>
                   </item>
@@ -1155,7 +1155,7 @@ QTabBar::tab:selected {
                         <enum>QPlainTextEdit::NoWrap</enum>
                       </property>
                       <property name="toolTip">
-                        <string>绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200条，每60秒清理</string>
+                        <string>每帧两行：信息行和数据行；绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200帧，每60秒清理</string>
                       </property>
                     </widget>
                   </item>
@@ -1301,7 +1301,7 @@ QTabBar::tab:selected {
                         <enum>QPlainTextEdit::NoWrap</enum>
                       </property>
                       <property name="toolTip">
-                        <string>绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200条，每60秒清理</string>
+                        <string>每帧两行：信息行和数据行；绿色 RX 为接收，蓝色 TX 为发送请求；最多保留200帧，每60秒清理</string>
                       </property>
                     </widget>
                   </item>

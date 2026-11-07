@@ -99,18 +99,19 @@ QString WorkbenchRuntime::formatTraffic(int channel, const TrafficEntry &entry) 
         .arg(entry.at.toString("yyyy-MM-dd HH:mm:ss.zzz"), names[channel],
              entry.outgoing ? tr("TX 发送请求") : tr("RX 接收"), entry.endpoint)
         .arg(entry.byteCount);
-    if (!entry.summary.isEmpty())
-        line += " | " + entry.summary;
+    QString dataLine = entry.summary;
     if (entry.showPayload) {
         const QString payload = m_rawHex[channel]
             ? QString::fromLatin1(entry.preview.toHex(' ').toUpper())
             : QString(entry.utf8).replace('\r', "\\r").replace('\n', "\\n")
                                 .replace(QChar(0x2028), "\\u2028").replace(QChar(0x2029), "\\u2029");
-        line += tr(" | 预览%1：%2").arg(m_rawHex[channel] ? "Hex" : "UTF-8", payload);
+        if (!dataLine.isEmpty())
+            dataLine += " | ";
+        dataLine += tr("预览%1：%2").arg(m_rawHex[channel] ? "Hex" : "UTF-8", payload);
         if (entry.byteCount > entry.preview.size())
-            line += tr(" …（预览已截断）");
+            dataLine += tr(" …（预览已截断）");
     }
-    return line;
+    return line + '\n' + dataLine;
 }
 
 QString WorkbenchRuntime::udpLogEntry() const {

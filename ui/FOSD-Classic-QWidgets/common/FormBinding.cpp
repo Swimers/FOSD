@@ -201,7 +201,9 @@ void FormBinding::applyFields(const QVariantMap &fields) {
                     QTextCharFormat format;
                     format.setForeground(QColor(outgoing ? (dark ? "#73b7ff" : "#1d4ed8")
                                                          : (dark ? "#63df91" : "#15803d")));
-                    cursor.insertText(row.value("text").toString(), format);
+                    // A line separator keeps both visual lines in one block, so the
+                    // document limit and theme recoloring always operate on whole frames.
+                    cursor.insertText(row.value("text").toString().replace('\n', QChar(0x2028)), format);
                     auto block = cursor.block();
                     block.setUserState(outgoing ? 2 : 1);
                 }

@@ -139,6 +139,13 @@ private slots:
   };
   for(auto *log:{serial,udp,tcp}) {
    QVERIFY(checkColors(log,false)); QVERIFY(log->document()->blockCount()>=2);
+   QCOMPARE(log->toPlainText().split('\n').size(), log->document()->blockCount()*2);
+   for(auto block=log->document()->begin();block.isValid();block=block.next()) {
+    const auto lines=block.text().split(QChar(0x2028));
+    QCOMPARE(lines.size(),2); QVERIFY(lines[0].startsWith('['));
+    QVERIFY(!lines[0].contains(QString::fromUtf8("预览")));
+    QVERIFY(lines[1].contains(QString::fromUtf8("预览UTF-8：")));
+   }
    QVERIFY(QRegularExpression("\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\]").match(log->toPlainText()).hasMatch());
   }
   auto *tabs=panel->findChild<QTabWidget *>("tabWidget"); tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_tcp"));
@@ -357,6 +364,9 @@ private slots:
   QVERIFY(contents.contains(QString::fromUtf8("记录=2")));
   QVERIFY(contents.contains("CH1/2 1.5 nm"));
   QVERIFY(contents.contains("22 B"));
+  const auto frameLines=contents.split('\n'); QCOMPARE(frameLines.size(),2);
+  QVERIFY(frameLines[0].contains("22 B")); QVERIFY(!frameLines[0].contains("mp.wavelength"));
+  QVERIFY(frameLines[1].contains("mp.wavelength"));
   QVERIFY(QRegularExpression("\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\]").match(contents).hasMatch());
   QVERIFY(!contents.contains("5A A5"));
   QVERIFY(serial->toPlainText().isEmpty());
@@ -383,6 +393,9 @@ private slots:
    QVERIFY(QMetaObject::invokeMethod(&runtime, "publishLatest"));
   }
   QTRY_COMPARE(log->document()->blockCount(), 200);
+  QCOMPARE(log->toPlainText().split('\n').size(),400);
+  for(auto block=log->document()->begin();block.isValid();block=block.next())
+   QCOMPARE(block.text().split(QChar(0x2028)).size(),2);
   QVERIFY(log->toPlainText().size() < 100000);
   emit transport.rawDataReceived(communication::Channel::Serial, "serial text", {});
   QTRY_VERIFY(serial->toPlainText().contains("serial text"));
