@@ -16,8 +16,12 @@ bool ConnectionPresenter::localAction(const UiRequest &request) {
         if(!path.isEmpty()) m_view->applyFields({{"cplot_Spectrum",QVariantMap{{"savePath",path}}}});
         return true;
     }
-    if (action == "pbtn_Diagnosis")
-        return showPanel(PanelId::ConnectionDebug);
+    if (action == "ckbox_SpectrumAutoRange")
+        return true;
+    if (action == "pbtn_SpectrumReset") {
+        m_view->applyFields({{"_spectrumReset", true}});
+        return true;
+    }
     if (action.startsWith("ckbox_CH"))
         return true; // Staged locally until pbtn_SelectCH.
     if (action == "pbtn_SelectAllCH") {
@@ -33,16 +37,14 @@ bool ConnectionPresenter::localAction(const UiRequest &request) {
 bool ConnectionPresenter::prepareRequest(UiRequest &request) {
     if (!m_host)
         return true;
-    const bool recording = request.action == "pbtn_SaveDynamic";
-    if (request.action != "pbtn_SaveStatic" && !recording)
+    if (request.action != "pbtn_SaveDynamic")
         return true;
-    if (recording && !request.fields.value("pbtn_SaveDynamic").toBool())
+    if (!request.fields.value("pbtn_SaveDynamic").toBool())
         return true;
     const auto path =
         m_host->chooseFile(true, tr("选择存储文件"), tr("CSV (*.csv);;SQLite (*.sqlite *.db)"));
     if (path.isEmpty()) {
-        if (recording)
-            m_view->applyFields({{"pbtn_SaveDynamic", false}});
+        m_view->applyFields({{"pbtn_SaveDynamic", false}});
         return false;
     }
     request.fields["filePath"] = path;

@@ -2,6 +2,8 @@
 
 | 文档 | 适用场景 |
 | --- | --- |
+| [Classic 通信页面改进与验证（2026-11-07）](Classic-Connection-UI-2026-11-07.md) | Designer 布局、TCP 模式、完整串口参数、保存状态与曲线交互/主题的接入和验证 |
+| [Classic 前后端功能闭环审阅（2026-11-07）](FOSD-Classic-QWidgets-Backend-Audit-2026-11-07.md) | 参数设置覆盖、配置恢复缺陷、诊断/设备应答缺口、各面板完成度和建议验收清单 |
 | [Classic 迁移实施与验证](MigrationCompletion-2026-11-04/README.md) | 当前 INI、16通道JCS、HYY、功能裁剪与验证记录 |
 | [核心参数与运行时 INI](Architectural/core-parameters.md) | 统一参数结构、只读默认模板、构建部署、各模块接入和校验 |
 | [INI 配置读写](Architectural/config-integration.md) | 模块分区、统一读写接口、原子保存、并发访问、错误处理与测试 |

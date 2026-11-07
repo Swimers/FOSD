@@ -108,10 +108,19 @@ bool WorkbenchRuntime::handleRequest(const UiRequest &request, UiResponse *respo
 
 void WorkbenchRuntime::initialize() {
     initializePorts();
-    communication::SerialConfig serial; communication::UdpConfig udp; communication::TcpConfig tcp; QString loadError;
-    if(m_parameters.read(&serial,false,&loadError)) emit presentationChanged(PanelId::Connection,{{"cbox_SerialNameChoose",QVariantMap{{"text",serial.portName}}},{"cbox_SerialBaudChoose",QVariantMap{{"text",QString::number(serial.baudRate)}}}});
-    if(m_parameters.read(&udp,false,&loadError) && udp.localPort) emit presentationChanged(PanelId::Connection,{{"edit_LocalPort",QString::number(udp.localPort)},{"edit_TargetIP",udp.defaultPeer.address.toString()},{"edit_TargetPort",QString::number(udp.defaultPeer.port)}});
-    if(m_parameters.read(&tcp,false,&loadError)) emit presentationChanged(PanelId::Connection,{{"cbox_TcpRole",QVariantMap{{"index",int(tcp.role)}}}});
+    communication::SerialConfig serial;
+    QString loadError;
+    if (m_parameters.read(&serial, false, &loadError)) {
+        const QMap<int, QString> parities{{QSerialPort::NoParity,"None"},{QSerialPort::OddParity,"Odd"},
+            {QSerialPort::EvenParity,"Even"},{QSerialPort::MarkParity,"Mark"},{QSerialPort::SpaceParity,"Space"}};
+        const QMap<int, QString> flows{{QSerialPort::NoFlowControl,"None"},{QSerialPort::HardwareControl,"Hardware"},{QSerialPort::SoftwareControl,"Software"}};
+        emit presentationChanged(PanelId::Connection,
+            {{"cbox_SerialBaudChoose",QVariantMap{{"text",QString::number(serial.baudRate)}}},
+             {"edit_SerialDataBits",QString::number(int(serial.dataBits))},
+             {"edit_SerialParity",parities.value(serial.parity)},
+             {"edit_SerialStopBits",serial.stopBits == QSerialPort::OneAndHalfStop ? "1.5" : serial.stopBits == QSerialPort::TwoStop ? "2" : "1"},
+             {"edit_SerialFlowControl",flows.value(serial.flowControl)}});
+    }
 
     config::IniConfigStore store(config::ParameterStore::runtimePath()); QVariant channels;
     QVariantMap commands;
@@ -125,12 +134,13 @@ void WorkbenchRuntime::initialize() {
     if(store.readValue("classic.display","channels",&channels)) {
         m_filterChannels=true; m_channels.clear(); for(const auto &s:channels.toStringList()) if(s.toInt()>=1 && s.toInt()<=16) m_channels.insert(s.toInt());
     }
-    QStringList addresses{QStringLiteral("0.0.0.0"), QStringLiteral("127.0.0.1")};
-    for (const auto &address : QNetworkInterface::allAddresses())
-        if (address.protocol() == QAbstractSocket::IPv4Protocol &&
-            !addresses.contains(address.toString()))
-            addresses.append(address.toString());
-    QVariantMap fields{{"cbox_LocakIP", QVariantMap{{"items", addresses}, {"index", 0}}}};
+    QVariant networkMode;
+    int mode = 0;
+    if (store.readValue("classic.connection", "networkMode", &networkMode) &&
+        networkMode.toInt() >= 0 && networkMode.toInt() <= 2)
+        mode = networkMode.toInt();
+    publishNetworkConfiguration(mode);
+    QVariantMap fields;
     for (int channel = 1; channel <= 16; ++channel)
         fields[QStringLiteral("ckbox_CH%1").arg(channel)] = !m_filterChannels || m_channels.contains(channel);
     emit presentationChanged(PanelId::Connection, fields);
@@ -161,14 +171,58 @@ void WorkbenchRuntime::initialize() {
     notice(tr("就绪：连接设备，采样置零后加载模型。"));
 }
 
-void WorkbenchRuntime::initializePorts() {
-    QStringList ports;
-    for (const auto &port : QSerialPortInfo::availablePorts())
+void WorkbenchRuntime::initializePorts(const QString &serialPort, const QString &localAddress) {
+    QStringList ports, labels;
+    QVariantList data;
+    for (const auto &port : QSerialPortInfo::availablePorts()) {
         ports.append(port.portName());
+        labels.append(port.portName() + ":" + (port.description().isEmpty() ? tr("串口设备") : port.description()));
+        data.append(port.portName());
+    }
+    communication::SerialConfig saved;
+    QString error;
+    m_parameters.read(&saved, false, &error);
+    const auto preferred = serialPort.isEmpty() ? saved.portName : serialPort;
+    int selected = ports.indexOf(preferred);
+    if (selected < 0) selected = ports.isEmpty() ? -1 : 0;
+    QStringList addresses{QStringLiteral("0.0.0.0"), QStringLiteral("127.0.0.1")};
+    for (const auto &address : QNetworkInterface::allAddresses())
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && !addresses.contains(address.toString()))
+            addresses.append(address.toString());
+    const int localIndex = addresses.indexOf(localAddress);
     emit presentationChanged(
         PanelId::Connection,
-        {{"cbox_SerialNameChoose",
-          QVariantMap{{"items", ports}, {"index", ports.isEmpty() ? -1 : 0}}}});
+        {{"cbox_SerialNameChoose", QVariantMap{{"items", labels}, {"data",data}, {"index", selected}}},
+         {"cbox_LocakIP",QVariantMap{{"items",addresses},{"index",localIndex < 0 ? 0 : localIndex}}}});
+}
+
+void WorkbenchRuntime::publishNetworkConfiguration(int mode) {
+    m_networkChannel = mode == 0 ? communication::Channel::Udp : communication::Channel::Tcp;
+    m_tcpRole = mode == 1 ? communication::TcpRole::Server : communication::TcpRole::Client;
+    QVariantMap fields{{"cbox_CommuteChoose",QVariantMap{{"index",mode}}},
+        {"cbox_LocakIP.enabled",mode != 2},{"edit_LocalPort.enabled",mode != 2},
+        {"edit_TargetIP.enabled",mode != 1},{"edit_TargetPort.enabled",mode != 1}};
+    QString error;
+    if (mode == 0) {
+        communication::UdpConfig saved;
+        if (m_parameters.read(&saved, false, &error)) {
+            fields["cbox_LocakIP"] = QVariantMap{{"text",saved.bindAddress.toString()}};
+            fields["edit_LocalPort"] = QString::number(saved.localPort);
+            if (saved.defaultPeer.isValid()) {
+                fields["edit_TargetIP"] = saved.defaultPeer.address.toString();
+                fields["edit_TargetPort"] = QString::number(saved.defaultPeer.port);
+            }
+        }
+    } else {
+        communication::TcpConfig saved;
+        if (m_parameters.read(&saved, false, &error)) {
+            fields["cbox_LocakIP"] = QVariantMap{{"text",saved.listenAddress.toString()}};
+            fields["edit_TargetIP"] = saved.host;
+            if (saved.port)
+                fields[mode == 1 ? "edit_LocalPort" : "edit_TargetPort"] = QString::number(saved.port);
+        }
+    }
+    emit presentationChanged(PanelId::Connection, fields);
 }
 
 void WorkbenchRuntime::frameReceived(const core::FrameSnapshotPtr &frame) {
@@ -313,12 +367,11 @@ void WorkbenchRuntime::notice(const QString &message) {
     if (message == m_lastNotice)
         return;
     m_lastNotice = message;
-    emit presentationChanged(PanelId::Connection, {{"lab_OperationStatus", message}});
     emit presentationChanged(PanelId::Main, {{"_status", message}});
 }
 
 void WorkbenchRuntime::transportError(const communication::CommunicationError &error) {
-    notice(tr("通信 %1：%2").arg(error.operation, error.message));
+    notice(tr("通信失败（%1）：%2").arg(error.operation, error.message));
 }
 
 void WorkbenchRuntime::decoderError(const communication::DecoderError &error) {
@@ -345,26 +398,27 @@ void WorkbenchRuntime::calculationError(const Calculation::CalculationError &err
         if (m_modelRequests.dequeue() == m_modelGeneration)
             m_modelPending = false;
     }
-    notice(tr("解算 %1：%2").arg(error.operation, error.message));
+    notice(tr("解算失败（%1）：%2").arg(error.operation, error.message));
 }
 
 void WorkbenchRuntime::storageError(const storage::StorageError &error) {
     m_recording = false;
     m_storagePending = false;
-    emit presentationChanged(PanelId::Connection, {{"pbtn_SaveDynamic", false}});
-    notice(tr("存储 %1：%2").arg(error.operation, error.message));
+    emit presentationChanged(PanelId::Connection, {{"pbtn_SaveDynamic", false},{"pbtn_SaveDynamic.enabled",true}});
+    notice(tr("存储失败（%1）：%2").arg(error.operation, error.message));
 }
 
 void WorkbenchRuntime::storageStarted(const QString &session) {
     m_storagePending = false;
     m_recording = true;
+    emit presentationChanged(PanelId::Connection, {{"pbtn_SaveDynamic", true},{"pbtn_SaveDynamic.enabled",true}});
     notice(tr("存储已启动：%1").arg(session));
 }
 
 void WorkbenchRuntime::storageStopped() {
     m_recording = false;
     m_storagePending = false;
-    emit presentationChanged(PanelId::Connection, {{"pbtn_SaveDynamic", false}});
+    emit presentationChanged(PanelId::Connection, {{"pbtn_SaveDynamic", false},{"pbtn_SaveDynamic.enabled",true}});
     notice(tr("存储已停止"));
 }
 

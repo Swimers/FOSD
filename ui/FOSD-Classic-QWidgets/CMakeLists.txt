@@ -46,9 +46,6 @@ add_library(fosd_classic_widgets STATIC
     apps/connection/views/connectwindow.h
     apps/connection/views/connectwindow.cpp
     apps/connection/views/connectwindow.ui
-    apps/connection/views/connectdebug.h
-    apps/connection/views/connectdebug.cpp
-    apps/connection/views/connectdebug.ui
     apps/plot/views/disp2dwindow.h
     apps/plot/views/disp2dwindow.cpp
     apps/plot/views/disp2dwindow.ui

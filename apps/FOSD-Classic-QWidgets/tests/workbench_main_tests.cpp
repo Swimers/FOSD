@@ -14,6 +14,11 @@
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QTextDocument>
+#include <QTabWidget>
+#include <QCheckBox>
+#include <QLabel>
+#include <QWheelEvent>
+#include "FOSD-Classic-QWidgets/controls/qcustomplot.h"
 #include <QSignalSpy>
 #include <QtEndian>
 #include <cstring>
@@ -35,6 +40,78 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void connectionLayoutSavingAndSpectrum() {
+  using namespace fosd; using namespace fosd::ui::classic;
+  QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("interface.ini").toUtf8());
+  TestWindow w; w.resize(1360,900); w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w)); QTest::qWait(150);
+  auto *panel=w.panelWidget(PanelId::Connection); auto *view=w.panelView(PanelId::Connection);
+  for(auto name:{"groupBox_3","pbtn_Diagnosis","cbox_TcpRole","pbtn_SaveStatic","lab_OperationStatus"})
+   QVERIFY(!panel->findChild<QWidget *>(name));
+  auto *mode=panel->findChild<QComboBox *>("cbox_CommuteChoose"); QVERIFY(mode); QCOMPARE(mode->count(),3);
+  QTest::keyClick(mode,Qt::Key_End);
+  QTRY_VERIFY(!panel->findChild<QLineEdit *>("edit_LocalPort")->isEnabled());
+  QVERIFY(panel->findChild<QLineEdit *>("edit_TargetPort")->isEnabled());
+  QTest::keyClick(mode,Qt::Key_Up);
+  QTRY_VERIFY(panel->findChild<QLineEdit *>("edit_LocalPort")->isEnabled());
+  QVERIFY(!panel->findChild<QLineEdit *>("edit_TargetPort")->isEnabled());
+  QTest::keyClick(mode,Qt::Key_Home);
+  QTRY_VERIFY(panel->findChild<QLineEdit *>("edit_TargetPort")->isEnabled());
+  QCOMPARE(panel->findChild<QPushButton *>("pbtn_RefreshSerial")->text(),QString::fromUtf8("刷新"));
+  auto *save=panel->findChild<QPushButton *>("pbtn_SaveDynamic"); QVERIFY(save->isCheckable());
+  save->click(); QVERIFY(!save->isChecked()); // File selection was cancelled.
+  w.selectedFile=dir.filePath("record.csv");
+  QSignalSpy started(&w.runtime().calculation().storage(),&storage::StorageControl::started);
+  QSignalSpy stopped(&w.runtime().calculation().storage(),&storage::StorageControl::stopped);
+  save->click(); QTRY_COMPARE(started.count(),1);
+  QTRY_VERIFY(save->isChecked() && save->isEnabled());
+  QCOMPARE(save->text(),QString::fromUtf8("停止保存"));
+  w.grab().save("connection-saving.png");
+  w.runtime().protocol().parseFrame(communication::Channel::Udp,jcs(0));
+  QTest::qWait(100); save->click(); QTRY_COMPARE(stopped.count(),1);
+  QTRY_VERIFY(!save->isChecked() && save->isEnabled());
+  QCOMPARE(save->text(),QString::fromUtf8("开始保存")); QVERIFY(QFileInfo(w.selectedFile).size()>0);
+  w.selectedFile=dir.filePath("invalid.extension"); save->click();
+  QTRY_VERIFY(!save->isChecked() && save->isEnabled());
+  // A valid extension with an unwritable file target exercises asynchronous failure.
+  w.selectedFile=dir.filePath("directory.csv"); QVERIFY(QDir().mkdir(w.selectedFile));
+  save->click(); QTRY_VERIFY(!save->isChecked() && save->isEnabled());
+  auto *tabs=panel->findChild<QTabWidget *>("tabWidget"); tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_guangpu"));
+  auto *plot=panel->findChild<QCustomPlot *>("cplot_Spectrum"); QVERIFY(plot);
+  auto *follow=panel->findChild<QCheckBox *>("ckbox_SpectrumAutoRange");
+  auto update=[&](const QVariantList &samples) {view->applyFields({{"cplot_Spectrum",QVariantMap{{"series",QVariantList{
+    QVariantMap{{"name","CH1_1"},{"samples",samples}}}}}}});};
+  const QVariantList samples{QVariantList{0.,1550.},QVariantList{1.,1550.5},QVariantList{2.,1551.}};
+  update(samples); plot->replot(); QTest::qWait(50);
+  QVERIFY(plot->interactions().testFlag(QCP::iRangeDrag)); QVERIFY(plot->interactions().testFlag(QCP::iRangeZoom));
+  QVERIFY(plot->interactions().testFlag(QCP::iSelectPlottables));
+  const QPoint point(qRound(plot->xAxis->coordToPixel(1)),qRound(plot->yAxis->coordToPixel(1550.5)));
+  QTest::mouseClick(plot,Qt::LeftButton,Qt::NoModifier,point);
+  QTRY_VERIFY(panel->findChild<QLabel *>("lab_SpectrumPointValue")->text().contains("1550.500000"));
+  QVERIFY(!follow->isChecked());
+  plot->xAxis->setRange(.5,1.5); const auto range=plot->xAxis->range();
+  auto more=samples; more.append(QVariant(QVariantList{3.,1552.})); update(more);
+  QCOMPARE(plot->xAxis->range().lower,range.lower); QCOMPARE(plot->xAxis->range().upper,range.upper);
+  QVERIFY(panel->findChild<QLabel *>("lab_SpectrumPointValue")->text().contains("1550.500000"));
+  const QPoint dragStart=plot->axisRect()->rect().center();
+  QTest::mousePress(plot,Qt::LeftButton,Qt::NoModifier,dragStart);
+  QMouseEvent drag(QEvent::MouseMove,QPointF(dragStart+QPoint(40,20)),Qt::NoButton,Qt::LeftButton,Qt::NoModifier);
+  QApplication::sendEvent(plot,&drag);
+  QTest::mouseRelease(plot,Qt::LeftButton,Qt::NoModifier,dragStart+QPoint(40,20));
+  QVERIFY(!qFuzzyCompare(plot->xAxis->range().lower,range.lower));
+  const double widthBefore=plot->xAxis->range().size();
+  QWheelEvent wheel(QPointF(dragStart),QPointF(plot->mapToGlobal(dragStart)),QPoint(),QPoint(0,120),Qt::NoButton,Qt::NoModifier,Qt::NoScrollPhase,false);
+  QApplication::sendEvent(plot,&wheel);
+  QVERIFY(plot->xAxis->range().size()<widthBefore);
+  w.applyTheme(true); QCOMPARE(plot->axisRect()->backgroundBrush().color(),QColor("#20252b"));
+  QCOMPARE(plot->xAxis->tickLabelColor(),QColor("#e4e8ed"));
+  plot->replot(); w.grab().save("connection-spectrum-dark.png");
+  w.applyTheme(false); QCOMPARE(plot->axisRect()->backgroundBrush().color(),QColor("#ffffff"));
+  panel->findChild<QPushButton *>("pbtn_SpectrumReset")->click();
+  QVERIFY(follow->isChecked()); QVERIFY(plot->xAxis->range().upper>=3.);
+  plot->replot(); w.grab().save("connection-spectrum-light.png");
+  tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_usart")); w.grab().save("connection-serial-layout.png");
+  qunsetenv("FOSD_CONFIG_FILE");
+ }
  void serialQuickCommandsAndCrlf() {
   using namespace fosd; using namespace fosd::ui::classic;
   QTemporaryDir dir;
@@ -244,7 +321,12 @@ private slots:
   QTest::qWait(100); QVERIFY(w.runtime().visualization().selectedPoint().displayPositionMm==frozen);
   w.selectedFile=dir.filePath("波长曲线.png"); cw->findChild<QPushButton *>("pbtn_SaveSpectrum")->click();
   QTRY_VERIFY(QFileInfo(w.selectedFile).size()>0); QVERIFY(!QImage(w.selectedFile).isNull());
-  w.selectedFile=dir.filePath("波长.csv"); cw->findChild<QPushButton *>("pbtn_SaveStatic")->click(); QTRY_VERIFY(QFileInfo(w.selectedFile).size()>0);
+  QSignalSpy started(&w.runtime().calculation().storage(),&storage::StorageControl::started);
+  w.selectedFile=dir.filePath("波长.csv"); cw->findChild<QPushButton *>("pbtn_SaveDynamic")->click();
+  QTRY_COMPARE(started.count(),1); send(.06f); QTest::qWait(100);
+  cw->findChild<QPushButton *>("pbtn_SaveDynamic")->click();
+  QTRY_VERIFY(!cw->findChild<QPushButton *>("pbtn_SaveDynamic")->isChecked());
+  QTRY_VERIFY(QFileInfo(w.selectedFile).size()>0);
   w.grab().save("migration-classic.png");
   w.selectPage(0); w.grab().save("migration-communication.png");
   cw->findChild<QPushButton *>("pbtn_OpenNet")->click();

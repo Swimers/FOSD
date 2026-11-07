@@ -105,6 +105,7 @@ QVariantMap FormBinding::values() const {
         QVariantMap value;
         value["index"] = combo->currentIndex();
         value["text"] = combo->currentText();
+        value["data"] = combo->currentData();
         fields[combo->objectName()] = value;
     }
     for (auto *button : m_widget->findChildren<QAbstractButton *>())
@@ -166,8 +167,13 @@ void FormBinding::applyFields(const QVariantMap &fields) {
             if (data.contains("items")) {
                 combo->clear();
                 combo->addItems(data["items"].toStringList());
+                const auto itemData = data.value("data").toList();
+                for (int i = 0; i < itemData.size() && i < combo->count(); ++i)
+                    combo->setItemData(i, itemData[i]);
             }
-            if (data.contains("index"))
+            if (data.contains("dataValue"))
+                combo->setCurrentIndex(combo->findData(data["dataValue"]));
+            else if (data.contains("index"))
                 combo->setCurrentIndex(data["index"].toInt());
             else if (data.contains("text"))
                 combo->setCurrentText(data["text"].toString());
@@ -210,13 +216,29 @@ void FormBinding::applyFields(const QVariantMap &fields) {
                 continue;
             }
             if(data.contains("series")) {
-                plot->clearGraphs();
-                for(const auto &v:data["series"].toList()) {
+                const auto allSeries = data["series"].toList();
+                while (plot->graphCount() > allSeries.size())
+                    plot->removeGraph(plot->graphCount() - 1);
+                int index = 0;
+                for(const auto &v:allSeries) {
                     const auto series=v.toMap(); QVector<double> x,y;
                     for(const auto &sample:series["samples"].toList()) {const auto p=sample.toList(); if(p.size()==2) {x.append(p[0].toDouble()); y.append(p[1].toDouble());}}
-                    auto *g=plot->addGraph(); g->setName(series["name"].toString()); g->setPen(QPen(QColor::fromHsv((plot->graphCount()*47)%360,200,230))); g->setData(x,y);
+                    auto *g = index < plot->graphCount() ? plot->graph(index) : plot->addGraph();
+                    const bool dark = plot->property("spectrumDarkTheme").toBool();
+                    g->setName(series["name"].toString());
+                    g->setPen(QPen(QColor::fromHsv((index * 47) % 360, dark ? 160 : 210, dark ? 245 : 175), 1.6));
+                    g->setData(x,y);
+                    g->setSelectable(QCP::stSingleData);
+                    g->selectionDecorator()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor("#f39c12"), QColor("#f39c12"), 8), QCPScatterStyle::spAll);
+                    ++index;
                 }
-                plot->xAxis->setLabel(tr("时间 (s)")); plot->yAxis->setLabel(tr("波长 (nm)")); plot->legend->setVisible(true); plot->rescaleAxes(); plot->replot(); continue;
+                plot->xAxis->setLabel(tr("时间 (s)"));
+                plot->yAxis->setLabel(tr("波长 (nm)"));
+                plot->legend->setVisible(true);
+                if (!plot->property("spectrumAutoRange").isValid() || plot->property("spectrumAutoRange").toBool())
+                    plot->rescaleAxes();
+                plot->replot(QCustomPlot::rpQueuedReplot);
+                continue;
             }
             const auto xs = data["x"].toList(), ys = data["y"].toList();
             if (xs.size() != ys.size())

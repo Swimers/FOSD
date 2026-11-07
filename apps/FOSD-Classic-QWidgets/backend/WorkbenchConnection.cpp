@@ -15,11 +15,6 @@ void WorkbenchRuntime::transportState(Channel channel, ConnectionState state) {
     const bool closed = state == ConnectionState::Closed;
     emit presentationChanged(PanelId::Connection, {{serial ? "pbtn_OpenSerial" : "pbtn_OpenNet",
                                                     closed ? tr("打开") : tr("关闭")}});
-    emit presentationChanged(PanelId::ConnectionDebug,
-                             {{"edit_ConnectState", QStringLiteral("Serial=%1 UDP=%2 TCP=%3")
-                                                        .arg(int(m_states[0]))
-                                                        .arg(int(m_states[1]))
-                                                        .arg(int(m_states[2]))}});
     notice(tr("%1 状态：%2")
                .arg(serial ? tr("串口") : channel == Channel::Udp ? "UDP" : "TCP")
                .arg(int(state)));
@@ -132,7 +127,7 @@ bool WorkbenchRuntime::sendSerialCommand(const QString &command, QString *error)
     return true;
 }
 
-bool WorkbenchRuntime::startStorage(const QString &path, bool single, QString *error) {
+bool WorkbenchRuntime::startStorage(const QString &path, QString *error) {
     if (m_recording || m_storagePending) {
         if (error)
             *error = tr("已有存储会话正在运行");
@@ -141,11 +136,6 @@ bool WorkbenchRuntime::startStorage(const QString &path, bool single, QString *e
     if (path.trimmed().isEmpty()) {
         if (error)
             *error = tr("请选择输出文件");
-        return false;
-    }
-    if (single && !m_frame) {
-        if (error)
-            *error = tr("尚无可保存的波长快照");
         return false;
     }
     storage::StorageConfiguration configuration;
@@ -158,23 +148,18 @@ bool WorkbenchRuntime::startStorage(const QString &path, bool single, QString *e
     }
     configuration.format =
         suffix == "csv" ? storage::StorageFormat::Csv : storage::StorageFormat::SQLite;
-    if (!single) {
-        configuration.dataTypes = storage::DataType::Wavelength |
-                                  storage::DataType::CalibratedHardware |
-                                  storage::DataType::PointDisplacement;
-        configuration.allPoints = true;
-    }
+    configuration.dataTypes = storage::DataType::Wavelength |
+                              storage::DataType::CalibratedHardware |
+                              storage::DataType::PointDisplacement;
+    configuration.allPoints = true;
     m_storagePending = true;
+    emit presentationChanged(PanelId::Connection, {{"pbtn_SaveDynamic",true},{"pbtn_SaveDynamic.enabled",false}});
     m_calculation->storage().start(configuration);
-    if (single) {
-        m_calculation->storage().writeWavelengthFrame(m_frame);
-        m_calculation->storage().stop();
-    }
     return true;
 }
 
 bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *response) {
-    if (request.panel != PanelId::Connection && request.panel != PanelId::ConnectionDebug)
+    if (request.panel != PanelId::Connection)
         return false;
     const auto &action = request.action;
     const auto &fields = request.fields;
@@ -198,9 +183,12 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
     } else if (action == "pbtn_ConfigRead") {
         Calculation::CalculationConfiguration c;
         response->success=m_parameters.read(&c,true,&response->message) && configure(c,&response->message);
-    } else if (action == "pbtn_RefreshSerial")
-        initializePorts();
-    else if (action == "cbox_TcpRole" || action == "cbox_SerialNameChoose" || action == "cbox_SerialBaudChoose" ||
+    } else if (action == "pbtn_RefreshSerial") {
+        const auto serial = fields.value("cbox_SerialNameChoose").toMap();
+        initializePorts(serial.value("data", serial.value("text")).toString().section(':', 0, 0),
+                        text(fields, "cbox_LocakIP"));
+        response->message = tr("串口与本地网口已刷新");
+    } else if (action == "cbox_SerialNameChoose" || action == "cbox_SerialBaudChoose" ||
              action == "cbox_LocakIP")
         response->message = tr("参数将在下次打开通道时生效");
     else if (action == "cbox_CommuteChoose") {
@@ -208,21 +196,63 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
             response->success = false;
             response->message = tr("请先关闭网络连接再切换方式");
             response->fields["cbox_CommuteChoose"] =
-                QVariantMap{{"index", m_networkChannel == Channel::Udp ? 0 : 1}};
-        } else
-            m_networkChannel =
-                index(fields, "cbox_CommuteChoose") == 0 ? Channel::Udp : Channel::Tcp;
+                QVariantMap{{"index", m_networkChannel == Channel::Udp ? 0 : m_tcpRole == TcpRole::Server ? 1 : 2}};
+        } else {
+            const int mode = index(fields, "cbox_CommuteChoose");
+            if (mode < 0 || mode > 2) {
+                response->success = false;
+                response->message = tr("请选择 UDP、TCP Server 或 TCP Client");
+                return true;
+            }
+            config::IniConfigStore store(config::ParameterStore::runtimePath());
+            response->success = store.writeValue("classic.connection", "networkMode", mode, &response->message);
+            if (response->success)
+                publishNetworkConfiguration(mode);
+        }
     } else if (action == "pbtn_OpenSerial") {
         if (m_states[0] != ConnectionState::Closed)
             communication.close(Channel::Serial);
         else {
             SerialConfig configuration;
-            configuration.portName = text(fields, "cbox_SerialNameChoose");
+            QString ignored;
+            m_parameters.read(&configuration, false, &ignored);
+            const auto serial = fields.value("cbox_SerialNameChoose").toMap();
+            configuration.portName = serial.value("data").toString();
+            if (configuration.portName.isEmpty())
+                configuration.portName = text(fields, "cbox_SerialNameChoose").section(':', 0, 0).trimmed();
             bool ok = false;
             configuration.baudRate = text(fields, "cbox_SerialBaudChoose").toInt(&ok);
-            if (configuration.portName.isEmpty() || !ok || configuration.baudRate <= 0) {
+            bool bitsOk = true, parityOk = true, stopOk = true, flowOk = true;
+            if (fields.contains("edit_SerialDataBits"))
+                configuration.dataBits = static_cast<QSerialPort::DataBits>(text(fields, "edit_SerialDataBits").toInt(&bitsOk));
+            if (fields.contains("edit_SerialParity")) {
+                const QMap<QString, QSerialPort::Parity> choices{
+                    {"none",QSerialPort::NoParity},{"n",QSerialPort::NoParity},{tr("无"),QSerialPort::NoParity},
+                    {"odd",QSerialPort::OddParity},{"o",QSerialPort::OddParity},{tr("奇"),QSerialPort::OddParity},
+                    {"even",QSerialPort::EvenParity},{"e",QSerialPort::EvenParity},{tr("偶"),QSerialPort::EvenParity},
+                    {"mark",QSerialPort::MarkParity},{"space",QSerialPort::SpaceParity}};
+                const auto value = text(fields,"edit_SerialParity").trimmed().toLower();
+                parityOk = choices.contains(value);
+                if (parityOk) configuration.parity = choices.value(value);
+            }
+            if (fields.contains("edit_SerialStopBits")) {
+                const auto value = text(fields,"edit_SerialStopBits").trimmed();
+                stopOk = value == "1" || value == "1.5" || value == "2";
+                configuration.stopBits = value == "1.5" ? QSerialPort::OneAndHalfStop : value == "2" ? QSerialPort::TwoStop : QSerialPort::OneStop;
+            }
+            if (fields.contains("edit_SerialFlowControl")) {
+                const QMap<QString, QSerialPort::FlowControl> choices{
+                    {"none",QSerialPort::NoFlowControl},{tr("无"),QSerialPort::NoFlowControl},
+                    {"hardware",QSerialPort::HardwareControl},{tr("硬件"),QSerialPort::HardwareControl},
+                    {"software",QSerialPort::SoftwareControl},{tr("软件"),QSerialPort::SoftwareControl}};
+                const auto value = text(fields,"edit_SerialFlowControl").trimmed().toLower();
+                flowOk = choices.contains(value);
+                if (flowOk) configuration.flowControl = choices.value(value);
+            }
+            if (!ok || !bitsOk || !parityOk || !stopOk || !flowOk ||
+                !config::validateParameter(configuration, true, &response->message)) {
                 response->success = false;
-                response->message = tr("请选择有效串口和波特率");
+                response->message = tr("串口参数无效：请检查端口、波特率、数据位、校验位、停止位和流控");
             } else
                 communication.openSerial(configuration);
         }
@@ -230,8 +260,11 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
         if (m_states[1] != ConnectionState::Closed || m_states[2] != ConnectionState::Closed)
             communication.close(m_networkChannel);
         else {
-            const Channel channel =
-                index(fields, "cbox_CommuteChoose") == 0 ? Channel::Udp : Channel::Tcp;
+            const int mode = index(fields, "cbox_CommuteChoose");
+            if (mode < 0 || mode > 2) {
+                response->success = false; response->message = tr("通信方式无效"); return true;
+            }
+            const Channel channel = mode == 0 ? Channel::Udp : Channel::Tcp;
             bool portOk = false;
             const uint targetPort = text(fields, "edit_TargetPort").toUInt(&portOk);
             const QString target = text(fields, "edit_TargetIP").trimmed();
@@ -250,10 +283,10 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
                     m_networkChannel = channel;
                     communication.openUdp(configuration);
                 }
-            } else if (valid || index(fields,"cbox_TcpRole") == 1) {
+            } else if (valid || mode == 1) {
                 valid = true;
                 TcpConfig configuration;
-                configuration.role = index(fields,"cbox_TcpRole") == 1 ? TcpRole::Server : TcpRole::Client;
+                configuration.role = mode == 1 ? TcpRole::Server : TcpRole::Client;
                 configuration.host = target;
                 if (configuration.role == TcpRole::Server) {
                     bool ok=false; uint port=text(fields,"edit_LocalPort").toUInt(&ok);
@@ -262,6 +295,7 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
                     configuration.port=quint16(port);
                 } else configuration.port = quint16(targetPort);
                 m_networkChannel = channel;
+                m_tcpRole = configuration.role;
                 communication.openTcp(configuration);
             }
             if (!valid) {
@@ -372,20 +406,27 @@ bool WorkbenchRuntime::connectionAction(const UiRequest &request, UiResponse *re
         m_presentedFrame = 0;
         response->message = tr("已更新波长表显示通道；原始数据继续完整解算和存储");
     } else if (action == "pbtn_SaveDynamic") {
-        if (!fields.value("pbtn_SaveDynamic").toBool())
+        if (m_storagePending) {
+            response->success = false;
+            response->message = tr("请等待保存操作完成");
+            response->fields["pbtn_SaveDynamic"] = true;
+            response->fields["pbtn_SaveDynamic.enabled"] = false;
+            return true;
+        }
+        if (!fields.value("pbtn_SaveDynamic").toBool()) {
+            if (!m_recording) {
+                response->fields["pbtn_SaveDynamic"] = false;
+                return true;
+            }
+            m_storagePending = true;
+            emit presentationChanged(PanelId::Connection, {{"pbtn_SaveDynamic",true},{"pbtn_SaveDynamic.enabled",false}});
             m_calculation->storage().stop();
-        else
-            response->success = startStorage(text(fields, "filePath"), false, &response->message);
-        if (!response->success)
-            response->fields["pbtn_SaveDynamic"] = m_recording || m_storagePending;
-    } else if (action == "pbtn_SaveStatic")
-        response->success = startStorage(text(fields, "filePath"), true, &response->message);
-    else if (request.panel == PanelId::ConnectionDebug && action == "pbtn_ConnectDebugStart") {
-        response->fields["edit_ConnectState"] = QStringLiteral("Serial=%1 UDP=%2 TCP=%3; frame=%4")
-                                                    .arg(int(m_states[0]))
-                                                    .arg(int(m_states[1]))
-                                                    .arg(int(m_states[2]))
-                                                    .arg(m_frame ? m_frame->revision : 0);
+        } else
+            response->success = startStorage(text(fields, "filePath"), &response->message);
+        if (!response->success) {
+            response->fields["pbtn_SaveDynamic"] = m_recording;
+            response->fields["pbtn_SaveDynamic.enabled"] = true;
+        }
     } else
         return false;
     return true;

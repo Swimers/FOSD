@@ -1,6 +1,5 @@
 #include "ViewFactory.h"
 #include "../apps/connection/views/connectwindow.h"
-#include "../apps/connection/views/connectdebug.h"
 #include "../apps/plot/views/disp2dwindow.h"
 #include "../apps/plot/views/disp2dpara.h"
 #include "../apps/visualization/views/disp3dwindow.h"
@@ -18,8 +17,6 @@ QWidget *createPanelView(PanelId panel, QWidget *parent) {
     switch (panel) {
         case PanelId::Connection:
             return new ConnectionView(parent);
-        case PanelId::ConnectionDebug:
-            return new ConnectionDebugView(parent);
         case PanelId::Plot:
             return new PlotView(parent);
         case PanelId::PlotSettings:

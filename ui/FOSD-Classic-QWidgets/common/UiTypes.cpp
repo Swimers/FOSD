@@ -7,7 +7,6 @@ FeatureId featureForPanel(PanelId panel) {
         case PanelId::Main:
             return FeatureId::MainWindow;
         case PanelId::Connection:
-        case PanelId::ConnectionDebug:
             return FeatureId::Connection;
         case PanelId::Plot:
         case PanelId::PlotSettings:

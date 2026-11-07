@@ -62,8 +62,9 @@ private:
     void publishCalibration();
     void publishModel();
     void publishRunState();
-    void initializePorts();
-    bool startStorage(const QString &path, bool single, QString *error);
+    void initializePorts(const QString &serialPort = QString(), const QString &localAddress = QString());
+    void publishNetworkConfiguration(int mode);
+    bool startStorage(const QString &path, QString *error);
     QString rawDisplay(int channel) const;
     QString udpLogEntry() const;
     bool sendSerialCommand(const QString &command, QString *error);
@@ -112,6 +113,7 @@ private:
                                                   communication::ConnectionState::Closed,
                                                   communication::ConnectionState::Closed};
     communication::Channel m_networkChannel = communication::Channel::Udp;
+    communication::TcpRole m_tcpRole = communication::TcpRole::Client;
     QSet<int> m_channels;
     bool m_filterChannels = false;
     bool m_running = true;

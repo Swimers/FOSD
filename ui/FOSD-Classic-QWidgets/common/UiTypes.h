@@ -8,7 +8,6 @@ namespace classic {
 enum class PanelId {
     Main,
     Connection,
-    ConnectionDebug,
     Plot,
     PlotSettings,
     Visualization,

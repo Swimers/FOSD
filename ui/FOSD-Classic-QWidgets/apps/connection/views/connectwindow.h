@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <memory>
+#include <QPoint>
 #include "../../../common/IView.h"
 namespace Ui {
 class connectwindow;
@@ -22,6 +23,7 @@ public:
     void clearSensitiveFields() override;
     void clearInputs() override;
     void showStatus(const QString &message) override;
+    void setSpectrumTheme(bool dark);
 signals:
     void cbox_CommuteChooseRequested(const QVariantMap &fields);
     void cbox_LocakIPRequested(const QVariantMap &fields);
@@ -43,7 +45,6 @@ signals:
     void ckbox_CH7Requested(const QVariantMap &fields);
     void ckbox_CH8Requested(const QVariantMap &fields);
     void ckbox_CH9Requested(const QVariantMap &fields);
-    void pbtn_DiagnosisRequested(const QVariantMap &fields);
     void pbtn_OpenNetRequested(const QVariantMap &fields);
     void pbtn_OpenSerialRequested(const QVariantMap &fields);
     void pbtn_ParaRestRequested(const QVariantMap &fields);
@@ -51,7 +52,6 @@ signals:
     void pbtn_RefreshSerialRequested(const QVariantMap &fields);
     void pbtn_SaveDynamicRequested(const QVariantMap &fields);
     void pbtn_SaveSpectrumRequested(const QVariantMap &fields);
-    void pbtn_SaveStaticRequested(const QVariantMap &fields);
     void pbtn_SelectAllCHRequested(const QVariantMap &fields);
     void pbtn_SelectCHRequested(const QVariantMap &fields);
     void pbtn_SerialClearRequested(const QVariantMap &fields);
@@ -65,8 +65,14 @@ private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 
 private:
+    void initializeSpectrum();
+    void refreshSpectrumSelection();
+    void resetSpectrumView();
     std::unique_ptr<Ui::connectwindow> m_ui;
     FormBinding *m_binding = nullptr;
+    QString m_selectedCurve;
+    double m_selectedTime = 0;
+    bool m_hasSpectrumSelection = false;
 };
 } // namespace classic
 } // namespace ui

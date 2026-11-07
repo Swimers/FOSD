@@ -127,7 +127,7 @@ bool PanelPresenter::localAction(const UiRequest &request) {
         return true;
     }
     if (action == "pbtn_Maximize" || action == "btn_Close" || action == "pbtn_Exit" ||
-        action == "pbtn_ConnectDebugClose" || action == "rejected" ||
+        action == "rejected" ||
         action == "pbtn_SenerCancel") {
         m_host->closePanel(m_panel);
         return true;

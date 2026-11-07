@@ -3,7 +3,7 @@
 namespace fosd {
 namespace ui {
 namespace classic {
-// Backend extension point for Connection, ConnectionDebug only.
+// Backend extension point for the connection panel.
 class ConnectionBackend : public FeatureBackend {
     Q_OBJECT
 public:

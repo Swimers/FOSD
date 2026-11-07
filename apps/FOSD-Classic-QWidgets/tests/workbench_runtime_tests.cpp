@@ -17,6 +17,46 @@ class WorkbenchRuntimeTests:public QObject {
 
 
 private slots:
+ void serialParametersAndInterfaceRefresh() {
+  QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("serial.ini").toUtf8());
+  application::WorkbenchRuntime r;
+  auto &transport=r.protocol().communication();
+  disconnect(&transport,&communication::ConnectControl::requestOpenSerial,nullptr,nullptr);
+  QSignalSpy opens(&transport,&communication::ConnectControl::requestOpenSerial);
+  UiRequest req; req.panel=PanelId::Connection; req.action="pbtn_OpenSerial";
+  req.fields={{"cbox_SerialNameChoose",QVariantMap{{"text",QString::fromUtf8("COM42:虚拟串口")},{"data","COM42"}}},
+      {"cbox_SerialBaudChoose",QVariantMap{{"text","230400"}}},{"edit_SerialDataBits","7"},
+      {"edit_SerialParity","Even"},{"edit_SerialStopBits","2"},{"edit_SerialFlowControl","Hardware"}};
+  UiResponse out; QVERIFY(r.handleRequest(req,&out)); QVERIFY2(out.success,qPrintable(out.message));
+  QCOMPARE(opens.count(),1);
+  auto actual=qvariant_cast<communication::SerialConfig>(opens.last()[0]);
+  QCOMPARE(actual.portName,QString("COM42")); QCOMPARE(actual.baudRate,230400);
+  QCOMPARE(actual.dataBits,QSerialPort::Data7); QCOMPARE(actual.parity,QSerialPort::EvenParity);
+  QCOMPARE(actual.stopBits,QSerialPort::TwoStop); QCOMPARE(actual.flowControl,QSerialPort::HardwareControl);
+  communication::SerialConfig saved; QString error;
+  QVERIFY(config::ParameterStore().read(&saved,true,&error)); QCOMPARE(saved.parity,QSerialPort::EvenParity);
+  req.fields["edit_SerialParity"]="unknown";
+  QVERIFY(r.handleRequest(req,&out)); QVERIFY(!out.success); QCOMPARE(opens.count(),1);
+  QVERIFY(config::ParameterStore().read(&saved,true,&error)); QCOMPARE(saved.parity,QSerialPort::EvenParity);
+  // Fields absent from a request retain saved advanced settings.
+  req.fields={{"cbox_SerialNameChoose",QVariantMap{{"text","COM43:USB serial"}}},
+      {"cbox_SerialBaudChoose",QVariantMap{{"text","115200"}}}};
+  QVERIFY(r.handleRequest(req,&out)); QVERIFY(out.success); QCOMPARE(opens.count(),2);
+  actual=qvariant_cast<communication::SerialConfig>(opens.last()[0]);
+  QCOMPARE(actual.portName,QString("COM43")); QCOMPARE(actual.dataBits,QSerialPort::Data7);
+  QCOMPARE(actual.parity,QSerialPort::EvenParity); QCOMPARE(actual.stopBits,QSerialPort::TwoStop);
+  QSignalSpy presentation(&r,&application::WorkbenchRuntime::presentationChanged);
+  req.action="pbtn_RefreshSerial"; req.fields={{"cbox_LocakIP",QVariantMap{{"text","127.0.0.1"}}}};
+  QVERIFY(r.handleRequest(req,&out)); QVERIFY(out.success);
+  QVERIFY(!presentation.isEmpty());
+  const auto fields=presentation.last()[1].toMap();
+  const auto addresses=fields.value("cbox_LocakIP").toMap();
+  QVERIFY(addresses.value("items").toStringList().contains("127.0.0.1"));
+  QCOMPARE(addresses.value("items").toStringList()[addresses.value("index").toInt()],QString("127.0.0.1"));
+  const auto serial=fields.value("cbox_SerialNameChoose").toMap();
+  QCOMPARE(serial.value("items").toStringList().size(),serial.value("data").toList().size());
+  qunsetenv("FOSD_CONFIG_FILE");
+ }
  void tcpClientAndServerJcs() {
   for(int role=0;role<2;++role) {
    QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("tcp.ini").toUtf8());
@@ -24,7 +64,7 @@ private slots:
    QVERIFY(peer.listen(QHostAddress::LocalHost,0)); quint16 port=peer.serverPort();
    if(role==1) peer.close();
    UiRequest req; req.panel=PanelId::Connection; req.action="pbtn_OpenNet";
-   req.fields={{"cbox_CommuteChoose",QVariantMap{{"index",1}}},{"cbox_TcpRole",QVariantMap{{"index",role}}},{"cbox_LocakIP",QVariantMap{{"text","127.0.0.1"}}},{"edit_LocalPort",QString::number(port)},{"edit_TargetIP","127.0.0.1"},{"edit_TargetPort",QString::number(port)}};
+   req.fields={{"cbox_CommuteChoose",QVariantMap{{"index",role == 1 ? 1 : 2}}},{"cbox_LocakIP",QVariantMap{{"text","127.0.0.1"}}},{"edit_LocalPort",QString::number(port)},{"edit_TargetIP","127.0.0.1"},{"edit_TargetPort",QString::number(port)}};
    UiResponse out; QVERIFY(r.handleRequest(req,&out)); QVERIFY(out.success);
    QTcpSocket *socket=nullptr;
    if(role==0) { QTRY_VERIFY(peer.hasPendingConnections()); socket=peer.nextPendingConnection(); }
@@ -66,8 +106,14 @@ private slots:
   QTest::qWait(50); int count=results.count(); feed(31); QTest::qWait(100); QCOMPARE(results.count(),count);
   req.action="pbtn_CalculationStart"; QVERIFY(r.handleRequest(req,&out)); QVERIFY(out.success);
   feed(32); QTRY_VERIFY(results.count()>count);
-  req.action="pbtn_SaveStatic"; req.fields={{"filePath",dir.filePath("波长.csv")}};
+  QSignalSpy storageStarted(&r.calculation().storage(), &storage::StorageControl::started);
+  QSignalSpy storageStopped(&r.calculation().storage(), &storage::StorageControl::stopped);
+  req.action="pbtn_SaveDynamic"; req.fields={{"filePath",dir.filePath("波长.csv")},{"pbtn_SaveDynamic",true}};
   QVERIFY(r.handleRequest(req,&out)); QVERIFY(out.success);
+  QTRY_COMPARE(storageStarted.count(),1);
+  const int previousFrames = frames.count(); feed(33); QTRY_COMPARE(frames.count(),previousFrames+1);
+  req.fields={{"pbtn_SaveDynamic",false}}; QVERIFY(r.handleRequest(req,&out)); QVERIFY(out.success);
+  QTRY_COMPARE(storageStopped.count(),1);
   QTRY_VERIFY(QFileInfo(dir.filePath("波长.csv")).size()>0);
   qunsetenv("FOSD_CONFIG_FILE");
  }

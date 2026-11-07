@@ -15,6 +15,7 @@
 #include <QHBoxLayout>
 #include <QComboBox>
 #include "../common/ViewEvents.h"
+#include "connection/views/connectwindow.h"
 #include <QTableWidget>
 
 namespace fosd {
@@ -52,24 +53,7 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     }
     navigation->setExclusive(true);
     selectPage(0);
-    auto *connection = panelWidget(PanelId::Connection);
-    auto *grid = qobject_cast<QGridLayout *>(connection->layout());
-    auto *controls = new QWidget(connection); auto *layout = new QHBoxLayout(controls);
-    if(grid) grid->addWidget(controls,grid->rowCount(),0);
-    if (layout) {
-        auto *role = new QComboBox(connection); role->setObjectName("cbox_TcpRole"); role->addItems({tr("TCP Client"),tr("TCP Server")}); layout->addWidget(role);
-        auto *state = new QLabel(tr("等待连接和有效配置"), connection);
-        state->setObjectName("lab_OperationStatus");
-        state->setWordWrap(true);
-        layout->addWidget(state);
-        for (const auto &pair : QVector<QPair<QString,QString>>{{"pbtn_CalculationStart",tr("开始解算")},{"pbtn_CalculationStop",tr("停止解算")},{"pbtn_ConfigRead",tr("读取 INI 标定配置")}}) {
-            auto *button = new QPushButton(pair.second, connection); button->setObjectName(pair.first); layout->addWidget(button);
-            connect(button,&QPushButton::clicked,this,[this,button]() { auto *v=panelView(PanelId::Connection); emit v->events()->actionTriggered(PanelId::Connection,button->objectName()); });
-        }
-    }
-
-    const QMap<int, QString> titles{{int(PanelId::ConnectionDebug), tr("通信诊断")},
-                                    {int(PanelId::PlotSettings), tr("标定参数")},
+    const QMap<int, QString> titles{{int(PanelId::PlotSettings), tr("标定参数")},
                                     {int(PanelId::KeyPointEdit), tr("关键点编辑")},
                                     {int(PanelId::KeyPointSelect), tr("关键点选择")},
                                     {int(PanelId::HardwareData), tr("硬件数据")}};
@@ -172,6 +156,8 @@ void WorkbenchView::applyTheme(bool dark) {
     QFile style(dark ? ":/fosd-ui/styles/dark.qss" : ":/fosd-ui/styles/light.qss");
     if (style.open(QIODevice::ReadOnly))
         setStyleSheet(QString::fromUtf8(style.readAll()));
+    if (auto *connection = qobject_cast<ConnectionView *>(panelWidget(PanelId::Connection)))
+        connection->setSpectrumTheme(dark);
 }
 
 QString WorkbenchView::chooseFile(bool save, const QString &title, const QString &filter) {
