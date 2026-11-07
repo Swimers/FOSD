@@ -1,7 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <memory>
-#include "../../../common/IView.h"
+#include "../../../../common/IView.h"
 namespace Ui {
 class Disp3DModelDockPanel;
 }

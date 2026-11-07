@@ -4,7 +4,7 @@
 #include "../apps/visualization/views/disp3dwindow.h"
 #include "../apps/visualization/views/docks/disp3dinfodockpanel.h"
 #include "../apps/visualization/views/docks/disp3dviewdockpanel.h"
-#include "../apps/model/views/disp3dmodeldockpanel.h"
+#include "../apps/visualization/views/docks/disp3dmodeldockpanel.h"
 #include "../apps/model/views/disp3dkeypointedit.h"
 #include "../apps/model/views/disp3dkeypointselect.h"
 #include "../apps/tracking/views/dispdata.h"

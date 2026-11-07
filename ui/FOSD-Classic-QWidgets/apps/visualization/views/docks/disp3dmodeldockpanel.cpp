@@ -1,6 +1,6 @@
 #include "disp3dmodeldockpanel.h"
-#include "../../../common/FormBinding.h"
-#include "../../../resources/UiResources.h"
+#include "../../../../common/FormBinding.h"
+#include "../../../../resources/UiResources.h"
 #include "ui_disp3dmodeldockpanel.h"
 namespace fosd {
 namespace ui {

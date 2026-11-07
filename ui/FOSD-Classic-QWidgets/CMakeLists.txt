@@ -56,9 +56,9 @@ add_library(fosd_classic_widgets STATIC
     apps/visualization/views/docks/disp3dviewdockpanel.h
     apps/visualization/views/docks/disp3dviewdockpanel.cpp
     apps/visualization/views/docks/disp3dviewdockpanel.ui
-    apps/model/views/disp3dmodeldockpanel.h
-    apps/model/views/disp3dmodeldockpanel.cpp
-    apps/model/views/disp3dmodeldockpanel.ui
+    apps/visualization/views/docks/disp3dmodeldockpanel.h
+    apps/visualization/views/docks/disp3dmodeldockpanel.cpp
+    apps/visualization/views/docks/disp3dmodeldockpanel.ui
     apps/model/views/disp3dkeypointedit.h
     apps/model/views/disp3dkeypointedit.cpp
     apps/model/views/disp3dkeypointedit.ui
