@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
   <class>disp3dkeypointedit</class>
   <widget class="QWidget" name="disp3dkeypointedit">
@@ -11,7 +11,7 @@
       </rect>
     </property>
     <property name="windowTitle">
-      <string>Form</string>
+      <string>关键点集合编辑</string>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
@@ -34,7 +34,32 @@
               <item row="1" column="0">
                 <widget class="QPushButton" name="pbtn_ClearAll">
                   <property name="text">
-                    <string>删除全部点</string>
+                    <string>清空关键点集合</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="2" column="0" colspan="1">
+                <widget class="QPushButton" name="pbtn_AddKeyPoint">
+                  <property name="text">
+                    <string>将查询 ID 加入关键点</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="3" column="0" colspan="1">
+                <widget class="QPushButton" name="pbtn_RemoveKeyPoint">
+                  <property name="text">
+                    <string>将查询 ID 移出关键点</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="4" column="0" colspan="1">
+                <widget class="QLabel" name="lab_KeyPointHint">
+                  <property name="text">
+                    <string>关键点仅定义可选集合，不创建显示标记。
+移除后会同步清理该点的选中和持续显示标记。</string>
+                  </property>
+                  <property name="wordWrap">
+                    <bool>true</bool>
                   </property>
                 </widget>
               </item>
@@ -89,6 +114,27 @@
                       </property>
                     </widget>
                   </item>
+                  <item>
+                    <widget class="QLineEdit" name="edit_Box1X">
+                      <property name="placeholderText">
+                        <string>X (mm)</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QLineEdit" name="edit_Box1Y">
+                      <property name="placeholderText">
+                        <string>Y (mm)</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QLineEdit" name="edit_Box1Z">
+                      <property name="placeholderText">
+                        <string>Z (mm)</string>
+                      </property>
+                    </widget>
+                  </item>
                 </layout>
               </item>
               <item>
@@ -106,6 +152,27 @@
                       </property>
                     </widget>
                   </item>
+                  <item>
+                    <widget class="QLineEdit" name="edit_Box2X">
+                      <property name="placeholderText">
+                        <string>X (mm)</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QLineEdit" name="edit_Box2Y">
+                      <property name="placeholderText">
+                        <string>Y (mm)</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QLineEdit" name="edit_Box2Z">
+                      <property name="placeholderText">
+                        <string>Z (mm)</string>
+                      </property>
+                    </widget>
+                  </item>
                 </layout>
               </item>
               <item>
@@ -117,6 +184,20 @@
               </item>
               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                  <item>
+                    <widget class="QPushButton" name="pbtn_AddBox">
+                      <property name="text">
+                        <string>加入盒内点</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QPushButton" name="pbtn_RemoveBox">
+                      <property name="text">
+                        <string>移除盒内点</string>
+                      </property>
+                    </widget>
+                  </item>
                 </layout>
               </item>
               <item>
@@ -136,8 +217,22 @@
           </widget>
           <widget class="QWidget" name="tab_2">
             <attribute name="title">
-              <string>条件选择</string>
+              <string>说明</string>
             </attribute>
+            <layout class="QVBoxLayout" name="instructionsLayout">
+              <item>
+                <widget class="QLabel" name="lab_SelectionHelp">
+                  <property name="text">
+                    <string>使用查询 ID 或原始坐标包围盒编辑关键点。
+包围盒包含边界，输入顺序不限。
+持续显示点请在“显示点管理”窗口设置。</string>
+                  </property>
+                  <property name="wordWrap">
+                    <bool>true</bool>
+                  </property>
+                </widget>
+              </item>
+            </layout>
           </widget>
         </widget>
       </item>

@@ -61,11 +61,19 @@ public:
     bool setPointScalarField(const PointScalarField &field);
     bool setKeyPoints(const QVector<KeyPointDefinition> &points);
     QVector<KeyPointDefinition> keyPoints() const;
+    bool setDisplayedPoints(const QVector<DisplayedPointDefinition> &points);
+    QVector<DisplayedPointDefinition> displayedPoints() const;
+    QVector<PickedPointInfo> displayedPointInfos() const;
+    void showDisplayedPoints(bool visible);
+    bool displayedPointsVisible() const;
+    bool setDisplayedPointStyle(const KeyPointStyle &style);
+    KeyPointStyle displayedPointStyle() const;
+    // Compatibility names: styles apply to DisplayedPoints; KeyPoints never own actors.
     bool setKeyPointStyle(const KeyPointStyle &style);
     bool setSelectionStyle(const KeyPointStyle &style);
     KeyPointStyle keyPointStyle() const;
     KeyPointStyle selectionStyle() const;
-    void showKeyPoints(bool visible);
+    void showKeyPoints(bool visible); // Compatibility alias for showDisplayedPoints().
     bool setPickingSettings(const PickingSettings &settings);
     PickingSettings pickingSettings() const;
     PickedPointInfo selectPoint(vtkIdType pointId);
@@ -97,6 +105,9 @@ signals:
     void modelLoaded(const fosd::core::ModelDataPtr &model);
     void pointPicked(const fosd::visualization::PickedPointInfo &info);
     void selectionUpdated(const fosd::visualization::PickedPointInfo &info);
+    void keyPointsChanged();
+    void displayedPointsChanged();
+    void displayedPointsUpdated();
     void errorOccurred(const QString &message);
     void scalarColorSettingsChanged(const fosd::visualization::ScalarColorSettings &settings);
 

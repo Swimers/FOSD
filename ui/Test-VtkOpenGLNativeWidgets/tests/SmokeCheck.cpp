@@ -214,12 +214,17 @@ void SmokeCheck::checkIntegration() {
         // Exercise the real model-only picker through mouse callbacks. Markers
         // overlap vertices deliberately; they must never intercept a pick.
         auto *control = m_backend->visualization();
-        visualization::KeyPointDefinition first, last;
+        visualization::KeyPointDefinition first, middle, last;
         first.pointId = 0;
         last.pointId = 2;
+        middle.pointId = 1;
         first.label = "root";
         last.label = "tip";
-        if (!control->setKeyPoints({first, last})) {
+        visualization::DisplayedPointDefinition displayedFirst, displayedLast;
+        displayedFirst.pointId = 0;
+        displayedLast.pointId = 2;
+        if (!control->setKeyPoints({first, middle, last}) ||
+            !control->setDisplayedPoints({displayedFirst, displayedLast})) {
             finish(false, "Key point configuration failed");
             return;
         }
@@ -267,6 +272,10 @@ void SmokeCheck::checkIntegration() {
                 return;
             }
         auto picking = control->pickingSettings();
+        if (!control->setKeyPoints({first, last}) || control->selectPoint(1).valid) {
+            finish(false, "Non-key vertex remained selectable");
+            return;
+        }
         picking.onlyKeyPoints = true;
         control->setPickingSettings(picking);
         mesh->GetPoint(0, world);
@@ -344,7 +353,10 @@ void SmokeCheck::checkIntegration() {
         control->setWorldSettings(environment);
         control->showAxes(false);
         control->showGrid(false);
-        control->selectPoint(1);
+        if (!control->setKeyPoints({first, middle, last}) || !control->selectPoint(1).valid) {
+            finish(false, "Restored key-point membership did not allow selection");
+            return;
+        }
         QVariantMap colorSettings{{"scalarEnabled", true},
                                   {"scalarMapping", 0},
                                   {"scalarRangeMode", 0},

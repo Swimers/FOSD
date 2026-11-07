@@ -25,18 +25,17 @@ bool KeyPointCreator::validateStyle(const KeyPointStyle &style, QString *error) 
     return valid;
 }
 
-KeyPointActors KeyPointCreator::create(vtkIdType id, 
-                                       const std::array<double, 3> &position,
-                                       const QString &label, 
-                                       const KeyPointStyle &style) {
+KeyPointActors KeyPointCreator::create(vtkIdType id, const std::array<double, 3> &position,
+                                       const QString &label, const KeyPointStyle &style) {
     KeyPointActors actors;
     if (id < 0 || !validateStyle(style))
         return actors;
     for (double value : position)
         if (!std::isfinite(value))
             return actors;
-    
+
     actors.pointId = id;
+    actors.text = label.isEmpty() ? QString::number(qlonglong(id)) : label;
     actors.source = vtkSmartPointer<vtkSphereSource>::New();
     auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     mapper->SetInputConnection(actors.source->GetOutputPort());
@@ -47,8 +46,6 @@ KeyPointActors KeyPointCreator::create(vtkIdType id,
     actors.sphere->UseBoundsOff();
 
     actors.label = vtkSmartPointer<vtkBillboardTextActor3D>::New();
-    actors.label->SetInput(
-        (label.isEmpty() ? QString::number(qlonglong(id)) : label).toUtf8().constData());
     actors.label->PickableOff();
     actors.label->UseBoundsOff();
 
@@ -71,8 +68,7 @@ void KeyPointCreator::configure(KeyPointActors &actors, const KeyPointStyle &sty
     actors.label->SetVisibility(style.labelsVisible);
 }
 
-void KeyPointCreator::setPosition(KeyPointActors &actors, 
-                                  const std::array<double, 3> &position,
+void KeyPointCreator::setPosition(KeyPointActors &actors, const std::array<double, 3> &position,
                                   const KeyPointStyle &style) {
     if (!actors.sphere || !actors.label)
         return;
@@ -80,6 +76,12 @@ void KeyPointCreator::setPosition(KeyPointActors &actors,
     actors.label->SetPosition(position[0] + style.labelOffsetMm[0],
                               position[1] + style.labelOffsetMm[1],
                               position[2] + style.labelOffsetMm[2]);
+    const auto text = QStringLiteral("%1\nX: %2  Y: %3  Z: %4 mm")
+                          .arg(actors.text)
+                          .arg(position[0], 0, 'g', 8)
+                          .arg(position[1], 0, 'g', 8)
+                          .arg(position[2], 0, 'g', 8);
+    actors.label->SetInput(text.toUtf8().constData());
 }
 } // namespace visualization
 } // namespace fosd

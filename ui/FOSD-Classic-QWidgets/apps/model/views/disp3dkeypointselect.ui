@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
   <class>disp3dkeypointselect</class>
   <widget class="QWidget" name="disp3dkeypointselect">
@@ -6,24 +6,19 @@
       <rect>
         <x>0</x>
         <y>0</y>
-        <width>597</width>
-        <height>458</height>
+        <width>820</width>
+        <height>720</height>
       </rect>
     </property>
     <property name="windowTitle">
-      <string>Form</string>
+      <string>持续显示点管理</string>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
         <widget class="QTableWidget" name="tablew_PointPara">
           <property name="rowCount">
-            <number>1</number>
+            <number>0</number>
           </property>
-          <row>
-            <property name="text">
-              <string>1</string>
-            </property>
-          </row>
           <column>
             <property name="text">
               <string>结点编号</string>
@@ -44,13 +39,22 @@
               <string>Z坐标</string>
             </property>
           </column>
+          <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
         </widget>
       </item>
       <item>
         <widget class="QDockWidget" name="dockWidget">
           <property name="maximumSize">
             <size>
-              <width>200</width>
+              <width>270</width>
               <height>524287</height>
             </size>
           </property>
@@ -58,7 +62,7 @@
             <set>QDockWidget::DockWidgetMovable</set>
           </property>
           <property name="windowTitle">
-            <string>关键点选择</string>
+            <string>持续显示点管理</string>
           </property>
           <widget class="QWidget" name="dockWidgetContents">
             <layout class="QGridLayout" name="gridLayout_4">
@@ -154,6 +158,9 @@
                   <property name="text">
                     <string>显示原始位置</string>
                   </property>
+                  <property name="checked">
+                    <bool>true</bool>
+                  </property>
                 </widget>
               </item>
               <item row="1" column="1">
@@ -207,10 +214,137 @@
               <item row="10" column="0" colspan="2">
                 <widget class="QCheckBox" name="radioButton_3">
                   <property name="text">
-                    <string>渲染关键点</string>
+                    <string>显示持续标记（球和文本）</string>
                   </property>
                   <property name="checked">
                     <bool>true</bool>
+                  </property>
+                </widget>
+              </item>
+              <item row="15" column="0" colspan="1">
+                <widget class="QLabel" name="lab_DisplayedCountTitle">
+                  <property name="text">
+                    <string>持续显示点数：</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="15" column="1" colspan="1">
+                <widget class="QLabel" name="lab_NumDisplayed">
+                  <property name="text">
+                    <string>0</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="16" column="0" colspan="1">
+                <widget class="QLabel" name="lab_PointSource">
+                  <property name="text">
+                    <string>添加点来源：</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="16" column="1" colspan="1">
+                <widget class="QComboBox" name="cbox_PointSource">
+                  <item>
+                    <property name="text">
+                      <string>模型关键点</string>
+                    </property>
+                  </item>
+                  <item>
+                    <property name="text">
+                      <string>模型外固定点</string>
+                    </property>
+                  </item>
+                </widget>
+              </item>
+              <item row="17" column="0" colspan="1">
+                <widget class="QLabel" name="lab_ExternalPointID">
+                  <property name="text">
+                    <string>外部 ID：</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="17" column="1" colspan="1">
+                <widget class="QLineEdit" name="edit_ExternalPointID">
+                  <property name="enabled">
+                    <bool>false</bool>
+                  </property>
+                  <property name="placeholderText">
+                    <string>不与模型 ID 重复</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="18" column="0" colspan="1">
+                <widget class="QLabel" name="lab_ExternalX">
+                  <property name="text">
+                    <string>外部 X (mm)：</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="18" column="1" colspan="1">
+                <widget class="QLineEdit" name="edit_ExternalX">
+                  <property name="enabled">
+                    <bool>false</bool>
+                  </property>
+                  <property name="placeholderText">
+                    <string>0</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="19" column="0" colspan="1">
+                <widget class="QLabel" name="lab_ExternalY">
+                  <property name="text">
+                    <string>外部 Y (mm)：</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="19" column="1" colspan="1">
+                <widget class="QLineEdit" name="edit_ExternalY">
+                  <property name="enabled">
+                    <bool>false</bool>
+                  </property>
+                  <property name="placeholderText">
+                    <string>0</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="20" column="0" colspan="1">
+                <widget class="QLabel" name="lab_ExternalZ">
+                  <property name="text">
+                    <string>外部 Z (mm)：</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="20" column="1" colspan="1">
+                <widget class="QLineEdit" name="edit_ExternalZ">
+                  <property name="enabled">
+                    <bool>false</bool>
+                  </property>
+                  <property name="placeholderText">
+                    <string>0</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="21" column="0" colspan="1">
+                <widget class="QLabel" name="lab_DisplayLabel">
+                  <property name="text">
+                    <string>文本名称：</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="21" column="1" colspan="1">
+                <widget class="QLineEdit" name="edit_DisplayLabel" />
+              </item>
+              <item row="22" column="0" colspan="2">
+                <widget class="QPushButton" name="pbtn_DisplayAllKeys">
+                  <property name="text">
+                    <string>加入全部关键点</string>
+                  </property>
+                </widget>
+              </item>
+              <item row="23" column="0" colspan="2">
+                <widget class="QPushButton" name="pbtn_ClearDisplayed">
+                  <property name="text">
+                    <string>清空持续显示点</string>
                   </property>
                 </widget>
               </item>

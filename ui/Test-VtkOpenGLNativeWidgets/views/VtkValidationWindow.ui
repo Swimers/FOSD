@@ -306,8 +306,14 @@
           </item>
           <item>
             <widget class="QCheckBox" name="pickOnlyKeyPoints">
+              <property name="enabled">
+                <bool>false</bool>
+              </property>
+              <property name="checked">
+                <bool>true</bool>
+              </property>
               <property name="text">
-                <string>仅选关键点</string>
+                <string>仅选关键点（固定约束）</string>
               </property>
             </widget>
           </item>

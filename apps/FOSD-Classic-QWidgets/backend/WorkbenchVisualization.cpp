@@ -151,69 +151,8 @@ bool WorkbenchRuntime::visualizationAction(const UiRequest &request, UiResponse 
                 view.setCameraPreset(presets[selected]);
         } else
             return false;
-    } else {
-        const QStringList supported{"pbtn_SelectAll",   "pbtn_ClearAll",   "pbtn_FindKeyPoint",
-                                    "cbox_IDKeyPoint",  "cbox_KeyPointID", "pbtn_AddPoint",
-                                    "pbtn_DeletePoint", "radioButton",     "radioButton_2",
-                                    "radioButton_3"};
-        if (!supported.contains(a))
-            return false;
-        auto points = view.keyPoints();
-        const auto model = view.originalModel();
-        if (!model) {
-            response->success = false;
-            response->message = tr("请先载入模型");
-            return true;
-        }
-        if (a == "pbtn_SelectAll") {
-            points.clear();
-            for (auto it = model->constBegin(); it != model->constEnd(); ++it) {
-                KeyPointDefinition point;
-                point.pointId = vtkIdType(it.key());
-                points.append(point);
-            }
-            response->success = view.setKeyPoints(points);
-        } else if (a == "pbtn_ClearAll")
-            response->success = view.setKeyPoints({});
-        else if (a == "pbtn_FindKeyPoint" || a == "cbox_IDKeyPoint" || a == "cbox_KeyPointID" ||
-                 a == "pbtn_AddPoint") {
-            const auto name = panel == PanelId::KeyPointSelect
-                                  ? "cbox_KeyPointID"
-                                  : a == "cbox_IDKeyPoint" ? "cbox_IDKeyPoint" : "edit_IDKeyPoint";
-            bool ok = false;
-            const auto id = text(f, name).toLongLong(&ok);
-            response->success = ok && model->contains(id);
-            if (response->success) {
-                view.selectPoint(vtkIdType(id));
-                if (a == "pbtn_AddPoint") {
-                    bool exists = false;
-                    for (const auto &point : points)
-                        if (point.pointId == id)
-                            exists = true;
-                    if (!exists) {
-                        KeyPointDefinition point;
-                        point.pointId = vtkIdType(id);
-                        points.append(point);
-                    }
-                    response->success = view.setKeyPoints(points);
-                }
-            } else
-                response->message = tr("点 ID 不在模型中");
-        } else if (a == "pbtn_DeletePoint") {
-            const auto rows = f.value("tablew_PointPara.selectedRows").toList();
-            QVector<KeyPointDefinition> retained;
-            for (int i = 0; i < points.size(); ++i)
-                if (!rows.contains(QVariant(i)))
-                    retained.append(points[i]);
-            response->success = view.setKeyPoints(retained);
-        } else if (a == "radioButton" || a == "radioButton_2") {
-            m_originalKeyCoordinates = a == "radioButton_2";
-        } else if (a == "radioButton_3")
-            view.showKeyPoints(f.value(a).toBool());
-        else
-            return false;
-        publishModel();
-    }
+    } else
+        return markerAction(request, response);
     return true;
 }
 

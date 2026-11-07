@@ -45,8 +45,20 @@ struct KeyPointDefinition {
     QString label;
 };
 
+enum class DisplayedPointSource { Model, External };
+
+// Model points follow the deformed mesh; external points keep fixed world coordinates.
+// An external ID must not identify a vertex in the current model.
+struct DisplayedPointDefinition {
+    vtkIdType pointId = -1;
+    DisplayedPointSource source = DisplayedPointSource::Model;
+    std::array<double, 3> positionMm{{0.0, 0.0, 0.0}};
+    QString label;
+};
+
 struct KeyPointActors {
     vtkIdType pointId = -1;
+    QString text;
     vtkSmartPointer<vtkSphereSource> source;
     vtkSmartPointer<vtkActor> sphere;
     vtkSmartPointer<vtkBillboardTextActor3D> label;

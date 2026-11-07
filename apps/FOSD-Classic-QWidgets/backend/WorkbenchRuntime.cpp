@@ -60,6 +60,14 @@ WorkbenchRuntime::WorkbenchRuntime(QObject *parent)
             &WorkbenchRuntime::modelLoaded);
     connect(m_visualization.get(), &visualization::VisualizationControl::selectionUpdated, this,
             &WorkbenchRuntime::selectionChanged);
+    connect(m_visualization.get(), &visualization::VisualizationControl::pointPicked, this,
+            &WorkbenchRuntime::selectionChanged);
+    connect(m_visualization.get(), &visualization::VisualizationControl::keyPointsChanged, this,
+            &WorkbenchRuntime::publishMarkers);
+    connect(m_visualization.get(), &visualization::VisualizationControl::displayedPointsChanged, this,
+            &WorkbenchRuntime::publishDisplayedPoints);
+    connect(m_visualization.get(), &visualization::VisualizationControl::displayedPointsUpdated, this,
+            &WorkbenchRuntime::publishDisplayedPoints);
     connect(m_visualization.get(), &visualization::VisualizationControl::errorOccurred, this,
             &WorkbenchRuntime::notice);
     connect(m_visualization.get(), &visualization::VisualizationControl::scalarColorSettingsChanged,
@@ -438,18 +446,16 @@ void WorkbenchRuntime::storageStopped() {
 }
 
 void WorkbenchRuntime::selectionChanged(const visualization::PickedPointInfo &info) {
-    if (info.valid && info.pointId != m_selectedPoint) {
-        m_selectedPoint = info.pointId;
+    m_selectedPoint = info.valid ? info.pointId : -1;
+    if (info.valid) {
         emit presentationChanged(PanelId::KeyPointEdit,
-                                 {{"edit_IDKeyPoint", QString::number(qlonglong(info.pointId))}});
-    } else if (!info.valid) {
-        m_selectedPoint = -1;
-        emit presentationChanged(PanelId::KeyPointEdit, {{"lab_XPosition", QString()},
-                                                         {"lab_YPosition", QString()},
-                                                         {"lab_ZPosition", QString()}});
-        emit presentationChanged(
-            PanelId::KeyPointSelect,
-            {{"lab_XPos", QString()}, {"lab_YPos", QString()}, {"lab_ZPos", QString()}});
+            {{"edit_IDKeyPoint", QString::number(qlonglong(info.pointId))},
+             {"lab_XPosition", QString::number(info.originalPositionMm[0], 'g', 12)},
+             {"lab_YPosition", QString::number(info.originalPositionMm[1], 'g', 12)},
+             {"lab_ZPosition", QString::number(info.originalPositionMm[2], 'g', 12)}});
+    } else {
+        emit presentationChanged(PanelId::KeyPointEdit,
+            {{"lab_XPosition", QString()}, {"lab_YPosition", QString()}, {"lab_ZPosition", QString()}});
     }
 }
 

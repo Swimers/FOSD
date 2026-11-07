@@ -68,39 +68,9 @@ void WorkbenchRuntime::publishCalibration() {
 
 void WorkbenchRuntime::publishModel() {
     const auto model = m_visualization->originalModel();
-    const auto points = m_visualization->keyPoints();
-    QVariantList rows;
-    QStringList ids;
-    if (model)
-        for (auto it = model->constBegin(); it != model->constEnd(); ++it)
-            ids.append(QString::number(it.key()));
-    for (const auto &point : points) {
-        QVector<double> coordinates = model ? model->value(point.pointId) : QVector<double>();
-        if (!m_originalKeyCoordinates)
-            coordinates =
-                m_result ? m_result->displacementMap.value(point.pointId) : QVector<double>(3, 0.0);
-        if (coordinates.size() == 3)
-            rows.append(QVariant(QVariantList{qlonglong(point.pointId), coordinates[0],
-                                              coordinates[1], coordinates[2]}));
-    }
-    const auto count = QString::number(model ? model->size() : 0),
-               keys = QString::number(points.size());
-    const QStringList headers = m_originalKeyCoordinates
-                                    ? QStringList{"ID", "X0 (mm)", "Y0 (mm)", "Z0 (mm)"}
-                                    : QStringList{"ID", "dX (mm)", "dY (mm)", "dZ (mm)"};
-    emit presentationChanged(PanelId::KeyPointSelect,
-                             {{"tablew_PointPara", table(headers, rows)},
-                              {"cbox_KeyPointID", QVariantMap{{"items", ids}}},
-                              {"lab_NumPoints", count},
-                              {"lab_NumKeyPoints", keys}});
-    emit presentationChanged(PanelId::KeyPointEdit,
-                             {{"cbox_IDKeyPoint", QVariantMap{{"items", ids}}},
-                              {"lab_NumPoint", count},
-                              {"lab_NumKeyPoint", keys}});
-    emit presentationChanged(
-        PanelId::InfoPanel,
-        {{"lab_NumPoints", count},
-         {"lab_NumKeyPoints", keys},
+    publishMarkers();
+    emit presentationChanged(PanelId::InfoPanel,
+        {{"lab_NumPoints", QString::number(model ? model->size() : 0)},
          {"lab_NumPolys", QString::number(m_visualization->modelPolygonCount())}});
     if (!m_result) {
         emit presentationChanged(PanelId::InfoPanel,
@@ -173,38 +143,6 @@ void WorkbenchRuntime::publishLatest() {
         if (m_running) emit presentationChanged(
             PanelId::InfoPanel, {{"lab_MaxDeformation", QString::number(maximum, 'g', 8) + " mm"}});
         m_presentedResult = m_result->revision;
-        // Only key-point rows change with deformation; avoid rebuilding all-ID combo boxes per frame.
-        const auto points = m_visualization->keyPoints();
-        QVariantList rows;
-        for (const auto &point : points) {
-            const auto original = m_visualization->originalModel();
-            const auto coordinates = m_originalKeyCoordinates && original
-                                         ? original->value(point.pointId)
-                                         : m_result->displacementMap.value(point.pointId);
-            if (coordinates.size() == 3)
-                rows.append(QVariant(QVariantList{qlonglong(point.pointId), coordinates[0],
-                                                  coordinates[1], coordinates[2]}));
-        }
-        const QStringList headers = m_originalKeyCoordinates
-                                        ? QStringList{"ID", "X0 (mm)", "Y0 (mm)", "Z0 (mm)"}
-                                        : QStringList{"ID", "dX (mm)", "dY (mm)", "dZ (mm)"};
-        if (!points.isEmpty())
-            emit presentationChanged(PanelId::KeyPointSelect,
-                                     {{"tablew_PointPara", table(headers, rows)}});
-    }
-    const auto selection = m_visualization->selectedPoint();
-    if (selection.valid && m_running) {
-        emit presentationChanged(
-            PanelId::KeyPointEdit,
-            {{"lab_XPosition", QString::number(selection.originalPositionMm[0])},
-             {"lab_YPosition", QString::number(selection.originalPositionMm[1])},
-             {"lab_ZPosition", QString::number(selection.originalPositionMm[2])}});
-        const auto coordinates =
-            m_originalKeyCoordinates ? selection.originalPositionMm : selection.displacementMm;
-        emit presentationChanged(PanelId::KeyPointSelect,
-                                 {{"lab_XPos", QString::number(coordinates[0])},
-                                  {"lab_YPos", QString::number(coordinates[1])},
-                                  {"lab_ZPos", QString::number(coordinates[2])}});
     }
 }
 } // namespace application

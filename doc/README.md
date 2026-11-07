@@ -11,7 +11,7 @@
 | [Classic 版本业务闭环对接](Architectural/formal-workbench-integration.md) | Classic 独立入口、MVP 业务注入、完整数据流、已接控件/不可用功能、历史界面验证（当前范围见实施记录） |
 | [迁移完成度核查与后续计划](Architectural/migration-audit-and-plan.md) | 正式入口缺口、模型管理、独立追踪点、配置与会话、观察面板及分阶段验收 |
 | [场景环境与相机](Architectural/scene-environment-integration.md) | 坐标轴、三平面网格、背景与纹理世界、相机视图/投影及验证 |
-| [关键点与选点交互](Architectural/keypoint-picking-integration.md) | 球体/Label 统一创建、批量标记、左键选点、鼠标交互、变形随动与 Control 接口 |
+| [关键点、选中点与持续显示点](Architectural/keypoint-picking-integration.md) | 三类集合约束、外部固定点、Classic MVP 编辑、球/文本随动、拾取与测试 |
 | [可视化迁移与标量映射](Architectural/visualization-integration.md) | 分步迁移安排、X/Y/Z/总位移着色、归一化与物理值、通用点标量入口及测试 |
 | [独立构建预设](build-presets.md) | 主程序、FOSD-Classic-QWidgets 预览、原生 Qt/VTK 验证及通信助手的配置、构建、测试与运行 |
 | [原生 Qt/VTK 验证前端](../ui/Test-VtkOpenGLNativeWidgets/README.md) | Designer UI、Presenter、全部后端连接、窗口指针传递及收包到变形显示验证 |

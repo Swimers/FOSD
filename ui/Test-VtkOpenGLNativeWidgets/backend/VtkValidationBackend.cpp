@@ -352,15 +352,23 @@ bool VtkValidationBackend::execute(const QString &action, const QVariantMap &p, 
         auto style = m_control->keyPointStyle();
         style.radiusMm = p.value("keyPointRadius", 5.0).toDouble();
         style.labelsVisible = p.value("keyPointLabels", true).toBool();
-        if (!m_control->setKeyPoints(points) || !m_control->setKeyPointStyle(style)) {
+        QVector<visualization::DisplayedPointDefinition> displays;
+        for (const auto &point : points) {
+            visualization::DisplayedPointDefinition display;
+            display.pointId = point.pointId;
+            display.label = point.label;
+            displays.append(display);
+        }
+        // This preview action explicitly updates both the allowed set and its visible sample.
+        if (!m_control->setKeyPoints(points) || !m_control->setDisplayedPointStyle(style) ||
+            !m_control->setDisplayedPoints(displays)) {
             if (error)
                 *error = m_status;
             return false;
         }
-        m_control->showKeyPoints(p.value("keyPointsVisible", true).toBool());
+        m_control->showDisplayedPoints(p.value("keyPointsVisible", true).toBool());
         auto picking = m_control->pickingSettings();
         picking.enabled = p.value("pickingEnabled", true).toBool();
-        picking.onlyKeyPoints = p.value("pickOnlyKeyPoints").toBool();
         if (!m_control->setPickingSettings(picking)) {
             if (error)
                 *error = m_status;

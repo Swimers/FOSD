@@ -71,7 +71,7 @@ bool PointPicker::selectable(vtkIdType id) const {
     return m_settings.enabled && m_displayMesh && m_originalModel && id >= 0 &&
            id < m_displayMesh->GetNumberOfPoints() && m_originalModel->contains(id) &&
            m_originalModel->value(id).size() == 3 &&
-           (!m_settings.onlyKeyPoints || (m_keyPoints && m_keyPoints->contains(id)));
+           m_keyPoints && m_keyPoints->contains(id);
 }
 
 PickedPointInfo PointPicker::selection() const {

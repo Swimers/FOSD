@@ -8,6 +8,8 @@ class WorkbenchTests:public QObject {
 
 private slots: void retainedAndRemoved() {
  WorkbenchView w;
+ QVERIFY(w.values().value("switch_Style").toBool());
+ QVERIFY(!w.styleSheet().isEmpty());
  for(int i=0;i<=int(PanelId::HardwareData);++i) QVERIFY(w.panelView(PanelId(i)));
  auto *c=w.panelWidget(PanelId::Connection);
  auto *mode=c->findChild<QComboBox *>("cbox_CommuteChoose"); QVERIFY(mode);

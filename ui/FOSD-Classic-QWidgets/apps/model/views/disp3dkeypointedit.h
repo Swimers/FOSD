@@ -27,6 +27,10 @@ signals:
     void pbtn_ClearAllRequested(const QVariantMap &fields);
     void pbtn_FindKeyPointRequested(const QVariantMap &fields);
     void pbtn_SelectAllRequested(const QVariantMap &fields);
+    void pbtn_AddKeyPointRequested(const QVariantMap &fields);
+    void pbtn_RemoveKeyPointRequested(const QVariantMap &fields);
+    void pbtn_AddBoxRequested(const QVariantMap &fields);
+    void pbtn_RemoveBoxRequested(const QVariantMap &fields);
 private slots:
     void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 

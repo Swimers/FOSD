@@ -172,7 +172,7 @@ struct KeyPointStyle {
 
 struct PickingSettings {
     bool enabled = true;
-    bool onlyKeyPoints = false;
+    bool onlyKeyPoints = false; // Legacy INI field; interactive selection always requires KeyPoints.
     bool clearOnCameraInteraction = false; // 标志位，旋转/平移/缩放相机时，是否自动取消当前选中的点
     double tolerance = 0.009;     // Fraction of render-window diagonal (VTK).
     int clickTolerancePixels = 4; // Device pixels, not Qt logical pixels.

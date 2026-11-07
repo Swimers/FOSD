@@ -43,7 +43,7 @@ signals:
     void selectionUpdated(const fosd::visualization::PickedPointInfo &info); // 选中点因变形/缩放而更新位置
 
 private:
-    bool selectable(vtkIdType id) const;                          // 判断顶点是否可选中（含 onlyKeyPoints 过滤）
+    bool selectable(vtkIdType id) const; // Selection always requires key-point membership.
 
     vtkRenderer *m_renderer = nullptr;
     vtkPolyData *m_displayMesh = nullptr;

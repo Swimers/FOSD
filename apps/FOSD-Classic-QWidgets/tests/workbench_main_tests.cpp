@@ -94,7 +94,7 @@ private slots:
   QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("traffic.ini").toUtf8());
   SerialConfig serialConfig; serialConfig.portName="COM42"; QString error;
   QVERIFY(config::ParameterStore().write(serialConfig,true,&error));
-  TestWindow w; w.resize(1360,900); w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w)); QTest::qWait(150);
+  TestWindow w; w.applyTheme(false); w.resize(1360,900); w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w)); QTest::qWait(150);
   auto *panel=w.panelWidget(PanelId::Connection); auto &transport=w.runtime().protocol().communication();
   auto *serial=panel->findChild<QPlainTextEdit *>("ptedit_SerialRec");
   auto *udp=panel->findChild<QPlainTextEdit *>("ptedit_UdpRec");

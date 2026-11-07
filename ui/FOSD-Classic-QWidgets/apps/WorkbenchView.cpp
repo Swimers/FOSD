@@ -84,6 +84,8 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     data->setColumnCount(3);
     data->setHorizontalHeaderLabels({tr("IFE 输入"), tr("波长源序号"), tr("标定应变")});
 
+    applyFields({{"switch_Style", true}});
+    applyTheme(true);
 }
 
 WorkbenchView::~WorkbenchView() = default;

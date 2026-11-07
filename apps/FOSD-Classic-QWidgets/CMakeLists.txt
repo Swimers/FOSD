@@ -2,6 +2,7 @@
 add_library(fosd_classic_runtime STATIC
     backend/WorkbenchRuntime.h backend/WorkbenchRuntime.cpp
     backend/WorkbenchConnection.cpp backend/WorkbenchVisualization.cpp backend/WorkbenchData.cpp
+    backend/WorkbenchMarkers.cpp
     )
 target_include_directories(fosd_classic_runtime PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(fosd_classic_runtime PUBLIC fosd_classic_contracts
@@ -23,6 +24,11 @@ if(FOSD_BUILD_TESTS OR FOSD_WORKBENCH_BUILD_TESTS)
     add_executable(test_workbench_runtime tests/workbench_runtime_tests.cpp)
     target_link_libraries(test_workbench_runtime PRIVATE fosd_classic_runtime fosd_classic_backends Qt5::Test)
     add_test(NAME test_workbench_runtime COMMAND test_workbench_runtime)
+
+    add_executable(test_workbench_markers tests/workbench_marker_tests.cpp)
+    target_link_libraries(test_workbench_markers PRIVATE fosd_classic_runtime
+        fosd_classic_widgets fosd_classic_backends Qt5::Test)
+    add_test(NAME test_workbench_markers COMMAND test_workbench_markers)
 
     add_executable(test_workbench_main tests/workbench_main_tests.cpp
         ClassicWorkbench.h ClassicWorkbench.cpp WorkbenchRenderSurface.ui)

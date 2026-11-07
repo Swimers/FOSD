@@ -41,6 +41,22 @@ void KeyPointEditView::showStatus(const QString &message) {
 void KeyPointEditView::relayControl(PanelId panel, const QString &action) {
     if (panel != PanelId::KeyPointEdit)
         return;
+    if (action == "pbtn_AddKeyPoint") {
+        emit pbtn_AddKeyPointRequested(values());
+        return;
+    }
+    if (action == "pbtn_RemoveKeyPoint") {
+        emit pbtn_RemoveKeyPointRequested(values());
+        return;
+    }
+    if (action == "pbtn_AddBox") {
+        emit pbtn_AddBoxRequested(values());
+        return;
+    }
+    if (action == "pbtn_RemoveBox") {
+        emit pbtn_RemoveBoxRequested(values());
+        return;
+    }
     if (action == "cbox_IDKeyPoint") {
         emit cbox_IDKeyPointRequested(values());
         return;

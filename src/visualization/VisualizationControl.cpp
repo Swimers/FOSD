@@ -157,6 +157,8 @@ bool VisualizationControl::loadModel(const QString &path) {
     m_lastResultRevision = 0;
     resetCamera();
     emit modelLoaded(originalModel());
+    emit keyPointsChanged();
+    emit displayedPointsChanged();
     return true;
 }
 
@@ -174,6 +176,8 @@ void VisualizationControl::unloadModel() {
     m_expectedModelRevision = 0;
     m_lastResultRevision = 0;
 
+    emit keyPointsChanged();
+    emit displayedPointsChanged();
     if (m_renderWindow)
         m_renderWindow->Render();
 }
@@ -240,6 +244,7 @@ void VisualizationControl::applyResult(const core::CalculationResultPtr &result)
     m_colorResult = result;
     updateScalarColors();
     m_lastResultRevision = result->revision;
+    emit displayedPointsUpdated();
     if (m_renderWindow)
         m_renderWindow->Render();
 }
@@ -257,6 +262,7 @@ void VisualizationControl::setDeformationScale(double scale) {
     m_deformation->setDeformationScale(scale);
     m_keyPoints->updatePositions();
     m_picker->refreshSelection();
+    emit displayedPointsUpdated();
     if (m_renderWindow)
         m_renderWindow->Render();
 }
@@ -270,6 +276,7 @@ void VisualizationControl::resetDeformation() {
     m_colorResult.reset();
     m_customField = PointScalarField();
     m_colors->clear(m_deformation->displayMesh(), m_deformation->mapper());
+    emit displayedPointsUpdated();
     if (m_renderWindow)
         m_renderWindow->Render();
 }
@@ -404,6 +411,8 @@ bool VisualizationControl::setKeyPoints(const QVector<KeyPointDefinition> &point
         return false;
     }
     m_picker->refreshSelection();
+    emit keyPointsChanged();
+    emit displayedPointsChanged();
     if (m_renderWindow)
         m_renderWindow->Render();
     return true;
@@ -413,8 +422,64 @@ QVector<KeyPointDefinition> VisualizationControl::keyPoints() const {
     return m_keyPoints->keyPoints();
 }
 
+bool VisualizationControl::setDisplayedPoints(const QVector<DisplayedPointDefinition> &points) {
+    QString error;
+    if (!m_keyPoints->setDisplayedPoints(points, &error)) {
+        emit errorOccurred(error);
+        return false;
+    }
+    emit displayedPointsChanged();
+    if (m_renderWindow)
+        m_renderWindow->Render();
+    return true;
+}
+
+QVector<DisplayedPointDefinition> VisualizationControl::displayedPoints() const {
+    return m_keyPoints->displayedPoints();
+}
+
+QVector<PickedPointInfo> VisualizationControl::displayedPointInfos() const {
+    QVector<PickedPointInfo> result;
+    const auto model = originalModel();
+    auto *mesh = m_deformation->displayMesh();
+    for (const auto &point : m_keyPoints->displayedPoints()) {
+        PickedPointInfo info;
+        info.pointId = point.pointId;
+        if (point.source == DisplayedPointSource::External) {
+            info.originalPositionMm = point.positionMm;
+            info.displayPositionMm = point.positionMm;
+        } else {
+            const auto raw = model->value(point.pointId);
+            for (int axis = 0; axis < 3; ++axis)
+                info.originalPositionMm[axis] = raw[axis];
+            mesh->GetPoint(point.pointId, info.displayPositionMm.data());
+            if (m_colorResult) {
+                const auto delta = m_colorResult->displacementMap.value(point.pointId);
+                if (delta.size() == 3)
+                    for (int axis = 0; axis < 3; ++axis)
+                        info.displacementMm[axis] = delta[axis];
+            }
+        }
+        info.valid = true;
+        result.append(info);
+    }
+    return result;
+}
+
+bool VisualizationControl::displayedPointsVisible() const {
+    return m_keyPoints->visible();
+}
+
 KeyPointStyle VisualizationControl::keyPointStyle() const {
     return m_keyPoints->style();
+}
+
+KeyPointStyle VisualizationControl::displayedPointStyle() const {
+    return keyPointStyle();
+}
+
+bool VisualizationControl::setDisplayedPointStyle(const KeyPointStyle &style) {
+    return setKeyPointStyle(style);
 }
 
 KeyPointStyle VisualizationControl::selectionStyle() const {
@@ -453,7 +518,12 @@ bool VisualizationControl::setSelectionStyle(const KeyPointStyle &style) {
 }
 
 void VisualizationControl::showKeyPoints(bool visible) {
+    showDisplayedPoints(visible);
+}
+
+void VisualizationControl::showDisplayedPoints(bool visible) {
     m_keyPoints->setVisible(visible);
+    emit displayedPointsUpdated();
     if (m_renderWindow)
         m_renderWindow->Render();
 }

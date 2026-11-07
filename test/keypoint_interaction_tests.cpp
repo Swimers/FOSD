@@ -8,6 +8,7 @@
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QFile>
+#include <limits>
 #include <vtkActor.h>
 #include <vtkBillboardTextActor3D.h>
 #include <vtkSphereSource.h>
@@ -45,12 +46,20 @@ KeyPointDefinition definition(vtkIdType id, const QString &label = {}) {
     p.label = label;
     return p;
 }
+
+DisplayedPointDefinition display(vtkIdType id) {
+    DisplayedPointDefinition point;
+    point.pointId = id;
+    return point;
+}
 } // namespace
 class KeyPointInteractionTests final : public QObject {
     Q_OBJECT
     ParameterTestIsolation m_parameterIsolation;
 private slots:
-    void init() { m_parameterIsolation.reset(); }
+    void init() {
+        m_parameterIsolation.reset();
+    }
 
     void creator() {
         KeyPointStyle style;
@@ -59,7 +68,7 @@ private slots:
         QVERIFY(actors.label);
         QCOMPARE(actors.pointId, vtkIdType(42));
         QCOMPARE(actors.source->GetRadius(), 5.0);
-        QCOMPARE(QString::fromUtf8(actors.label->GetInput()), QString("tip"));
+        QVERIFY(QString::fromUtf8(actors.label->GetInput()).startsWith("tip\nX: 1"));
         QCOMPARE(actors.sphere->GetPosition()[0], 1.0);
         QCOMPARE(actors.label->GetPosition()[2], 11.0);
         QVERIFY(!actors.sphere->GetPickable());
@@ -83,7 +92,13 @@ private slots:
         KeyPointManager manager;
         manager.setRenderer(first);
         manager.setModel(model(), data);
+        QCOMPARE(manager.keyPoints().size(), 3);
+        QVERIFY(manager.contains(1));
+        QVERIFY(manager.displayedPoints().isEmpty());
+        QCOMPARE(first->GetViewProps()->GetNumberOfItems(), 0);
         QVERIFY(manager.setKeyPoints({definition(0, "root"), definition(2, "tip")}));
+        QCOMPARE(first->GetViewProps()->GetNumberOfItems(), 0);
+        QVERIFY(manager.setDisplayedPoints({display(0), display(2)}));
         QCOMPARE(first->GetViewProps()->GetNumberOfItems(), 4);
         QVERIFY(!manager.setKeyPoints({definition(0), definition(0)}));
         QCOMPARE(manager.keyPoints().size(), 2);
@@ -128,7 +143,7 @@ private slots:
         auto data = mesh();
         KeyPointManager manager;
         manager.setModel(model(), data);
-        QVERIFY(manager.setKeyPoints({definition(0)}));
+        QVERIFY(manager.setKeyPoints({definition(0), definition(2)}));
         PointPicker picker;
         picker.setKeyPointManager(&manager);
         picker.setMesh(data, model());
@@ -162,6 +177,9 @@ private slots:
         picker.cameraInteractionStarted();
         QVERIFY(picker.selection().valid);
         auto settings = picker.settings();
+        QVERIFY(manager.setKeyPoints({definition(0)}));
+        picker.refreshSelection();
+        QVERIFY(!picker.selectPoint(2).valid); // Cannot bypass membership with onlyKeyPoints=false.
         settings.onlyKeyPoints = true;
         QVERIFY(picker.setSettings(settings));
         QVERIFY(!picker.selection().valid);
@@ -184,7 +202,10 @@ private slots:
     }
     void dragDoesNotDispatchClick() {
         auto data = mesh();
+        KeyPointManager manager;
+        manager.setModel(model(), data);
         PointPicker picker;
+        picker.setKeyPointManager(&manager);
         picker.setMesh(data, model());
         auto interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
         auto style = vtkSmartPointer<ModelInteractorStyle>::New();
@@ -215,8 +236,14 @@ private slots:
         file.close();
         VisualizationControl control;
         QVERIFY(control.loadModel(file.fileName()));
+        QCOMPARE(control.keyPoints().size(), 3);
+        QVERIFY(control.displayedPoints().isEmpty());
         control.setExpectedModelRevision(7);
         QVERIFY(control.setKeyPoints({definition(0), definition(2)}));
+        auto external = display(100);
+        external.source = DisplayedPointSource::External;
+        external.positionMm = {{50, 60, 70}};
+        QVERIFY(control.setDisplayedPoints({display(2), external}));
         QVERIFY(control.selectPoint(2).valid);
         core::CalculationResult result;
         result.revision = 1;
@@ -226,10 +253,16 @@ private slots:
         auto info = control.selectedPoint();
         QCOMPARE(info.displacementMm[0], 3.0);
         QCOMPARE(info.displayPositionMm[0], info.originalPositionMm[0] + 3);
+        QCOMPARE(control.displayedPointInfos()[0].displayPositionMm[0], info.displayPositionMm[0]);
+        QCOMPARE(control.displayedPointInfos()[1].displayPositionMm[0], 50.0);
+        QCOMPARE(control.displayedPointInfos()[1].displacementMm[0], 0.0);
         control.setDeformationScale(10);
         info = control.selectedPoint();
         QCOMPARE(info.displayPositionMm[0], info.originalPositionMm[0] + 30);
         QCOMPARE(info.displacementMm[0], 3.0);
+        QCOMPARE(control.displayedPointInfos()[0].displayPositionMm[0], info.displayPositionMm[0]);
+        QCOMPARE(control.displayedPointInfos()[0].displacementMm[0], 3.0);
+        QCOMPARE(control.displayedPointInfos()[1].displayPositionMm[0], 50.0);
         control.resetDeformation();
         info = control.selectedPoint();
         QVERIFY(info.valid);
@@ -242,9 +275,68 @@ private slots:
         control.clearSelection();
         QVERIFY(!control.selectedPoint().valid);
         QCOMPARE(control.keyPoints().size(), 2);
+        QVERIFY(control.selectPoint(2).valid);
+        QVERIFY(control.setKeyPoints({definition(0)}));
+        QVERIFY(!control.selectedPoint().valid);
+        QCOMPARE(control.displayedPoints().size(), 1);
+        QCOMPARE(control.displayedPoints()[0].pointId, vtkIdType(100));
         control.unloadModel();
         QVERIFY(control.keyPoints().isEmpty());
+        QVERIFY(control.displayedPoints().isEmpty());
         QVERIFY(!control.selectedPoint().valid);
+    }
+
+    void displayedConstraintsAndFixedCoordinates() {
+        auto renderer = vtkSmartPointer<vtkRenderer>::New();
+        auto data = mesh();
+        KeyPointManager manager;
+        manager.setRenderer(renderer);
+        manager.setModel(model(), data);
+        QVERIFY(manager.setKeyPoints({definition(0)}));
+        auto external = display(99);
+        external.source = DisplayedPointSource::External;
+        external.positionMm = {{2000, 3000, 4000}};
+        QVERIFY(manager.setDisplayedPoints({display(0), external}));
+        QCOMPARE(renderer->GetViewProps()->GetNumberOfItems(), 4);
+        QVERIFY(!manager.setDisplayedPoints({display(1)}));
+        QVERIFY(!manager.setSelectedPoint(1));
+        QVERIFY(!manager.setSelectedPoint(99));
+        auto impostor = external;
+        impostor.pointId = 1;
+        QVERIFY(!manager.setDisplayedPoints({impostor}));
+        external.positionMm[0] = std::numeric_limits<double>::quiet_NaN();
+        QVERIFY(!manager.setDisplayedPoints({external}));
+        QVERIFY(!manager.setDisplayedPoints({display(0), display(0)}));
+        QCOMPARE(manager.displayedPoints().size(), 2);
+        QCOMPARE(renderer->GetViewProps()->GetNumberOfItems(), 4);
+        QVERIFY(manager.setSelectedPoint(0));
+        data->GetPoints()->SetPoint(0, 111, 222, 333);
+        data->Modified();
+        manager.updatePositions();
+        auto *props = renderer->GetViewProps();
+        props->InitTraversal();
+        int movedSpheres = 0, fixedSpheres = 0, updatedLabels = 0;
+        while (auto *prop = props->GetNextProp()) {
+            if (auto *sphere = vtkActor::SafeDownCast(prop)) {
+                if (sphere->GetPosition()[0] == 111)
+                    ++movedSpheres;
+                if (sphere->GetPosition()[0] == 2000)
+                    ++fixedSpheres;
+            }
+            if (auto *label = vtkBillboardTextActor3D::SafeDownCast(prop))
+                if (QString::fromUtf8(label->GetInput()).contains("X: 111"))
+                    ++updatedLabels;
+        }
+        QCOMPARE(movedSpheres, 2); // Selected and persistent markers refresh independently.
+        QCOMPARE(fixedSpheres, 1);
+        QCOMPARE(updatedLabels, 2);
+        manager.setVisible(false);
+        QCOMPARE(renderer->GetViewProps()->GetNumberOfItems(), 6);
+        manager.clearSelection();
+        QCOMPARE(renderer->GetViewProps()->GetNumberOfItems(), 4);
+        QVERIFY(manager.setKeyPoints({}));
+        QCOMPARE(manager.displayedPoints().size(), 1); // External display survives key edits.
+        QCOMPARE(renderer->GetViewProps()->GetNumberOfItems(), 2);
     }
 };
 QTEST_GUILESS_MAIN(KeyPointInteractionTests)

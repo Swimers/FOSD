@@ -54,11 +54,14 @@ private slots:
     void notice(const QString &message);
     void publishLatest();
     void publishScalar();
+    void publishMarkers();
+    void publishDisplayedPoints();
     void clearReceiveLogs();
 
 private:
     bool connectionAction(const ui::classic::UiRequest &, ui::classic::UiResponse *);
     bool visualizationAction(const ui::classic::UiRequest &, ui::classic::UiResponse *);
+    bool markerAction(const ui::classic::UiRequest &, ui::classic::UiResponse *);
     bool dataAction(const ui::classic::UiRequest &, ui::classic::UiResponse *);
     bool configure(const Calculation::CalculationConfiguration &, QString *error);
     bool baseline(QString *error);
@@ -156,7 +159,7 @@ private:
     quint64 m_presentedResult = 0;
     core::CalibratedDataPtr m_presentedHardware;
     vtkIdType m_selectedPoint = -1;
-    bool m_originalKeyCoordinates = false;
+    bool m_originalKeyCoordinates = true;
 };
 } // namespace application
 } // namespace fosd
