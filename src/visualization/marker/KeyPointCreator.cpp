@@ -78,9 +78,9 @@ void KeyPointCreator::setPosition(KeyPointActors &actors, const std::array<doubl
                               position[2] + style.labelOffsetMm[2]);
     const auto text = QStringLiteral("%1\nX: %2  Y: %3  Z: %4 mm")
                           .arg(actors.text)
-                          .arg(position[0], 0, 'g', 8)
-                          .arg(position[1], 0, 'g', 8)
-                          .arg(position[2], 0, 'g', 8);
+                          .arg(position[0], 0, 'f', 2)
+                          .arg(position[1], 0, 'f', 2)
+                          .arg(position[2], 0, 'f', 2);
     actors.label->SetInput(text.toUtf8().constData());
 }
 } // namespace visualization

@@ -74,9 +74,9 @@ bool WorkbenchRuntime::markerAction(const UiRequest &request, UiResponse *respon
             } else {
                 // Querying a model vertex is independent of interactive selection membership.
                 const auto xyz = model->value(id);
-                response->fields = {{"lab_XPosition", QString::number(xyz[0], 'g', 12)},
-                                    {"lab_YPosition", QString::number(xyz[1], 'g', 12)},
-                                    {"lab_ZPosition", QString::number(xyz[2], 'g', 12)}};
+                response->fields = {{"lab_XPosition", QString::number(xyz[0], 'f', 2)},
+                                    {"lab_YPosition", QString::number(xyz[1], 'f', 2)},
+                                    {"lab_ZPosition", QString::number(xyz[2], 'f', 2)}};
                 response->success = true;
             }
         } else if (action == "pbtn_AddBox" || action == "pbtn_RemoveBox") {
@@ -174,9 +174,9 @@ bool WorkbenchRuntime::markerAction(const UiRequest &request, UiResponse *respon
             response->success = pointId(text(fields, action), &id) && model && model->contains(id);
             if (response->success) {
                 const auto xyz = model->value(id);
-                response->fields = {{"lab_XPos", QString::number(xyz[0], 'g', 12)},
-                                    {"lab_YPos", QString::number(xyz[1], 'g', 12)},
-                                    {"lab_ZPos", QString::number(xyz[2], 'g', 12)}};
+                response->fields = {{"lab_XPos", QString::number(xyz[0], 'f', 2)},
+                                    {"lab_YPos", QString::number(xyz[1], 'f', 2)},
+                                    {"lab_ZPos", QString::number(xyz[2], 'f', 2)}};
             }
         } else if (action == "radioButton" || action == "radioButton_2") {
             m_originalKeyCoordinates = action == "radioButton_2";
@@ -232,7 +232,10 @@ void WorkbenchRuntime::publishDisplayedPoints() {
     for (int i = 0; i < points.size(); ++i) {
         const auto &xyz =
             m_originalKeyCoordinates ? infos[i].originalPositionMm : infos[i].displacementMm;
-        rows.append(QVariant(QVariantList{qlonglong(points[i].pointId), xyz[0], xyz[1], xyz[2],
+        rows.append(QVariant(QVariantList{qlonglong(points[i].pointId),
+                                          QString::number(xyz[0], 'f', 2),
+                                          QString::number(xyz[1], 'f', 2),
+                                          QString::number(xyz[2], 'f', 2),
                                           points[i].source == DisplayedPointSource::External
                                               ? tr("模型外固定点")
                                               : tr("模型关键点")}));

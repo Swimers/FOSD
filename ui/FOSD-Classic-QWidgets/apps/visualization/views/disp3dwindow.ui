@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
   <class>disp3dwindow</class>
   <widget class="QMainWindow" name="disp3dwindow">
@@ -34,6 +34,7 @@
       </layout>
     </widget>
     <widget class="QStatusBar" name="statusBar_SelectedPoint">
+      <property name="font"><font><family>Consolas</family><pointsize>9</pointsize></font></property>
       <property name="sizeGripEnabled"><bool>false</bool></property>
       <property name="toolTip"><string>SelectedPoint：模型顶点 ID、原始位置和当前显示的变形位置，坐标单位 mm；变形位置包含显示倍率</string></property>
     </widget>

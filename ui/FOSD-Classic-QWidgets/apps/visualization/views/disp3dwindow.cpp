@@ -2,6 +2,7 @@
 #include "../../../common/FormBinding.h"
 #include "../../../resources/UiResources.h"
 #include "ui_disp3dwindow.h"
+#include "../../../common/CoordinateText.h"
 namespace fosd {
 namespace ui {
 namespace classic {
@@ -9,7 +10,7 @@ VisualizationView::VisualizationView(QWidget *parent)
     : QMainWindow(parent), m_ui(new Ui::disp3dwindow) {
     initializeFosdUiResources();
     m_ui->setupUi(this);
-    m_ui->statusBar_SelectedPoint->showMessage(tr("SelectedPoint：未选择 | 原始位置：-- | 变形位置：-- (mm)"));
+    m_ui->statusBar_SelectedPoint->showMessage(selectedPointStatus());
     m_binding = new FormBinding(PanelId::Visualization, this, this);
     connect(m_binding, &ViewEvents::actionTriggered, this, &VisualizationView::relayControl);
 }

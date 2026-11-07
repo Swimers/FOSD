@@ -1,4 +1,5 @@
 #include "WorkbenchRuntime.h"
+#include "FOSD-Classic-QWidgets/common/CoordinateText.h"
 #include <QFile>
 #include <QNetworkInterface>
 #include <QSerialPortInfo>
@@ -451,20 +452,16 @@ void WorkbenchRuntime::storageStopped() {
 
 void WorkbenchRuntime::selectionChanged(const visualization::PickedPointInfo &info) {
     m_selectedPoint = info.valid ? info.pointId : -1;
-    auto position = [](const std::array<double,3> &p) {
-        return QString("(%1, %2, %3)").arg(p[0],0,'g',9).arg(p[1],0,'g',9).arg(p[2],0,'g',9);
-    };
     emit presentationChanged(PanelId::Visualization,
-        {{"statusBar_SelectedPoint", info.valid
-            ? tr("SelectedPoint ID: %1 | 原始位置: %2 | 变形位置: %3 (mm)")
-                .arg(qlonglong(info.pointId)).arg(position(info.originalPositionMm),position(info.displayPositionMm))
-            : tr("SelectedPoint：未选择 | 原始位置：-- | 变形位置：-- (mm)")}});
+        {{"statusBar_SelectedPoint", selectedPointStatus(
+            info.valid ? QString::number(qlonglong(info.pointId)) : QString(),
+            info.originalPositionMm, info.displayPositionMm)}});
     if (info.valid) {
         emit presentationChanged(PanelId::KeyPointEdit,
             {{"edit_IDKeyPoint", QString::number(qlonglong(info.pointId))},
-             {"lab_XPosition", QString::number(info.originalPositionMm[0], 'g', 12)},
-             {"lab_YPosition", QString::number(info.originalPositionMm[1], 'g', 12)},
-             {"lab_ZPosition", QString::number(info.originalPositionMm[2], 'g', 12)}});
+             {"lab_XPosition", QString::number(info.originalPositionMm[0], 'f', 2)},
+             {"lab_YPosition", QString::number(info.originalPositionMm[1], 'f', 2)},
+             {"lab_ZPosition", QString::number(info.originalPositionMm[2], 'f', 2)}});
     } else {
         emit presentationChanged(PanelId::KeyPointEdit,
             {{"lab_XPosition", QString()}, {"lab_YPosition", QString()}, {"lab_ZPosition", QString()}});

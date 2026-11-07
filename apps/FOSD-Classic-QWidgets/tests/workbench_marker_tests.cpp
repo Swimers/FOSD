@@ -100,7 +100,7 @@ private slots:
         runtime.visualization().applyResult(
             std::make_shared<const core::CalculationResult>(result));
         display.findChild<QRadioButton *>("radioButton")->click();
-        QTRY_COMPARE(table->item(0, 1)->text(), QString("3"));
+        QTRY_COMPARE(table->item(0, 1)->text(), QString("3.00"));
         QTRY_VERIFY(display.values()
                         .value("tablew_PointPara.selectedIds")
                         .toList()
