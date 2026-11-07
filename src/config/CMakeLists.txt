@@ -1,5 +1,7 @@
 add_library(fosd_config STATIC
-    IConfigStore.h IniConfigStore.h IniConfigStore.cpp
+    IConfigStore.h
+    IniConfigStore.h
+    IniConfigStore.cpp
 )
 target_include_directories(fosd_config PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
 target_link_libraries(fosd_config PUBLIC Qt5::Core)
@@ -9,8 +11,15 @@ target_compile_features(fosd_config PUBLIC cxx_std_11)
 # business implementations. The generic fosd_config target remains Qt Core only.
 find_package(Qt5 5.12 REQUIRED COMPONENTS Network SerialPort)
 add_library(fosd_parameters STATIC
-    CoreParameters.h ParameterCodec.h ParameterDefaults.cpp
-    ParameterValidation.cpp ParameterStore.h ParameterStore.cpp parameter_defaults.qrc
+    CoreParameters.h
+    CoreParameters.cpp
+    ParameterCodec.h
+    ParameterCodec.cpp
+    ParameterDefaults.cpp
+    ParameterValidation.cpp
+    ParameterStore.h
+    ParameterStore.cpp
+    parameter_defaults.qrc
 )
 target_link_libraries(fosd_parameters PUBLIC fosd_config Qt5::Network Qt5::SerialPort)
 set(_fosd_parameter_bin "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")

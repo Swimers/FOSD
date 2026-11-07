@@ -17,11 +17,6 @@ namespace fosd {
 namespace visualization {
 
 // 颜色映射相关
-
-
-
-
-
 struct PointScalarField {               // 通用点标量场：与硬件应变数组解耦，任何逐点物理量都可经此结构送入着色。键必须与模型的 VTK 点 ID 一致；自定义场须显式绑定模型版本，版本不符则拒绝应用。
     QString id;                         // 场标识，用于判空与区分不同数据源
     QString label;                      // 显示名称，供图例/界面使用
@@ -37,13 +32,6 @@ struct ScalarColorRange {
 };
 
 // 相机环境相关
-
-
-
-
-
-
-
 struct CameraPose {
     std::array<double, 3> positionMm{{0, 0, 1}};
     std::array<double, 3> focalPointMm{{0, 0, 0}};
@@ -65,7 +53,6 @@ struct KeyPointActors {
 };
 
 // 拾取点相关
-
 struct PickedPointInfo {
     vtkIdType pointId = -1;
     std::array<double, 3> originalPositionMm{{0.0, 0.0, 0.0}};
