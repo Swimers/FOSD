@@ -9,6 +9,7 @@ target_link_libraries(FOSD
     PRIVATE
         Qt5::Widgets
         fosd_classic_widgets
+        fosd_classic_presenters
         fosd_communication
         fosd_protocol
         fosd_calculation

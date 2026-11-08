@@ -2,6 +2,7 @@
 #include "FOSD-Classic-QWidgets/common/FormBinding.h"
 #include "FOSD-Classic-QWidgets/common/UiResources.h"
 #include "ui_connectwindow.h"
+#include "FOSD-Classic-QWidgets/features/connection/views/ConnectionRenderers.h"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QCheckBox>
@@ -40,7 +41,13 @@ QVariantMap ConnectionView::values() const {
 }
 
 void ConnectionView::applyFields(const QVariantMap &fields) {
-    m_binding->applyFields(fields);
+    auto ordinary=fields;
+    if(fields.contains("cplot_Spectrum")){renderSpectrum(m_ui->cplot_Spectrum,fields.value("cplot_Spectrum").toMap(),this);ordinary.remove("cplot_Spectrum");}
+    for(auto *log:{m_ui->ptedit_SerialRec,m_ui->ptedit_UdpRec,m_ui->ptedit_TcpRec}){
+        const auto value=fields.value(log->objectName());
+        if(value.type()==QVariant::Map&&value.toMap().contains("entries")){appendTrafficEntries(log,value.toMap());ordinary.remove(log->objectName());}
+    }
+    m_binding->applyFields(ordinary);
     if (fields.contains("_spectrumReset"))
         resetSpectrumView();
     if (fields.contains("cplot_Spectrum"))

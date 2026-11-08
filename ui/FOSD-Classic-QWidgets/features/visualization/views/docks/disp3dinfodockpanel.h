@@ -23,7 +23,6 @@ public:
     void clearInputs() override;
     void showStatus(const QString &message) override;
 signals:
-    void modelAvailabilityChanged(bool available);
     void pushButton_6Requested(const QVariantMap &fields);
     void radioButtonRequested(const QVariantMap &fields);
     void radioButton_2Requested(const QVariantMap &fields);
@@ -35,7 +34,6 @@ private slots:
 private:
     std::unique_ptr<Ui::Disp3DInfoDockPanel> m_ui;
     FormBinding *m_binding = nullptr;
-    bool m_modelAvailable = false;
 };
 } // namespace classic
 } // namespace ui

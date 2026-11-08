@@ -5,14 +5,12 @@
 class vtkGenericOpenGLRenderWindow;
 namespace fosd {
 namespace application {
-class WorkbenchRuntime;
+class WorkbenchModel;
 }
 
 namespace ui {
 namespace classic {
 class WorkbenchPresenter;
-class WorkbenchBackend;
-class IBackend;
 } // namespace classic
 } // namespace ui
 } // namespace fosd
@@ -21,14 +19,12 @@ class ClassicWorkbench : public fosd::ui::classic::WorkbenchView {
 public:
     explicit ClassicWorkbench(QWidget *parent = nullptr);
     ~ClassicWorkbench() override;
-    void setUiBackend(fosd::ui::classic::FeatureId feature, fosd::ui::classic::IBackend *backend);
-    fosd::application::WorkbenchRuntime &runtime() const {
-        return *m_runtime;
+    fosd::application::WorkbenchModel &model() const {
+        return *m_model;
     }
 
 private:
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_renderWindow;
-    std::unique_ptr<fosd::application::WorkbenchRuntime> m_runtime;
-    std::unique_ptr<fosd::ui::classic::WorkbenchBackend> m_backends;
+    std::unique_ptr<fosd::application::WorkbenchModel> m_model;
     std::unique_ptr<fosd::ui::classic::WorkbenchPresenter> m_presenter;
 };

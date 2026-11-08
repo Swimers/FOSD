@@ -1,6 +1,5 @@
 #include "FOSD-Classic-QWidgets/common/FormBinding.h"
 #include "FOSD-Classic-QWidgets/controls/switchcontrol.h"
-#include "FOSD-Classic-QWidgets/third_party/qcustomplot/qcustomplot.h"
 #include <QAbstractButton>
 #include <QAbstractSlider>
 #include <QAction>
@@ -13,9 +12,6 @@
 #include <QMainWindow>
 #include <QPlainTextEdit>
 #include <QTextEdit>
-#include <QTextBlock>
-#include <QTextCursor>
-#include <QScrollBar>
 #include <QSignalBlocker>
 #include <QSpinBox>
 #include <QStandardItemModel>
@@ -23,7 +19,6 @@
 #include <QToolTip>
 #include <QTableView>
 #include <QTableWidget>
-#include <cmath>
 
 namespace fosd {
 namespace ui {
@@ -187,31 +182,7 @@ void FormBinding::applyFields(const QVariantMap &fields) {
         else if (auto *edit = qobject_cast<QLineEdit *>(object))
             edit->setText(value.toString());
         else if (auto *edit = qobject_cast<QPlainTextEdit *>(object)) {
-            if (value.type() == QVariant::Map && value.toMap().contains("entries")) {
-                const auto data = value.toMap();
-                const bool follow = edit->verticalScrollBar()->value() == edit->verticalScrollBar()->maximum();
-                if (data.value("clear").toBool())
-                    edit->clear();
-                QTextCursor cursor(edit->document());
-                cursor.movePosition(QTextCursor::End);
-                const bool dark = edit->property("trafficDarkTheme").toBool();
-                for (const auto &value : data.value("entries").toList()) {
-                    const auto row = value.toMap();
-                    const bool outgoing = row.value("outgoing").toBool();
-                    if (!edit->document()->isEmpty())
-                        cursor.insertBlock();
-                    QTextCharFormat format;
-                    format.setForeground(QColor(outgoing ? (dark ? "#73b7ff" : "#1d4ed8")
-                                                         : (dark ? "#63df91" : "#15803d")));
-                    // A line separator keeps both visual lines in one block, so the
-                    // document limit and theme recoloring always operate on whole frames.
-                    cursor.insertText(row.value("text").toString().replace('\n', QChar(0x2028)), format);
-                    auto block = cursor.block();
-                    block.setUserState(outgoing ? 2 : 1);
-                }
-                if (follow)
-                    edit->verticalScrollBar()->setValue(edit->verticalScrollBar()->maximum());
-            } else if (value.type() == QVariant::Map && value.toMap().contains("append"))
+            if (value.type() == QVariant::Map && value.toMap().contains("append"))
                 edit->appendPlainText(value.toMap().value("append").toString());
             else
                 edit->setPlainText(value.toString());
@@ -236,57 +207,7 @@ void FormBinding::applyFields(const QVariantMap &fields) {
             toggle->setToggle(value.toBool());
         else if (auto *slider = qobject_cast<QAbstractSlider *>(object))
             slider->setValue(value.toInt());
-        else if (auto *plot = qobject_cast<QCustomPlot *>(object)) {
-            const auto data = value.toMap();
-            if(data.contains("savePath")) {
-                const auto p=data["savePath"].toString();
-                const bool ok=p.endsWith(".jpg",Qt::CaseInsensitive) ? plot->saveJpg(p) : p.endsWith(".bmp",Qt::CaseInsensitive) ? plot->saveBmp(p) : plot->savePng(p);
-                QToolTip::showText(m_widget->mapToGlobal(QPoint(20,20)),ok ? tr("图片已保存") : tr("图片保存失败"),m_widget);
-                continue;
-            }
-            if(data.contains("series")) {
-                const auto allSeries = data["series"].toList();
-                while (plot->graphCount() > allSeries.size())
-                    plot->removeGraph(plot->graphCount() - 1);
-                int index = 0;
-                for(const auto &v:allSeries) {
-                    const auto series=v.toMap(); QVector<double> x,y;
-                    for(const auto &sample:series["samples"].toList()) {const auto p=sample.toList(); if(p.size()==2) {x.append(p[0].toDouble()); y.append(p[1].toDouble());}}
-                    auto *g = index < plot->graphCount() ? plot->graph(index) : plot->addGraph();
-                    const bool dark = plot->property("spectrumDarkTheme").toBool();
-                    g->setName(series["name"].toString());
-                    g->setPen(QPen(QColor::fromHsv((index * 47) % 360, dark ? 160 : 210, dark ? 245 : 175), 1.6));
-                    g->setData(x,y);
-                    g->setSelectable(QCP::stSingleData);
-                    g->selectionDecorator()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor("#f39c12"), QColor("#f39c12"), 8), QCPScatterStyle::spAll);
-                    ++index;
-                }
-                plot->xAxis->setLabel(tr("时间 (s)"));
-                plot->yAxis->setLabel(tr("波长 (nm)"));
-                plot->legend->setVisible(true);
-                if (!plot->property("spectrumAutoRange").isValid() || plot->property("spectrumAutoRange").toBool())
-                    plot->rescaleAxes();
-                plot->replot(QCustomPlot::rpQueuedReplot);
-                continue;
-            }
-            const auto xs = data["x"].toList(), ys = data["y"].toList();
-            if (xs.size() != ys.size())
-                continue;
-            QVector<double> x, y;
-            for (int index = 0; index < xs.size(); ++index) {
-                bool validX = false, validY = false;
-                const double xx = xs[index].toDouble(&validX), yy = ys[index].toDouble(&validY);
-                if (validX && validY && std::isfinite(xx) && std::isfinite(yy)) {
-                    x.append(xx);
-                    y.append(yy);
-                }
-            }
-            if (!plot->graphCount())
-                plot->addGraph();
-            plot->graph(0)->setData(x, y);
-            plot->rescaleAxes();
-            plot->replot();
-        } else if (auto *table = qobject_cast<QTableView *>(object)) {
+        else if (auto *table = qobject_cast<QTableView *>(object)) {
             const auto data = value.toMap();
             const auto rows = data["rows"].toList();
             const auto headers = data["headers"].toStringList();

@@ -13,6 +13,7 @@ public:
     virtual void closePanel(PanelId panel) = 0;
     virtual void windowAction(PanelId panel, WindowAction action) = 0;
     virtual void applyTheme(bool dark) = 0;
+    virtual void setModelAvailable(bool) {}
     virtual QString chooseFile(bool save, const QString &title, const QString &filter) = 0;
 };
 } // namespace classic

@@ -1,139 +1,92 @@
 #include "FOSD-Classic-QWidgets/common/PanelPresenter.h"
 #include "FOSD-Classic-QWidgets/application/IWorkbenchView.h"
-#include <atomic>
-#include <QAction>
 #include <QWidget>
+#include <QAction>
 namespace fosd {
 namespace ui {
 namespace classic {
-namespace {
-std::atomic<quint64> nextRequest{0};
-}
-
 PanelPresenter::PanelPresenter(PanelId panel, IView *view, IWorkbenchView *host, QObject *parent)
     : QObject(parent), m_panel(panel), m_view(view), m_host(host) {
-    qRegisterMetaType<PanelId>("fosd::ui::classic::PanelId");
-    qRegisterMetaType<UiRequest>("fosd::ui::classic::UiRequest");
-    qRegisterMetaType<UiResponse>("fosd::ui::classic::UiResponse");
     if (view->events())
         connect(view->events(), &ViewEvents::actionTriggered, this,
-                &PanelPresenter::actionTriggered);
+                [this](PanelId p, const QString &action) {
+                    if (p == m_panel)
+                        execute(action);
+                });
 }
-
-void PanelPresenter::setBackend(IBackend *backend) {
-    if (m_backend == backend)
+void PanelPresenter::setModel(fosd::application::WorkbenchModel *model) {
+    if (m_model == model)
         return;
-    if (m_backend) {
-        disconnect(this, nullptr, m_backend, nullptr);
-        disconnect(m_backend, nullptr, this, nullptr);
-    }
-    cancelPending();
-    m_backend = backend;
-    if (backend) {
-        connect(this, &PanelPresenter::requestReady, backend, &IBackend::execute,
-                Qt::QueuedConnection);
-        connect(backend, &IBackend::completed, this, &PanelPresenter::receiveResponse,
-                Qt::QueuedConnection);
-        connect(backend, &IBackend::presentationChanged, this, &PanelPresenter::present,
-                Qt::QueuedConnection);
-        connect(backend, &QObject::destroyed, this, &PanelPresenter::backendDestroyed);
+    if (m_model)
+        disconnect(m_model, nullptr, this, nullptr);
+    m_model = model;
+    if (model) {
+        connect(model, &fosd::application::WorkbenchModel::stateChanged, this,
+                &PanelPresenter::refresh);
+        bindModel();
     }
 }
-
-void PanelPresenter::cancelPending() {
-    m_pending.clear();
-    m_view->clearSensitiveFields();
+void PanelPresenter::initialize() {
+    refresh();
 }
-
-void PanelPresenter::actionTriggered(PanelId panel, const QString &action) {
-    if (panel == m_panel)
-        execute(action);
+void PanelPresenter::present(PanelId panel, const QVariantMap &fields) {
+    auto *view = m_host ? m_host->panelView(panel) : (panel == m_panel ? m_view : nullptr);
+    if (view)
+        view->applyFields(fields);
 }
-
+QString PanelPresenter::text(const QVariantMap &f, const QString &n) {
+    auto v = f.value(n);
+    return v.type() == QVariant::Map ? v.toMap().value("text").toString() : v.toString();
+}
+int PanelPresenter::index(const QVariantMap &f, const QString &n) {
+    return f.value(n).toMap().value("index", -1).toInt();
+}
 void PanelPresenter::execute(const QString &action) {
     if (action.isEmpty())
         return;
-    // Programmatic frontend activation must respect the same disabled state as
-    // mouse/keyboard input, before opening dialogs or sending backend requests.
     if (auto *root = dynamic_cast<QWidget *>(m_view)) {
         if (!root->isEnabled())
             return;
         auto *source = root->findChild<QObject *>(action);
-        if (auto *widget = qobject_cast<QWidget *>(source)) {
-            if (!widget->isEnabled())
+        if (auto *w = qobject_cast<QWidget *>(source)) {
+            if (!w->isEnabled())
                 return;
-        } else if (auto *command = qobject_cast<QAction *>(source)) {
-            if (!command->isEnabled())
+        } else if (auto *a = qobject_cast<QAction *>(source)) {
+            if (!a->isEnabled())
                 return;
         }
     }
-    UiRequest request;
-    request.id = ++nextRequest;
-    request.panel = m_panel;
-    request.action = action;
-    request.fields = m_view->values();
-    if (localAction(request))
+    QVariantMap fields = m_view->values();
+    if (localAction(action, fields))
         return;
-    m_pending.insert(request.id, action);
-    if (!m_backend || !m_backend->supports(m_panel)) {
-        UiResponse response;
-        response.id = request.id;
-        response.panel = m_panel;
-        response.message = tr("该功能的后端适配器尚未接入");
-        complete(response);
+    if (!m_model) {
+        const auto message = tr("业务服务尚未接入");
+        m_view->showStatus(message);
+        emit statusChanged(message);
+        emit actionFinished(action, false, message);
         return;
     }
-    if (!prepareRequest(request)) {
-        m_pending.remove(request.id);
+    if (!prepareAction(action, fields))
         return;
-    }
-    emit requestReady(request);
-}
-
-void PanelPresenter::receiveResponse(const UiResponse &response) {
-    if (sender() == m_backend.data())
-        complete(response);
-}
-
-void PanelPresenter::complete(const UiResponse &response) {
-    if (response.panel != m_panel || !m_pending.contains(response.id))
-        return;
-    const auto action = m_pending.take(response.id);
-    if (response.success)
-        m_view->applyFields(response.fields);
-    if (isSensitiveAction(action))
-        m_view->clearSensitiveFields();
-    const auto message = response.message.isEmpty()
-                             ? (response.success ? tr("操作完成") : tr("操作未完成"))
-                             : response.message;
-    m_view->showStatus(response.success ? message : tr("操作失败：%1").arg(message));
+    QString message = tr("请求已提交");
+    QVariantMap updates;
+    const bool success = handleAction(action, fields, message, updates);
+    if (!updates.isEmpty())
+        m_view->applyFields(updates);
+    m_view->showStatus(success ? message : tr("操作失败：%1").arg(message));
     emit statusChanged(message);
+    emit actionFinished(action, success, message);
 }
-
-void PanelPresenter::present(PanelId panel, const QVariantMap &fields) {
-    if (sender() == m_backend.data() && panel == m_panel)
-        m_view->applyFields(fields);
-}
-
-void PanelPresenter::backendDestroyed() {
-    if (m_backend)
-        return; // A queued destruction from a replaced adapter is stale.
-    cancelPending();
-    m_view->showStatus(tr("后端适配器已断开"));
-    emit statusChanged(tr("后端适配器已断开"));
-}
-
 bool PanelPresenter::showPanel(PanelId panel) {
     if (!m_host)
         return false;
     m_host->showPanel(panel);
     return true;
 }
-
-bool PanelPresenter::localAction(const UiRequest &request) {
+bool PanelPresenter::localAction(const QString &action, const QVariantMap &fields) {
     if (!m_host)
         return false;
-    const auto &action = request.action;
+    Q_UNUSED(fields)
     if (action == "pbtn_Minimize" || action == "btn_Min") {
         m_host->windowAction(m_panel, WindowAction::Minimize);
         return true;
@@ -143,19 +96,10 @@ bool PanelPresenter::localAction(const UiRequest &request) {
         return true;
     }
     if (action == "pbtn_Maximize" || action == "btn_Close" || action == "pbtn_Exit" ||
-        action == "rejected" ||
-        action == "pbtn_SenerCancel") {
+        action == "rejected" || action == "pbtn_SenerCancel") {
         m_host->closePanel(m_panel);
         return true;
     }
-    return false;
-}
-
-bool PanelPresenter::prepareRequest(UiRequest &) {
-    return true;
-}
-
-bool PanelPresenter::isSensitiveAction(const QString &) const {
     return false;
 }
 } // namespace classic

@@ -1,30 +1,30 @@
 #pragma once
 #include "FOSD-Classic-QWidgets/application/IWorkbenchView.h"
-#include "FOSD-Classic-QWidgets/application/WorkbenchBackend.h"
+#include "FOSD-Classic-QWidgets/common/PanelPresenter.h"
 #include <QMap>
+#include <QTimer>
 namespace fosd {
 namespace ui {
 namespace classic {
-class PanelPresenter;
-// Binds feature presenters to views/adapters; no control-name business switch.
 class WorkbenchPresenter final : public QObject {
     Q_OBJECT
-public:
-    explicit WorkbenchPresenter(IWorkbenchView *view, QObject *parent = nullptr);
-    void setBackends(WorkbenchBackend *backends);
-public slots:
-    void execute(fosd::ui::classic::PanelId panel, const QString &action);
-signals:
-    void backendRequest(const fosd::ui::classic::UiRequest &request);
-private slots:
-    void refreshBackend(fosd::ui::classic::FeatureId feature);
-    void registryDestroyed();
-    void showStatus(const QString &message);
+  public:
+    explicit WorkbenchPresenter(IWorkbenchView *view, application::WorkbenchModel *model = nullptr,
+                                QObject *parent = nullptr);
+    PanelPresenter *panelPresenter(PanelId panel) const {
+        return m_presenters.value(int(panel));
+    }
+  public slots:
+    void initialize();
+    void execute(PanelId, const QString &);
+    void refreshDisplays();
 
-private:
+  private:
+    void showStatus(const QString &);
     IWorkbenchView *m_view;
+    QPointer<application::WorkbenchModel> m_model;
     QMap<int, PanelPresenter *> m_presenters;
-    QPointer<WorkbenchBackend> m_backends;
+    QTimer m_refreshTimer;
 };
 } // namespace classic
 } // namespace ui

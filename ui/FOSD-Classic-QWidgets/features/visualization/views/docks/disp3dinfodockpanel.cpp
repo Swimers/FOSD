@@ -23,13 +23,7 @@ QVariantMap InfoPanelView::values() const {
 
 void InfoPanelView::applyFields(const QVariantMap &fields) {
     m_binding->applyFields(fields);
-    if (fields.contains("lab_NumPoints")) {
-        const bool available = fields.value("lab_NumPoints").toLongLong() > 0;
-        if (m_modelAvailable != available) {
-            m_modelAvailable = available;
-            emit modelAvailabilityChanged(available);
-        }
-    }
+
 }
 
 void InfoPanelView::clearSensitiveFields() {

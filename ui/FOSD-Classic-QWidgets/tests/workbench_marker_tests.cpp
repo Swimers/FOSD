@@ -1,6 +1,5 @@
-#include "FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.h"
-#include "FOSD-Classic-QWidgets/features/visualization/backends/ModelBackend.h"
-#include "FOSD-Classic-QWidgets/features/visualization/presenters/ModelPresenter.h"
+#include "FOSD-Classic-QWidgets/model/WorkbenchModel.h"
+#include "FOSD-Classic-QWidgets/features/visualization/presenters/ModelPanelPresenter.h"
 #include "FOSD-Classic-QWidgets/features/visualization/views/keypoints/disp3dkeypointedit.h"
 #include "FOSD-Classic-QWidgets/features/visualization/views/keypoints/disp3dkeypointselect.h"
 #include "../../../test/ParameterTestIsolation.h"
@@ -37,15 +36,13 @@ private slots:
         file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 50 "
                    "0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n");
         file.close();
-        application::WorkbenchRuntime runtime;
-        ModelBackend backend;
-        backend.setServices(&runtime);
+        application::WorkbenchModel runtime;
         KeyPointEditView edit;
         KeyPointSelectView display;
-        ModelPresenter editPresenter(PanelId::KeyPointEdit, &edit);
-        ModelPresenter displayPresenter(PanelId::KeyPointSelect, &display);
-        editPresenter.setBackend(&backend);
-        displayPresenter.setBackend(&backend);
+        ModelPanelPresenter editPresenter(PanelId::KeyPointEdit, &edit);
+        ModelPanelPresenter displayPresenter(PanelId::KeyPointSelect, &display);
+        editPresenter.setModel(&runtime);
+        displayPresenter.setModel(&runtime);
         auto *combo = display.findChild<QComboBox *>("cbox_KeyPointID");
         auto *source = display.findChild<QComboBox *>("cbox_PointSource");
         auto *table = display.findChild<QTableWidget *>("tablew_PointPara");
@@ -83,11 +80,11 @@ private slots:
         QCOMPARE(runtime.visualization().displayedPointInfos()[1].displayPositionMm[0], 2000.0);
 
         // A non-key model vertex cannot be disguised as an external point.
-        QSignalSpy responses(&backend, &ModelBackend::completed);
+        QSignalSpy responses(&displayPresenter, &PanelPresenter::actionFinished);
         display.findChild<QLineEdit *>("edit_ExternalPointID")->setText("1");
         display.findChild<QPushButton *>("pbtn_AddPoint")->click();
         QTRY_COMPARE(responses.count(), 1);
-        QVERIFY(!qvariant_cast<UiResponse>(responses.last()[0]).success);
+        QVERIFY(!responses.last()[1].toBool());
         QCOMPARE(table->rowCount(), 2);
 
         // Deformation refresh preserves selected row IDs, enabling safe deletion during updates.

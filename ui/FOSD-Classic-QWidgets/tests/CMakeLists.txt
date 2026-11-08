@@ -7,16 +7,16 @@ if(WIN32)
 endif()
 
 if(TARGET fosd_classic_application)
-    add_executable(test_workbench_runtime workbench_runtime_tests.cpp workbench_test_packets.h)
-    target_link_libraries(test_workbench_runtime PRIVATE fosd_classic_runtime fosd_classic_backends Qt5::Test)
-    add_test(NAME test_workbench_runtime COMMAND test_workbench_runtime)
+    add_executable(test_workbench_model workbench_model_tests.cpp workbench_test_packets.h)
+    target_link_libraries(test_workbench_model PRIVATE fosd_classic_model fosd_classic_presenters Qt5::Test)
+    add_test(NAME test_workbench_model COMMAND test_workbench_model)
 
     add_executable(test_workbench_markers workbench_marker_tests.cpp)
-    target_link_libraries(test_workbench_markers PRIVATE fosd_classic_runtime
-        fosd_classic_widgets fosd_classic_backends Qt5::Test)
+    target_link_libraries(test_workbench_markers PRIVATE fosd_classic_model
+        fosd_classic_widgets fosd_classic_presenters Qt5::Test)
     add_test(NAME test_workbench_markers COMMAND test_workbench_markers)
 
     add_executable(test_workbench_main workbench_main_tests.cpp)
     target_link_libraries(test_workbench_main PRIVATE fosd_classic_application Qt5::Test)
-    add_test(NAME test_workbench_main COMMAND test_workbench_main)
+    add_test(NAME test_workbench_main COMMAND test_workbench_main -o workbench-main-test.txt,txt)
 endif()

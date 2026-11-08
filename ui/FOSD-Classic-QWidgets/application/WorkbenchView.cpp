@@ -16,7 +16,6 @@
 #include <QComboBox>
 #include "FOSD-Classic-QWidgets/common/ViewEvents.h"
 #include "FOSD-Classic-QWidgets/features/connection/views/connectwindow.h"
-#include "FOSD-Classic-QWidgets/features/visualization/views/docks/disp3dinfodockpanel.h"
 #include <QTableWidget>
 
 namespace fosd {
@@ -85,8 +84,6 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     data->setColumnCount(3);
     data->setHorizontalHeaderLabels({tr("IFE 输入"), tr("波长源序号"), tr("标定应变")});
 
-    auto *info = qobject_cast<InfoPanelView *>(panelWidget(PanelId::InfoPanel));
-    connect(info, &InfoPanelView::modelAvailabilityChanged, this, &WorkbenchView::setModelAvailable);
     setModelAvailable(false);
     applyFields({{"switch_Style", true}});
     applyTheme(true);

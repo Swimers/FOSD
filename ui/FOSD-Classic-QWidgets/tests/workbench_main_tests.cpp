@@ -1,15 +1,14 @@
+#include "FOSD-Classic-QWidgets/application/WorkbenchPresenter.h"
 #include "FOSD-Classic-QWidgets/application/ClassicWorkbench.h"
 #include "FOSD-Classic-QWidgets/features/visualization/presenters/VisualizationPresenter.h"
-#include "FOSD-Classic-QWidgets/features/visualization/backends/VisualizationBackend.h"
-#include "FOSD-Classic-QWidgets/features/visualization/presenters/ModelPresenter.h"
-#include "FOSD-Classic-QWidgets/features/visualization/backends/ModelBackend.h"
+#include "FOSD-Classic-QWidgets/features/visualization/presenters/ModelPanelPresenter.h"
 #include "FOSD-Classic-QWidgets/controls/renderhostwidget.h"
 #include <QAction>
 #include <QStatusBar>
 #include <QVTKOpenGLNativeWidget.h>
 #include <QSurfaceFormat>
 #include <QtTest>
-#include "FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.h"
+#include "FOSD-Classic-QWidgets/model/WorkbenchModel.h"
 #include <QFile>
 #include <QTemporaryDir>
 #include <QUdpSocket>
@@ -38,6 +37,7 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 class TestWindow : public ClassicWorkbench {
 public:
  QString selectedFile;
+ fosd::ui::classic::WorkbenchPresenter &presenter(){return *findChild<fosd::ui::classic::WorkbenchPresenter *>();}
  QString chooseFile(bool,const QString &,const QString &) override { return selectedFile; }
 };
 static QByteArray jcs(float delta) {
@@ -49,6 +49,20 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void previewWithoutBusinessModel() {
+  using namespace fosd::ui::classic;
+  WorkbenchView view;
+  WorkbenchPresenter presenter(&view);
+  presenter.initialize();
+  view.show(); QVERIFY(QTest::qWaitForWindowExposed(&view));
+  auto *connection=view.panelWidget(PanelId::Connection);
+  connection->findChild<QPushButton *>("pbtn_ChannelCalibration")->click();
+  QTRY_VERIFY(view.panelWidget(PanelId::ChannelCalibration)->isVisible());
+  view.closePanel(PanelId::ChannelCalibration);
+  QVERIFY(!view.panelWidget(PanelId::ScenePanel)->isEnabled());
+  view.findChild<QPushButton *>("pbtn_3DPlot")->click();
+  QTRY_VERIFY(view.panelWidget(PanelId::Visualization)->isVisible());
+ }
  void sceneAppearanceSelectionAndToolbar() {
   using namespace fosd; using namespace fosd::ui::classic;
   QTemporaryDir dir; qputenv("FOSD_CONFIG_FILE",dir.filePath("scene.ini").toUtf8());
@@ -60,7 +74,7 @@ private slots:
   auto *start=page->findChild<QAction *>("actionStart"); auto *pause=page->findChild<QAction *>("actionPause");
   auto *stop=page->findChild<QAction *>("actionStop"); auto *reset=page->findChild<QAction *>("actionReset");
   QTRY_VERIFY(!start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&!reset->isEnabled());
-  auto &view=w.runtime().visualization();
+  auto &view=w.model().visualization();
   auto *modelPanel=w.panelWidget(PanelId::ModelPanel);
   QVERIFY(modelPanel->findChild<QPushButton *>("pbtn_ModelLoad")->isEnabled());
   QVERIFY(!modelPanel->findChild<QPushButton *>("pbtn_ModelClear")->isEnabled());
@@ -70,14 +84,12 @@ private slots:
   QVERIFY(!modelPanel->findChild<QWidget *>("pbtn_ScalarSet")->isEnabled());
   QVERIFY(!w.panelWidget(PanelId::KeyPointEdit)->isEnabled());
   {
-   VisualizationBackend backend; backend.setServices(&w.runtime());
    VisualizationPresenter presenter(PanelId::ScenePanel,w.panelView(PanelId::ScenePanel),&w);
-   presenter.setBackend(&backend); QSignalSpy requests(&presenter,&PanelPresenter::requestReady);
+   presenter.setModel(&w.model()); QSignalSpy requests(&presenter,&PanelPresenter::actionFinished);
    presenter.execute("pbtn_ModelColor"); // Must not open a dialog.
    presenter.execute("cbox_AxisAble");
-   ModelBackend modelBackend; modelBackend.setServices(&w.runtime());
-   ModelPresenter modelPresenter(PanelId::ModelPanel,w.panelView(PanelId::ModelPanel),&w);
-   modelPresenter.setBackend(&modelBackend); QSignalSpy modelRequests(&modelPresenter,&PanelPresenter::requestReady);
+   ModelPanelPresenter modelPresenter(PanelId::ModelPanel,w.panelView(PanelId::ModelPanel),&w);
+   modelPresenter.setModel(&w.model()); QSignalSpy modelRequests(&modelPresenter,&PanelPresenter::actionFinished);
    modelPresenter.execute("pbtn_ScalarSet");
    QTest::qWait(30); QCOMPARE(requests.count(),0); QCOMPARE(modelRequests.count(),0);
   }
@@ -90,9 +102,14 @@ private slots:
   view.showAxes(true); QVERIFY(view.axesSettings().visible); view.showAxes(false);
   const auto model=dir.filePath("model.stl"); QFile file(model); QVERIFY(file.open(QIODevice::WriteOnly));
   file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 50 0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n"); file.close();
-  QSignalSpy accepted(&w.runtime().calculation(),&Calculation::CalculationControl::modelAccepted);
+  QSignalSpy accepted(&w.model().calculation(),&Calculation::CalculationControl::modelAccepted);
   QVERIFY(view.loadModel(model)); QTRY_COMPARE(accepted.count(),1);
   QTRY_VERIFY(scene->isEnabled());
+  auto *keyCount=w.panelWidget(PanelId::InfoPanel)->findChild<QLabel *>("lab_NumKeyPoints");
+  QVERIFY(keyCount); QTRY_COMPARE(keyCount->text(),QString("3"));
+  const auto initialKeys=w.model().keyPoints();
+  QVERIFY(w.model().setKeyPoints(initialKeys.mid(1))); QTRY_COMPARE(keyCount->text(),QString("2"));
+  QVERIFY(w.model().setKeyPoints(initialKeys)); QTRY_COMPARE(keyCount->text(),QString("3"));
   QVERIFY(modelPanel->findChild<QPushButton *>("pbtn_ModelClear")->isEnabled());
   QVERIFY(modelPanel->findChild<QWidget *>("pbtn_ScalarSet")->isEnabled());
   QVERIFY(w.panelWidget(PanelId::KeyPointEdit)->isEnabled());
@@ -149,6 +166,7 @@ private slots:
   w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelClear")->click();
   QTRY_VERIFY(!start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&!reset->isEnabled());
   QTRY_VERIFY(!scene->isEnabled());
+  QTRY_COMPARE(keyCount->text(),QString("0"));
   QVERIFY(!modelPanel->findChild<QWidget *>("pbtn_ScalarSet")->isEnabled());
   QVERIFY(!w.panelWidget(PanelId::KeyPointEdit)->isEnabled());
   QVERIFY(modelPanel->findChild<QPushButton *>("pbtn_ModelLoad")->isEnabled());
@@ -191,7 +209,7 @@ private slots:
   }
   auto *offset=calibration->findChild<QLineEdit *>("edit_Sensor1Offset");
   QTRY_COMPARE(order->text(),QString("1")); order->setText("2"); factor->setText("1.75");
-  QSignalSpy accepted(&w.runtime().calculation(),&Calculation::CalculationControl::configurationAccepted);
+  QSignalSpy accepted(&w.model().calculation(),&Calculation::CalculationControl::configurationAccepted);
   calibration->findChild<QPushButton *>("pbtn_SenerSet")->click(); QTRY_COMPARE(accepted.count(),1);
   Calculation::CalculationConfiguration saved; QVERIFY(config::ParameterStore().read(&saved,true,&error));
   QCOMPARE(saved.channelCalibration.channelIndices[0],1); QCOMPARE(saved.channelCalibration.calibrationFactors[0],1.75);
@@ -215,7 +233,7 @@ private slots:
   tabs->setCurrentWidget(wave); QVERIFY(filter->isVisible());
   for(int i=1;i<=16;++i)panel->findChild<QCheckBox *>(QString("ckbox_CH%1").arg(i))->setChecked(i==16);
   panel->findChild<QPushButton *>("pbtn_SelectCH")->click();
-  w.runtime().protocol().parseFrame(communication::Channel::Udp,jcs(0));
+  w.model().protocol().parseFrame(communication::Channel::Udp,jcs(0));
   auto *plot=panel->findChild<QCustomPlot *>("cplot_Spectrum"); QTRY_COMPARE(plot->graphCount(),6);
   for(int i=0;i<plot->graphCount();++i)QVERIFY(plot->graph(i)->name().startsWith("CH16_"));
   auto *table=panel->findChild<QTableView *>("tablev_Wavelength"); QVERIFY(table);
@@ -231,13 +249,13 @@ private slots:
   SerialConfig serialConfig; serialConfig.portName="COM42"; QString error;
   QVERIFY(config::ParameterStore().write(serialConfig,true,&error));
   TestWindow w; w.applyTheme(false); w.resize(1360,900); w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w)); QTest::qWait(150);
-  auto *panel=w.panelWidget(PanelId::Connection); auto &transport=w.runtime().protocol().communication();
+  auto *panel=w.panelWidget(PanelId::Connection); auto &transport=w.model().protocol().communication();
   auto *serial=panel->findChild<QPlainTextEdit *>("ptedit_SerialRec");
   auto *udp=panel->findChild<QPlainTextEdit *>("ptedit_UdpRec");
   auto *tcp=panel->findChild<QPlainTextEdit *>("ptedit_TcpRec");
   emit transport.rawDataReceived(Channel::Serial,"serial reply\r\n",{});
   const QByteArray serialOut("serial out\r\n"); const Endpoint none;
-  QVERIFY(QMetaObject::invokeMethod(&w.runtime(),"rawSent",Qt::DirectConnection,
+  QVERIFY(QMetaObject::invokeMethod(w.presenter().panelPresenter(PanelId::Connection),"rawSent",Qt::DirectConnection,
       Q_ARG(fosd::communication::Channel,Channel::Serial),Q_ARG(QByteArray,serialOut),Q_ARG(fosd::communication::Endpoint,none)));
   QTRY_VERIFY(serial->toPlainText().contains("serial out\\r\\n"));
   QVERIFY(serial->toPlainText().contains("COM42 @115200"));
@@ -287,7 +305,7 @@ private slots:
   auto *tabs=panel->findChild<QTabWidget *>("tabWidget"); tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_tcp"));
   w.applyTheme(true); for(auto *log:{serial,udp,tcp})QVERIFY(checkColors(log,true));
   w.grab().save("connection-traffic-dark.png"); w.applyTheme(false); w.grab().save("connection-traffic-light.png");
-  auto *cleanup=w.runtime().findChild<QTimer *>("receiveLogCleanupTimer"); QVERIFY(cleanup); cleanup->start(30);
+  auto *cleanup=w.presenter().findChild<QTimer *>("receiveLogCleanupTimer"); QVERIFY(cleanup); cleanup->start(30);
   QTRY_VERIFY(serial->toPlainText().isEmpty()&&udp->toPlainText().isEmpty()&&tcp->toPlainText().isEmpty()); cleanup->stop();
   qunsetenv("FOSD_CONFIG_FILE");
  }
@@ -311,13 +329,13 @@ private slots:
   auto *save=panel->findChild<QPushButton *>("pbtn_SaveDynamic"); QVERIFY(save->isCheckable());
   save->click(); QVERIFY(!save->isChecked()); // File selection was cancelled.
   w.selectedFile=dir.filePath("record.csv");
-  QSignalSpy started(&w.runtime().calculation().storage(),&storage::StorageControl::started);
-  QSignalSpy stopped(&w.runtime().calculation().storage(),&storage::StorageControl::stopped);
+  QSignalSpy started(&w.model().calculation().storage(),&storage::StorageControl::started);
+  QSignalSpy stopped(&w.model().calculation().storage(),&storage::StorageControl::stopped);
   save->click(); QTRY_COMPARE(started.count(),1);
   QTRY_VERIFY(save->isChecked() && save->isEnabled());
   QCOMPARE(save->text(),QString::fromUtf8("停止保存"));
   w.grab().save("connection-saving.png");
-  w.runtime().protocol().parseFrame(communication::Channel::Udp,jcs(0));
+  w.model().protocol().parseFrame(communication::Channel::Udp,jcs(0));
   QTest::qWait(100); save->click(); QTRY_COMPARE(stopped.count(),1);
   QTRY_VERIFY(!save->isChecked() && save->isEnabled());
   QCOMPARE(save->text(),QString::fromUtf8("开始保存")); QVERIFY(QFileInfo(w.selectedFile).size()>0);
@@ -370,7 +388,7 @@ private slots:
   TestWindow w;
   QTest::qWait(100); // Apply initial configuration before editing commands.
   auto *panel = w.panelWidget(PanelId::Connection);
-  auto &transport = w.runtime().protocol().communication();
+  auto &transport = w.model().protocol().communication();
   // Observe the exact bytes submitted to the transport without physical serial I/O.
   disconnect(&transport, &communication::ConnectControl::requestSend, nullptr, nullptr);
   QSignalSpy sent(&transport, &communication::ConnectControl::requestSend);
@@ -427,7 +445,7 @@ private slots:
   QCOMPARE(serialMode->currentIndex(), 1);
   QCOMPARE(udpMode->currentIndex(), 0);
   QVERIFY(serialText->isReadOnly()); QVERIFY(udpText->isReadOnly());
-  auto &transport = w.runtime().protocol().communication();
+  auto &transport = w.model().protocol().communication();
   const QByteArray bytes = QString::fromUtf8("中文 AB\r\n").toUtf8();
   // Serial reads may split a UTF-8 character across callbacks.
   emit transport.rawDataReceived(communication::Channel::Serial, bytes.left(1), {});
@@ -481,7 +499,7 @@ private slots:
   QUdpSocket reserve;
   QVERIFY(reserve.bind(QHostAddress(QHostAddress::LocalHost), quint16(0)));
   const quint16 port = reserve.localPort(); reserve.close();
-  auto &runtime = w.runtime();
+  auto &runtime = w.model();
   auto &transport = runtime.protocol().communication();
   QSignalSpy state(&transport, &communication::ConnectControl::stateChanged);
   communication::UdpConfig config;
@@ -520,13 +538,13 @@ private slots:
   // Many callbacks within one display interval produce only the latest summary.
   for (int i = 0; i < 1000; ++i)
    emit runtime.protocol().frameParsed(saved);
-  QVERIFY(QMetaObject::invokeMethod(&runtime, "publishLatest"));
+  QVERIFY(QMetaObject::invokeMethod(&w.presenter(), "refreshDisplays"));
   QTRY_COMPARE(log->document()->blockCount(), 1);
   QTRY_VERIFY(log->toPlainText().contains("mp.wavelength"));
   // Exercise the document's actual limit after more than 200 display intervals.
   for (int i = 0; i < 220; ++i) {
    emit runtime.protocol().frameParsed(saved);
-   QVERIFY(QMetaObject::invokeMethod(&runtime, "publishLatest"));
+   QVERIFY(QMetaObject::invokeMethod(&w.presenter(), "refreshDisplays"));
   }
   QTRY_COMPARE(log->document()->blockCount(), 200);
   QCOMPARE(log->toPlainText().split('\n').size(),400);
@@ -535,7 +553,7 @@ private slots:
   QVERIFY(log->toPlainText().size() < 100000);
   emit transport.rawDataReceived(communication::Channel::Serial, "serial text", {});
   QTRY_VERIFY(serial->toPlainText().contains("serial text"));
-  auto *cleanup = runtime.findChild<QTimer *>("receiveLogCleanupTimer");
+  auto *cleanup = w.presenter().findChild<QTimer *>("receiveLogCleanupTimer");
   QVERIFY(cleanup); QCOMPARE(cleanup->interval(), 60000);
   cleanup->start(30); // Verify the same production timer without a 60-second delay.
   QTRY_VERIFY(log->toPlainText().isEmpty() && serial->toPlainText().isEmpty());
@@ -554,8 +572,8 @@ private slots:
   auto *connection=w.panelView(PanelId::Connection); auto *cw=w.panelWidget(PanelId::Connection);
   QUdpSocket reserve; QVERIFY(reserve.bind(QHostAddress(QHostAddress::LocalHost),quint16(0))); quint16 port=reserve.localPort(); reserve.close();
   connection->applyFields({{"cbox_CommuteChoose",QVariantMap{{"index",0}}},{"cbox_LocakIP",QVariantMap{{"text","127.0.0.1"}}},{"edit_LocalPort",QString::number(port)},{"edit_TargetIP","127.0.0.1"},{"edit_TargetPort","9000"}});
-  QSignalSpy frames(&w.runtime().protocol(),&protocol::ProtocolControl::frameParsed);
-  QSignalSpy configured(&w.runtime().calculation(),&Calculation::CalculationControl::configurationAccepted);
+  QSignalSpy frames(&w.model().protocol(),&protocol::ProtocolControl::frameParsed);
+  QSignalSpy configured(&w.model().calculation(),&Calculation::CalculationControl::configurationAccepted);
   cw->findChild<QPushButton *>("pbtn_OpenNet")->click(); QTest::qWait(150);
   QUdpSocket sender;
   auto send=[&](float delta){ QCOMPARE(sender.writeDatagram(jcs(delta),QHostAddress::LocalHost,port),qint64(jcs(delta).size())); };
@@ -565,22 +583,22 @@ private slots:
   QTRY_COMPARE(configured.count(),1);
   const auto model=dir.filePath("中文模型.stl"); QFile file(model); QVERIFY(file.open(QIODevice::WriteOnly));
   file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 10 0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n"); file.close();
-  w.selectedFile=model; QSignalSpy models(&w.runtime().calculation(),&Calculation::CalculationControl::modelAccepted);
+  w.selectedFile=model; QSignalSpy models(&w.model().calculation(),&Calculation::CalculationControl::modelAccepted);
   w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelLoad")->click(); QTRY_COMPARE(models.count(),1);
   QTRY_VERIFY(w.findChild<QAction *>("actionStart")->isEnabled());
   w.findChild<QAction *>("actionStart")->trigger(); QTRY_VERIFY(w.findChild<QAction *>("actionPause")->isEnabled());
   w.selectPage(1); send(.02f);
-  QTRY_VERIFY(w.runtime().calculation().dataModel()->latest());
-  QCOMPARE(w.runtime().calculation().dataModel()->latest()->algorithmId,QString("HYY.IFE"));
-  QTest::qWait(150); auto selected=w.runtime().visualization().selectPoint(0); QVERIFY(selected.valid);
+  QTRY_VERIFY(w.model().calculation().dataModel()->latest());
+  QCOMPARE(w.model().calculation().dataModel()->latest()->algorithmId,QString("HYY.IFE"));
+  QTest::qWait(150); auto selected=w.model().visualization().selectPoint(0); QVERIFY(selected.valid);
   w.findChild<QAction *>("actionPause")->trigger(); QTest::qWait(50);
-  auto frozen=w.runtime().visualization().selectedPoint().displayPositionMm;
-  auto revision=w.runtime().calculation().dataModel()->latest()->revision;
-  send(.04f); QTRY_VERIFY(w.runtime().calculation().dataModel()->latest()->revision>revision);
-  QTest::qWait(100); QVERIFY(w.runtime().visualization().selectedPoint().displayPositionMm==frozen);
+  auto frozen=w.model().visualization().selectedPoint().displayPositionMm;
+  auto revision=w.model().calculation().dataModel()->latest()->revision;
+  send(.04f); QTRY_VERIFY(w.model().calculation().dataModel()->latest()->revision>revision);
+  QTest::qWait(100); QVERIFY(w.model().visualization().selectedPoint().displayPositionMm==frozen);
   w.selectedFile=dir.filePath("波长曲线.png"); cw->findChild<QPushButton *>("pbtn_SaveSpectrum")->click();
   QTRY_VERIFY(QFileInfo(w.selectedFile).size()>0); QVERIFY(!QImage(w.selectedFile).isNull());
-  QSignalSpy started(&w.runtime().calculation().storage(),&storage::StorageControl::started);
+  QSignalSpy started(&w.model().calculation().storage(),&storage::StorageControl::started);
   w.selectedFile=dir.filePath("波长.csv"); cw->findChild<QPushButton *>("pbtn_SaveDynamic")->click();
   QTRY_COMPARE(started.count(),1); send(.06f); QTest::qWait(100);
   cw->findChild<QPushButton *>("pbtn_SaveDynamic")->click();

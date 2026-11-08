@@ -1,5 +1,7 @@
 # 独立构建预设
 
+> 2026-11-08：Classic 已迁移为三层 MVP；旧 Backend 请求转发链已删除，当前边界与测试命名见 [MVP 迁移指南](Architectural/classic-mvp-ui-backend-connection.md)。
+
 在仓库根目录执行命令；CMake Presets 要求 CMake 3.20 及以上，当前工具链为 Visual Studio 2017 x64、Qt 5.12.2。每个配置使用独立的 CMakeCache 和输出目录；Debug/Release 由多配置生成器在同一目录下分别生成。
 
 | configure 预设 | 构建目录 | 应用目标及范围 |
@@ -10,7 +12,7 @@
 | `communication-assistant-QML` | `build/communication-assistant-QML/` | 独立 QML 通信助手及其测试 |
 | `communication-assistant-widgets` | `build/communication-assistant-widgets/` | 独立 Widgets 通信助手及其测试 |
 
-Classic 业务闭环实现在 `ui/FOSD-Classic-QWidgets/application`：ClassicWorkbench 通过 WorkbenchRuntime 注入通信、协议、解算、存储和可视化服务，挂载真实 QVTK 控件；`apps/FOSD-Classic-QWidgets` 只负责启动入口和 EXE 构建。共享 UI 库仍保持分层，FOSD-Win 继续使用共享 Widgets。目录说明见 [Classic 界面](../ui/FOSD-Classic-QWidgets/README.md)，完整使用与验证见 [Classic 业务闭环](Architectural/formal-workbench-integration.md)。
+Classic 业务闭环实现在 `ui/FOSD-Classic-QWidgets/application`：ClassicWorkbench 通过 WorkbenchModel 注入通信、协议、解算、存储和可视化服务，挂载真实 QVTK 控件；`apps/FOSD-Classic-QWidgets` 只负责启动入口和 EXE 构建。共享 UI 库仍保持分层，FOSD-Win 继续使用共享 Widgets。目录说明见 [Classic 界面](../ui/FOSD-Classic-QWidgets/README.md)，完整使用与验证见 [Classic 业务闭环](Architectural/formal-workbench-integration.md)。
 
 ## 配置、构建与测试
 

@@ -9,8 +9,7 @@ MainWindowPresenter::MainWindowPresenter(PanelId panel, IView *view, IWorkbenchV
     : PanelPresenter(panel, view, host, parent) {
 }
 
-bool MainWindowPresenter::localAction(const UiRequest &request) {
-    const auto &action = request.action;
+bool MainWindowPresenter::localAction(const QString &action, const QVariantMap &fields) {
     if (m_host) {
         const QStringList navigation{"pbtn_JieTiaoYi", "pbtn_3DPlot"};
         if (navigation.contains(action)) {
@@ -18,11 +17,11 @@ bool MainWindowPresenter::localAction(const UiRequest &request) {
             return true;
         }
         if (action == "switch_Style") {
-            m_host->applyTheme(request.fields.value("switch_Style").toBool());
+            m_host->applyTheme(fields.value("switch_Style").toBool());
             return true;
         }
     }
-    return PanelPresenter::localAction(request);
+    return PanelPresenter::localAction(action, fields);
 }
 } // namespace classic
 } // namespace ui

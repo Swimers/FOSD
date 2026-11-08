@@ -1,83 +1,79 @@
 #include "FOSD-Classic-QWidgets/application/WorkbenchPresenter.h"
-#include "FOSD-Classic-QWidgets/features/connection/presenters/ConnectionPresenter.h"
 #include "FOSD-Classic-QWidgets/features/mainwindow/presenters/MainWindowPresenter.h"
-#include "FOSD-Classic-QWidgets/features/visualization/presenters/ModelPresenter.h"
-#include "FOSD-Classic-QWidgets/features/data/presenters/TrackingPresenter.h"
+#include "FOSD-Classic-QWidgets/features/connection/presenters/ConnectionPresenter.h"
 #include "FOSD-Classic-QWidgets/features/visualization/presenters/VisualizationPresenter.h"
+#include "FOSD-Classic-QWidgets/features/visualization/presenters/ModelPanelPresenter.h"
+#include "FOSD-Classic-QWidgets/features/data/presenters/HardwareDataPresenter.h"
 namespace fosd {
 namespace ui {
 namespace classic {
-WorkbenchPresenter::WorkbenchPresenter(IWorkbenchView *view, QObject *parent)
-    : QObject(parent), m_view(view) {
-    for (int index = int(PanelId::Main); index <= int(PanelId::HardwareData); ++index) {
-        const auto panel = PanelId(index);
-        auto *panelView = view->panelView(panel);
-        if (!panelView)
+WorkbenchPresenter::WorkbenchPresenter(IWorkbenchView *view, application::WorkbenchModel *model,
+                                       QObject *parent)
+    : QObject(parent), m_view(view), m_model(model) {
+    const PanelId panels[] = {
+        PanelId::Main,          PanelId::Connection,   PanelId::ChannelCalibration,
+        PanelId::Visualization, PanelId::ModelPanel,   PanelId::ScenePanel,
+        PanelId::InfoPanel,     PanelId::KeyPointEdit, PanelId::KeyPointSelect,
+        PanelId::HardwareData};
+    for (auto panel : panels) {
+        auto *v = view->panelView(panel);
+        if (!v)
             continue;
-        PanelPresenter *presenter = nullptr;
-        switch (featureForPanel(panel)) {
-            case FeatureId::MainWindow:
-                presenter = new MainWindowPresenter(panel, panelView, view, this);
-                break;
-            case FeatureId::Connection:
-                presenter = new ConnectionPresenter(panel, panelView, view, this);
-                break;
-            case FeatureId::Visualization:
-                presenter = new VisualizationPresenter(panel, panelView, view, this);
-                break;
-            case FeatureId::Model:
-                presenter = new ModelPresenter(panel, panelView, view, this);
-                break;
-            case FeatureId::Tracking:
-                presenter = new TrackingPresenter(panel, panelView, view, this);
-                break;
+        PanelPresenter *p = nullptr;
+        switch (panel) {
+        case PanelId::Main:
+            p = new MainWindowPresenter(panel, v, view, this);
+            break;
+        case PanelId::Connection:
+        case PanelId::ChannelCalibration:
+            p = new ConnectionPresenter(panel, v, view, this);
+            break;
+        case PanelId::Visualization:
+        case PanelId::ScenePanel:
+        case PanelId::InfoPanel:
+            p = new VisualizationPresenter(panel, v, view, this);
+            break;
+        case PanelId::ModelPanel:
+        case PanelId::KeyPointEdit:
+        case PanelId::KeyPointSelect:
+            p = new ModelPanelPresenter(panel, v, view, this);
+            break;
+        case PanelId::HardwareData:
+            p = new HardwareDataPresenter(panel, v, view, this);
+            break;
         }
-        m_presenters.insert(index, presenter);
-        connect(presenter, &PanelPresenter::requestReady, this,
-                &WorkbenchPresenter::backendRequest);
-        connect(presenter, &PanelPresenter::statusChanged, this, &WorkbenchPresenter::showStatus);
+        m_presenters.insert(int(panel), p);
+        p->setModel(model);
+        connect(p, &PanelPresenter::statusChanged, this, &WorkbenchPresenter::showStatus);
     }
-
-}
-
-void WorkbenchPresenter::setBackends(WorkbenchBackend *backends) {
-    if (m_backends == backends)
-        return;
-    if (m_backends)
-        disconnect(m_backends, nullptr, this, nullptr);
-        
-    m_backends = backends;
-    if (backends) {
-        connect(backends, &WorkbenchBackend::backendChanged, this,
-                &WorkbenchPresenter::refreshBackend);
-        connect(backends, &QObject::destroyed, this, &WorkbenchPresenter::registryDestroyed);
+    if (model) {
+        connect(model, &application::WorkbenchModel::messageChanged, this,
+                &WorkbenchPresenter::showStatus);
+        connect(model, &application::WorkbenchModel::stateChanged, this,
+                [this] { m_view->setModelAvailable(m_model && m_model->state().hasModel); });
     }
-    for (int feature = int(FeatureId::MainWindow); feature <= int(FeatureId::Tracking); ++feature)
-        refreshBackend(FeatureId(feature));
+    m_view->setModelAvailable(model && model->state().hasModel);
+    m_refreshTimer.setInterval(100);
+    connect(&m_refreshTimer, &QTimer::timeout, this, &WorkbenchPresenter::refreshDisplays);
+    m_refreshTimer.start();
 }
-
-void WorkbenchPresenter::refreshBackend(FeatureId feature) {
-    for (auto it = m_presenters.constBegin(); it != m_presenters.constEnd(); ++it)
-        if (featureForPanel(PanelId(it.key())) == feature)
-            it.value()->setBackend(m_backends ? m_backends->backend(feature) : nullptr);
+void WorkbenchPresenter::initialize() {
+    for (auto *p : m_presenters)
+        p->initialize();
+    if (m_model)
+        m_model->initialize();
 }
-
-void WorkbenchPresenter::registryDestroyed() {
-    if (m_backends)
-        return;
-    for (auto *presenter : m_presenters)
-        presenter->setBackend(nullptr);
-    showStatus(tr("后端适配器已断开"));
-}
-
-void WorkbenchPresenter::execute(PanelId panel, const QString &action) {
-    if (auto *presenter = m_presenters.value(int(panel), nullptr))
+void WorkbenchPresenter::execute(PanelId p, const QString &action) {
+    if (auto *presenter = m_presenters.value(int(p)))
         presenter->execute(action);
 }
-
-void WorkbenchPresenter::showStatus(const QString &message) {
+void WorkbenchPresenter::refreshDisplays() {
+    for (auto *p : m_presenters)
+        p->poll();
+}
+void WorkbenchPresenter::showStatus(const QString &s) {
     if (auto *view = m_view->panelView(PanelId::Main))
-        view->showStatus(message);
+        view->showStatus(s);
 }
 } // namespace classic
 } // namespace ui

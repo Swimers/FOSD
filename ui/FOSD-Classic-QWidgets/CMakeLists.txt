@@ -1,22 +1,15 @@
 find_package(Qt5 5.12 REQUIRED COMPONENTS Widgets PrintSupport)
 
 add_library(fosd_classic_contracts STATIC
-    common/UiTypes.h common/UiTypes.cpp common/IView.h common/ViewEvents.h common/IBackend.h
-    common/WorkbenchServices.h
+    common/UiTypes.h common/IView.h common/ViewEvents.h
 )
 target_include_directories(fosd_classic_contracts PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_link_libraries(fosd_classic_contracts PUBLIC Qt5::Core)
 
-add_library(fosd_classic_backends STATIC
-    common/FeatureBackend.h common/FeatureBackend.cpp
-    application/WorkbenchBackend.h application/WorkbenchBackend.cpp
-    features/mainwindow/backends/MainWindowBackend.h features/mainwindow/backends/MainWindowBackend.cpp
-    features/connection/backends/ConnectionBackend.h features/connection/backends/ConnectionBackend.cpp
-    features/visualization/backends/VisualizationBackend.h features/visualization/backends/VisualizationBackend.cpp
-    features/visualization/backends/ModelBackend.h features/visualization/backends/ModelBackend.cpp
-    features/data/backends/TrackingBackend.h features/data/backends/TrackingBackend.cpp
-)
-target_link_libraries(fosd_classic_backends PUBLIC fosd_classic_contracts)
+add_library(fosd_classic_model STATIC model/WorkbenchModel.h model/WorkbenchModel.cpp model/WorkbenchMarkers.cpp)
+target_include_directories(fosd_classic_model PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+target_link_libraries(fosd_classic_model PUBLIC fosd_protocol fosd_calculation fosd_visualization)
+set_target_properties(fosd_classic_contracts PROPERTIES LINKER_LANGUAGE CXX)
 
 add_library(fosd_classic_presenters STATIC
     common/PanelPresenter.h common/PanelPresenter.cpp
@@ -24,11 +17,11 @@ add_library(fosd_classic_presenters STATIC
     features/mainwindow/presenters/MainWindowPresenter.h features/mainwindow/presenters/MainWindowPresenter.cpp
     features/connection/presenters/ConnectionPresenter.h features/connection/presenters/ConnectionPresenter.cpp
     features/visualization/presenters/VisualizationPresenter.h features/visualization/presenters/VisualizationPresenter.cpp
-    features/visualization/presenters/ModelPresenter.h features/visualization/presenters/ModelPresenter.cpp
+    features/visualization/presenters/ModelPanelPresenter.h features/visualization/presenters/ModelPanelPresenter.cpp
     features/visualization/views/dialogs/sceneColorDialog.ui
-    features/data/presenters/TrackingPresenter.h features/data/presenters/TrackingPresenter.cpp
+    features/data/presenters/HardwareDataPresenter.h features/data/presenters/HardwareDataPresenter.cpp
 )
-target_link_libraries(fosd_classic_presenters PUBLIC fosd_classic_backends Qt5::Widgets)
+target_link_libraries(fosd_classic_presenters PUBLIC fosd_classic_contracts fosd_classic_model Qt5::Widgets)
 set_target_properties(fosd_classic_presenters PROPERTIES
     AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/features/visualization/views/dialogs")
 
@@ -47,6 +40,7 @@ add_library(fosd_classic_widgets STATIC
     common/FormBinding.h common/FormBinding.cpp common/ViewFactory.h common/ViewFactory.cpp
     common/CoordinateText.h common/UiResources.h common/UiResources.cpp resources/classic.qrc
     application/WorkbenchView.h application/WorkbenchView.cpp
+    features/connection/views/ConnectionRenderers.h features/connection/views/ConnectionRenderers.cpp
     features/connection/views/connectwindow.h features/connection/views/connectwindow.cpp features/connection/views/connectwindow.ui
     features/connection/views/channlCalibration.h features/connection/views/channlCalibration.cpp features/connection/views/channlCalibration.ui
     features/visualization/views/disp3dwindow.h features/visualization/views/disp3dwindow.cpp features/visualization/views/disp3dwindow.ui
@@ -58,7 +52,7 @@ add_library(fosd_classic_widgets STATIC
     features/data/views/dispdata.h features/data/views/dispdata.cpp features/data/views/dispdata.ui
     features/mainwindow/views/oldmainwindow.h features/mainwindow/views/oldmainwindow.cpp features/mainwindow/views/oldmainwindow.ui
 )
-target_link_libraries(fosd_classic_widgets PUBLIC fosd_classic_presenters fosd_classic_controls Qt5::Widgets)
+target_link_libraries(fosd_classic_widgets PUBLIC fosd_classic_contracts fosd_classic_controls Qt5::Widgets)
 
 if(FOSD_BUILD_WORKBENCH_APP)
     add_subdirectory(application)

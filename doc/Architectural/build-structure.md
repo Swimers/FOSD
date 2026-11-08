@@ -1,5 +1,7 @@
 # FOSD 构建结构说明
 
+> 2026-11-08：Classic 已迁移为三层 MVP；旧 Backend 请求转发链已删除，当前边界与测试命名见 [MVP 迁移指南](classic-mvp-ui-backend-connection.md)。
+
 本文档描述 FOSD 项目当前的 CMake 构建组织方式：有哪些构建目标、它们之间如何链接、如何配置与编译，以及新增模块时应遵循的约定。
 
 > 适用范围：仓库根目录 `FOSD-ReArc` 分支下的当前状态。文中所有路径均相对于仓库根目录。

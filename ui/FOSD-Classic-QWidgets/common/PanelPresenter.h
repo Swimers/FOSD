@@ -1,44 +1,49 @@
 #pragma once
 #include "FOSD-Classic-QWidgets/common/IView.h"
-#include "FOSD-Classic-QWidgets/common/IBackend.h"
-#include <QHash>
+#include "FOSD-Classic-QWidgets/model/WorkbenchModel.h"
 #include <QPointer>
 namespace fosd {
 namespace ui {
 namespace classic {
 class IWorkbenchView;
-// Shared request lifecycle only; feature-specific actions belong in subclasses.
 class PanelPresenter : public QObject {
     Q_OBJECT
-public:
-    PanelPresenter(PanelId panel, IView *view, IWorkbenchView *host = nullptr,
-                   QObject *parent = nullptr);
-    void setBackend(IBackend *backend);
-    void cancelPending();
-public slots:
+  public:
+    PanelPresenter(PanelId, IView *, IWorkbenchView *host = nullptr, QObject *parent = nullptr);
+    void setModel(fosd::application::WorkbenchModel *model);
+    virtual void initialize();
+    virtual void refresh() {
+    }
+    virtual void poll() {
+    }
+  public slots:
     void execute(const QString &action);
-    void complete(const fosd::ui::classic::UiResponse &response);
-signals:
-    void requestReady(const fosd::ui::classic::UiRequest &request);
+  signals:
     void statusChanged(const QString &message);
+    void actionFinished(const QString &action, bool success, const QString &message);
 
-protected:
-    virtual bool localAction(const UiRequest &request);
-    virtual bool prepareRequest(UiRequest &request);
-    virtual bool isSensitiveAction(const QString &action) const;
-    bool showPanel(PanelId panel);
+  protected:
+    virtual bool localAction(const QString &, const QVariantMap &);
+    virtual bool prepareAction(const QString &, QVariantMap &) {
+        return true;
+    }
+    virtual bool handleAction(const QString &, const QVariantMap &, QString &, QVariantMap &) {
+        return false;
+    }
+    virtual void bindModel() {
+    }
+    void present(PanelId, const QVariantMap &);
+    void presentOwn(PanelId p, const QVariantMap &f) {
+        if (p == m_panel)
+            m_view->applyFields(f);
+    }
+    bool showPanel(PanelId);
+    static QString text(const QVariantMap &fields, const QString &name);
+    static int index(const QVariantMap &fields, const QString &name);
     PanelId m_panel;
     IView *m_view;
     IWorkbenchView *m_host;
-private slots:
-    void actionTriggered(fosd::ui::classic::PanelId panel, const QString &action);
-    void receiveResponse(const fosd::ui::classic::UiResponse &response);
-    void present(fosd::ui::classic::PanelId panel, const QVariantMap &fields);
-    void backendDestroyed();
-
-private:
-    QPointer<IBackend> m_backend;
-    QHash<quint64, QString> m_pending;
+    QPointer<fosd::application::WorkbenchModel> m_model;
 };
 } // namespace classic
 } // namespace ui

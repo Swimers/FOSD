@@ -1,5 +1,7 @@
 # FOSD-Classic-QWidgets 业务闭环对接
 
+> 2026-11-08：Classic 已迁移为三层 MVP；旧 Backend 请求转发链已删除，当前边界与测试命名见 [MVP 迁移指南](classic-mvp-ui-backend-connection.md)。
+
 Classic 业务闭环由 `ui/FOSD-Classic-QWidgets/application` 组合，`apps/FOSD-Classic-QWidgets` 只保留启动入口与 EXE 构建，使用 `fosd-widgets` 预设，入口为 `build/fosd-widgets/bin/Release/FOSD-Classic-QWidgets.exe`。`apps/FOSD-Win` 继续使用共享界面库，不接入 Classic 应用服务。
 
 ## 架构与线程
@@ -7,7 +9,7 @@ Classic 业务闭环由 `ui/FOSD-Classic-QWidgets/application` 组合，`apps/FO
 ```text
 .ui / View → FormBinding → 功能 Presenter → 功能 FeatureBackend
                                                    ↓ 注入 WorkbenchServices
-                                         WorkbenchRuntime（应用适配层）
+                                         WorkbenchModel（应用适配层）
                                           ├─ ProtocolControl
                                           │   └─ ConnectWorker + ProtocolWorker：同一通信线程
                                           │       └─ FrameRepository：只读波长快照
@@ -19,7 +21,7 @@ Classic 业务闭环由 `ui/FOSD-Classic-QWidgets/application` 组合，`apps/FO
                                    WorkbenchRenderSurface.ui / QVTKOpenGLNativeWidget
 ```
 
-Presenter 只处理界面流程、文件选择、请求及响应。七类 Backend 保留各自的 panel 范围检查，通过 `WorkbenchBackend::setServices()` 使用同一套应用服务；ClassicWorkbench 可通过 `setUiBackend()` 替换单个 Backend。默认适配器与 WorkbenchRuntime 均在 GUI 线程，端口不应跨线程直接调用。
+Presenter 只处理界面流程、文件选择、请求及响应。七类 Backend 保留各自的 panel 范围检查，通过 `WorkbenchBackend::setServices()` 使用同一套应用服务；ClassicWorkbench 可通过 `setUiBackend()` 替换单个 Backend。默认适配器与 WorkbenchModel 均在 GUI 线程，端口不应跨线程直接调用。
 
 `WorkbenchServices` 只依赖 Qt Core，不向 View 或 Presenter 暴露 Control、VTK 或工作线程。运行服务分为生命周期、通信、显示、数据展示四个实现文件。没有服务或服务不识别的操作统一交回 `FeatureBackend::reportUnavailable()`；已实现操作的输入/执行错误返回具体错误。
 
@@ -77,6 +79,6 @@ cmake --build --preset fosd-widgets-release
 ctest --preset fosd-widgets-release
 ```
 
-`test_workbench_runtime` 验证真实共享 Controls、无业务操作反馈、Plate/HYY 切换、无效标定保留、模型清除及 CSV/SQLite 三类写入。`test_workbench_main` 使用 ClassicWorkbench 与真实 Designer 表单，点击工具栏、UDP 和存储控件，经 Presenter/Backend 完成 UDP → 解析 → Plate IFE → 波长表/VTK 位移 → CSV；同时核对窗口指针、场景设置及不可用操作回显。应用适配位于 `ui/FOSD-Classic-QWidgets/application/runtime`，测试源文件和注册位于 `ui/FOSD-Classic-QWidgets/tests`，完整装配与这些集成测试仅 Classic 版本启用；FOSD-Win 不构建或链接它们。
+`test_workbench_runtime` 验证真实共享 Controls、无业务操作反馈、Plate/HYY 切换、无效标定保留、模型清除及 CSV/SQLite 三类写入。`test_workbench_main` 使用 ClassicWorkbench 与真实 Designer 表单，点击工具栏、UDP 和存储控件，经 Presenter/Backend 完成 UDP → 解析 → Plate IFE → 波长表/VTK 位移 → CSV；同时核对窗口指针、场景设置及不可用操作回显。应用适配位于 `ui/FOSD-Classic-QWidgets/model`，测试源文件和注册位于 `ui/FOSD-Classic-QWidgets/tests`，完整装配与这些集成测试仅 Classic 版本启用；FOSD-Win 不构建或链接它们。
 
 上述测试不替代真实串口/设备验收；基础 UDP/TCP 拆包与各协议仍由原有模块测试覆盖。Debug 需另配与 Debug 库匹配的运行 DLL。
