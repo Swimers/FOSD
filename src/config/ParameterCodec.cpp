@@ -104,6 +104,8 @@ void ParameterCodec<Calculation::CalculationConfiguration>::fields(
     archive.field("channelCalibration.channelIndices", value.channelCalibration.channelIndices);
     archive.field("channelCalibration.calibrationFactors",
                   value.channelCalibration.calibrationFactors);
+    archive.field("channelCalibration.calibrationOffsets",
+                  value.channelCalibration.calibrationOffsets);
 }
 
 QString ParameterCodec<storage::StorageConfiguration>::section() {

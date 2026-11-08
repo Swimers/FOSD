@@ -121,7 +121,8 @@ bool WorkbenchRuntime::handleRequest(const UiRequest &request, UiResponse *respo
     response->id = request.id;
     response->panel = request.panel;
     const bool handled = connectionAction(request, response) ||
-                         visualizationAction(request, response) || dataAction(request, response);
+                         visualizationAction(request, response) || 
+                         dataAction(request, response);
     if (handled && !response->success && !response->fields.isEmpty())
         emit presentationChanged(request.panel, response->fields);
     return handled;

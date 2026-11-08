@@ -184,15 +184,33 @@ private slots:
   panel->findChild<QPushButton *>("pbtn_ChannelCalibration")->click(); QTRY_VERIFY(calibration->isVisible());
   auto *order=calibration->findChild<QLineEdit *>("edit_Sensor1Order");
   auto *factor=calibration->findChild<QLineEdit *>("edit_Sensor1Para"); QVERIFY(order && factor);
+  for(int i=1;i<=12;++i) {
+   auto *offset=calibration->findChild<QLineEdit *>(QString("edit_Sensor%1Offset").arg(i)); QVERIFY(offset);
+   QTRY_COMPARE(offset->text(),QString("0")); // Legacy configurations have empty offsets.
+   offset->setText(QString::number((i-6)*0.25));
+  }
+  auto *offset=calibration->findChild<QLineEdit *>("edit_Sensor1Offset");
   QTRY_COMPARE(order->text(),QString("1")); order->setText("2"); factor->setText("1.75");
   QSignalSpy accepted(&w.runtime().calculation(),&Calculation::CalculationControl::configurationAccepted);
   calibration->findChild<QPushButton *>("pbtn_SenerSet")->click(); QTRY_COMPARE(accepted.count(),1);
   Calculation::CalculationConfiguration saved; QVERIFY(config::ParameterStore().read(&saved,true,&error));
   QCOMPARE(saved.channelCalibration.channelIndices[0],1); QCOMPARE(saved.channelCalibration.calibrationFactors[0],1.75);
+  QCOMPARE(saved.channelCalibration.calibrationOffsets.size(),size_t(12));
+  for(int i=0;i<12;++i)QCOMPARE(saved.channelCalibration.calibrationOffsets[size_t(i)],(i-5)*0.25);
+  for(const auto &invalid:{"bad","nan","inf","1e999",""}) {
+   offset->setText(invalid); calibration->findChild<QPushButton *>("pbtn_SenerSet")->click(); QTest::qWait(60);
+   QCOMPARE(accepted.count(),1);
+   QVERIFY(config::ParameterStore().read(&saved,true,&error)); QCOMPARE(saved.channelCalibration.calibrationOffsets[0],-1.25);
+  }
+  offset->setText("-1.25");
   order->setText("99"); calibration->findChild<QPushButton *>("pbtn_SenerSet")->click(); QTest::qWait(100);
   QCOMPARE(accepted.count(),1); QVERIFY(config::ParameterStore().read(&saved,true,&error)); QCOMPARE(saved.channelCalibration.channelIndices[0],1);
+  offset->setText("999");
   calibration->findChild<QPushButton *>("pbtn_SenerCancel")->click(); QTRY_VERIFY(!calibration->isVisible());
   panel->findChild<QPushButton *>("pbtn_ChannelCalibration")->click(); QTRY_COMPARE(order->text(),QString("2"));
+  QTRY_COMPARE(offset->text(),QString("-1.25"));
+  for(int i=1;i<=12;++i)
+   QCOMPARE(calibration->findChild<QLineEdit *>(QString("edit_Sensor%1Offset").arg(i))->text().toDouble(),(i-6)*0.25);
   calibration->grab().save("channel-calibration.png"); calibration->close();
   tabs->setCurrentWidget(wave); QVERIFY(filter->isVisible());
   for(int i=1;i<=16;++i)panel->findChild<QCheckBox *>(QString("ckbox_CH%1").arg(i))->setChecked(i==16);

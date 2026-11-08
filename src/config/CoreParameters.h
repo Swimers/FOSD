@@ -60,6 +60,7 @@ struct CalibrationStrainData {
 struct CalibrationChannelData {
     std::vector<int> channelIndices;        // 校准通道索引数组
     std::vector<double> calibrationFactors; // 校准因子数组
+    std::vector<double> calibrationOffsets; // 按输出通道顺序，在比例运算后相加；单位与应变相同。空数组表示全零偏置。
 };
 
 enum class CalculationAlgorithm { HYY };
@@ -172,7 +173,8 @@ struct KeyPointStyle {
 
 struct PickingSettings {
     bool enabled = true;
-    bool onlyKeyPoints = false; // Legacy INI field; interactive selection always requires KeyPoints.
+    bool onlyKeyPoints =
+        false; // Legacy INI field; interactive selection always requires KeyPoints.
     bool clearOnCameraInteraction = false; // 标志位，旋转/平移/缩放相机时，是否自动取消当前选中的点
     double tolerance = 0.009;     // Fraction of render-window diagonal (VTK).
     int clickTolerancePixels = 4; // Device pixels, not Qt logical pixels.

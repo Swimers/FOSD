@@ -53,7 +53,8 @@ double calibratedStrain(int frame, int source) {
 Strain selectedStrains(int frame) {
     Strain strains;
     for (int index = 0; index < recordCount; ++index)
-        strains.push_back(calibratedStrain(frame, recordCount - 1 - index) * (index + 1));
+        strains.push_back(calibratedStrain(frame, recordCount - 1 - index) * (index + 1) +
+                          (index - 5) * 0.25);
     return strains;
 }
 
@@ -82,6 +83,7 @@ CalculationConfiguration calibration() {
         config.strainCalibration.originalWavelength.push_back(reference(index));
         config.channelCalibration.channelIndices.push_back(recordCount - 1 - index);
         config.channelCalibration.calibrationFactors.push_back(index + 1);
+        config.channelCalibration.calibrationOffsets.push_back((index - 5) * 0.25);
     }
     return config;
 }
@@ -181,7 +183,9 @@ class EndToEndTests final : public QObject {
     Q_OBJECT
     ParameterTestIsolation m_parameterIsolation;
 private slots:
-    void init() { m_parameterIsolation.reset(); }
+    void init() {
+        m_parameterIsolation.reset();
+    }
 
     void communicationToStorage_data();
     void communicationToStorage();

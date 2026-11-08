@@ -37,6 +37,9 @@ bool StrainCalibration::checkPara() {
         return fail(QStringLiteral("Wavelength references and channel mapping must not be empty"));
     if (channels.channelIndices.size() != channels.calibrationFactors.size())
         return fail(QStringLiteral("Channel indices and calibration factors size mismatch"));
+    if (!channels.calibrationOffsets.empty() &&
+        channels.channelIndices.size() != channels.calibrationOffsets.size())
+        return fail(QStringLiteral("Channel indices and calibration offsets size mismatch"));
     if (!std::isfinite(parameters.A) || parameters.A == 0.0 || !std::isfinite(parameters.B) ||
         !std::isfinite(parameters.calibrationFactor) || parameters.calibrationFactor <= 0.0)
         return fail(QStringLiteral(
@@ -51,6 +54,9 @@ bool StrainCalibration::checkPara() {
         const double factor = channels.calibrationFactors[index];
         if (!std::isfinite(factor) || factor <= 0.0)
             return fail(QStringLiteral("Channel calibration factors must be positive and finite"));
+        if (!channels.calibrationOffsets.empty() &&
+            !std::isfinite(channels.calibrationOffsets[index]))
+            return fail(QStringLiteral("Channel calibration offsets must be finite"));
     }
     return true;
 }
@@ -101,11 +107,13 @@ Strain StrainCalibration::rearrangeCalibration(const Strain &calibratedStrain) {
             fail(QStringLiteral("Strain values must be finite"));
             return {};
         }
-    Strain rearrangedStrain(m_calibrationChannelData.channelIndices.size());
+    const auto &channels = m_calibrationChannelData;
+    const bool hasOffsets = !channels.calibrationOffsets.empty();
+    Strain rearrangedStrain(channels.channelIndices.size());
     for (size_t i = 0; i < rearrangedStrain.size(); ++i) {
         rearrangedStrain[i] =
-            calibratedStrain[m_calibrationChannelData.channelIndices[i]] *
-            m_calibrationChannelData.calibrationFactors[i]; //根据通道索引和校准因子重新排列应变
+            calibratedStrain[channels.channelIndices[i]] * channels.calibrationFactors[i] +
+            (hasOffsets ? channels.calibrationOffsets[i] : 0.0);
         if (!std::isfinite(rearrangedStrain[i])) {
             fail(QStringLiteral("Channel calibration overflowed"));
             return {};

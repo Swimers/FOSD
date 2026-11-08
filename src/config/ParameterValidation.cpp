@@ -1,5 +1,6 @@
 #include "ParameterCodec.h"
 #include <QSet>
+#include <cmath>
 
 namespace fosd {
 namespace config {
@@ -30,14 +31,18 @@ bool validateCoreSection(const QString &group, const ConfigSection &values, bool
         const auto baseline = values["strainCalibration.originalWavelength"].toStringList();
         const auto indices = values["channelCalibration.channelIndices"].toStringList();
         const auto factors = values["channelCalibration.calibrationFactors"].toStringList();
+        const auto offsets = values["channelCalibration.calibrationOffsets"].toStringList();
         ok = (values["algorithm"].toInt() == 0) &&
              values["strainCalibration.calibrationFactor"].toDouble() > 0 &&
-             indices.size() == factors.size();
+             indices.size() == factors.size() &&
+             (offsets.isEmpty() || offsets.size() == indices.size());
         for (const auto &s : baseline)
             ok = ok && s.toDouble() > 0;
         for (int i = 0; i < indices.size(); ++i)
             ok = ok && indices[i].toInt() >= 0 && indices[i].toInt() < baseline.size() &&
                  factors[i].toDouble() > 0;
+        for (const auto &offset : offsets)
+            ok = ok && std::isfinite(offset.toDouble());
         if (ready)
             ok = ok && !baseline.isEmpty() && !indices.isEmpty() &&
                  values["strainCalibration.A"].toDouble() != 0;

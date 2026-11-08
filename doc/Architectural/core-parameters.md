@@ -19,7 +19,7 @@
 | INI 分区 | 结构 | 初始化与更新入口 |
 | --- | --- | --- |
 | communication.serial / udp / tcp | SerialConfig、UdpConfig、TcpConfig | ConnectControl 构造时补齐；openSerial/openUdp/openTcp 校验后保存，再提交设备请求 |
-| calculation | CalculationConfiguration，包含应变标定和通道排列 | CalculationWorker 初始化时补齐；configure 通过标定和算法工厂校验后保存，再替换当前算法配置 |
+| calculation | CalculationConfiguration，包含应变标定、通道排列、比例和偏置 | CalculationWorker 初始化时补齐；configure 通过标定和算法工厂校验后保存，再替换当前算法配置 |
 | storage | StorageConfiguration | StorageControl 构造时补齐；StorageWorker::start 验证并成功打开写入器后保存，随后启动会话 |
 | visualization.scalar | ScalarColorSettings | VisualizationControl 构造读取和应用；setScalarColorSettings 更新 |
 | visualization.axes / grid / background / world / camera | 对应 Settings | 构造读取和应用；对应 set*Settings 更新，显隐和背景快捷入口同样转入这些设置方法 |
@@ -52,6 +52,8 @@ if (!store.write(tcp, true, &error)) {
 ```
 
 initialize 按结构初值补齐一个分区，read 只读取，write 以完整结构替换其所属分区。所有调用返回 bool，可选 error 获取原因。业务 Control 已在相应入口调用这些方法，业务调用方无需额外再写一遍 INI。
+
+通道偏置键为 `channelCalibration.calibrationOffsets`，按输出通道顺序与 `channelIndices`、`calibrationFactors` 对应。例如 `1.5, -0.25` 表示两个输出通道在比例运算后分别加 1.5 和 -0.25。空列表（默认 `@Invalid()`）表示全零偏置；非空时必须与映射等长且全部有限。旧 INI 缺失该键时通过 initialize 补齐，不改写已有通道配置；read 保持严格读取。此参数设置与计算示例见 [解算与模型对接](calculation-integration.md)。
 
 ## 校验及失败处理
 

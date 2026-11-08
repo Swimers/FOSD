@@ -35,12 +35,18 @@
             <bool>true</bool>
           </property>
           <property name="text">
-            <string>配置 HYY 的12路应变输入。波长源序号从1开始，倍率须为正数；应用前需完成置零或读取有效标定配置。</string>
+            <string>配置 HYY 的12路应变输入，源序号从1开始。输出应变 = 源应变 × 校准倍率 + 偏置；倍率为正数，偏置允许正负数，默认0，单位与应变一致。应用前需完成置零或读取有效标定配置。</string>
+          </property>
+          <property name="minimumSize">
+            <size>
+              <width>640</width>
+              <height>0</height>
+            </size>
           </property>
         </widget>
       </item>
       <item>
-        <layout class="QGridLayout" name="layout_ChannelFactors" columnstretch="0,1,1" rowstretch="1,1,1,1,1,1,1,1,1,1,1,1,1">
+        <layout class="QGridLayout" name="layout_ChannelFactors" columnstretch="0,1,1,1" rowstretch="1,1,1,1,1,1,1,1,1,1,1,1,1">
           <item row="0" column="0">
             <widget class="QLabel" name="label_InputHeader">
               <property name="text">
@@ -311,6 +317,133 @@
             <widget class="QLineEdit" name="edit_Sensor12Para">
               <property name="text">
                 <string>1</string>
+              </property>
+            </widget>
+          </item>
+          <item row="0" column="3">
+            <widget class="QLabel" name="label_OffsetHeader">
+              <property name="text">
+                <string>偏置（应变）</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="3">
+            <widget class="QLineEdit" name="edit_Sensor1Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="2" column="3">
+            <widget class="QLineEdit" name="edit_Sensor2Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="3" column="3">
+            <widget class="QLineEdit" name="edit_Sensor3Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="4" column="3">
+            <widget class="QLineEdit" name="edit_Sensor4Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="5" column="3">
+            <widget class="QLineEdit" name="edit_Sensor5Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="6" column="3">
+            <widget class="QLineEdit" name="edit_Sensor6Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="7" column="3">
+            <widget class="QLineEdit" name="edit_Sensor7Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="8" column="3">
+            <widget class="QLineEdit" name="edit_Sensor8Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="9" column="3">
+            <widget class="QLineEdit" name="edit_Sensor9Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="10" column="3">
+            <widget class="QLineEdit" name="edit_Sensor10Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="11" column="3">
+            <widget class="QLineEdit" name="edit_Sensor11Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
+              </property>
+            </widget>
+          </item>
+          <item row="12" column="3">
+            <widget class="QLineEdit" name="edit_Sensor12Offset">
+              <property name="text">
+                <string>0</string>
+              </property>
+              <property name="toolTip">
+                <string>按此解算输入顺序，在源应变乘以校准倍率后相加；单位与应变一致，允许有限正负数，默认 0</string>
               </property>
             </widget>
           </item>

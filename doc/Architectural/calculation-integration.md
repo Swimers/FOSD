@@ -73,12 +73,32 @@ if (result) {
 
 ```text
 calibrated[i] = calibrationFactor * (wavelength[i] - originalWavelength[i]) / A + B
-strain[j] = calibrated[channelIndices[j]] * calibrationFactors[j]
+strain[j] = calibrated[channelIndices[j]] * calibrationFactors[j] + calibrationOffsets[j]
 ```
 
 `originalWavelength` 与输入记录数量必须完全相同；`channelIndices` 是解析器 records 的零基位置索引，不是设备通道号。应用必须保证参考波长、映射和输入记录身份、顺序一致；若设备更改通道/传感器排列，应同步更新配置。通道映射可以选择输入的子集，输出数量等于映射数量。
 
-`A` 必须有限且非零；B、所有波长、因子和标定结果必须有限。波长与因子要求正数。参数采用 double，初始化会恢复默认系数 0.00075、清空参考与映射，并将 A/B 复位为零。未配置状态不能计算。
+`CalibrationChannelData::calibrationOffsets` 是每个输出通道的加性偏置，与映射、比例因子按输出位置 `j` 对齐，单位与标定后的应变一致；允许正值、负值和零，与全局波长转换中的 `B` 分开应用。偏置默认空数组，计算时等价于全部为零，兼容未提供偏置的调用方。显式提供偏置时长度必须与 `channelIndices` 一致，且所有值必须有限；长度不匹配、NaN/Inf 均拒绝配置，乘加结果溢出则拒绝本帧。
+
+```cpp
+fosd::Calculation::CalculationConfiguration configuration;
+// 同时设置有效的参考波长、calibrationFactor、A/B。
+configuration.strainCalibration.originalWavelength = {1000, 2000, 3000};
+configuration.strainCalibration.calibrationFactor = 2;
+configuration.strainCalibration.A = 4;
+configuration.strainCalibration.B = 3;
+configuration.channelCalibration.channelIndices = {2, 0};
+configuration.channelCalibration.calibrationFactors = {2, 3};
+configuration.channelCalibration.calibrationOffsets = {1.5, -0.25};
+calculation.setConfiguration(configuration);
+// 输入 {1002, 2004, 3006} -> 全量应变 {4, 5, 6} -> 通道应变 {13.5, 11.75}。
+```
+
+单独使用标定器时通过 `setCalibrationChannelData()` 设置上述结构，再调用 `checkPara()`；setter 沿用整体赋值行为，校验在显式检查和计算入口执行。使用 `CalculationControl::setConfiguration()` 时，解算线程先校验、持久化完整配置，再激活；非法更新不改变已生效的配置或 INI。`calibratedStrains` 保留偏置前的全量波长标定结果，`selectedStrains`、IFE 输入、结果 `strains` 和存储的 selected 阶段均包含通道偏置。清空 `calibrationOffsets` 可取消所有通道偏置。
+
+INI 使用 `[calculation]` 下的 `channelCalibration.calibrationOffsets` 字符串列表。源码默认模板为空列表 `@Invalid()`；构建部署后只写运行时 `parameters.ini`。旧文件缺少该键时，`ParameterStore::initialize()` 补入零偏置默认值，保留已有基线、映射及比例；`read()` 只读取，不负责补齐。本次仅增加后端参数，前端没有新增输入控件。
+
+`A` 必须有限且非零；B、所有波长、因子、偏置和标定结果必须有限。波长与因子要求正数，偏置没有正数限制。参数采用 double，初始化会恢复默认系数 0.00075、清空参考、映射和偏置，并将 A/B 复位为零。未配置状态不能计算。
 
 `CalculationConfiguration` 只包含 `strainCalibration` 和 `channelCalibration`。IFE 作为黑箱调用，不再提供自由度映射、约束值或矩阵维度等业务配置；算法内部数据直接从计算接口传递到插值接口。控制层不会试算、检查或拒绝算法的中间数组，也不验收算法或插值的物理正确性。
 

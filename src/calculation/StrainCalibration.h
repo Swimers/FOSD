@@ -14,9 +14,6 @@ namespace Calculation {
 using Strain = std::vector<double>;     // 节点自由度数组
 using Wavelength = std::vector<double>; // 波长数组
 
-
-
-
 class StrainCalibration final : public QObject {
     Q_OBJECT
 public:
@@ -24,6 +21,8 @@ public:
     ~StrainCalibration() = default;
 
     void initializeCalibration();
+    // 设置映射、比例及偏置；偏置为空时按零处理，否则长度须与映射一致。
+    // 参数在 checkPara() 和计算入口校验，不接受非有限偏置。
     void setCalibrationChannelData(const CalibrationChannelData &channelData);
     void setCalibrationStrainData(const CalibrationStrainData &strainData);
     CalibrationChannelData getCalibrationChannelData() const;

@@ -24,19 +24,23 @@ bool WorkbenchRuntime::dataAction(const UiRequest &request, UiResponse *response
         auto configuration = m_configuration;
         configuration.channelCalibration.channelIndices.clear();
         configuration.channelCalibration.calibrationFactors.clear();
+        configuration.channelCalibration.calibrationOffsets.clear();
         for (int i = 1; i <= 12; ++i) {
-            bool indexOk = false, factorOk = false;
+            bool indexOk = false, factorOk = false, offsetOk = false;
             const int source =
                 text(f, QStringLiteral("edit_Sensor%1Order").arg(i)).toInt(&indexOk) - 1;
             const double factor =
                 text(f, QStringLiteral("edit_Sensor%1Para").arg(i)).toDouble(&factorOk);
-            if (!indexOk || !factorOk) {
+            const double offset =
+                text(f, QStringLiteral("edit_Sensor%1Offset").arg(i)).toDouble(&offsetOk);
+            if (!indexOk || !factorOk || !offsetOk || !std::isfinite(offset)) {
                 response->success = false;
-                response->message = tr("传感器序号和系数必须为有效数值");
+                response->message = tr("输入 %1：源序号、倍率和偏置必须为有效数值，偏置须为有限数值").arg(i);
                 return true;
             }
             configuration.channelCalibration.channelIndices.push_back(source);
             configuration.channelCalibration.calibrationFactors.push_back(factor);
+            configuration.channelCalibration.calibrationOffsets.push_back(offset);
         }
         response->success = configure(configuration, &response->message);
     } else if (request.panel == PanelId::HardwareData && action == "checkBox") {
@@ -61,6 +65,10 @@ void WorkbenchRuntime::publishCalibration() {
         fields[QStringLiteral("edit_Sensor%1Para").arg(i + 1)] = QString::number(
             i < int(channels.calibrationFactors.size()) ? channels.calibrationFactors[size_t(i)]
                                                         : 1.0,
+            'g', 12);
+        fields[QStringLiteral("edit_Sensor%1Offset").arg(i + 1)] = QString::number(
+            i < int(channels.calibrationOffsets.size()) ? channels.calibrationOffsets[size_t(i)]
+                                                        : 0.0,
             'g', 12);
     }
     emit presentationChanged(PanelId::ChannelCalibration, fields);

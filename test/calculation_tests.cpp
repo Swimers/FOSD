@@ -167,10 +167,13 @@ class CalculationTests : public QObject {
     Q_OBJECT
     ParameterTestIsolation m_parameterIsolation;
 private slots:
-    void init() { m_parameterIsolation.reset(); }
+    void init() {
+        m_parameterIsolation.reset();
+    }
 
     void calibrationFormulaAndSelection();
     void calibrationRejectsInvalidInputs();
+    void channelOffsetsReachWorkerAndRejectInvalidUpdates();
     void opaqueAlgorithmData();
     void workerTraversesWholeModel();
     void failuresPreservePreviousResult();
@@ -197,10 +200,19 @@ void CalculationTests::calibrationFormulaAndSelection() {
     const auto strains = calibration->applyCalibration({1002, 2004, 3006});
     QVERIFY(strains == Strain({4, 5, 6}));
     QVERIFY(calibration->rearrangeCalibration(strains) == Strain({12, 12}));
+    channels.calibrationOffsets = {1.5, -0.25};
+    calibration->setCalibrationChannelData(channels);
+    QVERIFY(calibration->checkPara());
+    QVERIFY(calibration->getCalibrationChannelData().calibrationOffsets == Strain({1.5, -0.25}));
+    QVERIFY(calibration->rearrangeCalibration(strains) == Strain({13.5, 11.75}));
+    channels.calibrationOffsets = {0, 0};
+    calibration->setCalibrationChannelData(channels);
+    QVERIFY(calibration->rearrangeCalibration(strains) == Strain({12, 12}));
     calibration->initializeCalibration();
     QVERIFY(!calibration->checkPara());
     QCOMPARE(calibration->getCalibrationStrainData().calibrationFactor, 0.00075);
     QCOMPARE(calibration->getCalibrationStrainData().A, 0.0);
+    QVERIFY(calibration->getCalibrationChannelData().calibrationOffsets.empty());
 }
 
 void CalculationTests::calibrationRejectsInvalidInputs() {
@@ -223,6 +235,29 @@ void CalculationTests::calibrationRejectsInvalidInputs() {
         calibration.setCalibrationChannelData(bad);
         QVERIFY(!calibration.checkPara());
     }
+    auto mismatched = config.channelCalibration;
+    mismatched.calibrationOffsets = {0.5};
+    calibration.setCalibrationChannelData(mismatched);
+    QVERIFY(!calibration.checkPara());
+    QVERIFY(calibration.rearrangeCalibration(Strain(12, 1.0)).empty());
+    for (double offset :
+         {std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(),
+          std::numeric_limits<double>::quiet_NaN()}) {
+        auto invalid = config.channelCalibration;
+        invalid.calibrationOffsets.assign(12, 0.0);
+        invalid.calibrationOffsets[0] = offset;
+        calibration.setCalibrationChannelData(invalid);
+        QVERIFY(!calibration.checkPara());
+    }
+    auto overflow = config.channelCalibration;
+    overflow.calibrationOffsets.assign(12, 0.0);
+    overflow.calibrationOffsets[0] = std::numeric_limits<double>::max();
+    calibration.setCalibrationChannelData(overflow);
+    QVERIFY(calibration.checkPara());
+    Strain large(12, 0.0);
+    large[0] = std::numeric_limits<double>::max();
+    QVERIFY(calibration.rearrangeCalibration(large).empty());
+    QVERIFY(calibration.lastError().contains("overflowed"));
     calibration.setCalibrationChannelData(config.channelCalibration);
     for (double value :
          {0.0, std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {
@@ -236,6 +271,45 @@ void CalculationTests::calibrationRejectsInvalidInputs() {
     calibration.setCalibrationStrainData(bad);
     QVERIFY(!calibration.checkPara());
     QVERIFY(!errors.isEmpty());
+}
+
+void CalculationTests::channelOffsetsReachWorkerAndRejectInvalidUpdates() {
+    Trace trace;
+    CalculationControl control(core::FrameRepositoryPtr(), nullptr,
+                               std::bind(translationFactory, &trace));
+    QSignalSpy configured(&control, &CalculationControl::configurationAccepted);
+    QSignalSpy hardware(&control, &CalculationControl::calibratedReady);
+    QSignalSpy results(&control, &CalculationControl::resultReady);
+    QSignalSpy errors(&control, &CalculationControl::errorOccurred);
+    auto configuration = settings();
+    configuration.channelCalibration.channelIndices = {0, 2, 1};
+    configuration.channelCalibration.calibrationFactors = {2, 3, 4};
+    configuration.channelCalibration.calibrationOffsets = {-0.5, 0.25, 0.0};
+    control.setConfiguration(configuration);
+    control.setModel(model());
+    QTRY_COMPARE(configured.count(), 1);
+    control.submitFrame(frame());
+    QTRY_COMPARE(results.count(), 1);
+    QCOMPARE(hardware.count(), 1);
+    const auto calibrated = qvariant_cast<core::CalibratedDataPtr>(hardware[0][0]);
+    QVERIFY(calibrated);
+    QCOMPARE(calibrated->calibratedStrains[0], 1.0); // Wavelength stage has no channel offset.
+    QVERIFY(calibrated->selectedStrains == QVector<double>({1.5, 0.25, 0.0}));
+    QVERIFY(control.dataModel()->latest()->strains == calibrated->selectedStrains);
+    QCOMPARE(control.dataModel()->latest()->nodeDofs[0], 1.5);
+    QCOMPARE(control.dataModel()->latest()->displacementMap.value(0)[0], 1.5);
+
+    configuration.channelCalibration.calibrationOffsets = {0.0};
+    control.setConfiguration(configuration);
+    QTRY_COMPARE(errors.count(), 1);
+    const auto error = qvariant_cast<CalculationError>(errors[0][0]);
+    QCOMPARE(error.operation, QString("configuration"));
+    QVERIFY(error.message.contains("offsets"));
+    QCOMPARE(configured.count(), 1);
+    control.submitFrame(frame(1001.0f, 2));
+    QTRY_COMPARE(results.count(), 2);
+    QCOMPARE(control.dataModel()->latest()->configurationRevision, quint64(1));
+    QCOMPARE(control.dataModel()->latest()->nodeDofs[0], 1.5);
 }
 
 void CalculationTests::opaqueAlgorithmData() {
