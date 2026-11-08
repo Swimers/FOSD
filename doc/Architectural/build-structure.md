@@ -4,6 +4,8 @@
 
 > 适用范围：仓库根目录 `FOSD-ReArc` 分支下的当前状态。文中所有路径均相对于仓库根目录。
 
+2026-11-08 Classic 目录调整：`apps/FOSD-Classic-QWidgets` 仅保留启动入口和 EXE 构建；`ui/FOSD-Classic-QWidgets/application` 管理工作台装配与运行时适配，`features` 按功能统一 View/Presenter/Backend，公共代码、控件、第三方库、资源及测试分别存放。详细目录与目标边界见 [Classic 界面说明](../../ui/FOSD-Classic-QWidgets/README.md)。
+
 ---
 
 ## 1. 目录结构

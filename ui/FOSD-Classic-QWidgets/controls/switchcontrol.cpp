@@ -1,7 +1,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QMouseEvent>
-#include "switchcontrol.h"
+#include "FOSD-Classic-QWidgets/controls/switchcontrol.h"
 
 SwitchControl::SwitchControl(QWidget *parent)
     : QWidget(parent), m_nHeight(16), m_bChecked(false), m_radius(8.0), m_nMargin(3),

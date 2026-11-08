@@ -1,6 +1,6 @@
 #pragma once
-#include "ViewEvents.h"
-#include "UiTypes.h"
+#include "FOSD-Classic-QWidgets/common/ViewEvents.h"
+#include "FOSD-Classic-QWidgets/common/UiTypes.h"
 #include <QObject>
 #include <QPointer>
 class QWidget;

@@ -1,5 +1,5 @@
-#include "PanelPresenter.h"
-#include "../apps/IWorkbenchView.h"
+#include "FOSD-Classic-QWidgets/common/PanelPresenter.h"
+#include "FOSD-Classic-QWidgets/application/IWorkbenchView.h"
 #include <atomic>
 #include <QAction>
 #include <QWidget>

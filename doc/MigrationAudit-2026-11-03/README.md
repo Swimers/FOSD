@@ -24,7 +24,7 @@
 
 | 能力 | 当前证据与实际边界 |
 | --- | --- |
-| Classic 业务组合与渲染宿主 | [ClassicWorkbench.cpp](../../apps/FOSD-Classic-QWidgets/ClassicWorkbench.cpp) 创建 Runtime、注入 Services、挂载 QVTK；不同于仍是骨架的 FOSD-Win |
+| Classic 业务组合与渲染宿主 | [ClassicWorkbench.cpp](../../ui/FOSD-Classic-QWidgets/application/ClassicWorkbench.cpp) 创建 Runtime、注入 Services、挂载 QVTK；不同于仍是骨架的 FOSD-Win |
 | 三种传输与波长链路 | `src/communication` 已有串口、UDP、TCP 客户端/服务器能力和拆包；`src/protocol` 有 MP/JCS 波长解析。Classic 已接打开、关闭、发送、清屏和状态回显，但旧 JCS 布局与 TCP 角色接入仍有 P0 差异 |
 | 标定和 HYY/Plate | [CalculationControl.cpp](../../src/calculation/CalculationControl.cpp) 有标定、通道重排、模型遍历、结果版本和硬件数据出口；Classic 可置零、改 A/B、改 12 路映射/系数、选择 HYY/内置 Plate。存在输入配置兼容与数值验收缺口 |
 | STL、三维变形、位移着色 | 加载/清理、倍率、四种位移量、正负/绝对值、自动/手动色域、归一化均有 Runtime 分支及 Control。三维加载/配置回执用于屏蔽部分旧结果 |
@@ -49,13 +49,13 @@
 
 旧 [connectwindow.cpp](../../../FOSD_Project/src/app/conncect/connectwindow.cpp) `on_pbtn_OpenNet_clicked()` 将本地 IP/端口交给 `tcpOpen()`；旧 [tcptask.cpp](../../../FOSD_Project/src/Communication/tcptask.cpp) 执行 `QTcpServer::listen()`，设备作为客户端连接上位机。
 
-新 [WorkbenchConnection.cpp](../../apps/FOSD-Classic-QWidgets/backend/WorkbenchConnection.cpp) `pbtn_OpenNet` TCP 分支仅设置 `host=目标地址`、`port=目标端口`；[ITransportTypes.h](../../src/communication/ITransportTypes.h) 的 `TcpConfig::role` 默认 Client。底层 [Tcp.cpp](../../src/communication/Tcp.cpp) 已实现 Server，Classic 没有选择角色或设置 `listenAddress` 的路径。
+新 [WorkbenchConnection.cpp](../../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchConnection.cpp) `pbtn_OpenNet` TCP 分支仅设置 `host=目标地址`、`port=目标端口`；[ITransportTypes.h](../../src/communication/ITransportTypes.h) 的 `TcpConfig::role` 默认 Client。底层 [Tcp.cpp](../../src/communication/Tcp.cpp) 已实现 Server，Classic 没有选择角色或设置 `listenAddress` 的路径。
 
 迁移：恢复旧版默认“监听本地 IP/端口”的业务，或提供明确的客户端/服务器选择；显示监听中、设备已接入、设备断开和监听失败。验收必须从 Classic 窗口让模拟设备主动连接，并验证断开后再次接入。旧版新客户端替换旧连接、新版拒绝第二客户端的策略也应明确并比对。
 
 ### A03 · P1 · 置零从 20 帧平均变成单帧，并丢失基线文件恢复【差异/缺失】
 
-旧 `analyzepackets.cpp:26,128` 构造时读 `data/calibration/初始波长.txt`；按置零后累计 20 帧求均值、写文件并发送完成信号。新 [WorkbenchRuntime.cpp](../../apps/FOSD-Classic-QWidgets/backend/WorkbenchRuntime.cpp) `baseline():225` 直接复制最近一帧到 `originalWavelength`，不做平均或持久化。
+旧 `analyzepackets.cpp:26,128` 构造时读 `data/calibration/初始波长.txt`；按置零后累计 20 帧求均值、写文件并发送完成信号。新 [WorkbenchRuntime.cpp](../../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.cpp) `baseline():225` 直接复制最近一帧到 `originalWavelength`，不做平均或持久化。
 
 影响：基线抗噪策略和重启后的工作流程不同；不能声称已经实测精度变差。迁移：恢复可配置的采样平均（兼容默认 20 帧）、采样进度/完成状态、数量与传感器身份一致性检查、基线保存/恢复。验收：输入已知波动的 20 帧，对照均值；采样中断/换设备不能混入同一基线。
 

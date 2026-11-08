@@ -1,5 +1,5 @@
 #pragma once
-#include "UiTypes.h"
+#include "FOSD-Classic-QWidgets/common/UiTypes.h"
 #include <QObject>
 namespace fosd {
 namespace ui {

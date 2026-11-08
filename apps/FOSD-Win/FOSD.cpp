@@ -1,7 +1,7 @@
 #include "FOSD.h"
 #include "protocol/ProtocolControl.h"
 #include "calculation/CalculationControl.h"
-#include "FOSD-Classic-QWidgets/apps/WorkbenchPresenter.h"
+#include "FOSD-Classic-QWidgets/application/WorkbenchPresenter.h"
 
 FOSD::FOSD(QWidget *parent)
     : fosd::ui::classic::WorkbenchView(parent), m_protocol(new fosd::protocol::ProtocolControl),

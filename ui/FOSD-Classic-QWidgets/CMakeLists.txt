@@ -9,78 +9,60 @@ target_link_libraries(fosd_classic_contracts PUBLIC Qt5::Core)
 
 add_library(fosd_classic_backends STATIC
     common/FeatureBackend.h common/FeatureBackend.cpp
-    apps/WorkbenchBackend.h apps/WorkbenchBackend.cpp
-    apps/mainwindow/backends/MainWindowBackend.h apps/mainwindow/backends/MainWindowBackend.cpp
-    apps/connection/backends/ConnectionBackend.h apps/connection/backends/ConnectionBackend.cpp
-    apps/visualization/backends/VisualizationBackend.h apps/visualization/backends/VisualizationBackend.cpp
-    apps/model/backends/ModelBackend.h apps/model/backends/ModelBackend.cpp
-    apps/tracking/backends/TrackingBackend.h apps/tracking/backends/TrackingBackend.cpp
+    application/WorkbenchBackend.h application/WorkbenchBackend.cpp
+    features/mainwindow/backends/MainWindowBackend.h features/mainwindow/backends/MainWindowBackend.cpp
+    features/connection/backends/ConnectionBackend.h features/connection/backends/ConnectionBackend.cpp
+    features/visualization/backends/VisualizationBackend.h features/visualization/backends/VisualizationBackend.cpp
+    features/visualization/backends/ModelBackend.h features/visualization/backends/ModelBackend.cpp
+    features/data/backends/TrackingBackend.h features/data/backends/TrackingBackend.cpp
 )
 target_link_libraries(fosd_classic_backends PUBLIC fosd_classic_contracts)
 
 add_library(fosd_classic_presenters STATIC
     common/PanelPresenter.h common/PanelPresenter.cpp
-    apps/IWorkbenchView.h apps/WorkbenchPresenter.h apps/WorkbenchPresenter.cpp
-    apps/mainwindow/presenters/MainWindowPresenter.h apps/mainwindow/presenters/MainWindowPresenter.cpp
-    apps/connection/presenters/ConnectionPresenter.h apps/connection/presenters/ConnectionPresenter.cpp
-    apps/visualization/presenters/VisualizationPresenter.h apps/visualization/presenters/VisualizationPresenter.cpp
-    apps/visualization/presenters/sceneColorDialog.ui
-    apps/model/presenters/ModelPresenter.h apps/model/presenters/ModelPresenter.cpp
-    apps/tracking/presenters/TrackingPresenter.h apps/tracking/presenters/TrackingPresenter.cpp
+    application/IWorkbenchView.h application/WorkbenchPresenter.h application/WorkbenchPresenter.cpp
+    features/mainwindow/presenters/MainWindowPresenter.h features/mainwindow/presenters/MainWindowPresenter.cpp
+    features/connection/presenters/ConnectionPresenter.h features/connection/presenters/ConnectionPresenter.cpp
+    features/visualization/presenters/VisualizationPresenter.h features/visualization/presenters/VisualizationPresenter.cpp
+    features/visualization/presenters/ModelPresenter.h features/visualization/presenters/ModelPresenter.cpp
+    features/visualization/views/dialogs/sceneColorDialog.ui
+    features/data/presenters/TrackingPresenter.h features/data/presenters/TrackingPresenter.cpp
 )
 target_link_libraries(fosd_classic_presenters PUBLIC fosd_classic_backends Qt5::Widgets)
+set_target_properties(fosd_classic_presenters PROPERTIES
+    AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/features/visualization/views/dialogs")
 
 add_library(fosd_classic_controls STATIC
-    controls/qcustomplot.h controls/qcustomplot.cpp
     controls/switchcontrol.h controls/switchcontrol.cpp
     controls/renderhostwidget.h controls/renderhostwidget.cpp
+    third_party/qcustomplot/qcustomplot.h third_party/qcustomplot/qcustomplot.cpp
 )
-target_include_directories(fosd_classic_controls PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/controls")
+target_include_directories(fosd_classic_controls PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+    "${CMAKE_CURRENT_SOURCE_DIR}/controls"
+    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/qcustomplot")
 target_link_libraries(fosd_classic_controls PUBLIC Qt5::Widgets Qt5::PrintSupport)
 
 add_library(fosd_classic_widgets STATIC
     common/FormBinding.h common/FormBinding.cpp common/ViewFactory.h common/ViewFactory.cpp
-    apps/WorkbenchView.h apps/WorkbenchView.cpp
-    resources/UiResources.h resources/UiResources.cpp resources/legacy_ui.qrc
-    apps/connection/views/connectwindow.h
-    apps/connection/views/connectwindow.cpp
-    apps/connection/views/connectwindow.ui
-    apps/connection/views/channlCalibration.h
-    apps/connection/views/channlCalibration.cpp
-    apps/connection/views/channlCalibration.ui
-    apps/visualization/views/disp3dwindow.h
-    apps/visualization/views/disp3dwindow.cpp
-    apps/visualization/views/disp3dwindow.ui
-    apps/visualization/views/docks/disp3dinfodockpanel.h
-    apps/visualization/views/docks/disp3dinfodockpanel.cpp
-    apps/visualization/views/docks/disp3dinfodockpanel.ui
-    apps/visualization/views/docks/disp3dviewdockpanel.h
-    apps/visualization/views/docks/disp3dviewdockpanel.cpp
-    apps/visualization/views/docks/disp3dviewdockpanel.ui
-    apps/visualization/views/docks/disp3dmodeldockpanel.h
-    apps/visualization/views/docks/disp3dmodeldockpanel.cpp
-    apps/visualization/views/docks/disp3dmodeldockpanel.ui
-    apps/model/views/disp3dkeypointedit.h
-    apps/model/views/disp3dkeypointedit.cpp
-    apps/model/views/disp3dkeypointedit.ui
-    apps/model/views/disp3dkeypointselect.h
-    apps/model/views/disp3dkeypointselect.cpp
-    apps/model/views/disp3dkeypointselect.ui
-    apps/tracking/views/dispdata.h
-    apps/tracking/views/dispdata.cpp
-    apps/tracking/views/dispdata.ui
-    apps/mainwindow/views/oldmainwindow.h
-    apps/mainwindow/views/oldmainwindow.cpp
-    apps/mainwindow/views/oldmainwindow.ui
+    common/CoordinateText.h common/UiResources.h common/UiResources.cpp resources/classic.qrc
+    application/WorkbenchView.h application/WorkbenchView.cpp
+    features/connection/views/connectwindow.h features/connection/views/connectwindow.cpp features/connection/views/connectwindow.ui
+    features/connection/views/channlCalibration.h features/connection/views/channlCalibration.cpp features/connection/views/channlCalibration.ui
+    features/visualization/views/disp3dwindow.h features/visualization/views/disp3dwindow.cpp features/visualization/views/disp3dwindow.ui
+    features/visualization/views/docks/disp3dinfodockpanel.h features/visualization/views/docks/disp3dinfodockpanel.cpp features/visualization/views/docks/disp3dinfodockpanel.ui
+    features/visualization/views/docks/disp3dviewdockpanel.h features/visualization/views/docks/disp3dviewdockpanel.cpp features/visualization/views/docks/disp3dviewdockpanel.ui
+    features/visualization/views/docks/disp3dmodeldockpanel.h features/visualization/views/docks/disp3dmodeldockpanel.cpp features/visualization/views/docks/disp3dmodeldockpanel.ui
+    features/visualization/views/keypoints/disp3dkeypointedit.h features/visualization/views/keypoints/disp3dkeypointedit.cpp features/visualization/views/keypoints/disp3dkeypointedit.ui
+    features/visualization/views/keypoints/disp3dkeypointselect.h features/visualization/views/keypoints/disp3dkeypointselect.cpp features/visualization/views/keypoints/disp3dkeypointselect.ui
+    features/data/views/dispdata.h features/data/views/dispdata.cpp features/data/views/dispdata.ui
+    features/mainwindow/views/oldmainwindow.h features/mainwindow/views/oldmainwindow.cpp features/mainwindow/views/oldmainwindow.ui
 )
 target_link_libraries(fosd_classic_widgets PUBLIC fosd_classic_presenters fosd_classic_controls Qt5::Widgets)
 
+if(FOSD_BUILD_WORKBENCH_APP)
+    add_subdirectory(application)
+endif()
 if(FOSD_BUILD_TESTS OR FOSD_WORKBENCH_BUILD_TESTS)
-    add_executable(test_classic_widgets tests/WorkbenchTests.cpp)
-    target_link_libraries(test_classic_widgets PRIVATE fosd_classic_widgets Qt5::Test)
-    add_test(NAME test_classic_widgets COMMAND test_classic_widgets)
-    set_tests_properties(test_classic_widgets PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen" TIMEOUT 60)
-    if(WIN32)
-        set_property(TEST test_classic_widgets APPEND PROPERTY ENVIRONMENT "QT_QPA_FONTDIR=$ENV{WINDIR}/Fonts")
-    endif()
+    add_subdirectory(tests)
 endif()

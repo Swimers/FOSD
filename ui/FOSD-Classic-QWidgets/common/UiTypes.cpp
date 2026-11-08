@@ -1,4 +1,4 @@
-#include "UiTypes.h"
+#include "FOSD-Classic-QWidgets/common/UiTypes.h"
 namespace fosd {
 namespace ui {
 namespace classic {

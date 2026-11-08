@@ -1,8 +1,8 @@
 #pragma once
-#include "IBackend.h"
+#include "FOSD-Classic-QWidgets/common/IBackend.h"
 #include <QVector>
 #include <QPointer>
-#include "WorkbenchServices.h"
+#include "FOSD-Classic-QWidgets/common/WorkbenchServices.h"
 namespace fosd {
 namespace ui {
 namespace classic {

@@ -1,4 +1,4 @@
-#include "FeatureBackend.h"
+#include "FOSD-Classic-QWidgets/common/FeatureBackend.h"
 namespace fosd {
 namespace ui {
 namespace classic {

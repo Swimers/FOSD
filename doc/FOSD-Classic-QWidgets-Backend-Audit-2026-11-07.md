@@ -42,7 +42,7 @@
 | 标量映射设置 | 映射/清除、X/Y/Z/总位移、归一化、符号、自动/手动范围 | 调用 `setScalarColorSettings()`，检查返回值，并通过信号刷新控件 | 已实现；自定义节点标量没有 Classic 数据输入入口 |
 | 坐标轴、网格、视角、锁定 | `ScenePanel` 的动作 → `VisualizationControl` | 设置显示、尺寸、网格平面、六个预设视角和相机锁定 | 已实现基础子集；不是完整场景参数编辑器 |
 
-源码证据：[A/B 与配置读取](../apps/FOSD-Classic-QWidgets/backend/WorkbenchConnection.cpp#L176)、[传感器映射及参数回填](../apps/FOSD-Classic-QWidgets/backend/WorkbenchData.cpp#L18)、[配置提交与置零](../apps/FOSD-Classic-QWidgets/backend/WorkbenchRuntime.cpp#L254)、[计算配置校验及持久化](../src/calculation/CalculationControl.cpp#L65)、[标量及场景路由](../apps/FOSD-Classic-QWidgets/backend/WorkbenchVisualization.cpp#L7)。
+源码证据：[A/B 与配置读取](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchConnection.cpp#L176)、[传感器映射及参数回填](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchData.cpp#L18)、[配置提交与置零](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.cpp#L254)、[计算配置校验及持久化](../src/calculation/CalculationControl.cpp#L65)、[标量及场景路由](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchVisualization.cpp#L7)。
 
 **参数的作用域需要说明清楚：A/B 和传感器系数用于本机波长→应变→HYY 计算，不会自动转换成下位机配置命令。** 计算标定公式为 `calibrationFactor × (当前波长 − 基线波长) / A + B`；A 必须非零，基线和通道映射不能是空数组。首次使用尚未置零时设置失败，属于已有校验约束，不是按钮没有实现。[标定公式与校验](../src/calculation/StrainCalibration.cpp#L33)
 
@@ -56,7 +56,7 @@
 
 **建议**：先读出完整配置，再由界面覆盖已展示字段；增加数据位、校验、停止位和流控设置，并在打开前展示有效参数。验收应覆盖“7 数据位、偶校验、2 停止位”等非默认配置的保存、重启及打开请求，不能只验证默认 8N1。
 
-证据：[串口配置结构](../src/config/CoreParameters.h#L30)、[Classic 重建串口配置](../apps/FOSD-Classic-QWidgets/backend/WorkbenchConnection.cpp#L219)、[打开前写入完整配置](../src/communication/ConnectControl.cpp#L245)。
+证据：[串口配置结构](../src/config/CoreParameters.h#L30)、[Classic 重建串口配置](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchConnection.cpp#L219)、[打开前写入完整配置](../src/communication/ConnectControl.cpp#L245)。
 
 ### F02 · P1：刷新率的恢复结果被启动代码覆盖
 
@@ -66,7 +66,7 @@
 
 **建议**：初始化仅根据实际恢复值回填 UI，不调用具有写入副作用的设置方法。下拉框无法精确表示自定义周期时，应显示自定义项或保留原值。验收应检查启动前后 INI 内容不变。
 
-证据：[恢复运行时参数](../src/visualization/VisualizationControl.cpp#L78)、[启动时强制设置](../apps/FOSD-Classic-QWidgets/backend/WorkbenchRuntime.cpp#L143)、[刷新率设置会写入 INI](../src/visualization/VisualizationControl.cpp#L277)。
+证据：[恢复运行时参数](../src/visualization/VisualizationControl.cpp#L78)、[启动时强制设置](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.cpp#L143)、[刷新率设置会写入 INI](../src/visualization/VisualizationControl.cpp#L277)。
 
 ### F03 · P2：变形倍率只恢复到后端，没有恢复到输入框
 
@@ -76,7 +76,7 @@
 
 **建议**：提供可查询的运行时设置或完整状态快照，初始化时回填倍率与刷新率。验收直接比较“INI、后端有效值、控件值”三者。
 
-证据：[后端恢复倍率](../src/visualization/VisualizationControl.cpp#L78)、[控件默认值](../ui/FOSD-Classic-QWidgets/apps/model/views/disp3dmodeldockpanel.ui#L290)、[Classic 初始化](../apps/FOSD-Classic-QWidgets/backend/WorkbenchRuntime.cpp#L109)。
+证据：[后端恢复倍率](../src/visualization/VisualizationControl.cpp#L78)、[控件默认值](../ui/FOSD-Classic-QWidgets/features/visualization/views/docks/disp3dmodeldockpanel.ui#L290)、[Classic 初始化](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.cpp#L109)。
 
 ### F04 · P2：网络连接参数恢复不完整，且 UDP 与 TCP 共用字段缺少切换回填
 
@@ -86,7 +86,7 @@
 
 **建议**：以通道和 TCP 角色分别维护编辑状态；切换时回填对应配置，并明确区分未保存草稿和有效配置。验收应使用不同的 UDP/TCP 地址与端口，覆盖随机本地端口和 TCP 服务端模式。
 
-证据：[启动回填逻辑](../apps/FOSD-Classic-QWidgets/backend/WorkbenchRuntime.cpp#L109)、[网络切换与打开](../apps/FOSD-Classic-QWidgets/backend/WorkbenchConnection.cpp#L204)、[通用下拉框回填方式](../ui/FOSD-Classic-QWidgets/common/FormBinding.cpp#L163)。
+证据：[启动回填逻辑](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.cpp#L109)、[网络切换与打开](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchConnection.cpp#L204)、[通用下拉框回填方式](../ui/FOSD-Classic-QWidgets/common/FormBinding.cpp#L163)。
 
 ### F05 · P2：部分设置在底层失败后仍会返回“设置已应用”
 
@@ -96,7 +96,7 @@
 
 **建议**：同步设置返回 `bool/error` 或有效值，异步设置使用请求编号与完成回执。只有实际生效后才报告成功；失败时回填旧值。验收应覆盖不可写 INI、非法配置和持久化失败。
 
-证据：[默认成功及相关分支](../apps/FOSD-Classic-QWidgets/backend/WorkbenchVisualization.cpp#L20)、[倍率设置的失败出口](../src/visualization/VisualizationControl.cpp#L247)、[刷新率设置的失败出口](../src/visualization/VisualizationControl.cpp#L277)、[相机锁定](../src/visualization/VisualizationControl.cpp#L496)。
+证据：[默认成功及相关分支](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchVisualization.cpp#L20)、[倍率设置的失败出口](../src/visualization/VisualizationControl.cpp#L247)、[刷新率设置的失败出口](../src/visualization/VisualizationControl.cpp#L277)、[相机锁定](../src/visualization/VisualizationControl.cpp#L496)。
 
 ### F06 · P2：系数设置窗口“取消”只有关闭，没有恢复草稿
 
@@ -106,7 +106,7 @@
 
 **建议**：打开时加载有效配置，取消时丢弃草稿；或者明确标注草稿状态。验收应覆盖“修改→取消→重新打开”，确认没有改变后端且控件恢复有效值。
 
-证据：[取消动作](../ui/FOSD-Classic-QWidgets/common/PanelPresenter.cpp#L125)、[面板显示与关闭](../ui/FOSD-Classic-QWidgets/apps/WorkbenchView.cpp#L131)、[仅清理敏感字段](../ui/FOSD-Classic-QWidgets/common/FormBinding.cpp#L272)。
+证据：[取消动作](../ui/FOSD-Classic-QWidgets/common/PanelPresenter.cpp#L125)、[面板显示与关闭](../ui/FOSD-Classic-QWidgets/application/WorkbenchView.cpp#L131)、[仅清理敏感字段](../ui/FOSD-Classic-QWidgets/common/FormBinding.cpp#L272)。
 
 ## 4. 部分实现或缺少 Classic 入口的能力
 
@@ -116,7 +116,7 @@
 
 因此应称为“连接状态查看”，不能按完整故障诊断验收。若要建设诊断功能，需先明确设备支持的探测指令及错误码，再增加诊断状态机和明确的完成/失败反馈。
 
-证据：[打开诊断窗口](../ui/FOSD-Classic-QWidgets/apps/connection/presenters/ConnectionPresenter.cpp#L20)、[诊断启动实际处理](../apps/FOSD-Classic-QWidgets/backend/WorkbenchConnection.cpp#L383)。
+证据：[打开诊断窗口](../ui/FOSD-Classic-QWidgets/features/connection/presenters/ConnectionPresenter.cpp#L20)、[诊断启动实际处理](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchConnection.cpp#L383)。
 
 ### F08 · 配置后端已有较完整参数结构，Classic 只暴露其中一部分
 
@@ -140,7 +140,7 @@
 
 建议先增加“计算参数/串口参数/显示参数”三个小范围编辑入口，复用 `ParameterCodec` 和既有验证，不要再建立一套与 INI 相互独立的参数副本。场景高级功能是否恢复到 Classic，应由产品范围决定。
 
-证据：[参数定义](../src/config/CoreParameters.h)、[通用参数存储](../src/config/ParameterStore.h)、[可视化启动恢复](../src/visualization/VisualizationControl.cpp#L49)、[可视化能力接口](../src/visualization/VisualizationControl.h#L44)、[Classic 已暴露设置](../apps/FOSD-Classic-QWidgets/backend/WorkbenchVisualization.cpp#L7)。
+证据：[参数定义](../src/config/CoreParameters.h)、[通用参数存储](../src/config/ParameterStore.h)、[可视化启动恢复](../src/visualization/VisualizationControl.cpp#L49)、[可视化能力接口](../src/visualization/VisualizationControl.h#L44)、[Classic 已暴露设置](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchVisualization.cpp#L7)。
 
 ### F09 · 高级存储配置有后端，但 Classic 保存时使用固定策略
 
@@ -150,7 +150,7 @@
 
 **建议**：增加数据类型与点集选择，启动前显示有效配置；以 CSV/SQLite 读回内容作为验收依据。
 
-证据：[固定保存策略](../apps/FOSD-Classic-QWidgets/backend/WorkbenchConnection.cpp#L135)、[存储配置结构](../src/config/CoreParameters.h)、[存储启动与配置保存](../src/storage/StorageControl.cpp#L45)。
+证据：[固定保存策略](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchConnection.cpp#L135)、[存储配置结构](../src/config/CoreParameters.h)、[存储启动与配置保存](../src/storage/StorageControl.cpp#L45)。
 
 ### F10 · 串口快捷发送已实现，但设备配置/应答闭环尚未接入
 
@@ -160,7 +160,7 @@
 
 **建议**：先确定设备命令/应答格式和编码，再增加命令服务及完成事件；不能仅根据 `requestSend` 已发出就宣布设备参数已设置成功。
 
-证据：[串口发送与快捷指令](../apps/FOSD-Classic-QWidgets/backend/WorkbenchConnection.cpp#L118)、[新增命令信号](../src/communication/IPacketDecoder.h#L43)、[命令转发](../src/communication/ConnectControl.cpp#L34)、[Classic 当前订阅](../apps/FOSD-Classic-QWidgets/backend/WorkbenchRuntime.cpp#L19)。
+证据：[串口发送与快捷指令](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchConnection.cpp#L118)、[新增命令信号](../src/communication/IPacketDecoder.h#L43)、[命令转发](../src/communication/ConnectControl.cpp#L34)、[Classic 当前订阅](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchRuntime.cpp#L19)。
 
 ### F11 · 模型与关键点能操作，但没有项目/会话恢复功能
 
@@ -168,7 +168,7 @@
 
 如果“关闭软件后继续上次工程”是目标，这部分尚未闭环。建议作为独立会话文件设计，记录模型身份/路径与点 ID 校验，不要只把关键点 ID 无条件套用到其他模型。
 
-证据：[模型加载会重置相关状态](../src/visualization/VisualizationControl.cpp#L133)、[关键点更新不持久化](../src/visualization/VisualizationControl.cpp#L400)、[Classic 模型操作](../apps/FOSD-Classic-QWidgets/backend/WorkbenchVisualization.cpp#L40)。
+证据：[模型加载会重置相关状态](../src/visualization/VisualizationControl.cpp#L133)、[关键点更新不持久化](../src/visualization/VisualizationControl.cpp#L400)、[Classic 模型操作](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchVisualization.cpp#L40)。
 
 ## 5. 当前串口调整的额外协议风险
 
@@ -201,7 +201,7 @@
 
 波长表最多展示 2048 条记录，曲线每条保留 300 个显示采样点，观察表最多 256 个点。这些是当前显示策略，不等于解析器或存储只接受相同数量；建议在界面明确提示截断/采样，后续若要求全量浏览再补分页与查询。
 
-证据：[面板创建](../ui/FOSD-Classic-QWidgets/common/ViewFactory.cpp#L19)、[动态控件及界面组合](../ui/FOSD-Classic-QWidgets/apps/WorkbenchView.cpp#L24)、[数据显示及数量限制](../apps/FOSD-Classic-QWidgets/backend/WorkbenchData.cpp#L119)、[显示控制语义](../apps/FOSD-Classic-QWidgets/backend/WorkbenchVisualization.cpp#L23)。
+证据：[面板创建](../ui/FOSD-Classic-QWidgets/common/ViewFactory.cpp#L19)、[动态控件及界面组合](../ui/FOSD-Classic-QWidgets/application/WorkbenchView.cpp#L24)、[数据显示及数量限制](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchData.cpp#L119)、[显示控制语义](../ui/FOSD-Classic-QWidgets/application/runtime/WorkbenchVisualization.cpp#L23)。
 
 ## 7. 不应混入“现存按钮未实现”的项目
 
@@ -228,6 +228,6 @@
 
 现有测试源码已经涉及 TCP 两种角色、均值置零、解算启停、采集到显示/文件保存、串口快捷指令、显示编码、UDP 摘要和清理。**未在现有 Classic 测试中找到针对 F01～F06 的完整回归场景**，尤其是非默认参数重启、启动不改写配置和持久化失败回滚。单独的参数模块测试只能证明编码/验证/保存接口工作，不能证明 Classic 传入了正确值。
 
-测试入口：[运行时测试](../apps/FOSD-Classic-QWidgets/tests/workbench_runtime_tests.cpp)、[主程序界面集成测试](../apps/FOSD-Classic-QWidgets/tests/workbench_main_tests.cpp)、[UI 存在性检查](../ui/FOSD-Classic-QWidgets/tests/WorkbenchTests.cpp)、[参数模块测试](../test/parameters_tests.cpp)。
+测试入口：[运行时测试](../ui/FOSD-Classic-QWidgets/tests/workbench_runtime_tests.cpp)、[主程序界面集成测试](../ui/FOSD-Classic-QWidgets/tests/workbench_main_tests.cpp)、[UI 存在性检查](../ui/FOSD-Classic-QWidgets/tests/WorkbenchTests.cpp)、[参数模块测试](../test/parameters_tests.cpp)。
 
 本轮交付为审阅报告；上述修复、补充控件与设备协议实现均尚未在本轮执行。

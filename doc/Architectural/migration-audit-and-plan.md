@@ -28,7 +28,7 @@
 ### 直接证据位置
 
 - [主程序组合入口](../../apps/FOSD-Win/FOSD.cpp)。
-- [Workbench 默认 Backend 注册](../../ui/FOSD-Classic-QWidgets/apps/WorkbenchBackend.cpp) 与 [FeatureBackend 的未实现反馈](../../ui/FOSD-Classic-QWidgets/common/FeatureBackend.cpp)。
+- [Workbench 默认 Backend 注册](../../ui/FOSD-Classic-QWidgets/application/WorkbenchBackend.cpp) 与 [FeatureBackend 的未实现反馈](../../ui/FOSD-Classic-QWidgets/common/FeatureBackend.cpp)。
 - [模型管理声明](../../src/visualization/mesh/MeshManager.h) / [当前定义](../../src/visualization/mesh/MeshManager.cpp)。
 - [可视化 Control](../../src/visualization/VisualizationControl.h) / [模型加载及运行实现](../../src/visualization/VisualizationControl.cpp)。
 - [模型与计算结果结构](../../src/core/Datamodel/ModelData.h)、[计算 Worker](../../src/calculation/CalculationControl.cpp)、[对外接口](../../src/calculation/CalculationControl.h)。

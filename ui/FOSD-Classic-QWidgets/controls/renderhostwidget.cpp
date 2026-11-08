@@ -1,4 +1,4 @@
-#include "renderhostwidget.h"
+#include "FOSD-Classic-QWidgets/controls/renderhostwidget.h"
 #include <QVBoxLayout>
 namespace fosd {
 namespace ui {

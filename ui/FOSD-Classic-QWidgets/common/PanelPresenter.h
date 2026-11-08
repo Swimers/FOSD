@@ -1,6 +1,6 @@
 #pragma once
-#include "IView.h"
-#include "IBackend.h"
+#include "FOSD-Classic-QWidgets/common/IView.h"
+#include "FOSD-Classic-QWidgets/common/IBackend.h"
 #include <QHash>
 #include <QPointer>
 namespace fosd {

@@ -147,7 +147,7 @@ Classic 通信页提供角色选择、Client 目标地址/端口、Server 本地
 
 还需同步清理原审计之外发现的同类死入口，但不得借此删除已经工作的新功能或扩大实施范围。通用 FeatureBackend 的“未知/不支持请求”错误通道可以保留；产品已删除功能不应继续出现在可用能力列表中。
 
-需要特别处理 [UiTypes.h](../../ui/FOSD-Classic-QWidgets/common/UiTypes.h)、[ViewFactory.cpp](../../ui/FOSD-Classic-QWidgets/common/ViewFactory.cpp)、[WorkbenchPresenter.cpp](../../ui/FOSD-Classic-QWidgets/apps/WorkbenchPresenter.cpp)、[WorkbenchView.cpp](../../ui/FOSD-Classic-QWidgets/apps/WorkbenchView.cpp) 和 [WorkbenchBackend.cpp](../../ui/FOSD-Classic-QWidgets/apps/WorkbenchBackend.cpp)：目前按 `Main..Account` 连续枚举创建面板/Presenter，删除末尾账户枚举后必须改成明确的保留面板/feature 注册表，不能留下循环边界和空面板解引用。硬件表的 feature 映射、工厂和注册必须同步调整。
+需要特别处理 [UiTypes.h](../../ui/FOSD-Classic-QWidgets/common/UiTypes.h)、[ViewFactory.cpp](../../ui/FOSD-Classic-QWidgets/common/ViewFactory.cpp)、[WorkbenchPresenter.cpp](../../ui/FOSD-Classic-QWidgets/application/WorkbenchPresenter.cpp)、[WorkbenchView.cpp](../../ui/FOSD-Classic-QWidgets/application/WorkbenchView.cpp) 和 [WorkbenchBackend.cpp](../../ui/FOSD-Classic-QWidgets/application/WorkbenchBackend.cpp)：目前按 `Main..Account` 连续枚举创建面板/Presenter，删除末尾账户枚举后必须改成明确的保留面板/feature 注册表，不能留下循环边界和空面板解引用。硬件表的 feature 映射、工厂和注册必须同步调整。
 
 共享 UI 代码也被 FOSD-Win 引用，公共类型/签名清理时不得顺带改动 FOSD-Win 业务；尽量保持其当前引用可编译。若确有编译依赖冲突，应在共享契约处解决或缩小 Classic 专属清理范围，不以此启动 FOSD-Win 的功能开发。旧项目目录仅作参考，不在本轮删除或改写。
 

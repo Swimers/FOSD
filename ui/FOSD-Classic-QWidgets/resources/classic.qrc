@@ -1,0 +1,18 @@
+<RCC>
+    <!-- Keep public URLs stable while storing assets by type. -->
+    <qresource prefix="/icon">
+        <file alias="icon/3D_Plot.png">icons/3D_Plot.png</file>
+        <file alias="icon/favicon.ico">icons/favicon.ico</file>
+        <file alias="icon/Help_icon.png">icons/Help_icon.png</file>
+        <file alias="icon/Menu.png">icons/Menu.png</file>
+        <file alias="icon/Model_icon.png">icons/Model_icon.png</file>
+        <file alias="icon/Pasue_icon.png">icons/Pasue_icon.png</file>
+        <file alias="icon/Play_icon.png">icons/Play_icon.png</file>
+        <file alias="icon/Reset_icon.png">icons/Reset_icon.png</file>
+        <file alias="icon/Stop_icon.png">icons/Stop_icon.png</file>
+    </qresource>
+    <qresource prefix="/fosd-ui/styles">
+        <file alias="dark.qss">styles/MaterialDark-B.qss</file>
+        <file alias="light.qss">styles/MacOS.qss</file>
+    </qresource>
+</RCC>

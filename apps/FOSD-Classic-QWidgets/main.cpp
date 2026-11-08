@@ -1,4 +1,4 @@
-#include "ClassicWorkbench.h"
+#include "FOSD-Classic-QWidgets/application/ClassicWorkbench.h"
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <QVTKOpenGLNativeWidget.h>

@@ -1,6 +1,6 @@
-#include "FormBinding.h"
-#include "../controls/switchcontrol.h"
-#include "../controls/qcustomplot.h"
+#include "FOSD-Classic-QWidgets/common/FormBinding.h"
+#include "FOSD-Classic-QWidgets/controls/switchcontrol.h"
+#include "FOSD-Classic-QWidgets/third_party/qcustomplot/qcustomplot.h"
 #include <QAbstractButton>
 #include <QAbstractSlider>
 #include <QAction>

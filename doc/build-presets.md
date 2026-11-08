@@ -10,7 +10,7 @@
 | `communication-assistant-QML` | `build/communication-assistant-QML/` | 独立 QML 通信助手及其测试 |
 | `communication-assistant-widgets` | `build/communication-assistant-widgets/` | 独立 Widgets 通信助手及其测试 |
 
-本轮业务闭环仅在 `apps/FOSD-Classic-QWidgets` 实现：ClassicWorkbench 通过 WorkbenchRuntime 注入通信、协议、解算、存储和可视化服务，挂载真实 QVTK 控件。共享 UI 库仍保持分层；`apps/FOSD-Win` 的源码、入口和构建文件恢复原状。完整使用与验证见 [Classic 业务闭环](Architectural/formal-workbench-integration.md)。
+Classic 业务闭环实现在 `ui/FOSD-Classic-QWidgets/application`：ClassicWorkbench 通过 WorkbenchRuntime 注入通信、协议、解算、存储和可视化服务，挂载真实 QVTK 控件；`apps/FOSD-Classic-QWidgets` 只负责启动入口和 EXE 构建。共享 UI 库仍保持分层，FOSD-Win 继续使用共享 Widgets。目录说明见 [Classic 界面](../ui/FOSD-Classic-QWidgets/README.md)，完整使用与验证见 [Classic 业务闭环](Architectural/formal-workbench-integration.md)。
 
 ## 配置、构建与测试
 

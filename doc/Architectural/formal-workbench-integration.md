@@ -1,6 +1,6 @@
 # FOSD-Classic-QWidgets 业务闭环对接
 
-本次业务闭环仅由 `apps/FOSD-Classic-QWidgets` 组合，使用 `fosd-widgets` 预设，入口为 `build/fosd-widgets/bin/Release/FOSD-Classic-QWidgets.exe`。`apps/FOSD-Win` 的源码、入口和 CMake 已恢复原状，不接入本轮应用服务。
+Classic 业务闭环由 `ui/FOSD-Classic-QWidgets/application` 组合，`apps/FOSD-Classic-QWidgets` 只保留启动入口与 EXE 构建，使用 `fosd-widgets` 预设，入口为 `build/fosd-widgets/bin/Release/FOSD-Classic-QWidgets.exe`。`apps/FOSD-Win` 继续使用共享界面库，不接入 Classic 应用服务。
 
 ## 架构与线程
 
@@ -77,6 +77,6 @@ cmake --build --preset fosd-widgets-release
 ctest --preset fosd-widgets-release
 ```
 
-`test_workbench_runtime` 验证真实共享 Controls、无业务操作反馈、Plate/HYY 切换、无效标定保留、模型清除及 CSV/SQLite 三类写入。`test_workbench_main` 使用 ClassicWorkbench 与真实 Designer 表单，点击工具栏、UDP 和存储控件，经 Presenter/Backend 完成 UDP → 解析 → Plate IFE → 波长表/VTK 位移 → CSV；同时核对窗口指针、场景设置及不可用操作回显。应用适配及这两项测试均在 `apps/FOSD-Classic-QWidgets` 下构建，仅 Classic 版本启用；FOSD-Win 不构建或链接它们。
+`test_workbench_runtime` 验证真实共享 Controls、无业务操作反馈、Plate/HYY 切换、无效标定保留、模型清除及 CSV/SQLite 三类写入。`test_workbench_main` 使用 ClassicWorkbench 与真实 Designer 表单，点击工具栏、UDP 和存储控件，经 Presenter/Backend 完成 UDP → 解析 → Plate IFE → 波长表/VTK 位移 → CSV；同时核对窗口指针、场景设置及不可用操作回显。应用适配位于 `ui/FOSD-Classic-QWidgets/application/runtime`，测试源文件和注册位于 `ui/FOSD-Classic-QWidgets/tests`，完整装配与这些集成测试仅 Classic 版本启用；FOSD-Win 不构建或链接它们。
 
 上述测试不替代真实串口/设备验收；基础 UDP/TCP 拆包与各协议仍由原有模块测试覆盖。Debug 需另配与 Debug 库匹配的运行 DLL。

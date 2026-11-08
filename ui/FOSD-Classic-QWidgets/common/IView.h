@@ -1,6 +1,6 @@
 #pragma once
 #include <QVariantMap>
-#include "ViewEvents.h"
+#include "FOSD-Classic-QWidgets/common/ViewEvents.h"
 
 namespace fosd {
 namespace ui {

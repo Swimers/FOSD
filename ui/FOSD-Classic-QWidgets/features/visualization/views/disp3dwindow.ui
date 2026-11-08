@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>disp3dwindow</class>
+  <widget class="QMainWindow" name="disp3dwindow">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1050</width>
+        <height>775</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>MainWindow</string>
+    </property>
+    <widget class="QWidget" name="centralwidget">
+      <layout class="QGridLayout" name="gridLayout_4">
+        <item row="1" column="1">
+          <widget class="RenderHostWidget" name="vtk_openGL">
+            <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+              <size>
+                <width>800</width>
+                <height>0</height>
+              </size>
+            </property>
+          </widget>
+        </item>
+      </layout>
+    </widget>
+    <widget class="QStatusBar" name="statusBar_SelectedPoint">
+      <property name="font"><font><family>Consolas</family><pointsize>9</pointsize></font></property>
+      <property name="sizeGripEnabled"><bool>false</bool></property>
+      <property name="toolTip"><string>SelectedPoint：模型顶点 ID、原始位置和当前显示的变形位置，坐标单位 mm；变形位置包含显示倍率</string></property>
+    </widget>
+    <widget class="QToolBar" name="toolBar">
+      <property name="windowTitle">
+        <string>toolBar</string>
+      </property>
+      <attribute name="toolBarArea">
+        <enum>TopToolBarArea</enum>
+      </attribute>
+      <attribute name="toolBarBreak">
+        <bool>false</bool>
+      </attribute>
+      <addaction name="actionModelDock" />
+      <addaction name="actionInforDock" />
+      <addaction name="actionViewDock" />
+      <addaction name="separator" />
+      <addaction name="actionStart" />
+      <addaction name="actionPause" />
+      <addaction name="actionStop" />
+      <addaction name="actionReset" />
+      <addaction name="separator" />
+      <addaction name="actionBackData" />
+    </widget>
+    <action name="actionModelDock">
+      <property name="icon">
+        <iconset resource="../../../resources/classic.qrc">
+          <normaloff>:/icon/icon/3D_Plot.png</normaloff>:/icon/icon/3D_Plot.png</iconset>
+      </property>
+      <property name="text">
+        <string>ModelDock</string>
+      </property>
+    </action>
+    <action name="actionInforDock">
+      <property name="icon">
+        <iconset resource="../../../resources/classic.qrc">
+          <normaloff>:/icon/icon/Help_icon.png</normaloff>:/icon/icon/Help_icon.png</iconset>
+      </property>
+      <property name="text">
+        <string>InforDock</string>
+      </property>
+    </action>
+    <action name="actionViewDock">
+      <property name="icon">
+        <iconset resource="../../../resources/classic.qrc">
+          <normaloff>:/icon/icon/Model_icon.png</normaloff>:/icon/icon/Model_icon.png</iconset>
+      </property>
+      <property name="text">
+        <string>ViewDock</string>
+      </property>
+    </action>
+    <action name="actionStart">
+      <property name="enabled"><bool>false</bool></property>
+      <property name="icon">
+        <iconset resource="../../../resources/classic.qrc">
+          <normaloff>:/icon/icon/Play_icon.png</normaloff>:/icon/icon/Play_icon.png</iconset>
+      </property>
+      <property name="text">
+        <string>Start</string>
+      </property>
+    </action>
+    <action name="actionStop">
+      <property name="enabled"><bool>false</bool></property>
+      <property name="icon">
+        <iconset resource="../../../resources/classic.qrc">
+          <normaloff>:/icon/icon/Stop_icon.png</normaloff>:/icon/icon/Stop_icon.png</iconset>
+      </property>
+      <property name="text">
+        <string>Stop</string>
+      </property>
+    </action>
+    <action name="actionPause">
+      <property name="enabled"><bool>false</bool></property>
+      <property name="icon">
+        <iconset resource="../../../resources/classic.qrc">
+          <normaloff>:/icon/icon/Pasue_icon.png</normaloff>:/icon/icon/Pasue_icon.png</iconset>
+      </property>
+      <property name="text">
+        <string>Pause</string>
+      </property>
+    </action>
+    <action name="actionReset">
+      <property name="enabled"><bool>false</bool></property>
+      <property name="icon">
+        <iconset resource="../../../resources/classic.qrc">
+          <normaloff>:/icon/icon/Reset_icon.png</normaloff>:/icon/icon/Reset_icon.png</iconset>
+      </property>
+      <property name="text">
+        <string>Reset</string>
+      </property>
+    </action>
+    <action name="actionBackData">
+      <property name="text">
+        <string>回传数据</string>
+      </property>
+    </action>
+  </widget>
+  <customwidgets>
+    <customwidget>
+      <class>RenderHostWidget</class>
+      <extends>QWidget</extends>
+      <header location="global">renderhostwidget.h</header>
+    </customwidget>
+  </customwidgets>
+  <resources>
+    <include location="../../../resources/classic.qrc" />
+  </resources>
+  <connections />
+</ui>
