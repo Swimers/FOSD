@@ -5,6 +5,7 @@
 namespace fosd {
 namespace ui {
 namespace classic {
+
 enum class PanelId {
     Main,
     Connection,
@@ -17,7 +18,13 @@ enum class PanelId {
     KeyPointSelect,
     HardwareData,
 };
-enum class FeatureId { MainWindow, Connection, Visualization, Model, Tracking };
+enum class FeatureId { 
+    MainWindow, 
+    Connection, 
+    Visualization, 
+    Model, 
+    Tracking 
+};
 FeatureId featureForPanel(PanelId panel);
 
 enum class WindowAction { Minimize, ToggleFullScreen, Close };
@@ -36,9 +43,11 @@ struct UiResponse {
     QString message;
     QVariantMap fields;
 };
+
 } // namespace classic
 } // namespace ui
 } // namespace fosd
+
 Q_DECLARE_METATYPE(fosd::ui::classic::PanelId)
 Q_DECLARE_METATYPE(fosd::ui::classic::FeatureId)
 Q_DECLARE_METATYPE(fosd::ui::classic::UiRequest)

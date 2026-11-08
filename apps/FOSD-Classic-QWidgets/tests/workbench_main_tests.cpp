@@ -1,4 +1,8 @@
 #include "ClassicWorkbench.h"
+#include "FOSD-Classic-QWidgets/apps/visualization/presenters/VisualizationPresenter.h"
+#include "FOSD-Classic-QWidgets/apps/visualization/backends/VisualizationBackend.h"
+#include "FOSD-Classic-QWidgets/apps/model/presenters/ModelPresenter.h"
+#include "FOSD-Classic-QWidgets/apps/model/backends/ModelBackend.h"
 #include "FOSD-Classic-QWidgets/controls/renderhostwidget.h"
 #include <QAction>
 #include <QStatusBar>
@@ -57,6 +61,42 @@ private slots:
   auto *stop=page->findChild<QAction *>("actionStop"); auto *reset=page->findChild<QAction *>("actionReset");
   QTRY_VERIFY(!start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&!reset->isEnabled());
   auto &view=w.runtime().visualization();
+  auto *modelPanel=w.panelWidget(PanelId::ModelPanel);
+  QVERIFY(modelPanel->findChild<QPushButton *>("pbtn_ModelLoad")->isEnabled());
+  QVERIFY(!modelPanel->findChild<QPushButton *>("pbtn_ModelClear")->isEnabled());
+  QVERIFY(!scene->findChild<QWidget *>("cbox_AxisAble")->isEnabled());
+  QVERIFY(!scene->findChild<QWidget *>("cbox_GridAble")->isEnabled());
+  QVERIFY(!scene->findChild<QWidget *>("pbtn_ModelColor")->isEnabled());
+  QVERIFY(!modelPanel->findChild<QWidget *>("pbtn_ScalarSet")->isEnabled());
+  QVERIFY(!w.panelWidget(PanelId::KeyPointEdit)->isEnabled());
+  {
+   VisualizationBackend backend; backend.setServices(&w.runtime());
+   VisualizationPresenter presenter(PanelId::ScenePanel,w.panelView(PanelId::ScenePanel),&w);
+   presenter.setBackend(&backend); QSignalSpy requests(&presenter,&PanelPresenter::requestReady);
+   presenter.execute("pbtn_ModelColor"); // Must not open a dialog.
+   presenter.execute("cbox_AxisAble");
+   ModelBackend modelBackend; modelBackend.setServices(&w.runtime());
+   ModelPresenter modelPresenter(PanelId::ModelPanel,w.panelView(PanelId::ModelPanel),&w);
+   modelPresenter.setBackend(&modelBackend); QSignalSpy modelRequests(&modelPresenter,&PanelPresenter::requestReady);
+   modelPresenter.execute("pbtn_ScalarSet");
+   QTest::qWait(30); QCOMPARE(requests.count(),0); QCOMPARE(modelRequests.count(),0);
+  }
+  QSignalSpy failedLoad(&view,&visualization::VisualizationControl::errorOccurred);
+  w.selectedFile=dir.filePath("missing.stl");
+  modelPanel->findChild<QPushButton *>("pbtn_ModelLoad")->click();
+  QTRY_COMPARE(failedLoad.count(),1);
+  QVERIFY(!view.originalModel()); QVERIFY(!scene->isEnabled());
+  // The restriction is frontend-only; backend environment APIs stay usable.
+  view.showAxes(true); QVERIFY(view.axesSettings().visible); view.showAxes(false);
+  const auto model=dir.filePath("model.stl"); QFile file(model); QVERIFY(file.open(QIODevice::WriteOnly));
+  file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 50 0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n"); file.close();
+  QSignalSpy accepted(&w.runtime().calculation(),&Calculation::CalculationControl::modelAccepted);
+  QVERIFY(view.loadModel(model)); QTRY_COMPARE(accepted.count(),1);
+  QTRY_VERIFY(scene->isEnabled());
+  QVERIFY(modelPanel->findChild<QPushButton *>("pbtn_ModelClear")->isEnabled());
+  QVERIFY(modelPanel->findChild<QWidget *>("pbtn_ScalarSet")->isEnabled());
+  QVERIFY(w.panelWidget(PanelId::KeyPointEdit)->isEnabled());
+  QTRY_VERIFY(start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&reset->isEnabled());
   auto choose=[&](const char *name,const QColor &color,bool accept) {
    QTimer::singleShot(30,[color,accept] {
     auto *dialog=qobject_cast<QColorDialog *>(QApplication::activeModalWidget()); QVERIFY(dialog);
@@ -83,11 +123,6 @@ private slots:
   visualization::VisualizationControl restored;
   QVERIFY(restored.modelColor()==saved); QVERIFY(restored.backgroundSettings().gradient);
   QVERIFY(restored.backgroundSettings().bottomColor==bottom);
-  const auto model=dir.filePath("model.stl"); QFile file(model); QVERIFY(file.open(QIODevice::WriteOnly));
-  file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 100 0 0\nvertex 700 50 0\nvertex 1300 0 0\nendloop\nendfacet\nendsolid t\n"); file.close();
-  QSignalSpy accepted(&w.runtime().calculation(),&Calculation::CalculationControl::modelAccepted);
-  QVERIFY(view.loadModel(model)); QTRY_COMPARE(accepted.count(),1);
-  QTRY_VERIFY(start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&reset->isEnabled());
   start->trigger(); QTRY_VERIFY(!start->isEnabled()&&pause->isEnabled()&&stop->isEnabled());
   pause->trigger(); QTRY_VERIFY(start->isEnabled()&&!pause->isEnabled()&&stop->isEnabled());
   start->trigger(); QTRY_VERIFY(!start->isEnabled()&&pause->isEnabled());
@@ -113,6 +148,18 @@ private slots:
   QCOMPARE(status->currentMessage().size(),aligned.size());
   w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelClear")->click();
   QTRY_VERIFY(!start->isEnabled()&&!pause->isEnabled()&&!stop->isEnabled()&&!reset->isEnabled());
+  QTRY_VERIFY(!scene->isEnabled());
+  QVERIFY(!modelPanel->findChild<QWidget *>("pbtn_ScalarSet")->isEnabled());
+  QVERIFY(!w.panelWidget(PanelId::KeyPointEdit)->isEnabled());
+  QVERIFY(modelPanel->findChild<QPushButton *>("pbtn_ModelLoad")->isEnabled());
+  w.grab().save("scene-no-model-disabled.png");
+  QVERIFY(view.loadModel(model)); QTRY_COMPARE(accepted.count(),2); QTRY_VERIFY(scene->isEnabled());
+  QVERIFY(scene->findChild<QPushButton *>("pbtn_BackgroundTopColor")->isEnabled()); // Gradient retained.
+  QTest::keyClick(mode,Qt::Key_Home); QTRY_VERIFY(!view.backgroundSettings().gradient);
+  QTRY_VERIFY(!scene->findChild<QPushButton *>("pbtn_BackgroundTopColor")->isEnabled());
+  modelPanel->findChild<QPushButton *>("pbtn_ModelClear")->click(); QTRY_VERIFY(!scene->isEnabled());
+  QVERIFY(view.loadModel(model)); QTRY_COMPARE(accepted.count(),3); QTRY_VERIFY(scene->isEnabled());
+  QVERIFY(!scene->findChild<QPushButton *>("pbtn_BackgroundTopColor")->isEnabled()); // Solid retained.
   qunsetenv("FOSD_CONFIG_FILE");
  }
  void calibrationEntryFilteringAndAddressRefresh() {

@@ -1,6 +1,8 @@
 #include "PanelPresenter.h"
 #include "../apps/IWorkbenchView.h"
 #include <atomic>
+#include <QAction>
+#include <QWidget>
 namespace fosd {
 namespace ui {
 namespace classic {
@@ -51,6 +53,20 @@ void PanelPresenter::actionTriggered(PanelId panel, const QString &action) {
 void PanelPresenter::execute(const QString &action) {
     if (action.isEmpty())
         return;
+    // Programmatic frontend activation must respect the same disabled state as
+    // mouse/keyboard input, before opening dialogs or sending backend requests.
+    if (auto *root = dynamic_cast<QWidget *>(m_view)) {
+        if (!root->isEnabled())
+            return;
+        auto *source = root->findChild<QObject *>(action);
+        if (auto *widget = qobject_cast<QWidget *>(source)) {
+            if (!widget->isEnabled())
+                return;
+        } else if (auto *command = qobject_cast<QAction *>(source)) {
+            if (!command->isEnabled())
+                return;
+        }
+    }
     UiRequest request;
     request.id = ++nextRequest;
     request.panel = m_panel;

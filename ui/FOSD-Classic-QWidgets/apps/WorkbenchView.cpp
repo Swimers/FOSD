@@ -16,6 +16,7 @@
 #include <QComboBox>
 #include "../common/ViewEvents.h"
 #include "connection/views/connectwindow.h"
+#include "visualization/views/docks/disp3dinfodockpanel.h"
 #include <QTableWidget>
 
 namespace fosd {
@@ -84,11 +85,24 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     data->setColumnCount(3);
     data->setHorizontalHeaderLabels({tr("IFE 输入"), tr("波长源序号"), tr("标定应变")});
 
+    auto *info = qobject_cast<InfoPanelView *>(panelWidget(PanelId::InfoPanel));
+    connect(info, &InfoPanelView::modelAvailabilityChanged, this, &WorkbenchView::setModelAvailable);
+    setModelAvailable(false);
     applyFields({{"switch_Style", true}});
     applyTheme(true);
 }
 
 WorkbenchView::~WorkbenchView() = default;
+
+void WorkbenchView::setModelAvailable(bool available) {
+    // Gate parent containers so child-specific states (e.g. gradient top color)
+    // continue to follow their own rules while model availability changes.
+    for (auto panel : {PanelId::ScenePanel, PanelId::KeyPointEdit, PanelId::KeyPointSelect})
+        panelWidget(panel)->setEnabled(available);
+    auto *model = panelWidget(PanelId::ModelPanel);
+    model->findChild<QWidget *>("widget_ModelControls")->setEnabled(available);
+    model->findChild<QPushButton *>("pbtn_ModelClear")->setEnabled(available);
+}
 IView *WorkbenchView::panelView(PanelId panel) const {
     return dynamic_cast<IView *>(panelWidget(panel));
 }
