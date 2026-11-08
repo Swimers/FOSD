@@ -9,7 +9,7 @@
 #include <QMouseEvent>
 #include <QTextBlock>
 #include <QTextCursor>
-#include "FOSD-Classic-QWidgets/third_party/qcustomplot/qcustomplot.h"
+#include "FOSD-Classic-QWidgets/controls/qcustomplot/qcustomplot.h"
 namespace fosd {
 namespace ui {
 namespace classic {

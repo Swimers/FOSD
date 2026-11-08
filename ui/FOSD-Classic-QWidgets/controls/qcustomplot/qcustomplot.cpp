@@ -23,7 +23,7 @@
 **          Version: 2.1.1                                                **
 ****************************************************************************/
 
-#include "FOSD-Classic-QWidgets/third_party/qcustomplot/qcustomplot.h"
+#include "FOSD-Classic-QWidgets/controls/qcustomplot/qcustomplot.h"
 
 
 /* including file 'src/vector2d.cpp'       */

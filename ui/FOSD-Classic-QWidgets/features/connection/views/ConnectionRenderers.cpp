@@ -1,5 +1,5 @@
 #include "FOSD-Classic-QWidgets/features/connection/views/ConnectionRenderers.h"
-#include "FOSD-Classic-QWidgets/third_party/qcustomplot/qcustomplot.h"
+#include "FOSD-Classic-QWidgets/controls/qcustomplot/qcustomplot.h"
 #include <QPlainTextEdit>
 #include <QTextBlock>
 #include <QTextCursor>

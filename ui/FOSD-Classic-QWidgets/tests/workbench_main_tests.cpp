@@ -26,7 +26,7 @@
 #include <QTextBlock>
 #include <QColorDialog>
 #include <QStandardItemModel>
-#include "FOSD-Classic-QWidgets/third_party/qcustomplot/qcustomplot.h"
+#include "FOSD-Classic-QWidgets/controls/qcustomplot/qcustomplot.h"
 #include <QSignalSpy>
 #include <QtEndian>
 #include <cstring>

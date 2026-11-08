@@ -28,12 +28,12 @@ set_target_properties(fosd_classic_presenters PROPERTIES
 add_library(fosd_classic_controls STATIC
     controls/switchcontrol.h controls/switchcontrol.cpp
     controls/renderhostwidget.h controls/renderhostwidget.cpp
-    third_party/qcustomplot/qcustomplot.h third_party/qcustomplot/qcustomplot.cpp
+    controls/qcustomplot/qcustomplot.h controls/qcustomplot/qcustomplot.cpp
 )
 target_include_directories(fosd_classic_controls PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/.."
     "${CMAKE_CURRENT_SOURCE_DIR}/controls"
-    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/qcustomplot")
+    "${CMAKE_CURRENT_SOURCE_DIR}/controls/qcustomplot")
 target_link_libraries(fosd_classic_controls PUBLIC Qt5::Widgets Qt5::PrintSupport)
 
 add_library(fosd_classic_widgets STATIC

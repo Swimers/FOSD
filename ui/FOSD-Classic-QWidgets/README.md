@@ -20,8 +20,8 @@ ui/FOSD-Classic-QWidgets/
       views/dialogs/           颜色选择色卡
     data/                      HardwareDataPresenter 与硬件数据表
   common/                      IView、基础绑定、格式化和资源初始化
-  controls/                    自研通用控件
-  third_party/qcustomplot/     第三方曲线控件及原许可证说明
+  controls/                    自研通用控件与第三方控件
+    qcustomplot/               第三方曲线控件及原许可证说明
   resources/                   classic.qrc、icons、styles
   tests/                       控件、Model/Presenter、选点与完整工作台回归
 ```
