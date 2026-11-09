@@ -19,7 +19,7 @@ enum class PanelId {
     HardwareData,
 };
 
-enum class WindowAction { Minimize, ToggleFullScreen, Close };
+enum class WindowAction { Minimize, ToggleFullScreen };
 } // namespace classic
 } // namespace ui
 } // namespace fosd

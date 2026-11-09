@@ -20,16 +20,7 @@ public:
     QVariantMap values() const override;
     void applyFields(const QVariantMap &fields) override;
     void clearSensitiveFields() override;
-    void clearInputs() override;
     void showStatus(const QString &message) override;
-signals:
-    void pushButton_6Requested(const QVariantMap &fields);
-    void radioButtonRequested(const QVariantMap &fields);
-    void radioButton_2Requested(const QVariantMap &fields);
-    void radioButton_3Requested(const QVariantMap &fields);
-    void radioButton_4Requested(const QVariantMap &fields);
-private slots:
-    void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 
 private:
     std::unique_ptr<Ui::Disp3DInfoDockPanel> m_ui;

@@ -9,7 +9,7 @@
     {
       "name": "windows-msvc2017",
       "displayName": "FOSD 主程序 (MSVC 2017 x64)",
-      "description": "主程序及全链路测试；独立 UI 预览、VTK 验证和通信助手使用各自预设。Debug/Release 共用 build/。",
+      "description": "主程序及全链路测试；Classic 主界面和通信助手使用各自预设。Debug/Release 共用 build/。",
       "generator": "Visual Studio 15 2017",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build",
@@ -19,8 +19,6 @@
         "FOSD_BUILD_MAIN_APP": "ON",
         "FOSD_BUILD_WORKBENCH_APP": "OFF",
         "FOSD_WORKBENCH_BUILD_TESTS": "OFF",
-        "FOSD_BUILD_VTK_NATIVE_TEST_APP": "OFF",
-        "FOSD_VTK_NATIVE_BUILD_TESTS": "OFF",
         "FOSD_BUILD_COMMUNICATION_ASSISTANT_QML": "OFF",
         "FOSD_ASSISTANT_QML_BUILD_TESTS": "OFF",
         "FOSD_BUILD_WIDGETS_ASSISTANT": "OFF",
@@ -39,19 +37,6 @@
         "FOSD_BUILD_VISUALIZATION_TESTS": "ON",
         "FOSD_BUILD_WORKBENCH_APP": "ON",
         "FOSD_WORKBENCH_BUILD_TESTS": "ON"
-      }
-    },
-    {
-      "name": "vtk-native-widgets",
-      "displayName": "Test-VtkOpenGLNativeWidgets 独立验证 (MSVC 2017 x64)",
-      "description": "构建原生 Qt/VTK 集成前端、全部现有后端模块及全链路测试。",
-      "inherits": "windows-msvc2017",
-      "binaryDir": "${sourceDir}/build/vtk-native-widgets",
-      "cacheVariables": {
-        "FOSD_BUILD_MAIN_APP": "OFF",
-        "FOSD_BUILD_VTK_NATIVE_TEST_APP": "ON",
-        "FOSD_BUILD_TESTS": "ON",
-        "FOSD_VTK_NATIVE_BUILD_TESTS": "ON"
       }
     },
     {
@@ -102,16 +87,6 @@
     {
       "name": "fosd-widgets-release",
       "configurePreset": "fosd-widgets",
-      "configuration": "Release"
-    },
-    {
-      "name": "vtk-native-widgets-debug",
-      "configurePreset": "vtk-native-widgets",
-      "configuration": "Debug"
-    },
-    {
-      "name": "vtk-native-widgets-release",
-      "configurePreset": "vtk-native-widgets",
       "configuration": "Release"
     },
     {
@@ -170,26 +145,6 @@
     {
       "name": "fosd-widgets-release",
       "configurePreset": "fosd-widgets",
-      "configuration": "Release",
-      "environment": {
-        "PATH": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;$penv{PATH}"
-      },
-      "output": { "outputOnFailure": true },
-      "execution": { "noTestsAction": "error" }
-    },
-    {
-      "name": "vtk-native-widgets-debug",
-      "configurePreset": "vtk-native-widgets",
-      "configuration": "Debug",
-      "environment": {
-        "PATH": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;$penv{PATH}"
-      },
-      "output": { "outputOnFailure": true },
-      "execution": { "noTestsAction": "error" }
-    },
-    {
-      "name": "vtk-native-widgets-release",
-      "configurePreset": "vtk-native-widgets",
       "configuration": "Release",
       "environment": {
         "PATH": "d:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;$penv{PATH}"

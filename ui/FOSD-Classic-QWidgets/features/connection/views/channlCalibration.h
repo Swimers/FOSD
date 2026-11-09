@@ -20,13 +20,7 @@ public:
     QVariantMap values() const override;
     void applyFields(const QVariantMap &fields) override;
     void clearSensitiveFields() override;
-    void clearInputs() override;
     void showStatus(const QString &message) override;
-signals:
-    void pbtn_SenerCancelRequested(const QVariantMap &fields);
-    void pbtn_SenerSetRequested(const QVariantMap &fields);
-private slots:
-    void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 
 private:
     std::unique_ptr<Ui::channlCalibration> m_ui;

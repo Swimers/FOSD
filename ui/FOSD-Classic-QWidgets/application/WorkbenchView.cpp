@@ -159,9 +159,6 @@ void WorkbenchView::windowAction(PanelId panel, WindowAction action) {
             else
                 widget->showFullScreen();
             break;
-        case WindowAction::Close:
-            closePanel(panel);
-            break;
     }
 }
 

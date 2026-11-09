@@ -10,7 +10,6 @@ class ModelPanelPresenter final : public PanelPresenter {
                         QObject *parent = nullptr);
     void initialize() override;
     void refresh() override;
-    void poll() override;
 
   protected:
     bool localAction(const QString &, const QVariantMap &) override;

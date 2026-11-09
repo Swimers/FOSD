@@ -1,5 +1,7 @@
 # 三维可视化迁移与标量颜色映射
 
+> 2026-11-09：独立 Qt/VTK 验证前端已移除。当前通过 fosd-widgets 预设运行 Classic 与共享后端测试；文中原独立冒烟检查的说明属于历史验证记录，不再提供 --smoke-test 入口。
+
 ## 分步迁移安排
 
 | 阶段 | 组件职责与 Control 接口 | 状态 |
@@ -79,20 +81,19 @@ control.setScalarColoringEnabled(true);
 
 ## 验证前端与测试
 
-`ui/Test-VtkOpenGLNativeWidgets/views/VtkValidationWindow.ui` 新增颜色配置控件，值经 Presenter → Backend → VisualizationControl 传递；应用按钮一次提交配置。分量顺序为 X/Y/Z/总位移，物理范围单位为 mm。应变等自定义场暂由后端接口输入。
+当前 Classic 颜色映射控件位于 `D:/Documents/GitHub/FOSD-ReArc/ui/FOSD-Classic-QWidgets/features/visualization/views/docks/disp3dmodeldockpanel.ui`，通过 ModelPanelPresenter → WorkbenchModel → VisualizationControl 提交配置。分量顺序为 X/Y/Z/总位移，物理范围单位为 mm。应变等自定义场暂由后端接口输入。
 
 无窗口 VTK 单元测试需要完整运行库，仓库裁剪 SDK 不含 DLL，因此通过独立选项开启，不改变默认无 VTK DLL 的测试运行条件：
 
 ```powershell
-cmake --preset vtk-native-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=ON
-cmake --build --preset vtk-native-widgets-release
+cmake --preset fosd-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=ON
+cmake --build --preset fosd-widgets-release
 $env:PATH = 'D:/VTK/VTK-release/bin;D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
-ctest --preset vtk-native-widgets-release
-& ./build/vtk-native-widgets/bin/Release/Test-VtkOpenGLNativeWidgets.exe --smoke-test | Out-Host
+ctest --preset fosd-widgets-release
 ```
 
 `test_visualization` 检查四种位移值、带符号/绝对值、归一化/物理值、自动/手动范围、色表方向、常量/零场、超大数值、非法输入、自定义场、Control 即时切换、倍率独立性和模型生命周期。OpenGL 冒烟检查在真实 UDP 到解算结果的链路上额外验证四分量颜色数组、物理范围和复位清理。
 
-Debug 可编译同一测试，但运行须提供 Debug VTK DLL，不能使用 Release DLL。完成专项验证后，可用 `cmake --preset vtk-native-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=OFF` 还原默认测试集合。
+Debug 可编译同一测试，但运行须提供 Debug VTK DLL，不能使用 Release DLL。完成专项验证后，可用 `cmake --preset fosd-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=OFF` 还原默认测试集合。
 
 关键点和鼠标交互接口详见 [关键点与选点对接](keypoint-picking-integration.md)。

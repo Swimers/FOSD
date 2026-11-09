@@ -29,9 +29,6 @@ class MemoryView : public IView {
     }
     void clearSensitiveFields() override {
     }
-    void clearInputs() override {
-        input.clear();
-    }
     void showStatus(const QString &s) override {
         status = s;
     }

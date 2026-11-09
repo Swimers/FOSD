@@ -5,7 +5,6 @@
 #include <QTextCursor>
 #include <QScrollBar>
 #include <QToolTip>
-#include <cmath>
 namespace fosd {
 namespace ui {
 namespace classic {
@@ -56,23 +55,6 @@ void renderSpectrum(QCustomPlot *plot, const QVariantMap &data, QWidget *owner) 
         plot->replot(QCustomPlot::rpQueuedReplot);
         return;
     }
-    const auto xs = data["x"].toList(), ys = data["y"].toList();
-    if (xs.size() != ys.size())
-        return;
-    QVector<double> x, y;
-    for (int index = 0; index < xs.size(); ++index) {
-        bool validX = false, validY = false;
-        const double xx = xs[index].toDouble(&validX), yy = ys[index].toDouble(&validY);
-        if (validX && validY && std::isfinite(xx) && std::isfinite(yy)) {
-            x.append(xx);
-            y.append(yy);
-        }
-    }
-    if (!plot->graphCount())
-        plot->addGraph();
-    plot->graph(0)->setData(x, y);
-    plot->rescaleAxes();
-    plot->replot();
 }
 void appendTrafficEntries(QPlainTextEdit *edit, const QVariantMap &data) {
     const bool follow = edit->verticalScrollBar()->value() == edit->verticalScrollBar()->maximum();

@@ -84,7 +84,7 @@ target_link_libraries(fosd_visualization PUBLIC fosd_core Qt5::Core Qt5::Widgets
 
 target_compile_features(fosd_visualization PUBLIC cxx_std_11)
 
-if(FOSD_BUILD_WORKBENCH_APP OR FOSD_BUILD_VTK_NATIVE_TEST_APP)
+if(FOSD_BUILD_WORKBENCH_APP)
     find_package(Qt5 5.12 REQUIRED COMPONENTS OpenGL)
     add_library(fosd_visualization_qt INTERFACE)
     find_library(FOSD_vtkGUISupportQt_LIBRARY_RELEASE NAMES vtkGUISupportQt-8.2

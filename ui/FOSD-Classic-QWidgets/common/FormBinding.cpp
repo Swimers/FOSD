@@ -28,9 +28,11 @@ bool named(const QObject *object) {
     return !object->objectName().isEmpty() && !object->objectName().startsWith("qt_");
 }
 } // namespace
+
 FormBinding::FormBinding(PanelId panel, QWidget *widget, QObject *parent)
     : ViewEvents(parent), m_panel(panel), m_widget(widget) {
     widget->setProperty("fosdPanelRoot", true);
+
     for (auto *button : widget->findChildren<QAbstractButton *>())
         if (named(button))
             connect(button, &QAbstractButton::clicked, this, &FormBinding::relay);
@@ -55,10 +57,6 @@ FormBinding::FormBinding(PanelId panel, QWidget *widget, QObject *parent)
         connect(box, &QDialogButtonBox::accepted, this, &FormBinding::accepted);
         connect(box, &QDialogButtonBox::rejected, this, &FormBinding::rejected);
     }
-}
-
-QWidget *FormBinding::widget() const {
-    return m_widget.data();
 }
 
 bool FormBinding::owns(const QObject *object) const {
@@ -246,21 +244,6 @@ void FormBinding::clearSensitiveFields() {
         return;
     for (auto *edit : m_widget->findChildren<QLineEdit *>())
         if (owns(edit) && edit->echoMode() != QLineEdit::Normal) {
-            QSignalBlocker block(edit);
-            edit->clear();
-        }
-}
-
-void FormBinding::clearInputs() {
-    if (!m_widget)
-        return;
-    for (auto *edit : m_widget->findChildren<QLineEdit *>())
-        if (owns(edit) && !edit->isReadOnly()) {
-            QSignalBlocker block(edit);
-            edit->clear();
-        }
-    for (auto *edit : m_widget->findChildren<QPlainTextEdit *>())
-        if (owns(edit) && !edit->isReadOnly()) {
             QSignalBlocker block(edit);
             edit->clear();
         }

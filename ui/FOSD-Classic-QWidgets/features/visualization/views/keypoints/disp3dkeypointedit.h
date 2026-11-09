@@ -20,19 +20,7 @@ public:
     QVariantMap values() const override;
     void applyFields(const QVariantMap &fields) override;
     void clearSensitiveFields() override;
-    void clearInputs() override;
     void showStatus(const QString &message) override;
-signals:
-    void cbox_IDKeyPointRequested(const QVariantMap &fields);
-    void pbtn_ClearAllRequested(const QVariantMap &fields);
-    void pbtn_FindKeyPointRequested(const QVariantMap &fields);
-    void pbtn_SelectAllRequested(const QVariantMap &fields);
-    void pbtn_AddKeyPointRequested(const QVariantMap &fields);
-    void pbtn_RemoveKeyPointRequested(const QVariantMap &fields);
-    void pbtn_AddBoxRequested(const QVariantMap &fields);
-    void pbtn_RemoveBoxRequested(const QVariantMap &fields);
-private slots:
-    void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 
 private:
     std::unique_ptr<Ui::disp3dkeypointedit> m_ui;

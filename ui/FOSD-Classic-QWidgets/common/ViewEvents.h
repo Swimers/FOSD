@@ -8,8 +8,8 @@ namespace classic {
 class ViewEvents : public QObject {
     Q_OBJECT
 public:
-    explicit ViewEvents(QObject *parent = nullptr) : QObject(parent) {
-    }
+    explicit ViewEvents(QObject *parent = nullptr) : QObject(parent) { }
+
 signals:
     void actionTriggered(fosd::ui::classic::PanelId panel, const QString &action);
 };

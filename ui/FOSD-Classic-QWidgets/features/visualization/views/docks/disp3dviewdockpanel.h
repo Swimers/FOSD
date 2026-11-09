@@ -20,21 +20,7 @@ public:
     QVariantMap values() const override;
     void applyFields(const QVariantMap &fields) override;
     void clearSensitiveFields() override;
-    void clearInputs() override;
     void showStatus(const QString &message) override;
-signals:
-    void cbox_AxisAbleRequested(const QVariantMap &fields);
-    void cbox_CareamLockAbleRequested(const QVariantMap &fields);
-    void cbox_GridAbleRequested(const QVariantMap &fields);
-    void cbox_SelectViewRequested(const QVariantMap &fields);
-    void cbox_XOYGridRequested(const QVariantMap &fields);
-    void cbox_XOZGridRequested(const QVariantMap &fields);
-    void cbox_ZOYGridRequested(const QVariantMap &fields);
-    void hsd_AxisSizeRequested(const QVariantMap &fields);
-    void hsd_GridSizeRequested(const QVariantMap &fields);
-    void pbtn_SwitchViewRequested(const QVariantMap &fields);
-private slots:
-    void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 
 private:
     std::unique_ptr<Ui::Disp3DViewDockPanel> m_ui;

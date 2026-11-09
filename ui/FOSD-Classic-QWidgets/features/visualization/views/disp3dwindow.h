@@ -20,19 +20,7 @@ public:
     QVariantMap values() const override;
     void applyFields(const QVariantMap &fields) override;
     void clearSensitiveFields() override;
-    void clearInputs() override;
     void showStatus(const QString &message) override;
-signals:
-    void actionBackDataRequested(const QVariantMap &fields);
-    void actionInforDockRequested(const QVariantMap &fields);
-    void actionModelDockRequested(const QVariantMap &fields);
-    void actionPauseRequested(const QVariantMap &fields);
-    void actionResetRequested(const QVariantMap &fields);
-    void actionStartRequested(const QVariantMap &fields);
-    void actionStopRequested(const QVariantMap &fields);
-    void actionViewDockRequested(const QVariantMap &fields);
-private slots:
-    void relayControl(fosd::ui::classic::PanelId panel, const QString &action);
 
 private:
     std::unique_ptr<Ui::disp3dwindow> m_ui;

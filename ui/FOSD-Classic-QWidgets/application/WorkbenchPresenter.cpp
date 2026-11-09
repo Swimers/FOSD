@@ -63,10 +63,6 @@ void WorkbenchPresenter::initialize() {
     if (m_model)
         m_model->initialize();
 }
-void WorkbenchPresenter::execute(PanelId p, const QString &action) {
-    if (auto *presenter = m_presenters.value(int(p)))
-        presenter->execute(action);
-}
 void WorkbenchPresenter::refreshDisplays() {
     for (auto *p : m_presenters)
         p->poll();

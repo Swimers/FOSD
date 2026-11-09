@@ -13,12 +13,11 @@ class FormBinding final : public ViewEvents {
     Q_OBJECT
 public:
     FormBinding(PanelId panel, QWidget *widget, QObject *parent = nullptr);
-    QWidget *widget() const;
     QVariantMap values() const;
     void applyFields(const QVariantMap &fields);
     void clearSensitiveFields();
-    void clearInputs();
     void showStatus(const QString &message);
+
 private slots:
     void relay();
     void accepted();

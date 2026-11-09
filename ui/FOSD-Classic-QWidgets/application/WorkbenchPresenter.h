@@ -16,7 +16,6 @@ class WorkbenchPresenter final : public QObject {
     }
   public slots:
     void initialize();
-    void execute(PanelId, const QString &);
     void refreshDisplays();
 
   private:

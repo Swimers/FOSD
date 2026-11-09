@@ -14,8 +14,7 @@
 | [场景环境与相机](Architectural/scene-environment-integration.md) | 坐标轴、三平面网格、背景与纹理世界、相机视图/投影及验证 |
 | [关键点、选中点与持续显示点](Architectural/keypoint-picking-integration.md) | 三类集合约束、外部固定点、Classic MVP 编辑、球/文本随动、拾取与测试 |
 | [可视化迁移与标量映射](Architectural/visualization-integration.md) | 分步迁移安排、X/Y/Z/总位移着色、归一化与物理值、通用点标量入口及测试 |
-| [独立构建预设](build-presets.md) | 主程序、FOSD-Classic-QWidgets 预览、原生 Qt/VTK 验证及通信助手的配置、构建、测试与运行 |
-| [原生 Qt/VTK 验证前端](../ui/Test-VtkOpenGLNativeWidgets/README.md) | Designer UI、Presenter、全部后端连接、窗口指针传递及收包到变形显示验证 |
+| [独立构建预设](build-presets.md) | 主程序、FOSD-Classic-QWidgets 完整版本及通信助手的配置、构建、测试与运行 |
 | [主工作台 Widgets 与 MVP](../ui/FOSD-Classic-QWidgets/README.md) | 旧版 19 个表单、资源、View/Presenter、后端请求及三维宿主对接 |
 | [解算与模型对接](Architectural/calculation-integration.md) | 波长快照、标定、模型输入、逐点插值与只读结果输出 |
 | [数据存储对接](Architectural/storage-integration.md) | 解算线程托管、CSV/SQLite、数据类型及点位选择、错误处理、扩展与测试 |

@@ -15,6 +15,7 @@ struct WorkbenchState {
     DisplayState display = DisplayState::Stopped;
     RecordingState recording = RecordingState::Stopped;
 };
+
 // GUI-thread business coordinator. No widget identifiers or presentation maps.
 class WorkbenchModel final : public QObject {
     Q_OBJECT
@@ -39,6 +40,7 @@ class WorkbenchModel final : public QObject {
     communication::ConnectionState connectionState(communication::Channel c) const {
         return m_states[int(c)];
     }
+
     bool applyCalibration(const Calculation::CalculationConfiguration &, QString *error = nullptr);
     bool loadCalibration(QString *error = nullptr);
     bool baseline(QString *error = nullptr);
@@ -65,6 +67,7 @@ class WorkbenchModel final : public QObject {
     bool loadModel(const QString &path) {
         return m_visualization->loadModel(path);
     }
+
     void clearModel();
     bool selectAllKeyPoints();
     bool addKeyPoint(vtkIdType id);
@@ -168,15 +171,6 @@ class WorkbenchModel final : public QObject {
     }
     visualization::PickedPointInfo selectedPoint() const {
         return m_visualization->selectedPoint();
-    }
-    visualization::PickedPointInfo selectPoint(vtkIdType id) {
-        return m_visualization->selectPoint(id);
-    }
-    void clearSelection() const {
-        m_visualization->clearSelection();
-    }
-    QVector<vtkIdType> nearbyPoints(const std::array<double, 3> &p, double radius) {
-        return m_visualization->nearbyPoints(p, radius);
     }
   signals:
     void stateChanged();

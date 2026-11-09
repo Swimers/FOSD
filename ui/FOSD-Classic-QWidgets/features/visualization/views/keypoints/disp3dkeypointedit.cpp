@@ -10,7 +10,6 @@ KeyPointEditView::KeyPointEditView(QWidget *parent)
     initializeFosdUiResources();
     m_ui->setupUi(this);
     m_binding = new FormBinding(PanelId::KeyPointEdit, this, this);
-    connect(m_binding, &ViewEvents::actionTriggered, this, &KeyPointEditView::relayControl);
 }
 
 KeyPointEditView::~KeyPointEditView() = default;
@@ -30,50 +29,10 @@ void KeyPointEditView::clearSensitiveFields() {
     m_binding->clearSensitiveFields();
 }
 
-void KeyPointEditView::clearInputs() {
-    m_binding->clearInputs();
-}
-
 void KeyPointEditView::showStatus(const QString &message) {
     m_binding->showStatus(message);
 }
 
-void KeyPointEditView::relayControl(PanelId panel, const QString &action) {
-    if (panel != PanelId::KeyPointEdit)
-        return;
-    if (action == "pbtn_AddKeyPoint") {
-        emit pbtn_AddKeyPointRequested(values());
-        return;
-    }
-    if (action == "pbtn_RemoveKeyPoint") {
-        emit pbtn_RemoveKeyPointRequested(values());
-        return;
-    }
-    if (action == "pbtn_AddBox") {
-        emit pbtn_AddBoxRequested(values());
-        return;
-    }
-    if (action == "pbtn_RemoveBox") {
-        emit pbtn_RemoveBoxRequested(values());
-        return;
-    }
-    if (action == "cbox_IDKeyPoint") {
-        emit cbox_IDKeyPointRequested(values());
-        return;
-    }
-    if (action == "pbtn_ClearAll") {
-        emit pbtn_ClearAllRequested(values());
-        return;
-    }
-    if (action == "pbtn_FindKeyPoint") {
-        emit pbtn_FindKeyPointRequested(values());
-        return;
-    }
-    if (action == "pbtn_SelectAll") {
-        emit pbtn_SelectAllRequested(values());
-        return;
-    }
-}
 } // namespace classic
 } // namespace ui
 } // namespace fosd

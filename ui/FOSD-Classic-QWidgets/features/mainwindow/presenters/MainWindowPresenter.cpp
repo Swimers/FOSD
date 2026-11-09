@@ -4,8 +4,7 @@
 namespace fosd {
 namespace ui {
 namespace classic {
-MainWindowPresenter::MainWindowPresenter(PanelId panel, IView *view, IWorkbenchView *host,
-                                         QObject *parent)
+MainWindowPresenter::MainWindowPresenter(PanelId panel, IView *view, IWorkbenchView *host, QObject *parent)
     : PanelPresenter(panel, view, host, parent) {
 }
 

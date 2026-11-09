@@ -123,6 +123,7 @@ void ConnectionPresenter::bindModel() {
                 }
             });
 }
+
 void ConnectionPresenter::refresh() {
     if (!m_model)
         return;
@@ -159,6 +160,7 @@ void ConnectionPresenter::refresh() {
              {"pbtn_CalculationStart.enabled", !s.solving},
              {"pbtn_CalculationStop.enabled", s.solving}});
 }
+
 bool ConnectionPresenter::handleAction(const QString &action, const QVariantMap &fields,
                                        QString &message, QVariantMap &updates) {
     const auto &f = fields;
@@ -208,8 +210,6 @@ bool ConnectionPresenter::handleAction(const QString &action, const QVariantMap 
         m_model->notice(message);
     } else if (action == "pbtn_ConfigRead") {
         success = m_model->loadCalibration(&message);
-    } else if (action == "pbtn_ChannelCalibration") {
-        publishCalibration();
     } else if (action == "pbtn_RefreshLocalAddress") {
         initializeLocalAddresses(text(fields, "cbox_LocakIP"));
         message = tr("本地 IPv4 地址已刷新");
@@ -453,6 +453,7 @@ bool ConnectionPresenter::handleAction(const QString &action, const QVariantMap 
         return false;
     return success;
 }
+
 void ConnectionPresenter::initialize() {
     if (!m_model)
         return;
@@ -515,6 +516,7 @@ void ConnectionPresenter::initialize() {
     publishCalibration();
     refresh();
 }
+
 void ConnectionPresenter::poll() {
     if (!m_model || m_panel != PanelId::Connection)
         return;
@@ -569,6 +571,7 @@ void ConnectionPresenter::poll() {
         m_presentedFrame = m_frame->revision;
     }
 }
+
 void ConnectionPresenter::rawReceived(Channel channel, const QByteArray &bytes,
                                       const Endpoint &peer) {
     if (channel == Channel::Tcp && peer.isValid())
@@ -727,6 +730,7 @@ void ConnectionPresenter::clearReceiveLogs() {
                                   {"ptedit_UdpRec", QString()},
                                   {"ptedit_TcpRec", QString()}});
 }
+
 void ConnectionPresenter::initializePorts(const QString &serialPort, const QString &localAddress) {
     QStringList ports, labels;
     QVariantList data;
@@ -792,6 +796,7 @@ void ConnectionPresenter::publishNetworkConfiguration(int mode) {
     }
     present(PanelId::Connection, fields);
 }
+
 void ConnectionPresenter::publishCalibration() {
     present(
         PanelId::Connection,

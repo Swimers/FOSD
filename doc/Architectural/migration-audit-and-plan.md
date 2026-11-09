@@ -1,5 +1,7 @@
 # 迁移完成度核查与后续计划
 
+> 历史计划：Test-VtkOpenGLNativeWidgets 已于 2026-11-09 移除；当前主工作台为 FOSD-Classic-QWidgets，构建与测试以构建预设文档为准。下文保留原核查时的状态。
+
 核查日期：2026-10-26。依据当前重构项目和旧版 `D:/Documents/GitHub/FOSD_Project/src` 的实际源码、入口及调用关系。此文是源码核查与迁移计划，不代表本轮完成了运行测试或真实设备验收。
 
 后续更新：本轮 MVP/Control、QVTK、保存交互及全链路测试已在 FOSD-Classic-QWidgets 分版本完成，见 [Classic 业务闭环对接](formal-workbench-integration.md)。FOSD-Win 的入口及源码保持原状，下文对该入口的缺口分析仍作为后续参考。Plate IFE 已迁入共享 calculation，发送器仍在 tools。

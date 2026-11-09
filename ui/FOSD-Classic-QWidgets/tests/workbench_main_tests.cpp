@@ -10,6 +10,7 @@
 #include <QtTest>
 #include "FOSD-Classic-QWidgets/model/WorkbenchModel.h"
 #include <QFile>
+#include <QImage>
 #include <QTemporaryDir>
 #include <QUdpSocket>
 #include <QPushButton>
@@ -195,7 +196,11 @@ private slots:
   tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_udp")); QVERIFY(!filter->isVisible());
   auto *addresses=panel->findChild<QComboBox *>("cbox_LocakIP");
   addresses->addItem("192.0.2.123"); addresses->setCurrentIndex(addresses->findText("127.0.0.1"));
+  QSignalSpy completed(w.presenter().panelPresenter(PanelId::Connection),&PanelPresenter::actionFinished);
   panel->findChild<QPushButton *>("pbtn_RefreshLocalAddress")->click();
+  QCOMPARE(completed.count(),1);
+  QCOMPARE(completed.first()[0].toString(),QString("pbtn_RefreshLocalAddress"));
+  QVERIFY(completed.first()[1].toBool());
   QTRY_COMPARE(addresses->findText("192.0.2.123"),-1); QCOMPARE(addresses->currentText(),QString("127.0.0.1"));
   auto *calibration=w.panelWidget(PanelId::ChannelCalibration); QVERIFY(calibration);
   QCOMPARE(calibration->objectName(),QString("channlCalibration"));
@@ -360,6 +365,11 @@ private slots:
   plot->xAxis->setRange(.5,1.5); const auto range=plot->xAxis->range();
   auto more=samples; more.append(QVariant(QVariantList{3.,1552.})); update(more);
   QCOMPARE(plot->xAxis->range().lower,range.lower); QCOMPARE(plot->xAxis->range().upper,range.upper);
+  // Unknown presentation fields must preserve the active multi-series curve and viewport.
+  view->applyFields({{"cplot_Spectrum",QVariantMap{{"unsupported",true}}}});
+  QCOMPARE(plot->graphCount(),1); QCOMPARE(plot->graph(0)->dataCount(),4);
+  QCOMPARE(plot->graph(0)->name(),QString("CH1_1"));
+  QCOMPARE(plot->xAxis->range().lower,range.lower); QCOMPARE(plot->xAxis->range().upper,range.upper);
   QVERIFY(panel->findChild<QLabel *>("lab_SpectrumPointValue")->text().contains("1550.500000"));
   const QPoint dragStart=plot->axisRect()->rect().center();
   QTest::mousePress(plot,Qt::LeftButton,Qt::NoModifier,dragStart);
@@ -378,6 +388,11 @@ private slots:
   panel->findChild<QPushButton *>("pbtn_SpectrumReset")->click();
   QVERIFY(follow->isChecked()); QVERIFY(plot->xAxis->range().upper>=3.);
   plot->replot(); w.grab().save("connection-spectrum-light.png");
+  w.selectedFile=dir.filePath("spectrum-export.png");
+  panel->findChild<QPushButton *>("pbtn_SaveSpectrum")->click();
+  QVERIFY(QFileInfo(w.selectedFile).size()>0);
+  QVERIFY(!QImage(w.selectedFile).isNull());
+  QCOMPARE(plot->graph(0)->dataCount(),4);
   tabs->setCurrentWidget(panel->findChild<QWidget *>("tab_usart")); w.grab().save("connection-serial-layout.png");
   qunsetenv("FOSD_CONFIG_FILE");
  }

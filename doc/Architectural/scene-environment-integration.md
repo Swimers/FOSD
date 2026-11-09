@@ -1,5 +1,7 @@
 # 场景环境与相机对接
 
+> 2026-11-09：独立 Qt/VTK 验证前端已移除。当前通过 fosd-widgets 预设运行 Classic 与共享后端测试；文中原独立冒烟检查的说明属于历史验证记录，不再提供 --smoke-test 入口。
+
 `SceneEnvironment` 管理世界坐标轴、三平面网格、背景、地面/天空及相机；`VisualizationControl` 提供统一设置、渲染和错误信号。VTK 对象仍全部在 GUI 线程操作，环境不进入解算、存储或模型点数据。
 
 ## Control 配置入口
@@ -123,11 +125,10 @@ Scene 借用 Renderer，模型 Actor 使用弱指针；Control 在模型卸载�
 ## 验证
 
 ```powershell
-cmake --preset vtk-native-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=ON
-cmake --build --preset vtk-native-widgets-release
+cmake --preset fosd-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=ON
+cmake --build --preset fosd-widgets-release
 $env:PATH = 'D:/VTK/VTK-release/bin;D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
-ctest --preset vtk-native-widgets-release
-& ./build/vtk-native-widgets/bin/Release/Test-VtkOpenGLNativeWidgets.exe --smoke-test | Out-Host
+ctest --preset fosd-widgets-release
 ```
 
 `test_scene_environment` 覆盖轴设置、三平面网格几何、显隐/重建、Renderer 迁移、配置校验、背景、纹理解码与缓存、七种视图、投影、镜头适配和姿态校验。真实 OpenGL 冒烟检查额外验证 Presenter 到场景/镜头参数的传递、开启环境不改变模型适配距离、正交投影，以及环境 Props 不拦截模型选点。Debug 测试运行需要匹配的 Debug VTK DLL。

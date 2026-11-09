@@ -1,5 +1,7 @@
 # 关键点、选中点与持续显示点对接
 
+> 2026-11-09：独立 Qt/VTK 验证前端已移除。当前通过 fosd-widgets 预设运行 Classic 与共享后端测试；文中原独立冒烟检查的说明属于历史验证记录，不再提供 --smoke-test 入口。
+
 ## 三类点的约束
 
 | 集合 | 默认状态 | 数据及显示 |
@@ -106,18 +108,17 @@ Manager 直接从显示网格取模型标记位置，不重复计算或累计位
 
 ## 验证前端与测试
 
-独立 VTK 验证程序仍使用 `.ui`；其“应用关键点/交互”预览动作显式将输入 ID 同时写入 KeyPoints 和 DisplayedPoints，便于观察样式。“仅选关键点”固定勾选且不可关闭；“清除选择”单独清除高亮。
+历史独立 VTK 验证程序曾使用 `.ui`；其“应用关键点/交互”预览动作显式将输入 ID 同时写入 KeyPoints 和 DisplayedPoints，便于观察样式。“仅选关键点”固定勾选且不可关闭；“清除选择”单独清除高亮。
 
-`test_workbench_markers` 使用真实的两个 View、ModelPresenter、ModelBackend 和 WorkbenchRuntime，验证集合独立性、移除级联、外部点、包围盒、实时表格刷新与按 ID 删除。`test_keypoint_interaction` 补充默认全部关键点但零 Actor、非法整批输入不改变状态、固定点不随模型移动、两种球和文本同步刷新的测试。
+`test_workbench_markers` 使用真实的两个 View、ModelPanelPresenter 和 WorkbenchModel，验证集合独立性、移除级联、外部点、包围盒、实时表格刷新与按 ID 删除。`test_keypoint_interaction` 补充默认全部关键点但零 Actor、非法整批输入不改变状态、固定点不随模型移动、两种球和文本同步刷新的测试。
 
 专项测试沿用可视化运行库选项：
 
 ```powershell
-cmake --preset vtk-native-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=ON
-cmake --build --preset vtk-native-widgets-release
+cmake --preset fosd-widgets -DFOSD_BUILD_VISUALIZATION_TESTS=ON
+cmake --build --preset fosd-widgets-release
 $env:PATH = 'D:/VTK/VTK-release/bin;D:/AppData/Qt/Qt5.12.2/5.12.2/msvc2017_64/bin;' + $env:PATH
-ctest --preset vtk-native-widgets-release
-& ./build/vtk-native-widgets/bin/Release/Test-VtkOpenGLNativeWidgets.exe --smoke-test | Out-Host
+ctest --preset fosd-widgets-release
 ```
 
 `test_keypoint_interaction` 覆盖 Creator、批量管理/显隐/重复配置、Renderer 切换、样式校验、选择约束、邻域重建、拖动往返门控，以及 Control 的倍率/复位/卸载行为。Presenter 测试覆盖参数转发和选中信息回显；原生 OpenGL 冒烟检查通过真实模型投影坐标触发鼠标回调，检查模型拾取、标记不截获选择、相机缩放/拖动保留选择、锁定相机仍可选点、空白取消及倍率数据更新。

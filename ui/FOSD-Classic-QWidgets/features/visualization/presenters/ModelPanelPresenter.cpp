@@ -71,8 +71,6 @@ void ModelPanelPresenter::refresh() {
     }
     publishMarkers();
 }
-void ModelPanelPresenter::poll() {
-}
 bool ModelPanelPresenter::handleAction(const QString &action, const QVariantMap &fields,
                                        QString &message, QVariantMap &updates) {
     bool success = true;
