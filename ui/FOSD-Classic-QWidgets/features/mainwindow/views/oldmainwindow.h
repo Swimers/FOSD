@@ -1,7 +1,9 @@
 #pragma once
 #include <QMainWindow>
+#include <QPoint>
 #include <memory>
 #include "FOSD-Classic-QWidgets/common/IView.h"
+class QMouseEvent;
 namespace Ui {
 class OldMainWindow;
 }
@@ -22,9 +24,20 @@ public:
     void clearSensitiveFields() override;
     void showStatus(const QString &message) override;
 
+protected:
+    // 无边框窗口的拖动：空白标题带按下后跟随鼠标移动窗口。
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private:
+    // 判断窗口坐标是否落在标题带（与最小化/全屏/关闭按钮同一水平区域）。
+    bool isTitleBarArea(const QPoint &pos) const;
+
     std::unique_ptr<Ui::OldMainWindow> m_ui;
     FormBinding *m_binding = nullptr;
+    bool m_dragging = false;   // 是否处于拖动中
+    QPoint m_dragOffset;       // 按下点相对窗口左上角的偏移
 };
 } // namespace classic
 } // namespace ui
