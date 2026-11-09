@@ -32,6 +32,7 @@ class ConnectionPresenter final : public PanelPresenter {
                          const QString &localAddress = QString());
     void initializeLocalAddresses(const QString &localAddress = QString());
     void publishNetworkConfiguration(int);
+    
     struct TrafficEntry {
         quint64 id = 0;
         QDateTime at;

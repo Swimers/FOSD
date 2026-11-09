@@ -12,6 +12,7 @@ ClassicWorkbench::ClassicWorkbench(QWidget *parent)
       m_renderWindow(vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New()),
       m_model(new fosd::application::WorkbenchModel),
       m_presenter(new fosd::ui::classic::WorkbenchPresenter(this, m_model.get(), this)) {
+        
     auto *surface = new QWidget(renderHost());
     Ui::WorkbenchRenderSurface renderUi;
     renderUi.setupUi(surface);

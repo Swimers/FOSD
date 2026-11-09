@@ -218,10 +218,9 @@ bool ConnectionPresenter::handleAction(const QString &action, const QVariantMap 
         initializePorts(serial.value("data", serial.value("text")).toString().section(':', 0, 0),
                         text(fields, "cbox_LocakIP"));
         message = tr("串口与本地网口已刷新");
-    } else if (action == "cbox_SerialNameChoose" || action == "cbox_SerialBaudChoose" ||
-               action == "cbox_LocakIP")
+    } else if (action == "cbox_SerialNameChoose" || action == "cbox_SerialBaudChoose" || action == "cbox_LocakIP") {
         message = tr("参数将在下次打开通道时生效");
-    else if (action == "cbox_CommuteChoose") {
+    } else if (action == "cbox_CommuteChoose") {
         if (m_model->connectionState(Channel::Udp) != ConnectionState::Closed ||
             m_model->connectionState(Channel::Tcp) != ConnectionState::Closed) {
             success = false;
@@ -398,22 +397,20 @@ bool ConnectionPresenter::handleAction(const QString &action, const QVariantMap 
             message = tr("请先打开通信通道");
         } else
             communication.send(channel, text(fields, input).toUtf8(), peer);
-    } else if (action == "cbox_SerialDisplayMode" || action == "cbox_UdpDisplayMode" ||
-               action == "cbox_TcpDisplayMode") {
+    } else if (action == "cbox_SerialDisplayMode" || action == "cbox_UdpDisplayMode" || action == "cbox_TcpDisplayMode") {
         const int channel =
             action == "cbox_SerialDisplayMode" ? 0 : action == "cbox_UdpDisplayMode" ? 1 : 2;
         m_rawHex[channel] = index(fields, action) == 0;
         m_resetTraffic[channel] = true;
         message = tr("已切换收发日志的预览格式；有效 UDP 包保留摘要");
-    } else if (action == "pbtn_SerialClear" || action == "pbtn_UdpClear" ||
-               action == "pbtn_TcpClear") {
+    } else if (action == "pbtn_SerialClear" || action == "pbtn_UdpClear" || action == "pbtn_TcpClear") {
         const int channel = action == "pbtn_SerialClear" ? 0 : action == "pbtn_UdpClear" ? 1 : 2;
         clearTraffic(channel);
         const char *names[] = {"ptedit_SerialRec", "ptedit_UdpRec", "ptedit_TcpRec"};
         updates[names[channel]] = QString();
-    } else if (action == "pbtn_WaveLengthReset")
+    } else if (action == "pbtn_WaveLengthReset") {
         success = m_model->baseline(&message);
-    else if (action == "pbtn_ParaSet" || action == "pbtn_ParaRest") {
+    } else if (action == "pbtn_ParaSet" || action == "pbtn_ParaRest") {
         auto configuration = m_model->configuration();
         bool aOk = true, bOk = true;
         configuration.strainCalibration.A =

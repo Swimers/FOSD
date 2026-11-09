@@ -158,12 +158,11 @@ bool ModelPanelPresenter::markerAction(const QString &action, const QVariantMap 
             message = tr("请先载入模型");
             return success;
         }
-        if (action == "pbtn_SelectAll")
+        if (action == "pbtn_SelectAll") {
             success = view.selectAllKeyPoints();
-        else if (action == "pbtn_ClearAll")
+        } else if (action == "pbtn_ClearAll") {
             success = view.setKeyPoints({});
-        else if (action == "pbtn_AddKeyPoint" || action == "pbtn_RemoveKeyPoint" ||
-                 action == "pbtn_FindKeyPoint" || action == "cbox_IDKeyPoint") {
+        } else if (action == "pbtn_AddKeyPoint" || action == "pbtn_RemoveKeyPoint" || action == "pbtn_FindKeyPoint" || action == "cbox_IDKeyPoint") {
             vtkIdType id = -1;
             const auto field = action == "cbox_IDKeyPoint" ? "cbox_IDKeyPoint" : "edit_IDKeyPoint";
             if (!pointId(text(fields, field), &id) || !model->contains(id)) {

@@ -15,6 +15,7 @@ WorkbenchPresenter::WorkbenchPresenter(IWorkbenchView *view, application::Workbe
         PanelId::Visualization, PanelId::ModelPanel,   PanelId::ScenePanel,
         PanelId::InfoPanel,     PanelId::KeyPointEdit, PanelId::KeyPointSelect,
         PanelId::HardwareData};
+
     for (auto panel : panels) {
         auto *v = view->panelView(panel);
         if (!v)
@@ -46,10 +47,15 @@ WorkbenchPresenter::WorkbenchPresenter(IWorkbenchView *view, application::Workbe
         p->setModel(model);
         connect(p, &PanelPresenter::statusChanged, this, &WorkbenchPresenter::showStatus);
     }
+    
     if (model) {
-        connect(model, &application::WorkbenchModel::messageChanged, this,
+        connect(model, 
+                &application::WorkbenchModel::messageChanged, 
+                this,
                 &WorkbenchPresenter::showStatus);
-        connect(model, &application::WorkbenchModel::stateChanged, this,
+        connect(model, 
+                &application::WorkbenchModel::stateChanged, 
+                this,
                 [this] { m_view->setModelAvailable(m_model && m_model->state().hasModel); });
     }
     m_view->setModelAvailable(model && model->state().hasModel);

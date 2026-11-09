@@ -30,6 +30,7 @@ private:
     QMap<int, QDockWidget *> m_docks;
     QStackedWidget *m_pages = nullptr;
 };
+
 } // namespace classic
 } // namespace ui
 } // namespace fosd

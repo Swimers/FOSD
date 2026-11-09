@@ -19,9 +19,7 @@ class ClassicWorkbench : public fosd::ui::classic::WorkbenchView {
 public:
     explicit ClassicWorkbench(QWidget *parent = nullptr);
     ~ClassicWorkbench() override;
-    fosd::application::WorkbenchModel &model() const {
-        return *m_model;
-    }
+    fosd::application::WorkbenchModel &model() const { return *m_model; }
 
 private:
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_renderWindow;
