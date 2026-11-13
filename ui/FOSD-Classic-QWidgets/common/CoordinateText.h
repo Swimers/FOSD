@@ -4,7 +4,10 @@
 #include <array>
 #include <cmath>
 
-namespace fosd { namespace ui { namespace classic {
+namespace fosd { 
+namespace ui { 
+namespace classic {
+
 inline QString selectedPointStatus(const QString &id = QString(),
                                    const std::array<double,3> &original = {},
                                    const std::array<double,3> &display = {}) {
@@ -27,4 +30,7 @@ inline QString selectedPointStatus(const QString &id = QString(),
              coordinates(original), coordinates(display),
              valid ? QString::fromUtf8("已选择") : QString::fromUtf8("未选择"));
 }
-}}}
+
+}
+}
+}

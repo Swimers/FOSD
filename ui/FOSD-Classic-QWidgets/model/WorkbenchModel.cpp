@@ -134,8 +134,8 @@ void WorkbenchModel::transportState(communication::Channel c, communication::Con
 void WorkbenchModel::frameReceived(const core::FrameSnapshotPtr &frame) {
     m_frame = frame;
     emit frameObserved(frame);
-    auto wavelengths =
-        frame ? std::dynamic_pointer_cast<const core::WavelengthFrame>(frame->data) : nullptr;
+    
+    auto wavelengths = frame ? std::dynamic_pointer_cast<const core::WavelengthFrame>(frame->data) : nullptr;
     QString layout;
     if (wavelengths)
         for (const auto &r : wavelengths->records)
@@ -149,6 +149,7 @@ void WorkbenchModel::frameReceived(const core::FrameSnapshotPtr &frame) {
     }
     if (!m_baselineClock.isValid())
         return;
+    
     auto data =
         frame ? std::dynamic_pointer_cast<const core::WavelengthFrame>(frame->data) : nullptr;
     QString identity = frame ? frame->protocolId + frame->source.address +
@@ -175,6 +176,7 @@ void WorkbenchModel::frameReceived(const core::FrameSnapshotPtr &frame) {
         m_baselineIdentity = identity;
         m_baselineSum.fill(0, data->records.size());
     }
+
     m_baselineRevision = frame->revision;
     for (int i = 0; i < data->records.size(); ++i)
         m_baselineSum[i] += data->records[i].wavelength;
@@ -199,6 +201,7 @@ void WorkbenchModel::frameReceived(const core::FrameSnapshotPtr &frame) {
         }
     }
 }
+
 void WorkbenchModel::hardwareReady(const core::CalibratedDataPtr &data) {
     if (m_solving && !m_configurationPending && data && data->sourceFrame &&
         data->sourceFrame->revision > m_runStartFrameRevision &&

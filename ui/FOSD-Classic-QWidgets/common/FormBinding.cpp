@@ -133,6 +133,7 @@ QVariantMap FormBinding::values() const {
 void FormBinding::applyFields(const QVariantMap &fields) {
     if (!m_widget)
         return;
+        
     for (auto it = fields.constBegin(); it != fields.constEnd(); ++it) {
         if (it.key() == "_status") {
             showStatus(it.value().toString());

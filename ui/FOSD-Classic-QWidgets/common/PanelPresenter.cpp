@@ -25,7 +25,9 @@ void PanelPresenter::setModel(fosd::application::WorkbenchModel *model) {
         disconnect(m_model, nullptr, this, nullptr);
     m_model = model;
     if (model) {
-        connect(model, &fosd::application::WorkbenchModel::stateChanged, this,
+        connect(model, 
+                &fosd::application::WorkbenchModel::stateChanged,
+                this,
                 &PanelPresenter::refresh);
         bindModel();
     }

@@ -5,6 +5,7 @@
 #include <QTextCursor>
 #include <QScrollBar>
 #include <QToolTip>
+
 namespace fosd {
 namespace ui {
 namespace classic {
@@ -19,6 +20,7 @@ void renderSpectrum(QCustomPlot *plot, const QVariantMap &data, QWidget *owner) 
                            ok ? QObject::tr("图片已保存") : QObject::tr("图片保存失败"), owner);
         return;
     }
+
     if (data.contains("series")) {
         const auto allSeries = data["series"].toList();
         while (plot->graphCount() > allSeries.size())

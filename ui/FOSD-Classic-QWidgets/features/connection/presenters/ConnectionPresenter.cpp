@@ -195,9 +195,11 @@ bool ConnectionPresenter::handleAction(const QString &action, const QVariantMap 
 
     if (m_panel != PanelId::Connection)
         return false;
+    
     auto &communication = *m_model;
     success = true;
     message = tr("请求已提交");
+    
     if (action == "pbtn_CalculationStart" || action == "pbtn_CalculationStop") {
         const bool start = action == "pbtn_CalculationStart";
         success = m_model->setCalculationRunning(start, &message);
@@ -515,6 +517,7 @@ void ConnectionPresenter::initialize() {
 }
 
 void ConnectionPresenter::poll() {
+    //  守卫
     if (!m_model || m_panel != PanelId::Connection)
         return;
     const auto m_frame = m_model->frame();
@@ -536,6 +539,8 @@ void ConnectionPresenter::poll() {
     }
     if (!raw.isEmpty())
         present(PanelId::Connection, raw);
+
+    //  revision 去重
     if (m_frame && m_presentedFrame != m_frame->revision) {
         const auto frame = std::dynamic_pointer_cast<const core::WavelengthFrame>(m_frame->data);
         if (frame) {
@@ -543,6 +548,7 @@ void ConnectionPresenter::poll() {
             for (const auto &record : frame->records) {
                 const auto key = QString("CH%1_%2").arg(record.channel).arg(record.sensor);
                 auto &samples = m_history[key];
+                // 保留 300 个点数据
                 samples.append(
                     QVariant(QVariantList{m_historyClock.elapsed() / 1000.0, record.wavelength}));
                 while (samples.size() > 300)
@@ -556,14 +562,11 @@ void ConnectionPresenter::poll() {
             }
             present(PanelId::Connection, {{"cplot_Spectrum", QVariantMap{{"series", series}}}});
             for (const auto &record : frame->records) {
-                rows.append(QVariant(QVariantList{record.channel, record.sensor,
-                                                  QString::number(record.wavelength, 'f', 6)}));
+                rows.append(QVariant(QVariantList{record.channel, record.sensor, QString::number(record.wavelength, 'f', 6)}));
                 if (rows.size() >= 2048)
                     break;
             }
-            present(
-                PanelId::Connection,
-                {{"tablev_Wavelength", table({tr("通道"), tr("传感器"), tr("波长 (nm)")}, rows)}});
+            present(PanelId::Connection, {{"tablev_Wavelength", table({tr("通道"), tr("传感器"), tr("波长 (nm)")}, rows)}});
         }
         m_presentedFrame = m_frame->revision;
     }

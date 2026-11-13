@@ -407,7 +407,7 @@ Model 侧对应 `applyCalibration()` 的写法：**先置 pending 并拒绝重�
 ### 6.6 新增一个面板
 
 1. `PanelId` 加枚举值（`common/UiTypes.h`）。
-2. `common/ViewFactory.cpp` 加 `case`。
+2. `application/WorkbenchView.cpp` 的 `createPanelView()` 加 `case`（原 `common/ViewFactory.cpp` 已并入组装根）。
 3. 新 View 照抄 30 行样板：`initializeFosdUiResources()` → `setupUi` → `new FormBinding(PanelId::Xxx, this, this)`。
 4. `WorkbenchView` 决定它进 `QStackedWidget` / `QDockWidget` / 独立窗口。
 5. `WorkbenchPresenter` 构造函数里 `case` 到某个 Presenter（可复用现有 Presenter 管多个面板，

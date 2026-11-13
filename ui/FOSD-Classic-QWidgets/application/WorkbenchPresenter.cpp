@@ -69,10 +69,12 @@ void WorkbenchPresenter::initialize() {
     if (m_model)
         m_model->initialize();
 }
+
 void WorkbenchPresenter::refreshDisplays() {
     for (auto *p : m_presenters)
         p->poll();
 }
+
 void WorkbenchPresenter::showStatus(const QString &s) {
     if (auto *view = m_view->panelView(PanelId::Main))
         view->showStatus(s);

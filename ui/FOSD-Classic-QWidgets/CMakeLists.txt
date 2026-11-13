@@ -37,7 +37,7 @@ target_include_directories(fosd_classic_controls PUBLIC
 target_link_libraries(fosd_classic_controls PUBLIC Qt5::Widgets Qt5::PrintSupport)
 
 add_library(fosd_classic_widgets STATIC
-    common/FormBinding.h common/FormBinding.cpp common/ViewFactory.h common/ViewFactory.cpp
+    common/FormBinding.h common/FormBinding.cpp
     common/CoordinateText.h common/UiResources.h common/UiResources.cpp resources/classic.qrc
     application/WorkbenchView.h application/WorkbenchView.cpp
     features/connection/views/ConnectionRenderers.h features/connection/views/ConnectionRenderers.cpp

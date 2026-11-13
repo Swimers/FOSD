@@ -78,103 +78,51 @@ class WorkbenchModel final : public QObject {
     bool removeDisplayedPoints(const QVector<vtkIdType> &ids);
     bool displayAllKeyPoints();
     void resetDeformation();
-    // Backend facades remain available for composition and integration diagnostics.
-    protocol::ProtocolControl &protocol() {
-        return *m_protocol;
-    }
-    Calculation::CalculationControl &calculation() {
-        return *m_calculation;
-    }
-    visualization::VisualizationControl &visualization() {
-        return *m_visualization;
-    }
-    core::ModelDataPtr originalModel() const {
-        return m_visualization->originalModel();
-    }
-    qint64 modelPolygonCount() const {
-        return m_visualization->modelPolygonCount();
-    }
-    void setfreshFPS(int rate) {
-        m_visualization->setfreshFPS(rate);
-    }
-    void setDeformationScale(double scale) {
-        m_visualization->setDeformationScale(scale);
-    }
-    visualization::ScalarColorSettings scalarColorSettings() const {
-        return m_visualization->scalarColorSettings();
-    }
-    bool setScalarColorSettings(const visualization::ScalarColorSettings &s) {
-        return m_visualization->setScalarColorSettings(s);
-    }
-    std::array<double, 3> modelColor() const {
-        return m_visualization->modelColor();
-    }
-    bool setModelColor(const std::array<double, 3> &c) {
-        return m_visualization->setModelColor(c);
-    }
-    visualization::AxesSettings axesSettings() const {
-        return m_visualization->axesSettings();
-    }
-    bool setAxesSettings(const visualization::AxesSettings &s) {
-        return m_visualization->setAxesSettings(s);
-    }
-    void showAxes(bool visible) {
-        m_visualization->showAxes(visible);
-    }
-    visualization::GridSettings gridSettings() const {
-        return m_visualization->gridSettings();
-    }
-    bool setGridSettings(const visualization::GridSettings &s) {
-        return m_visualization->setGridSettings(s);
-    }
-    void showGrid(bool visible) {
-        m_visualization->showGrid(visible);
-    }
-    bool showGrid(visualization::GridPlane plane, bool visible) {
-        return m_visualization->showGrid(plane, visible);
-    }
-    visualization::BackgroundSettings backgroundSettings() const {
-        return m_visualization->backgroundSettings();
-    }
-    bool setBackgroundSettings(const visualization::BackgroundSettings &s) {
-        return m_visualization->setBackgroundSettings(s);
-    }
-    visualization::CameraSettings cameraSettings() const {
-        return m_visualization->cameraSettings();
-    }
-    void setCameraLocked(bool locked) {
-        m_visualization->setCameraLocked(locked);
-    }
-    void setCameraPreset(visualization::CameraPreset preset) {
-        m_visualization->setCameraPreset(preset);
-    }
-    QVector<visualization::KeyPointDefinition> keyPoints() const {
-        return m_visualization->keyPoints();
-    }
-    bool setKeyPoints(const QVector<visualization::KeyPointDefinition> &p) {
-        return m_visualization->setKeyPoints(p);
-    }
-    QVector<visualization::DisplayedPointDefinition> displayedPoints() const {
-        return m_visualization->displayedPoints();
-    }
-    bool setDisplayedPoints(const QVector<visualization::DisplayedPointDefinition> &p) {
-        return m_visualization->setDisplayedPoints(p);
-    }
-    QVector<visualization::PickedPointInfo> displayedPointInfos() const {
-        return m_visualization->displayedPointInfos();
-    }
-    bool displayedPointsVisible() const {
-        return m_visualization->displayedPointsVisible();
-    }
-    void showDisplayedPoints(bool visible) {
-        m_visualization->showDisplayedPoints(visible);
-    }
-    visualization::PickedPointInfo selectedPoint() const {
-        return m_visualization->selectedPoint();
-    }
+    
+    protocol::ProtocolControl &protocol() { return *m_protocol; }
+    Calculation::CalculationControl &calculation() { return *m_calculation; }
+    visualization::VisualizationControl &visualization() { return *m_visualization; }
+    core::ModelDataPtr originalModel() const { return m_visualization->originalModel(); }
+
+    qint64 modelPolygonCount() const { return m_visualization->modelPolygonCount(); }
+    void setfreshFPS(int rate) { m_visualization->setfreshFPS(rate); }
+    void setDeformationScale(double scale) { m_visualization->setDeformationScale(scale); }
+    bool setScalarColorSettings(const visualization::ScalarColorSettings &s) { return m_visualization->setScalarColorSettings(s); }
+    bool setModelColor(const std::array<double, 3> &c) { return m_visualization->setModelColor(c); }
+    bool setAxesSettings(const visualization::AxesSettings &s) { return m_visualization->setAxesSettings(s); }
+    bool setGridSettings(const visualization::GridSettings &s) { return m_visualization->setGridSettings(s); }
+    bool setBackgroundSettings(const visualization::BackgroundSettings &s) { return m_visualization->setBackgroundSettings(s); }
+    bool setKeyPoints(const QVector<visualization::KeyPointDefinition> &p) { return m_visualization->setKeyPoints(p); }
+    bool setDisplayedPoints(const QVector<visualization::DisplayedPointDefinition> &p) { return m_visualization->setDisplayedPoints(p); }
+    bool setBackgroundSettings(const visualization::BackgroundSettings &s) { return m_visualization->setBackgroundSettings(s); }
+    
+    void setCameraLocked(bool locked) { m_visualization->setCameraLocked(locked); }
+    void setCameraPreset(visualization::CameraPreset preset) { m_visualization->setCameraPreset(preset); }
+    std::array<double, 3> modelColor() const { return m_visualization->modelColor(); }
+
+    bool displayedPointsVisible() const { return m_visualization->displayedPointsVisible(); }
+    
+    bool showGrid(visualization::GridPlane plane, bool visible) { return m_visualization->showGrid(plane, visible); }
+    void showGrid(bool visible) { m_visualization->showGrid(visible); }
+    void showAxes(bool visible) { m_visualization->showAxes(visible); }
+    void showDisplayedPoints(bool visible) { m_visualization->showDisplayedPoints(visible); }
+
+    visualization::ScalarColorSettings scalarColorSettings() const { return m_visualization->scalarColorSettings(); }
+    visualization::GridSettings gridSettings() const { return m_visualization->gridSettings(); }
+    visualization::AxesSettings axesSettings() const { return m_visualization->axesSettings(); }
+    visualization::BackgroundSettings backgroundSettings() const { return m_visualization->backgroundSettings(); }
+    visualization::CameraSettings cameraSettings() const { return m_visualization->cameraSettings(); }
+    visualization::PickedPointInfo selectedPoint() const { return m_visualization->selectedPoint(); }
+
+    QVector<visualization::KeyPointDefinition> keyPoints() const { return m_visualization->keyPoints(); }
+    QVector<visualization::DisplayedPointDefinition> displayedPoints() const { return m_visualization->displayedPoints(); }
+    QVector<visualization::PickedPointInfo> displayedPointInfos() const { return m_visualization->displayedPointInfos(); }
+        
+    
   signals:
-    void stateChanged();
-    void dataChanged();
+    void stateChanged();    // 推送状态更新
+    void dataChanged();     // 推送数据更新
+
     void configurationChanged();
     void configurationApplied(quint64 revision);
     void messageChanged(const QString &message);

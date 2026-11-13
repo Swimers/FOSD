@@ -1,5 +1,4 @@
 #include "FOSD-Classic-QWidgets/application/WorkbenchView.h"
-#include "FOSD-Classic-QWidgets/common/ViewFactory.h"
 #include "FOSD-Classic-QWidgets/controls/renderhostwidget.h"
 #include <QButtonGroup>
 #include <QDockWidget>
@@ -16,11 +15,49 @@
 #include <QComboBox>
 #include "FOSD-Classic-QWidgets/common/ViewEvents.h"
 #include "FOSD-Classic-QWidgets/features/connection/views/connectwindow.h"
+#include "FOSD-Classic-QWidgets/features/connection/views/channlCalibration.h"
+#include "FOSD-Classic-QWidgets/features/data/views/dispdata.h"
+#include "FOSD-Classic-QWidgets/features/visualization/views/disp3dwindow.h"
+#include "FOSD-Classic-QWidgets/features/visualization/views/docks/disp3dinfodockpanel.h"
+#include "FOSD-Classic-QWidgets/features/visualization/views/docks/disp3dmodeldockpanel.h"
+#include "FOSD-Classic-QWidgets/features/visualization/views/docks/disp3dviewdockpanel.h"
+#include "FOSD-Classic-QWidgets/features/visualization/views/keypoints/disp3dkeypointedit.h"
+#include "FOSD-Classic-QWidgets/features/visualization/views/keypoints/disp3dkeypointselect.h"
 #include <QTableWidget>
 
 namespace fosd {
 namespace ui {
 namespace classic {
+namespace {
+// PanelId → 具体 View 的映射。组装知识只属于组装根，原 common/ViewFactory 已并入此处。
+QWidget *createPanelView(PanelId panel, QWidget *parent) {
+    switch (panel) {
+        case PanelId::Connection:
+            return new ConnectionView(parent);
+        case PanelId::ChannelCalibration:
+            return new ChannelCalibrationView(parent);
+        case PanelId::Visualization:
+            return new VisualizationView(parent);
+        case PanelId::InfoPanel:
+            return new InfoPanelView(parent);
+        case PanelId::ScenePanel:
+            return new ScenePanelView(parent);
+        case PanelId::ModelPanel:
+            return new ModelPanelView(parent);
+        case PanelId::KeyPointEdit:
+            return new KeyPointEditView(parent);
+        case PanelId::KeyPointSelect:
+            return new KeyPointSelectView(parent);
+        case PanelId::HardwareData:
+            return new HardwareDataView(parent);
+        case PanelId::Main:
+            // 主窗口即 WorkbenchView 自身，调用处直接复用 this，不会走到这里。
+            return nullptr;
+    }
+    return nullptr;
+}
+} // namespace
+
 WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     setWindowTitle(tr("FOSD Monitor"));
     setWindowIcon(QIcon(":/icon/icon/favicon.ico"));

@@ -43,16 +43,26 @@ QVariantMap ConnectionView::values() const {
 
 void ConnectionView::applyFields(const QVariantMap &fields) {
     auto ordinary=fields;
-    if(fields.contains("cplot_Spectrum")){renderSpectrum(m_ui->cplot_Spectrum,fields.value("cplot_Spectrum").toMap(),this);ordinary.remove("cplot_Spectrum");}
+    if(fields.contains("cplot_Spectrum")){
+        renderSpectrum(m_ui->cplot_Spectrum,fields.value("cplot_Spectrum").toMap(),this);
+        ordinary.remove("cplot_Spectrum");
+    }
+    
     for(auto *log:{m_ui->ptedit_SerialRec,m_ui->ptedit_UdpRec,m_ui->ptedit_TcpRec}){
-        const auto value=fields.value(log->objectName());
-        if(value.type()==QVariant::Map&&value.toMap().contains("entries")){appendTrafficEntries(log,value.toMap());ordinary.remove(log->objectName());}
+        const auto value = fields.value(log->objectName());
+        if(value.type() == QVariant::Map&&value.toMap().contains("entries")){
+            appendTrafficEntries(log,value.toMap());
+            ordinary.remove(log->objectName());
+        }
     }
     m_binding->applyFields(ordinary);
+
     if (fields.contains("_spectrumReset"))
         resetSpectrumView();
+
     if (fields.contains("cplot_Spectrum"))
         refreshSpectrumSelection();
+        
     m_ui->pbtn_SaveDynamic->setText(m_ui->pbtn_SaveDynamic->isChecked() ? tr("停止保存") : tr("开始保存"));
 }
 
