@@ -30,8 +30,7 @@ void ScenePanelView::applyFields(const QVariantMap &fields) {
     for (auto *button : {m_ui->pbtn_ModelColor, m_ui->pbtn_BackgroundBottomColor, m_ui->pbtn_BackgroundTopColor}) {
         const QColor color(button->text());
         if (color.isValid())
-            button->setStyleSheet(QString("QPushButton { background-color:%1; color:%2; border:1px solid #808080; padding:4px; } "
-                                         "QPushButton:disabled { background-color:#555b63; color:#a0a6ad; border-color:#707780; }")
+            button->setStyleSheet(QString("QPushButton:enabled { background-color:%1; color:%2; border:1px solid palette(mid); border-radius:4px; padding:4px; } ")
                 .arg(color.name(), color.lightness() < 128 ? "white" : "black"));
     }
 }

@@ -135,7 +135,7 @@
                   <string notr="true" />
                 </property>
                 <property name="text">
-                  <string>调 解 仪</string>
+                  <string>通信与采集</string>
                 </property>
                 <property name="icon">
                   <iconset resource="../../../resources/classic.qrc">
@@ -161,7 +161,7 @@
                   <string notr="true" />
                 </property>
                 <property name="text">
-                  <string>变 形 场</string>
+                  <string>三维变形场</string>
                 </property>
                 <property name="icon">
                   <iconset resource="../../../resources/classic.qrc">

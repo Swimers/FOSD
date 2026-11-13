@@ -12,7 +12,36 @@
         <file alias="icon/Stop_icon.png">icons/Stop_icon.png</file>
     </qresource>
     <qresource prefix="/fosd-ui/styles">
-        <file alias="dark.qss">styles/MaterialDark-B.qss</file>
-        <file alias="light.qss">styles/MacOS.qss</file>
+        <file alias="dark.qss">styles/classic-dark.qss</file>
+        <file alias="light.qss">styles/classic-light.qss</file>
+    </qresource>
+    <qresource prefix="/fosd-ui/icons">
+        <file alias="info-dark.svg">icons/info-dark.svg</file>
+        <file alias="info-light.svg">icons/info-light.svg</file>
+        <file alias="scene-dark.svg">icons/scene-dark.svg</file>
+        <file alias="scene-light.svg">icons/scene-light.svg</file>
+        <file alias="play-dark.svg">icons/play-dark.svg</file>
+        <file alias="play-light.svg">icons/play-light.svg</file>
+        <file alias="pause-dark.svg">icons/pause-dark.svg</file>
+        <file alias="pause-light.svg">icons/pause-light.svg</file>
+        <file alias="stop-dark.svg">icons/stop-dark.svg</file>
+        <file alias="stop-light.svg">icons/stop-light.svg</file>
+        <file alias="reset-dark.svg">icons/reset-dark.svg</file>
+        <file alias="reset-light.svg">icons/reset-light.svg</file>
+        <file alias="wave-dark.svg">icons/wave-dark.svg</file>
+        <file alias="wave-light.svg">icons/wave-light.svg</file>
+        <file alias="wave-active.svg">icons/wave-active.svg</file>
+        <file alias="cube-dark.svg">icons/cube-dark.svg</file>
+        <file alias="cube-light.svg">icons/cube-light.svg</file>
+        <file alias="cube-active.svg">icons/cube-active.svg</file>
+        <file alias="check.svg">icons/check.svg</file>
+        <file alias="chevron-dark.svg">icons/chevron-dark.svg</file>
+        <file alias="chevron-light.svg">icons/chevron-light.svg</file>
+        <file alias="minus-dark.svg">icons/minus-dark.svg</file>
+        <file alias="minus-light.svg">icons/minus-light.svg</file>
+        <file alias="dot-dark.svg">icons/dot-dark.svg</file>
+        <file alias="dot-light.svg">icons/dot-light.svg</file>
+        <file alias="close-dark.svg">icons/close-dark.svg</file>
+        <file alias="close-light.svg">icons/close-light.svg</file>
     </qresource>
 </RCC>

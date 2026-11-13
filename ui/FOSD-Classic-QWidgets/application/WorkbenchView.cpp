@@ -24,6 +24,8 @@
 #include "FOSD-Classic-QWidgets/features/visualization/views/keypoints/disp3dkeypointedit.h"
 #include "FOSD-Classic-QWidgets/features/visualization/views/keypoints/disp3dkeypointselect.h"
 #include <QTableWidget>
+#include <QPalette>
+#include <QAction>
 
 namespace fosd {
 namespace ui {
@@ -157,8 +159,6 @@ void WorkbenchView::selectPage(int index) {
     for (int button = 0; button < names.size(); ++button) {
         auto *widget = findChild<QPushButton *>(names[button]);
         widget->setChecked(button == index);
-        widget->setStyleSheet(button == index ? "background-color:#0078D7;color:white;"
-                                              : QString());
     }
 }
 
@@ -200,6 +200,36 @@ void WorkbenchView::windowAction(PanelId panel, WindowAction action) {
 }
 
 void WorkbenchView::applyTheme(bool dark) {
+    // Native subcontrols and popup windows must follow the stylesheet as well.
+    QPalette colors;
+    colors.setColor(QPalette::Window, QColor(dark ? "#171e2b" : "#f1f4f8"));
+    colors.setColor(QPalette::WindowText, QColor(dark ? "#e6edf7" : "#243247"));
+    colors.setColor(QPalette::Base, QColor(dark ? "#182231" : "#ffffff"));
+    colors.setColor(QPalette::AlternateBase, QColor(dark ? "#202a3a" : "#edf1f6"));
+    colors.setColor(QPalette::Text, colors.color(QPalette::WindowText));
+    colors.setColor(QPalette::Button, QColor(dark ? "#29364a" : "#f6f8fb"));
+    colors.setColor(QPalette::ButtonText, colors.color(QPalette::WindowText));
+    colors.setColor(QPalette::Highlight, QColor(dark ? "#357cca" : "#2563aa"));
+    colors.setColor(QPalette::HighlightedText, Qt::white);
+    colors.setColor(QPalette::ToolTipBase, QColor(dark ? "#202a3a" : "#ffffff"));
+    colors.setColor(QPalette::ToolTipText, colors.color(QPalette::WindowText));
+    for (auto role : {QPalette::WindowText, QPalette::Text, QPalette::ButtonText})
+        colors.setColor(QPalette::Disabled, role, QColor(dark ? "#8392a8" : "#7b899c"));
+    setPalette(colors);
+    const QString mode = dark ? QStringLiteral("dark") : QStringLiteral("light");
+    const QMap<QString, QString> toolbarIcons{{"actionModelDock", "cube"}, {"actionInforDock", "info"},
+        {"actionViewDock", "scene"}, {"actionStart", "play"}, {"actionPause", "pause"},
+        {"actionStop", "stop"}, {"actionReset", "reset"}};
+    for (auto it = toolbarIcons.constBegin(); it != toolbarIcons.constEnd(); ++it)
+        panelWidget(PanelId::Visualization)->findChild<QAction *>(it.key())->setIcon(
+            QIcon(QString(":/fosd-ui/icons/%1-%2.svg").arg(it.value(), mode)));
+    for (const auto &name : {QStringLiteral("pbtn_JieTiaoYi"), QStringLiteral("pbtn_3DPlot")}) {
+        const QString symbol = name == "pbtn_JieTiaoYi" ? QStringLiteral("wave") : QStringLiteral("cube");
+        QIcon icon;
+        icon.addFile(QString(":/fosd-ui/icons/%1-%2.svg").arg(symbol, mode), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString(":/fosd-ui/icons/%1-active.svg").arg(symbol), QSize(), QIcon::Normal, QIcon::On);
+        findChild<QPushButton *>(name)->setIcon(icon);
+    }
     QFile style(dark ? ":/fosd-ui/styles/dark.qss" : ":/fosd-ui/styles/light.qss");
     if (style.open(QIODevice::ReadOnly))
         setStyleSheet(QString::fromUtf8(style.readAll()));

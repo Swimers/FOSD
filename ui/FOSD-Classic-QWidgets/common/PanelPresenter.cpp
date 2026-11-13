@@ -85,10 +85,9 @@ void PanelPresenter::execute(const QString &action) {
     if (!prepareAction(action, fields))
         return;
     QString message = tr("请求已提交");
-    QVariantMap updates;
 
+    QVariantMap updates;
     const bool success = handleAction(action, fields, message, updates);
-    
     if (!updates.isEmpty())
         m_view->applyFields(updates);
     m_view->showStatus(success ? message : tr("操作失败：%1").arg(message));

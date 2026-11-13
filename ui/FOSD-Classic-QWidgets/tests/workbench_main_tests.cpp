@@ -50,6 +50,31 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void pairedThemes() {
+  using namespace fosd::ui::classic;
+  WorkbenchView w; w.resize(1500,1000); w.show();
+  QVERIFY(QTest::qWaitForWindowExposed(&w));
+  auto *connection=w.panelWidget(PanelId::Connection);
+  auto *tabs=connection->findChild<QTabWidget *>("tabWidget");
+  auto *nav=w.findChild<QPushButton *>("pbtn_JieTiaoYi");
+  for (bool dark : {true, false, true}) {
+   w.applyTheme(dark); QCoreApplication::processEvents();
+   QCOMPARE(w.palette().color(QPalette::Window),QColor(dark ? "#171e2b" : "#f1f4f8"));
+   QCOMPARE(connection->palette().color(QPalette::Text),QColor(dark ? "#e6edf7" : "#243247"));
+   QVERIFY(nav->isChecked()); QVERIFY(nav->styleSheet().isEmpty());
+   QVERIFY(tabs->styleSheet().isEmpty());
+   QVERIFY(QFile::exists(dark ? ":/fosd-ui/icons/chevron-dark.svg" : ":/fosd-ui/icons/chevron-light.svg"));
+   w.grab().save(dark ? "theme-connection-dark.png" : "theme-connection-light.png");
+   w.showPanel(PanelId::ChannelCalibration);
+   auto *calibration=w.panelWidget(PanelId::ChannelCalibration);
+   QCOMPARE(calibration->palette().color(QPalette::WindowText),w.palette().color(QPalette::WindowText));
+   calibration->grab().save(dark ? "theme-calibration-dark.png" : "theme-calibration-light.png");
+   w.closePanel(PanelId::ChannelCalibration);
+   w.selectPage(1); QCoreApplication::processEvents();
+   w.grab().save(dark ? "theme-scene-dark.png" : "theme-scene-light.png");
+   w.selectPage(0);
+  }
+ }
  void previewWithoutBusinessModel() {
   using namespace fosd::ui::classic;
   WorkbenchView view;
@@ -381,8 +406,8 @@ private slots:
   QWheelEvent wheel(QPointF(dragStart),QPointF(plot->mapToGlobal(dragStart)),QPoint(),QPoint(0,120),Qt::NoButton,Qt::NoModifier,Qt::NoScrollPhase,false);
   QApplication::sendEvent(plot,&wheel);
   QVERIFY(plot->xAxis->range().size()<widthBefore);
-  w.applyTheme(true); QCOMPARE(plot->axisRect()->backgroundBrush().color(),QColor("#20252b"));
-  QCOMPARE(plot->xAxis->tickLabelColor(),QColor("#e4e8ed"));
+  w.applyTheme(true); QCOMPARE(plot->axisRect()->backgroundBrush().color(),QColor("#182231"));
+  QCOMPARE(plot->xAxis->tickLabelColor(),QColor("#b1bfd2"));
   plot->replot(); w.grab().save("connection-spectrum-dark.png");
   w.applyTheme(false); QCOMPARE(plot->axisRect()->backgroundBrush().color(),QColor("#ffffff"));
   panel->findChild<QPushButton *>("pbtn_SpectrumReset")->click();

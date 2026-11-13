@@ -366,30 +366,8 @@
         <layout class="QVBoxLayout" name="layout_DataColumn" stretch="1">
           <item>
             <widget class="QTabWidget" name="tabWidget">
-              <property name="styleSheet">
-                <string notr="true">QTabWidget::pane {
-    border: 1px solid #CCCCCC;
-    border-radius: 4px;
-    padding: 5px;
-}
-
-QTabBar::tab {
-    border: 1px solid #CCCCCC;
-    border-radius: 6px;
-    min-width: 80px;
-    padding: 6px 12px;
-    margin-right: 4px;
-}
-
-QTabBar::tab:selected {
-    background-color: #0078D7;
-    color: white;
-    border-color: #005A9E;
-}
-</string>
-              </property>
               <property name="tabShape">
-                <enum>QTabWidget::Triangular</enum>
+                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
                 <number>2</number>
@@ -1437,7 +1415,7 @@ QTabBar::tab:selected {
                   </widget>
                 </item>
                 <item row="1" column="1">
-                  <widget class="QTextEdit" name="textEdit_APara">
+                  <widget class="QTextEdit" name="textEdit_APara"><property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
                     <property name="maximumSize">
                       <size>
                         <width>16777215</width>
@@ -1460,7 +1438,7 @@ QTabBar::tab:selected {
                   </widget>
                 </item>
                 <item row="2" column="1">
-                  <widget class="QTextEdit" name="textEdit_BPara">
+                  <widget class="QTextEdit" name="textEdit_BPara"><property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
                     <property name="maximumSize">
                       <size>
                         <width>16777215</width>
@@ -1600,9 +1578,6 @@ QTabBar::tab:selected {
                     </property>
                     <property name="checkable">
                       <bool>true</bool>
-                    </property>
-                    <property name="styleSheet">
-                      <string>QPushButton#pbtn_SaveDynamic:checked { background-color: #c0392b; color: white; border: 1px solid #922b21; border-radius: 4px; }</string>
                     </property>
                   </widget>
                 </item>

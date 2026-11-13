@@ -151,9 +151,9 @@ void ConnectionView::setSpectrumTheme(bool dark) {
     }
     auto *plot = m_ui->cplot_Spectrum;
     plot->setProperty("spectrumDarkTheme", dark);
-    const QColor background = dark ? QColor("#20252b") : QColor("#ffffff");
-    const QColor foreground = dark ? QColor("#e4e8ed") : QColor("#28323c");
-    const QColor grid = dark ? QColor("#454d58") : QColor("#dbe0e5");
+    const QColor background = dark ? QColor("#182231") : QColor("#ffffff");
+    const QColor foreground = dark ? QColor("#b1bfd2") : QColor("#52647d");
+    const QColor grid = dark ? QColor("#33445b") : QColor("#e2e8f0");
     plot->setBackground(QBrush(background));
     plot->axisRect()->setBackground(QBrush(background));
     for (auto *axis : {plot->xAxis, plot->yAxis, plot->xAxis2, plot->yAxis2}) {
