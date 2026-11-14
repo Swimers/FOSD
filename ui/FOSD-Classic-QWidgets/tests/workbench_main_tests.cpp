@@ -29,8 +29,16 @@
 #include <QStandardItemModel>
 #include "FOSD-Classic-QWidgets/controls/qcustomplot/qcustomplot.h"
 #include <QSignalSpy>
+#include <QLayout>
+#include <QScreen>
+#include <QWindow>
+#include <QDockWidget>
 #include <QtEndian>
 #include <cstring>
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#include <windowsx.h>
+#endif
 #include <vtkAutoInit.h>
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkRenderingFreeType);
@@ -50,6 +58,119 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void startupAspectAndVtkSpace() {
+  using namespace fosd::ui::classic;
+  QTemporaryDir configDir; QVERIFY(configDir.isValid());
+  struct RestoreConfig {
+   QByteArray old;
+   ~RestoreConfig() { if(old.isNull()) qunsetenv("FOSD_CONFIG_FILE"); else qputenv("FOSD_CONFIG_FILE",old); }
+  } restore{qgetenv("FOSD_CONFIG_FILE")};
+  qputenv("FOSD_CONFIG_FILE",configDir.filePath("startup.ini").toUtf8());
+  TestWindow w; w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w));
+  const auto available=w.windowHandle()->screen()->availableGeometry();
+  const auto initial=w.size();
+  const auto minimum=w.minimumSize().expandedTo(w.minimumSizeHint());
+  const int units=qMax((minimum.width()+15)/16,(minimum.height()+8)/9);
+  if(units<=qMin(available.width()/16,available.height()/9)) {
+   QCOMPARE(9*w.width(),16*w.height());
+   QVERIFY(available.contains(w.geometry()));
+  }
+  w.selectPage(1); QCoreApplication::processEvents();
+  auto *page=qobject_cast<QMainWindow *>(w.panelWidget(PanelId::Visualization));
+  auto *model=page->findChild<QDockWidget *>("fosdDock0");
+  QCOMPARE(page->tabifiedDockWidgets(model).size(),2);
+  for(const auto panel:{PanelId::ModelPanel,PanelId::ScenePanel,PanelId::InfoPanel}) {
+   w.showPanel(panel); QCoreApplication::processEvents();
+   auto *dock=qobject_cast<QDockWidget *>(w.panelWidget(panel)->parentWidget());
+   QVERIFY(dock); QCOMPARE(page->dockWidgetArea(dock),Qt::LeftDockWidgetArea);
+   QVERIFY(!dock->visibleRegion().isEmpty());
+  }
+  w.showPanel(PanelId::ModelPanel); QCoreApplication::processEvents();
+  QVERIFY(w.renderHost()->width()>page->width()*0.60);
+  auto *vtk=w.renderHost()->surface()->findChild<QVTKOpenGLNativeWidget *>();
+  QVERIFY(vtk); QTRY_COMPARE(vtk->size(),w.renderHost()->size());
+  qInfo()<<"Startup window"<<initial<<"available screen"<<available.size()<<"VTK"<<vtk->size();
+  w.grab().save("startup-vtk-layout.png");
+  w.resize(initial+QSize(32,0)); QCOMPARE(w.size(),initial+QSize(32,0));
+  w.resize(initial); w.hide(); w.show(); QCoreApplication::processEvents();
+  QCOMPARE(w.size(),initial);
+ }
+#ifdef Q_OS_WIN
+ void interactiveResizeCoalescesRendering() {
+  using namespace fosd::ui::classic;
+  WorkbenchView w; w.resize(1500,1000); w.show();
+  QVERIFY(QTest::qWaitForWindowExposed(&w));
+  auto *connection=w.panelWidget(PanelId::Connection);
+  connection->findChild<QTabWidget *>("tabWidget")->setCurrentIndex(0);
+  auto *plot=connection->findChild<QCustomPlot *>("cplot_Spectrum");
+  QVector<double> x(20000),y(20000);
+  for(int i=0;i<x.size();++i) { x[i]=i*.001; y[i]=1550+qSin(x[i]); }
+  plot->addGraph()->setData(x,y); plot->rescaleAxes(); plot->replot();
+  QCoreApplication::processEvents();
+  QSignalSpy renders(plot,&QCustomPlot::afterReplot);
+  const auto original=w.size();
+  auto burst=[&] {
+   for(int i=1;i<=60;++i) w.resize(original+QSize(i,i/2));
+   QCoreApplication::processEvents();
+  };
+  QElapsedTimer clock; clock.start(); burst();
+  const auto baselineMs=clock.elapsed(); const int baseline=renders.count();
+  QVERIFY(baseline>10);
+  w.resize(original); QCoreApplication::processEvents(); renders.clear();
+  const auto hwnd=reinterpret_cast<HWND>(w.winId());
+  RECT bounds; GetWindowRect(hwnd,&bounds);
+  SendMessage(hwnd,WM_SIZING,WMSZ_BOTTOMRIGHT,reinterpret_cast<LPARAM>(&bounds));
+  clock.restart(); burst(); const auto throttledMs=clock.elapsed();
+  const int during=renders.count();
+  QVERIFY2(during<baseline/2,"Each native size change must not synchronously re-render the plot");
+  // A timer frame must apply the latest size while the mouse is still held.
+  const auto beforeFrame=plot->size();
+  w.resize(w.size()+QSize(20,20)); QTest::qWait(80);
+  QVERIFY(plot->size()!=beforeFrame);
+  SendMessage(hwnd,WM_EXITSIZEMOVE,0,0);
+  QVERIFY(w.layout()->isEnabled());
+  QCOMPARE(w.layout()->geometry(),w.rect());
+  QCOMPARE(plot->viewport(),plot->rect());
+  const auto finalPlot=plot->size();
+  w.resize(w.size()+QSize(20,20)); QCoreApplication::processEvents();
+  QVERIFY(plot->size()!=finalPlot);
+  QCOMPARE(plot->graph(0)->dataCount(),20000);
+  // Cancellation must restore ordinary layout as well.
+  SendMessage(hwnd,WM_SIZING,WMSZ_BOTTOMRIGHT,reinterpret_cast<LPARAM>(&bounds));
+  SendMessage(hwnd,WM_CANCELMODE,0,0); QVERIFY(w.layout()->isEnabled());
+  qInfo()<<"Resize burst: immediate"<<baseline<<"replots,"<<baselineMs<<"ms; coalesced"<<during<<"replots,"<<throttledMs<<"ms";
+ }
+ void framelessResizeHitTests() {
+  using namespace fosd::ui::classic;
+  WorkbenchView w; w.resize(1500,1000); w.show();
+  QVERIFY(QTest::qWaitForWindowExposed(&w));
+  const auto hwnd=reinterpret_cast<HWND>(w.winId());
+  auto hit=[&](int x,int y) {
+   RECT r; GetWindowRect(hwnd,&r);
+   return SendMessage(hwnd,WM_NCHITTEST,0,MAKELPARAM(r.left+x,r.top+y));
+  };
+  RECT r; QVERIFY(GetWindowRect(hwnd,&r));
+  const int right=r.right-r.left-2, bottom=r.bottom-r.top-2;
+  QCOMPARE(hit(1,1),LRESULT(HTTOPLEFT));
+  QCOMPARE(hit(right,1),LRESULT(HTTOPRIGHT));
+  QCOMPARE(hit(1,bottom),LRESULT(HTBOTTOMLEFT));
+  QCOMPARE(hit(right,bottom),LRESULT(HTBOTTOMRIGHT));
+  QCOMPARE(hit(1,bottom/2),LRESULT(HTLEFT));
+  QCOMPARE(hit(right,bottom/2),LRESULT(HTRIGHT));
+  QCOMPARE(hit(right/2,1),LRESULT(HTTOP));
+  QCOMPARE(hit(right/2,bottom),LRESULT(HTBOTTOM));
+  QCOMPARE(hit(right/2,bottom/2),LRESULT(HTCLIENT));
+  const int minWidth=w.minimumWidth();
+  w.setFixedWidth(w.width());
+  QVERIFY(hit(1,bottom/2)!=HTLEFT);
+  w.setMinimumWidth(minWidth); w.setMaximumWidth(QWIDGETSIZE_MAX);
+  const auto isResize=[](LRESULT code){ return code>=HTLEFT && code<=HTBOTTOMRIGHT; };
+  w.showMaximized(); QCoreApplication::processEvents();
+  QVERIFY(!isResize(hit(1,1)));
+  w.showFullScreen(); QCoreApplication::processEvents();
+  QVERIFY(!isResize(hit(1,1)));
+ }
+#endif
  void pairedThemes() {
   using namespace fosd::ui::classic;
   WorkbenchView w; w.resize(1500,1000); w.show();

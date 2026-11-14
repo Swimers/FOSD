@@ -26,6 +26,7 @@ public:
     QString chooseFile(bool save, const QString &title, const QString &filter) override;
 
 private:
+    void initializeWindowGeometry();
     QMap<int, QWidget *> m_panels;
     QMap<int, QDockWidget *> m_docks;
     QStackedWidget *m_pages = nullptr;

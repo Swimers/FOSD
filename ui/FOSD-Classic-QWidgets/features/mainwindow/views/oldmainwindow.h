@@ -1,6 +1,7 @@
 #pragma once
 #include <QMainWindow>
 #include <QPoint>
+#include <QTimer>
 #include <memory>
 #include "FOSD-Classic-QWidgets/common/IView.h"
 class QMouseEvent;
@@ -25,12 +26,23 @@ public:
     void showStatus(const QString &message) override;
 
 protected:
+#ifdef Q_OS_WIN
+    bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
+#endif
     // 无边框窗口的拖动：空白标题带按下后跟随鼠标移动窗口。
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
+#ifdef Q_OS_WIN
+    void beginInteractiveResize();
+    void flushResizeLayout();
+    void endInteractiveResize();
+    QTimer m_resizeTimer;
+    bool m_interactiveResize = false;
+    QSize m_lastLayoutSize;
+#endif
     // 判断窗口坐标是否落在标题带（与最小化/全屏/关闭按钮同一水平区域）。
     bool isTitleBarArea(const QPoint &pos) const;
 

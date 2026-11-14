@@ -26,6 +26,10 @@
 #include <QTableWidget>
 #include <QPalette>
 #include <QAction>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QCursor>
+#include <QTabWidget>
 
 namespace fosd {
 namespace ui {
@@ -109,10 +113,15 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
         auto *page = panelWidget(docks[index]);
         page->setWindowFlags(Qt::Widget);
         dock->setWidget(page);
-        visualization->addDockWidget(index == 2 ? Qt::RightDockWidgetArea : Qt::LeftDockWidgetArea,
-                                     dock);
+        visualization->addDockWidget(Qt::LeftDockWidgetArea, dock);
         m_docks.insert(int(docks[index]), dock);
     }
+    auto *modelDock = m_docks.value(int(PanelId::ModelPanel));
+    for (auto panel : {PanelId::ScenePanel, PanelId::InfoPanel})
+        visualization->tabifyDockWidget(modelDock, m_docks.value(int(panel)));
+    visualization->setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::North);
+    visualization->resizeDocks({modelDock}, {280}, Qt::Horizontal);
+    modelDock->raise();
 
     for (auto *table : findChildren<QTableWidget *>()) {
         table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -126,9 +135,34 @@ WorkbenchView::WorkbenchView(QWidget *parent) : MainWindowView(parent) {
     setModelAvailable(false);
     applyFields({{"switch_Style", true}});
     applyTheme(true);
+    initializeWindowGeometry();
 }
 
 WorkbenchView::~WorkbenchView() = default;
+
+void WorkbenchView::initializeWindowGeometry() {
+    // Calculate in logical pixels, using the display under the pointer and
+    // excluding taskbars. This is only the initial size, not an aspect lock.
+    auto *screen = QGuiApplication::screenAt(QCursor::pos());
+    if (!screen)
+        screen = QGuiApplication::primaryScreen();
+    if (!screen)
+        return;
+    ensurePolished();
+    layout()->activate();
+    const QRect available = screen->availableGeometry();
+    const QSize minimum = minimumSize().expandedTo(minimumSizeHint());
+    const int minimumUnits = qMax((minimum.width() + 15) / 16, (minimum.height() + 8) / 9);
+    const int screenUnits = qMin(available.width() / 16, available.height() / 9);
+    const int preferredUnits = qMin(int(available.width() * 0.94) / 16,
+                                   int(available.height() * 0.94) / 9);
+    // Drop the outer breathing space if it would violate the form minimum.
+    // If the display cannot fit the form at all, Qt's minimum size wins.
+    const int units = qMax(1, qMin(screenUnits, qMax(preferredUnits, minimumUnits)));
+    resize(16 * units, 9 * units);
+    move(available.left() + qMax(0, (available.width() - width()) / 2),
+         available.top() + qMax(0, (available.height() - height()) / 2));
+}
 
 void WorkbenchView::setModelAvailable(bool available) {
     // Gate parent containers so child-specific states (e.g. gradient top color)
