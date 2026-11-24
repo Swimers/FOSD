@@ -165,6 +165,11 @@ void WorkbenchView::initializeWindowGeometry() {
 }
 
 void WorkbenchView::setModelAvailable(bool available) {
+    renderHost()->setModelAvailable(available);
+    auto *hint = panelWidget(PanelId::Visualization)->findChild<QWidget *>("widget_ModelPlaceholder");
+    hint->setVisible(!available);
+    if (!available)
+        hint->raise();
     // Gate parent containers so child-specific states (e.g. gradient top color)
     // continue to follow their own rules while model availability changes.
     for (auto panel : {PanelId::ScenePanel, PanelId::KeyPointEdit, PanelId::KeyPointSelect})

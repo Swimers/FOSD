@@ -1,4 +1,8 @@
 /* FOSD Classic: paired light/dark themes. Keep geometry identical when switching. */
+QWidget#widget_ModelPlaceholder { background: transparent; }
+QFrame#frame_ModelPlaceholder { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; }
+QLabel#label_ModelHintTitle { font-size: 16px; font-weight: 600; }
+QLabel#label_ModelHintBody { color: #52647d; }
 QWidget {
     font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
     font-size: 13px; color: #243247; background-color: #f1f4f8;

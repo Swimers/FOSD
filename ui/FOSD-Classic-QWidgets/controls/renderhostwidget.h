@@ -12,12 +12,17 @@ class RenderHostWidget final : public QWidget {
 public:
     explicit RenderHostWidget(QWidget *parent = nullptr);
     void setSurface(QWidget *surface);
+    void setModelAvailable(bool available);
     QWidget *surface() const {
         return m_surface.data();
     }
 
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 private:
     QPointer<QWidget> m_surface;
+    bool m_modelAvailable = false;
 };
 } // namespace classic
 } // namespace ui

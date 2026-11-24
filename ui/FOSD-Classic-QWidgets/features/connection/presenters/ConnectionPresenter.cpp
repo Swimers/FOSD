@@ -399,6 +399,11 @@ bool ConnectionPresenter::handleAction(const QString &action, const QVariantMap 
             message = tr("请先打开通信通道");
         } else
             communication.send(channel, text(fields, input).toUtf8(), peer);
+    } else if (action == "ckbox_SerialRawHex" || action == "ckbox_UdpRawHex" || action == "ckbox_TcpRawHex") {
+        const int channel = action == "ckbox_SerialRawHex" ? 0 : action == "ckbox_UdpRawHex" ? 1 : 2;
+        m_showRawHex[channel] = fields.value(action).toBool();
+        m_resetTraffic[channel] = true;
+        message = tr("已切换原始 Hex 附加行显示");
     } else if (action == "cbox_SerialDisplayMode" || action == "cbox_UdpDisplayMode" || action == "cbox_TcpDisplayMode") {
         const int channel =
             action == "cbox_SerialDisplayMode" ? 0 : action == "cbox_UdpDisplayMode" ? 1 : 2;
@@ -577,7 +582,7 @@ void ConnectionPresenter::rawReceived(Channel channel, const QByteArray &bytes,
     if (channel == Channel::Tcp && peer.isValid())
         m_logTcpPeer = peer;
     if (channel == Channel::Udp) {
-        m_udpPreview = bytes.left(64);
+        m_udpPreview = bytes.left(65536); // Retain the whole UDP datagram for the optional Hex line.
         m_udpPacketBytes = bytes.size();
         m_udpPeer = peer;
         m_udpReceivedAt = QDateTime::currentDateTime();
@@ -606,6 +611,7 @@ void ConnectionPresenter::appendTraffic(Channel channel, const QByteArray &bytes
     entry.outgoing = outgoing;
     entry.byteCount = byteCount < 0 ? bytes.size() : byteCount;
     entry.preview = bytes.left(64);
+    entry.rawBytes = bytes.left(65536);
     entry.summary = summary;
     entry.showPayload = showPayload;
     if (outgoing || channel == Channel::Udp)
@@ -647,8 +653,15 @@ void ConnectionPresenter::appendTraffic(Channel channel, const QByteArray &bytes
     }
     auto &entries = m_traffic[i];
     entries.append(entry);
-    while (entries.size() > 200)
+    m_trafficBytes[i] += entry.rawBytes.size();
+    if (m_trafficBytes[i] > 128 * 1024)
+        m_resetTraffic[i] = true; // Prune the document as well as the byte cache.
+    // Keep complete normal datagrams while bounding serial/TCP bursts and
+    // retained debug history. This limit also applies while Hex is hidden.
+    while (entries.size() > 200 || m_trafficBytes[i] > 128 * 1024) {
+        m_trafficBytes[i] -= entries.first().rawBytes.size();
         entries.removeFirst();
+    }
 }
 
 QString ConnectionPresenter::formatTraffic(int channel, const TrafficEntry &entry) const {
@@ -672,7 +685,21 @@ QString ConnectionPresenter::formatTraffic(int channel, const TrafficEntry &entr
         if (entry.byteCount > entry.preview.size())
             dataLine += tr(" …（预览已截断）");
     }
-    return line + '\n' + dataLine;
+    QString result = line + '\n' + dataLine;
+    if (m_showRawHex[channel]) {
+        // Very long unbroken lines make QTextLayout expensive. Normal packets
+        // stay on one line; large batches use bounded-width 32-byte rows.
+        if (entry.rawBytes.size() <= 256)
+            result += '\n' + QString::fromLatin1(entry.rawBytes.toHex(' ').toUpper());
+        else {
+            for (int offset = 0; offset < entry.rawBytes.size(); offset += 32)
+                result += '\n' + QString::fromLatin1(entry.rawBytes.mid(offset, 32).toHex(' ').toUpper());
+        }
+        if (entry.byteCount > entry.rawBytes.size())
+            result += tr(" …（原始 Hex 已截断，显示 %1/%2 B）")
+                          .arg(entry.rawBytes.size()).arg(entry.byteCount);
+    }
+    return result;
 }
 
 QString ConnectionPresenter::udpLogEntry() const {
@@ -710,6 +737,7 @@ void ConnectionPresenter::flushUdpTraffic() {
 
 void ConnectionPresenter::clearTraffic(int channel) {
     m_traffic[channel].clear();
+    m_trafficBytes[channel] = 0;
     m_publishedTrafficId[channel] = 0;
     m_resetTraffic[channel] = true;
     m_receiveDecoder[channel].reset();

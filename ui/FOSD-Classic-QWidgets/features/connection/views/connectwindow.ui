@@ -665,7 +665,7 @@
                             </property>
                           </item>
                         </widget>
-                      </item>
+                      </item><item><widget class="QCheckBox" name="ckbox_SerialRawHex"><property name="text"><string>显示原始 Hex</string></property><property name="toolTip"><string>在现有日志后另起一行追加原始收发字节，与上方预览格式独立；串口/TCP 按读写批次显示。单批最多 64 KiB，超出明确标记截断；缓存有大小上限。</string></property></widget></item>
                     </layout>
                   </item>
                   <item>
@@ -1115,7 +1115,7 @@
                             </property>
                           </item>
                         </widget>
-                      </item>
+                      </item><item><widget class="QCheckBox" name="ckbox_UdpRawHex"><property name="text"><string>显示原始 Hex</string></property><property name="toolTip"><string>在现有日志后另起一行追加原始收发字节，与上方预览格式独立；串口/TCP 按读写批次显示。单批最多 64 KiB，超出明确标记截断；缓存有大小上限。</string></property></widget></item>
                     </layout>
                   </item>
                   <item>
@@ -1261,7 +1261,7 @@
                             </property>
                           </item>
                         </widget>
-                      </item>
+                      </item><item><widget class="QCheckBox" name="ckbox_TcpRawHex"><property name="text"><string>显示原始 Hex</string></property><property name="toolTip"><string>在现有日志后另起一行追加原始收发字节，与上方预览格式独立；串口/TCP 按读写批次显示。单批最多 64 KiB，超出明确标记截断；缓存有大小上限。</string></property></widget></item>
                     </layout>
                   </item>
                   <item>

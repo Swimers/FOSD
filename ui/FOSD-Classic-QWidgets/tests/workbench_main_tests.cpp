@@ -21,6 +21,7 @@
 #include <QTabWidget>
 #include <QCheckBox>
 #include <QLabel>
+#include <QFrame>
 #include <QWheelEvent>
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -60,6 +61,110 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void emptyModelViewportGuard() {
+  using namespace fosd::ui::classic;
+  ParameterTestIsolation isolated; isolated.reset();
+  QTemporaryDir directory;
+  TestWindow w; w.resize(1500,1000); w.show(); w.selectPage(1);
+  QVERIFY(QTest::qWaitForWindowExposed(&w));
+  auto *page=w.panelWidget(PanelId::Visualization);
+  auto *hint=page->findChild<QWidget *>("widget_ModelPlaceholder");
+  auto *card=page->findChild<QFrame *>("frame_ModelPlaceholder");
+  auto *vtk=w.renderHost()->surface()->findChild<QVTKOpenGLNativeWidget *>();
+  QVERIFY(hint && card && vtk); QTRY_VERIFY(hint->isVisible());
+  QVERIFY(!hint->isWindow()); QVERIFY(!card->isWindow());
+  QVERIFY(!vtk->isEnabled()); QVERIFY(!w.renderHost()->surface()->isEnabled());
+  auto verifyCentered=[&] {
+   return hint->geometry()==w.renderHost()->geometry() &&
+     (card->mapTo(hint,card->rect().center())-hint->rect().center()).manhattanLength()<=2;
+  };
+  QTRY_VERIFY(verifyCentered());
+  int mouseEvents=0; QObject mouseGuard;
+  connect(vtk,&QVTKOpenGLNativeWidget::mouseEvent,&mouseGuard,[&mouseEvents](QMouseEvent *){++mouseEvents;});
+  const auto camera=w.model().visualization().cameraPose();
+  auto blockedInput=[&] {
+   const QPoint p=vtk->rect().center();
+   QMouseEvent press(QEvent::MouseButtonPress,p,Qt::LeftButton,Qt::LeftButton,Qt::NoModifier);
+   QApplication::sendEvent(vtk,&press);
+   QMouseEvent move(QEvent::MouseMove,p+QPoint(40,20),Qt::NoButton,Qt::LeftButton,Qt::NoModifier);
+   QApplication::sendEvent(vtk,&move);
+   QMouseEvent release(QEvent::MouseButtonRelease,p+QPoint(40,20),Qt::LeftButton,Qt::NoButton,Qt::NoModifier);
+   QApplication::sendEvent(vtk,&release);
+   QWheelEvent wheel(QPointF(p),QPointF(vtk->mapToGlobal(p)),QPoint(),QPoint(0,120),Qt::NoButton,Qt::NoModifier,Qt::NoScrollPhase,false);
+   QApplication::sendEvent(vtk,&wheel);
+   QTest::keyClick(vtk,Qt::Key_R);
+  };
+  blockedInput(); QCOMPARE(mouseEvents,0);
+  QVERIFY(w.model().visualization().cameraPose().positionMm==camera.positionMm);
+  QVERIFY(w.model().visualization().cameraPose().focalPointMm==camera.focalPointMm);
+  const auto cardPosition=card->pos();
+  QTest::mousePress(card,Qt::LeftButton); QTest::mouseMove(card,QPoint(20,20)); QTest::mouseRelease(card,Qt::LeftButton);
+  QCOMPARE(card->pos(),cardPosition);
+  hint->setFocus(); QTest::keyClick(hint,Qt::Key_Escape); QVERIFY(hint->isVisible());
+  w.resize(w.size()+QSize(80,40)); QCoreApplication::processEvents(); QTRY_VERIFY(verifyCentered());
+  auto *top=hint->parentWidget()->childAt(card->mapTo(hint->parentWidget(),card->rect().center()));
+  QVERIFY(top && (top==hint || hint->isAncestorOf(top)));
+  w.applyTheme(false); w.grab().save("empty-vtk-light.png");
+  w.applyTheme(true); w.grab().save("empty-vtk-dark.png");
+  auto *load=w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelLoad");
+  QVERIFY(load->isEnabled());
+  w.selectedFile=directory.filePath("missing.stl"); load->click();
+  QVERIFY(hint->isVisible()); QVERIFY(!vtk->isEnabled());
+  QFile file(directory.filePath("model.stl")); QVERIFY(file.open(QIODevice::WriteOnly));
+  file.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 0 0 0\nvertex 10 0 0\nvertex 0 10 0\nendloop\nendfacet\nendsolid t\n"); file.close();
+  w.selectedFile=file.fileName(); load->click();
+  QTRY_VERIFY(!hint->isVisible() && vtk->isEnabled());
+  QTest::mouseClick(vtk,Qt::LeftButton,Qt::NoModifier,vtk->rect().center());
+  QVERIFY(mouseEvents>0); mouseEvents=0;
+  w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelClear")->click();
+  QTRY_VERIFY(hint->isVisible() && !vtk->isEnabled());
+  blockedInput(); QCOMPARE(mouseEvents,0);
+ }
+ void rawHexAppendix() {
+  using namespace fosd; using namespace fosd::ui::classic;
+  ParameterTestIsolation isolated; isolated.reset();
+  TestWindow w; w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w));
+  auto *panel=w.panelWidget(PanelId::Connection);
+  auto &transport=w.model().protocol().communication();
+  const QByteArray bytes=QByteArray::fromHex("000102ff0d0a")+QByteArray(90,'x')+QByteArray::fromHex("aaccee");
+  const auto expected=QString::fromLatin1(bytes.toHex(' ').toUpper());
+  const char *checks[]={"ckbox_SerialRawHex","ckbox_UdpRawHex","ckbox_TcpRawHex"};
+  const char *logs[]={"ptedit_SerialRec","ptedit_UdpRec","ptedit_TcpRec"};
+  for(int i=0;i<3;++i) {
+   auto *check=panel->findChild<QCheckBox *>(checks[i]); QVERIFY(check); QVERIFY(!check->isChecked());
+   auto *log=panel->findChild<QPlainTextEdit *>(logs[i]); QVERIFY(log);
+   emit transport.rawDataReceived(communication::Channel(i),bytes,{});
+   if(i==1) {
+    communication::DecoderError error; error.channel=communication::Channel::Udp; error.message="debug bytes";
+    emit transport.decoderErrorOccurred(error);
+   }
+   QTRY_VERIFY(!log->toPlainText().isEmpty());
+   QVERIFY(!log->toPlainText().contains("AA CC EE"));
+   const auto before=log->toPlainText(); check->click();
+   QTRY_VERIFY(log->toPlainText().endsWith('\n'+expected));
+   QVERIFY(log->toPlainText().startsWith(before));
+   QCOMPARE(log->document()->blockCount(),1); // All three lines remain one colored frame.
+   QCOMPARE(log->document()->begin().userState(),1);
+   check->click(); QTRY_COMPARE(log->toPlainText(),before);
+  }
+  auto *serialCheck=panel->findChild<QCheckBox *>(checks[0]); serialCheck->click();
+  auto *serial=panel->findChild<QPlainTextEdit *>(logs[0]);
+  // Send requests use the same optional complete-byte appendix and blue frame.
+  emit w.model().sendRequested(communication::Channel::Serial,bytes,{});
+  QTRY_COMPARE(serial->document()->blockCount(),2);
+  QVERIFY(serial->document()->lastBlock().text().endsWith(expected));
+  QCOMPARE(serial->document()->lastBlock().userState(),2);
+  emit transport.rawDataReceived(communication::Channel::Serial,QByteArray(70000,'Z'),{});
+  QTRY_VERIFY(serial->toPlainText().contains(QString::fromUtf8("原始 Hex 已截断")));
+  QVERIFY(serial->toPlainText().contains("65536/70000 B"));
+  for(int i=0;i<6;++i) {
+   emit transport.rawDataReceived(communication::Channel::Serial,QByteArray(65536,'Z'),{});
+   QVERIFY(QMetaObject::invokeMethod(&w.presenter(),"refreshDisplays"));
+  }
+  QVERIFY(serial->document()->blockCount()<=2);
+  auto *cleanup=w.presenter().findChild<QTimer *>("receiveLogCleanupTimer"); QVERIFY(cleanup);
+  cleanup->start(20); QTRY_VERIFY(serial->toPlainText().isEmpty()); cleanup->stop();
+ }
  void markerRadiusSliders() {
   using namespace fosd; using namespace fosd::ui::classic;
   ParameterTestIsolation isolated; isolated.reset();
@@ -733,6 +838,20 @@ private slots:
   QVERIFY(QRegularExpression("\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\]").match(contents).hasMatch());
   QVERIFY(!contents.contains("5A A5"));
   QVERIFY(serial->toPlainText().isEmpty());
+  auto *rawHex=panel->findChild<QCheckBox *>("ckbox_UdpRawHex"); QVERIFY(rawHex);
+  rawHex->click();
+  QTRY_VERIFY(log->toPlainText().endsWith(QString::fromLatin1(packet.toHex(' ').toUpper())));
+  QVERIFY(log->toPlainText().contains("mp.wavelength"));
+  QCOMPARE(log->document()->blockCount(),1);
+  QCOMPARE(log->document()->begin().text().split(QChar(0x2028)).size(),3);
+  QByteArray fullPacket=packet.left(10); fullPacket[4]=12; fullPacket[5]=0;
+  for(int i=0;i<12;++i) fullPacket+=QByteArray::fromHex("01020000c03f");
+  QCOMPARE(fullPacket.size(),82);
+  QCOMPARE(sender.writeDatagram(fullPacket,QHostAddress::LocalHost,port),qint64(82));
+  QTRY_VERIFY(log->toPlainText().endsWith(QString::fromLatin1(fullPacket.toHex(' ').toUpper())));
+  QVERIFY(log->toPlainText().contains(QString::fromUtf8("记录=12")));
+  rawHex->click();
+  QTRY_VERIFY(!log->toPlainText().contains("5A A5"));
   const auto saved = runtime.protocol().dataModel()->latest();
   QVERIFY(saved);
   // Invalid/large data gets a short preview, never the entire datagram.

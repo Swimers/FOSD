@@ -40,6 +40,7 @@ class ConnectionPresenter final : public PanelPresenter {
         QString endpoint;
         int byteCount = 0;
         QByteArray preview;
+        QByteArray rawBytes;
         QString utf8;
         QString summary;
         bool showPayload = true;
@@ -53,6 +54,8 @@ class ConnectionPresenter final : public PanelPresenter {
     void flushUdpTraffic();
     void clearTraffic(int);
     bool m_rawHex[3] = {false, true, true};
+    bool m_showRawHex[3] = {false, false, false};
+    int m_trafficBytes[3] = {0, 0, 0};
     QVector<TrafficEntry> m_traffic[3];
     quint64 m_nextTrafficId[3] = {0, 0, 0};
     quint64 m_publishedTrafficId[3] = {0, 0, 0};
