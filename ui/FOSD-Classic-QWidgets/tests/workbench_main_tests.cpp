@@ -29,6 +29,8 @@
 #include <QStandardItemModel>
 #include "FOSD-Classic-QWidgets/controls/qcustomplot/qcustomplot.h"
 #include <QSignalSpy>
+#include <QSlider>
+#include "../../../test/ParameterTestIsolation.h"
 #include <QLayout>
 #include <QScreen>
 #include <QWindow>
@@ -58,6 +60,51 @@ class WorkbenchMainTests:public QObject {
     Q_OBJECT
 
 private slots:
+ void markerRadiusSliders() {
+  using namespace fosd; using namespace fosd::ui::classic;
+  ParameterTestIsolation isolated; isolated.reset();
+  QTemporaryDir directory;
+  {
+   TestWindow w; w.show(); QVERIFY(QTest::qWaitForWindowExposed(&w));
+   auto *scene=w.panelWidget(PanelId::ScenePanel);
+   auto *key=scene->findChild<QSlider *>("hsd_KeyPointRadius");
+   auto *selected=scene->findChild<QSlider *>("hsd_SelectionRadius");
+   QVERIFY(key && selected); QVERIFY(!key->hasTracking() && !selected->hasTracking());
+   QVERIFY(!key->isEnabled() && !selected->isEnabled());
+   const double initial=w.model().displayedPointStyle().radiusMm;
+   key->setValue(100); QCOMPARE(w.model().displayedPointStyle().radiusMm,initial);
+   QFile model(directory.filePath("points.stl")); QVERIFY(model.open(QIODevice::WriteOnly));
+   model.write("solid t\nfacet normal 0 0 1\nouter loop\nvertex 0 0 0\nvertex 10 0 0\nvertex 0 10 0\nendloop\nendfacet\nendsolid t\n"); model.close();
+   auto &view=w.model().visualization(); QVERIFY(view.loadModel(model.fileName()));
+   QTRY_VERIFY(key->isEnabled() && selected->isEnabled());
+   visualization::DisplayedPointDefinition point; point.pointId=0;
+   QVERIFY(view.setDisplayedPoints({point})); QVERIFY(view.selectPoint(0).valid);
+   const auto original=view.displayedPointStyle(); const auto highlight=view.selectionStyle();
+   key->setValue(101); key->setValue(100); // 0.1 mm, independently of selection.
+   QCOMPARE(view.displayedPointStyle().radiusMm,0.1);
+   QCOMPARE(view.selectionStyle().radiusMm,highlight.radiusMm);
+   QVERIFY(view.displayedPointStyle().color==original.color);
+   QCOMPARE(view.displayedPointStyle().fontSize,original.fontSize);
+   selected->setValue(200); // 1 mm.
+   QCOMPARE(view.selectionStyle().radiusMm,1.0);
+   QVERIFY(view.selectionStyle().color==highlight.color);
+   QCOMPARE(scene->findChild<QLabel *>("lab_KeyPointRadiusValue")->text(),QString("0.1 mm"));
+   QCOMPARE(scene->findChild<QLabel *>("lab_SelectionRadiusValue")->text(),QString("1 mm"));
+   QCOMPARE(view.keyPoints().size(),3); QCOMPARE(view.displayedPoints().size(),1);
+   QVERIFY(view.selectedPoint().valid);
+   w.showPanel(PanelId::ScenePanel); QCoreApplication::processEvents();
+   w.grab().save("marker-radius-sliders.png");
+   w.panelWidget(PanelId::ModelPanel)->findChild<QPushButton *>("pbtn_ModelClear")->click();
+   QTRY_VERIFY(!key->isEnabled() && !selected->isEnabled());
+  }
+  // Existing backend persistence must restore both independent sizes on restart.
+  TestWindow reopened; reopened.show(); QVERIFY(QTest::qWaitForWindowExposed(&reopened));
+  QTRY_COMPARE(reopened.model().displayedPointStyle().radiusMm,0.1);
+  QCOMPARE(reopened.model().selectionStyle().radiusMm,1.0);
+  auto *scene=reopened.panelWidget(PanelId::ScenePanel);
+  QTRY_COMPARE(scene->findChild<QSlider *>("hsd_KeyPointRadius")->value(),100);
+  QCOMPARE(scene->findChild<QSlider *>("hsd_SelectionRadius")->value(),200);
+ }
  void startupAspectAndVtkSpace() {
   using namespace fosd::ui::classic;
   QTemporaryDir configDir; QVERIFY(configDir.isValid());
@@ -70,6 +117,7 @@ private slots:
   const auto available=w.windowHandle()->screen()->availableGeometry();
   const auto initial=w.size();
   const auto minimum=w.minimumSize().expandedTo(w.minimumSizeHint());
+  qInfo()<<"Startup sizing check"<<initial<<available<<minimum<<QCursor::pos();
   const int units=qMax((minimum.width()+15)/16,(minimum.height()+8)/9);
   if(units<=qMin(available.width()/16,available.height()/9)) {
    QCOMPARE(9*w.width(),16*w.height());

@@ -94,6 +94,10 @@ class WorkbenchModel final : public QObject {
     bool setBackgroundSettings(const visualization::BackgroundSettings &s) { return m_visualization->setBackgroundSettings(s); }
     bool setKeyPoints(const QVector<visualization::KeyPointDefinition> &p) { return m_visualization->setKeyPoints(p); }
     bool setDisplayedPoints(const QVector<visualization::DisplayedPointDefinition> &p) { return m_visualization->setDisplayedPoints(p); }
+    bool setDisplayedPointStyle(const visualization::KeyPointStyle &s) { return m_visualization->setDisplayedPointStyle(s); }
+    bool setSelectionStyle(const visualization::KeyPointStyle &s) { return m_visualization->setSelectionStyle(s); }
+    visualization::KeyPointStyle displayedPointStyle() const { return m_visualization->displayedPointStyle(); }
+    visualization::KeyPointStyle selectionStyle() const { return m_visualization->selectionStyle(); }
     
     void setCameraLocked(bool locked) { m_visualization->setCameraLocked(locked); }
     void setCameraPreset(visualization::CameraPreset preset) { m_visualization->setCameraPreset(preset); }

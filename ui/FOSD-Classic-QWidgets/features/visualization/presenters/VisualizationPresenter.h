@@ -20,6 +20,7 @@ class VisualizationPresenter final : public PanelPresenter {
 
   private:
     void publishAppearance();
+    void publishMarkerSizes();
     void selectionChanged(const visualization::PickedPointInfo &);
     quint64 m_presentedResult = 0;
 };

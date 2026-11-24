@@ -65,7 +65,19 @@ bool VisualizationPresenter::handleAction(const QString &action, const QVariantM
     }
     if (m_panel != PanelId::ScenePanel)
         return false;
-    if (a == "cbox_BackgroundMode" || a == "pbtn_BackgroundBottomColor" ||
+    if (a == "hsd_KeyPointRadius" || a == "hsd_SelectionRadius") {
+        bool ok = false;
+        const int value = f.value(a).toInt(&ok);
+        success = ok && value >= 0 && value <= 400;
+        if (success) {
+            const bool selected = a == "hsd_SelectionRadius";
+            auto style = selected ? view.selectionStyle() : view.displayedPointStyle();
+            style.radiusMm = std::pow(10.0, value / 100.0 - 2.0);
+            success = selected ? view.setSelectionStyle(style) : view.setDisplayedPointStyle(style);
+        }
+        message = success ? tr("点标记大小已保存") : tr("点标记大小未能保存");
+        publishMarkerSizes(); // Also restore the actual value after a failed save.
+    } else if (a == "cbox_BackgroundMode" || a == "pbtn_BackgroundBottomColor" ||
         a == "pbtn_BackgroundTopColor" || a == "pbtn_ModelColor") {
         auto background = view.backgroundSettings();
         if (a == "cbox_BackgroundMode") {
@@ -152,6 +164,7 @@ void VisualizationPresenter::initialize() {
                  {"hsd_GridSize", qRound(grid.halfExtentMm / 150.0)},
                  {"cbox_CareamLockAble", m_model->cameraSettings().locked}});
         publishAppearance();
+        publishMarkerSizes();
     }
     refresh();
 }
@@ -214,6 +227,19 @@ void VisualizationPresenter::selectionChanged(const visualization::PickedPointIn
                                         {"lab_ZPosition", QString()}});
     }
 }
+void VisualizationPresenter::publishMarkerSizes() {
+    const auto displayed = m_model->displayedPointStyle();
+    const auto selected = m_model->selectionStyle();
+    auto position = [](double radius) {
+        return qBound(0, qRound((std::log10(radius) + 2.0) * 100.0), 400);
+    };
+    present(PanelId::ScenePanel,
+            {{"hsd_KeyPointRadius", position(displayed.radiusMm)},
+             {"lab_KeyPointRadiusValue", QString::number(displayed.radiusMm, 'g', 3) + " mm"},
+             {"hsd_SelectionRadius", position(selected.radiusMm)},
+             {"lab_SelectionRadiusValue", QString::number(selected.radiusMm, 'g', 3) + " mm"}});
+}
+
 void VisualizationPresenter::publishAppearance() {
     const auto background = m_model->backgroundSettings();
     auto colorName = [](const std::array<double, 3> &rgb) {
