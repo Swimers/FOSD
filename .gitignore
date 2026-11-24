@@ -34,3 +34,13 @@ __pycache__/
 # 图标脚本的 24×24 预览产物（用 python tools/gen_icons.py --preview 生成）
 tools/preview_24/
 
+# Private device/model data: retain only the audited QSS resources.
+/[Dd][Aa][Tt][Aa]/*
+!/[Dd][Aa][Tt][Aa]/[Qq][Ss][Ss]/
+!/[Dd][Aa][Tt][Aa]/[Qq][Ss][Ss]/**
+
+# Historical generated copies and unaudited application packages.
+/[Bb][Uu][Ii][Ll][Dd]/
+/[Bb][Uu][Ll][Ii][Dd]/
+/[Rr]elease/FOSD-*.[Zz][Ii][Pp]
+/[Rr]elease/FOSD-*.[Zz][Ii][Pp].sha256
