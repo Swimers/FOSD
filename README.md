@@ -5,6 +5,8 @@ FOSD（Fiber Optic Sensing Demodulator）用于接收光纤解调仪的波长数
 
 当前重构版本为 **V3.0.0**，主要应用入口是 **FOSD-Classic-QWidgets**。项目采用 C++11、Qt 5.12.2、VTK 8.2 和 CMake，当前构建预设面向 Windows x64 / MSVC 2017。
 
+许可证：[GNU GPL v3 或更新版本（GPL-3.0-or-later）](LICENSE)。
+
 源码与真实工程数据分开管理：仓库中的 `data` 仅保留 QSS 样式与许可证，模型、点阵、标定和采集数据由使用者在本地提供。详细边界见 [私有数据说明](doc/Architectural/private-data-boundary.md)。
 
 ## 功能与应用入口
@@ -157,7 +159,8 @@ FOSD_Project/
 ├── Release/                  # 发行说明与保留的模拟器文件
 ├── build/                    # 本地构建输出，不进入 Git
 ├── CMakeLists.txt
-└── CMakePresets.json
+├── CMakePresets.json
+└── LICENSE                   # GNU GPLv3 正文，项目采用 v3 或更新版本
 ```
 
 | 文档 | 内容 |
@@ -170,13 +173,21 @@ FOSD_Project/
 | [关键点与拾取](doc/Architectural/keypoint-picking-integration.md) | 三类点集合、标记与交互 |
 | [场景与相机](doc/Architectural/scene-environment-integration.md) | 网格、坐标轴、背景和相机 |
 
-## 参与开发与授权
+## 参与开发
 
 修改前请先阅读对应模块说明，保持界面、业务编排与底层 Control 的职责边界。新增协议、存储方法或算法时通过现有接口扩展，并补充覆盖实际行为的测试；提交说明应包含修改目的、验证方式及使用限制。代码格式遵循 `.clang-format`，可使用 `tools/format-source.ps1` 整理。
 
 提交前检查差异与暂存内容，运行相关测试及数据边界检查。使用合成数据或经过确认可公开的样例，避免将工程数据作为测试夹具、截图附件或发行包资源上传。
 
-根目录目前未提供统一的项目 LICENSE；复制或分发前请与作者确认授权，第三方依赖和资源遵循各自许可证。
+## 许可证
+
+本项目原创源码采用 **GNU General Public License v3.0 or later**，即 GNU GPL 第 3 版或你选择的任何更新版本。SPDX 标识为 **`GPL-3.0-or-later`**，许可证正文见 [LICENSE](LICENSE)。
+
+该许可证允许使用、学习、修改、分发及商业使用。再分发受 GPL 约束的软件及其修改版本时，应遵守对应源码提供、许可与版权声明保留等要求；软件按许可证约定不提供担保，具体权利与义务以许可证正文为准。
+
+Qt、VTK、QCustomPlot、QSS 等第三方组件和资源保留各自的版权及许可证声明，使用与分发时需同时遵守对应条款。未随仓库分发的工程模型、点阵、标定和采集数据不在本项目源码许可的授权范围内，详见 [私有数据边界](doc/Architectural/private-data-boundary.md)。
+
+## 致谢与联系
 
 感谢 Qt、VTK 等项目，以及楚辉超、凌立瞳的指导和帮助。
 
