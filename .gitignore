@@ -9,3 +9,13 @@ lib/VTK/VTK-Linux-debug/include/vtk-9.5/
 *.pro.user
 *.pro.user.*
 
+# Private device/model data: retain only the audited QSS resources.
+/[Dd][Aa][Tt][Aa]/*
+!/[Dd][Aa][Tt][Aa]/[Qq][Ss][Ss]/
+!/[Dd][Aa][Tt][Aa]/[Qq][Ss][Ss]/**
+
+# Historical generated copies and unaudited application packages.
+/[Bb][Uu][Ii][Ll][Dd]/
+/[Bb][Uu][Ll][Ii][Dd]/
+/[Rr]elease/FOSD-*.[Zz][Ii][Pp]
+/[Rr]elease/FOSD-*.[Zz][Ii][Pp].sha256
