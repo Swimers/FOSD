@@ -11,11 +11,10 @@ from pathlib import Path
 
 def forbidden(path):
     normalized = path.replace("\\", "/").lower()
-    parts = normalized.split("/")
-    if "data" in parts:
-        index = parts.index("data")
-        if index + 1 < len(parts) and parts[index + 1] != "qss":
-            return True
+    # Only the repository's dataset root is private. Source features may also
+    # legitimately be named "data" (for example ui/.../features/data).
+    if normalized.startswith("data/") and not normalized.startswith("data/qss/"):
+        return True
     return normalized.startswith(("build/", "bulid/")) or bool(
         re.fullmatch(r"release/fosd-.*\.zip(?:\.sha256)?", normalized)
     )
